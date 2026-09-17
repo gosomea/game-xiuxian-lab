@@ -1,0 +1,39 @@
+# lefthook 配置（见 notes/implemented/tech/2026-08-28-hooks-choice.md）
+#
+# 本地钩子保持快；测试与全量矩阵归 CI。
+# 未安装 lefthook 不阻塞协作——CI 是最终裁判。
+#
+# 安装：brew install lefthook（macOS）/ winget install evilmartians.lefthook（Windows）
+# 挂接：lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    vocabulary:
+      glob: "{src/**/*.gd,src/data/vocabulary/**/*.json}"
+      run: python3 tools/gen/gen_vocabulary_index.py --check && python3 tools/verify/verify_vocabulary.py
+    capabilities:
+      glob: "src/**/*.gd"
+      run: python3 tools/verify/verify_capabilities.py
+    packages:
+      glob: "{src/game/**/*,design/package_policy.json,notes/**/*.md}"
+      run: python3 tools/verify/verify_packages.py
+    component-purity:
+      glob: "src/**/*.gd"
+      run: python3 tools/verify/verify_component_purity.py
+    sheets:
+      glob: "src/**/*.tscn"
+      run: python3 tools/verify/verify_scenes.py
+    notes:
+      glob: "notes/**/*.md"
+      run: python3 tools/verify/verify_notes_format.py
+    skills:
+      glob: "skills/**/SKILL.md"
+      run: python3 tools/verify/verify_skills.py
+    whitespace:
+      run: git diff --cached --check
+
+pre-push:
+  commands:
+    gates:
+      run: python3 tools/verify/run_all.py

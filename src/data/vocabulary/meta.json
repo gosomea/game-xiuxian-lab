@@ -1,0 +1,11 @@
+{
+  "domain": "meta",
+  "description": "节点 meta 键。跨模块读写的 meta 是公共契约，须登记。",
+  "meta": {
+    "sheet_path": {
+      "description": "Sheet 根节点上记录其来源场景路径，供调试与重载使用",
+      "written_by": "src/core/sheet_loader.gd",
+      "added": "2026-08-28"
+    }
+  }
+}

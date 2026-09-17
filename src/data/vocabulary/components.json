@@ -1,0 +1,20 @@
+{
+  "domain": "components",
+  "description": "组件类名与字段契约。能力通过类名查找组件，因此类名是公共词汇。",
+  "components": {
+    "VitalsComponent": {
+      "description": "生命数值：当前值/上限 + 伤害减免账本",
+      "script": "src/tests/fixtures/template_vitals/vitals_component.gd",
+      "fields": {
+        "maximum": "数值上限",
+        "current": "当前值",
+        "critical_ratio": "视为危急的比例阈值（供能力作为触发条件读取）"
+      },
+      "signals": {
+        "value_changed": "当前值或减免变化（UI 订阅用）",
+        "depleted": "数值降至 0"
+      },
+      "added": "2026-08-28"
+    }
+  }
+}

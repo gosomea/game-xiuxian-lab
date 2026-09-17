@@ -1,0 +1,24 @@
+# Godot
+.godot/
+*.translation
+.import/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# 注意：.agents/ .claude/ .codex/ .codebuddy/ .workbuddy/ 下的 skills 符号链接
+# 必须入库（Agent 自动发现入口），不要忽略这些目录。
+# 各 Agent 的运行时产物（会话历史、缓存、本地设置）按需在此追加，例如：
+.codebuddy/settings.local.json
+.workbuddy/memory/
+.workbuddy/tmp/
+.claude/settings.local.json
+
+# 父仓库默认排除 .workbuddy；本项目的 Agent 入口需要保留。
+!.workbuddy/
+!.workbuddy/skills

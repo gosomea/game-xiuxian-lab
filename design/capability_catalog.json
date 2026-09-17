@@ -1,0 +1,8 @@
+{
+  "_generated_by": "由 tools/gen/gen_capability_catalog.py 生成，请勿手改；改动能力源码后重跑。",
+  "capabilities": [],
+  "count": 0,
+  "domains": [],
+  "packages": [],
+  "schema_version": 2
+}

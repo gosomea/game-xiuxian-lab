@@ -1,0 +1,7 @@
+0.4.0
+
+基线：../game-template
+实例化：2026-09-17
+工程：game-xiuxian-lab（模块探索）
+同步：模板更新需手工选取；不自动同步。
+模板 vitals 示例只作为 src/tests/fixtures/template_vitals/ 测试夹具保留。

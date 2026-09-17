@@ -1,0 +1,51 @@
+name: gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tier0:
+    name: Tier 0 门禁
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 全部 Tier 0 门禁（含玩法包策略与负向控制）
+        run: python3 tools/verify/run_all.py
+      - name: 玩法包策略单元测试
+        run: python3 -m unittest tools.verify.test_verify_packages
+
+  runtime-tests:
+    name: 运行时测试（Godot headless）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 Godot
+        run: |
+          GODOT_VERSION=4.6
+          curl -sSLo godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+      - name: 导入资源（生成全局类缓存）
+        run: godot --headless --path src --import || true
+      - name: 运行测试
+        run: godot --headless --path src tests/test_runner.tscn
+
+  # Tier 1：第二人加入当周把下面的 if 条件改为 true 即启用
+  # 依据 notes/implemented/process/2026-08-28-gate-tiers.md
+  tier1:
+    name: Tier 1 门禁（协作期启用）
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Tier 0 + 1 门禁
+        run: python3 tools/verify/run_all.py --tier 1

@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "limits": {
+    "max_capabilities": 4,
+    "max_non_test_gdscript": 12
+  },
+  "exceptions": []
+}

@@ -1,0 +1,16 @@
+{
+  "domain": "vitals",
+  "description": "生命数值域：可被消耗、恢复、保护的数值相关词汇。模板通用示例，实例化项目时可改名或删除。",
+  "tags": {
+    "regen_block": {
+      "description": "再生封锁：目标被禁止自然恢复生命数值（TagRegistry 阻塞，带 instigator）",
+      "added": "2026-08-28"
+    }
+  },
+  "groups": {
+    "actor": {
+      "description": "拥有生命数值的实体（可成为伤害与治疗的目标）",
+      "added": "2026-08-28"
+    }
+  }
+}

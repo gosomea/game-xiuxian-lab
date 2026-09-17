@@ -1,0 +1,20 @@
+{
+  "_schema": "内容层示例：功法。实例化项目时按需重写或删除。",
+  "_note": "内容引用的能力必须存在于 design/capability_catalog.json；引用的 tag 必须在词汇表登记。Tier 1 的 verify-content-schema 将机械校验这两点。",
+  "items": [
+    {
+      "id": "shenshi_jue",
+      "name": "神识诀",
+      "category": "gongfa",
+      "tier": 1,
+      "description": "最基础的神识修炼法门，赋予修士探查四方的能力。",
+      "grants_capabilities": ["ShenshiProbe"],
+      "sheet": "src/sheets/shenshi_awareness.tscn",
+      "parameters": {
+        "expand_speed": 400.0,
+        "cooldown": 0.5
+      },
+      "pillar": "机制广度优先于系统广度"
+    }
+  ]
+}

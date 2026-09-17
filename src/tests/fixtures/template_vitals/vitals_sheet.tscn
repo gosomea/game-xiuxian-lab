@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://cvitalssheet"]
+
+[ext_resource type="Script" path="res://tests/fixtures/template_vitals/vitals_component.gd" id="1_component"]
+[ext_resource type="Script" path="res://core/capability_manager.gd" id="2_manager"]
+[ext_resource type="Script" path="res://tests/fixtures/template_vitals/vitals_regeneration.gd" id="3_regen"]
+[ext_resource type="Script" path="res://tests/fixtures/template_vitals/vitals_guard.gd" id="4_guard"]
+
+[node name="VitalsSheet" type="Node"]
+
+[node name="VitalsComponent" type="Node" parent="."]
+script = ExtResource("1_component")
+maximum = 100.0
+current = 100.0
+
+[node name="CapabilityManager" type="Node" parent="."]
+script = ExtResource("2_manager")
+
+[node name="VitalsRegeneration" type="Node" parent="CapabilityManager"]
+script = ExtResource("3_regen")
+
+[node name="VitalsGuard" type="Node" parent="CapabilityManager"]
+script = ExtResource("4_guard")

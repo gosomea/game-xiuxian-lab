@@ -1,0 +1,43 @@
+{
+  "_generated_by": "由 tools/gen/gen_vocabulary_index.py 生成，请勿手改；编辑 tags/ events/ components.json 后重跑。",
+  "components": {
+    "VitalsComponent": {
+      "_source": "components.json",
+      "added": "2026-08-28",
+      "description": "生命数值：当前值/上限 + 伤害减免账本",
+      "fields": {
+        "critical_ratio": "视为危急的比例阈值（供能力作为触发条件读取）",
+        "current": "当前值",
+        "maximum": "数值上限"
+      },
+      "script": "src/tests/fixtures/template_vitals/vitals_component.gd",
+      "signals": {
+        "depleted": "数值降至 0",
+        "value_changed": "当前值或减免变化（UI 订阅用）"
+      }
+    }
+  },
+  "events": {},
+  "groups": {
+    "actor": {
+      "_source": "tags/vitals.json",
+      "added": "2026-08-28",
+      "description": "拥有生命数值的实体（可成为伤害与治疗的目标）"
+    }
+  },
+  "meta": {
+    "sheet_path": {
+      "_source": "meta.json",
+      "added": "2026-08-28",
+      "description": "Sheet 根节点上记录其来源场景路径，供调试与重载使用",
+      "written_by": "src/core/sheet_loader.gd"
+    }
+  },
+  "tags": {
+    "regen_block": {
+      "_source": "tags/vitals.json",
+      "added": "2026-08-28",
+      "description": "再生封锁：目标被禁止自然恢复生命数值（TagRegistry 阻塞，带 instigator）"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+; Godot 4.x — game-template
+; 运行规则见根 AGENTS.md；架构决策见 notes/implemented/tech/2026-08-28-capabilities-architecture.md
+; 全局设施（TagRegistry / TimeKeeper）是静态类，不用 autoload：
+; 见 notes/implemented/tech/2026-08-28-static-globals-over-autoload.md
+
+config_version=5
+
+[application]
+
+config/name="修仙 · 模块实验室"
+config/description="2.5D 修仙模块实验：独立场景、逐项探索、按需组合。"
+run/main_scene="res://levels/lab_hub.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=800
+window/size/window_width_override=1280
+window/size/window_height_override=800
+window/size/min_width=960
+window/size/min_height=640
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.952941, 0.941176, 0.905882, 1)

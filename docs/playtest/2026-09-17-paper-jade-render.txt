@@ -1,0 +1,21 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-09-17 23:17:05.878 Godot[49556:144470795] +[IMKClient subclass]: chose IMKClient_Modern
+2026-09-17 23:17:06.032 Godot[49556:144470795] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 实验目录已进入真实场景树
+PASS 八个计划模块可见
+PASS 待探索模块不能启动
+PASS 截图保存：hub-1280x800
+PASS 键盘激活模块后详情更新
+PASS 组合依赖展示真实模块名
+PASS 截图保存：hub-960x640
+PASS 从入口进入空白工作台
+PASS 正交俯视相机已激活
+PASS 截图保存：empty-stage
+PASS 滚轮改变工作台视野
+PASS R 重置视野
+PASS Esc 返回实验目录
+PASS 返回后模块仍为真实计划状态
+PASS 工作台返回按钮正常
+PLAYTEST 完成：失败 0

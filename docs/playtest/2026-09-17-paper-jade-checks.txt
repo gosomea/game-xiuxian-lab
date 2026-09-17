@@ -1,0 +1,49 @@
+OK   verify-vocabulary-index — 索引与分域文件同步（4 条词汇）
+OK   verify-capability-catalog — catalog 与源码同步（0 个能力，0 个领域，0 个叶子包）
+OK   verify-packages — 检查 1 个目标，全部合规
+OK   verify-vocabulary — 检查 22 个目标，全部合规
+OK   verify-capabilities — 检查 0 个目标，全部合规
+OK   verify-component-purity — 检查 0 个目标，全部合规
+OK   verify-scenes — 检查 4 个目标，全部合规
+OK   verify-skills — 检查 39 个目标，全部合规
+OK   verify-mcp — 检查 1 个目标，全部合规
+OK   verify-agent-entries — 检查 7 个目标，全部合规
+OK   verify-notes-format — 检查 15 个目标，全部合规
+OK   verify_packages.py             正确拒绝：领域目录直接放运行时文件
+OK   verify_packages.py             正确拒绝：第 5 个 Capability 没有豁免
+OK   verify_packages.py             正确拒绝：超限豁免引用不存在的 implemented note
+OK   verify_packages.py             正确拒绝：超限豁免引用 proposed note
+OK   verify_capabilities.py         正确拒绝：缺少同目录配对测试的 Capability
+OK   verify_capabilities.py         正确拒绝：同一功能包内跨 Capability 直接引用
+OK   verify_capabilities.py         正确拒绝：只有激活条件、无任何行为函数的 Capability
+OK   verify_capabilities.py         正确拒绝：Capability 未声明 class_name
+OK   verify_component_purity.py     正确拒绝：Component 实现每帧回调
+OK   verify_component_purity.py     正确拒绝：Component 引用全局决策设施
+OK   verify_vocabulary.py           正确拒绝：使用未登记的 Tag（拼写错误）
+OK   verify_scenes.py               正确拒绝：Sheet 悬空引用
+OK   verify_scenes.py               正确拒绝：不含任何脚本节点的空 Sheet
+OK   verify_scenes.py               正确拒绝：节点 parent 为空字符串（会导致引擎段错误）
+OK   verify_scenes.py               正确拒绝：节点 parent 指向未声明的节点
+OK   verify_scenes.py               正确拒绝：arena.tscn 根节点挂异名 m3_flow.gd
+OK   verify_skills.py               正确拒绝：skill 目录名缺少域前缀
+OK   verify_skills.py               正确拒绝：skill frontmatter name 与目录名不一致
+OK   verify_skills.py               正确拒绝：skill frontmatter 缺少 description
+OK   verify_mcp.py                  正确拒绝：未登记的 MCP 集成目录
+OK   verify_mcp.py                  正确拒绝：vendored MCP 缺少 LICENSE
+OK   verify_agent_entries.py        正确拒绝：Agent 入口缺失（无 .claude/skills 等）
+OK   verify_agent_entries.py        正确拒绝：Agent 入口是普通文件而非 symlink（Windows clone 假文件）
+OK   verify_notes_format.py         正确拒绝：notes 缺少 ## 备选方案
+OK   verify_notes_format.py         正确拒绝：notes Status 与 lifecycle 目录不一致
+OK   verify_notes_format.py         正确拒绝：notes 文件名不符合日期-标题规范
+OK   verify_notes_format.py         正确拒绝：implemented 中残留提案期标题
+
+负向控制全部通过（27/27）：每条门禁都能拒绝对应非法案例
+
+OK   test_core.gd                           通过 16 / 失败 0
+OK   test_vocabulary.gd                     通过 10 / 失败 0
+OK   test_vitals_regeneration.gd            通过 7 / 失败 0
+OK   test_vitals_guard.gd                   通过 14 / 失败 0
+OK   test_lab_catalog.gd                    通过 23 / 失败 0
+测试合计：通过 70，失败 0
+
+门禁全部通过（Tier <= 0）
