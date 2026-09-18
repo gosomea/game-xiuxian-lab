@@ -1,12 +1,18 @@
 class_name CultivatorPresentation
 extends Node3D
 
-## 纯表现层：分件步态、摆臂、袍摆与御剑平衡姿态。
+## 纯表现层：分件步态、摆臂、袍摆、腾空与御剑姿态，以及落地压缩过渡。
 ##
 ## 只读 actor.motion() 的 actual_velocity / on_floor / flight_active；不写任何 Component 字段、
 ## 不新增 Capability、不移动物理根与胶囊。删除本节点后角色行为与碰撞完全不变。
 ## 导出的分件对象原点都在角色原点，直接旋转会绕脚底转，因此 _ready() 按实测包围盒给每组
 ## 建枢轴（髋 / 肩 / 腰）并把网格 reparent 进去；枢轴仍建在模型根内，既有子树查询不受影响。
+##
+## 过渡全部由物理状态驱动，不依赖动画帧：
+## - 着地/腾空来自 on_floor 边沿（跳起、落地各一次），不做「动画播放完毕」判定；
+## - 落地压缩是 on_floor 上升沿触发的衰减脉冲，脚底基准始终由 actor 的物理结果决定；
+## - 方向反转来自实际速度方向与上一帧方向点积，不是按键边沿；
+## - 御剑起降看 flight_active 与实际竖直速度，升降/悬停分别是升速、降速与近零。
 ##
 ## 已知边界：GLB 无骨骼，这是分件刚体摆动而非骨骼动画；脚掌无 IK 锁定，竖直起伏仅厘米级。
 ## 轴（导出实测）：Godot -Z 为正面、+Y 向上、足底 y=0；髋 y≈0.70、肩 y≈1.42、腰 y≈0.97。
@@ -22,6 +28,23 @@ extends Node3D
 @export var arm_swing: float = 0.22
 ## 御剑时身体前倾（弧度）。
 @export var flight_lean: float = 0.16
+## 步态增益上升 / 下降速率（每秒）：起步要快、停下稍缓，读起来才像有质量。
+@export var gait_attack: float = 6.0
+@export var gait_release: float = 4.5
+## 腾空姿态增益速率（每秒）。
+@export var airborne_rate: float = 5.5
+## 落地压缩脉冲的初始强度与衰减速率（每秒）。
+@export var landing_impulse: float = 1.0
+@export var landing_decay: float = 5.0
+## 方向反转响应的强度与衰减速率（每秒）。
+@export var turn_response: float = 0.55
+@export var turn_decay: float = 3.0
+## 下落时屈膝伸展的最大角度（弧度）与达到该角度的下落速度（米/秒）。
+@export var fall_leg_extend: float = 0.30
+@export var fall_speed_reference: float = 6.0
+## 御剑升降时机身俯仰的附加角（弧度）。
+@export var flight_climb_pitch: float = 0.10
+@export var flight_dive_pitch: float = 0.12
 
 var _actor: Node3D
 var _body: Node3D
@@ -32,6 +55,13 @@ var _phase := 0.0
 var _clock := 0.0
 var _gait := 0.0
 var _flight := 0.0
+var _airborne := 0.0
+var _landing := 0.0
+var _turn := 0.0
+var _was_grounded := true
+var _last_direction := Vector3.ZERO
+## 最近一次读到的只读快照：供工作台 HUD 与验收脚本读取，不参与物理。
+var _pose: Dictionary = {}
 
 
 func _ready() -> void:
@@ -51,6 +81,8 @@ func _ready() -> void:
 	_arms.append(_require_pivot(model, ["Arm_Sleeve_R", "Cuff_R", "Hand_R"]))
 	_robe = _require_pivot(model, ["Robe_Skirt", "Robe_HemBand", "Robe_Panel"])
 	_assert_rig(model)
+	if _actor is CharacterBody3D:
+		_was_grounded = true
 
 
 func _process(delta: float) -> void:
@@ -60,36 +92,99 @@ func _process(delta: float) -> void:
 	if motion == null:
 		return
 	var velocity: Vector3 = motion.get("actual_velocity")
-	var speed := Vector2(velocity.x, velocity.z).length()
+	var flat := Vector3(velocity.x, 0.0, velocity.z)
+	var speed := flat.length()
 	var grounded: bool = motion.get("on_floor")
 	var flying: bool = motion.get("flight_active")
 	_clock += delta
+	# 御剑 / 腾空增益：都是物理状态驱动，不依赖动画播放进度。
 	_flight = move_toward(_flight, 1.0 if flying else 0.0, delta * 4.0)
+	_airborne = move_toward(_airborne, 0.0 if (grounded or flying) else 1.0, delta * airborne_rate)
+	# 落地脉冲：着地上升沿触发一次，随后按 landing_decay 衰减，不做「落地动画播放完毕」判定。
+	if grounded and not _was_grounded:
+		_landing = landing_impulse
+	_was_grounded = grounded
+	_landing = move_toward(_landing, 0.0, delta * landing_decay)
+	# 方向反转：实际速度方向与上一帧方向接近反向时给一次转身响应。
+	if speed > 0.6:
+		var direction := flat / speed
+		if _last_direction.length_squared() > 0.25 and direction.dot(_last_direction) < -0.35:
+			_turn = turn_response
+		_last_direction = direction
+	_turn = move_toward(_turn, 0.0, delta * turn_decay)
 	# 相位只在着地且真的在走时推进：停下就停在当前步态，不原地踏步。
-	_gait = move_toward(_gait, 1.0 if grounded and speed > 0.2 else 0.0, delta * 6.0)
+	_gait = move_toward(_gait, 1.0 if grounded and speed > 0.2 else 0.0,
+		delta * (gait_attack if speed > 0.2 else gait_release))
 	if grounded:
 		_phase = fmod(_phase + delta * TAU * speed / maxf(stride_meters, 0.01), TAU)
-	var airborne := 0.0 if (grounded or flying) else 1.0
+	_apply_pose(velocity, speed)
+	_record_pose(velocity, speed, grounded, flying)
+
+
+## 姿态合成：步态摆动 + 腾空收腿 + 下落伸腿 + 落地屈膝 + 转向侧倾 + 御剑平衡。
+func _apply_pose(velocity: Vector3, speed: float) -> void:
+	var vertical := velocity.y
+	# 下落速度归一化：下落越快，腿越向前下方伸出准备触地。
+	var fall := clampf(-vertical / maxf(fall_speed_reference, 0.01), 0.0, 1.0) * _airborne
+	# 起跳 / 上升：收腿。
+	var rise := clampf(vertical / maxf(fall_speed_reference, 0.01), 0.0, 1.0) * _airborne
+	var tuck := rise * 0.30 - fall * fall_leg_extend
+	var squash := _landing * 0.26
 	if _legs.size() >= 2:
 		var swing := sin(_phase) * leg_swing * _gait
-		_legs[0].rotation.x = swing - airborne * 0.22 + _flight * 0.10
-		_legs[1].rotation.x = -swing - airborne * 0.16 + _flight * 0.14
+		_legs[0].rotation.x = swing + tuck + squash - _flight * 0.06
+		_legs[1].rotation.x = -swing + tuck * 0.85 + squash - _flight * 0.02
 	if _arms.size() >= 2:
 		var arm := -sin(_phase) * arm_swing * _gait
-		_arms[0].rotation.x = arm
-		_arms[1].rotation.x = -arm
-		# 御剑与腾空时双臂略向外张，形成平衡姿态。
-		_arms[0].rotation.z = _flight * 0.22 + airborne * 0.10
-		_arms[1].rotation.z = -_flight * 0.22 - airborne * 0.10
+		_arms[0].rotation.x = arm + rise * 0.22 - fall * 0.10 + _turn * 0.10
+		_arms[1].rotation.x = -arm + rise * 0.22 - fall * 0.10 - _turn * 0.10
+		# 御剑与腾空时双臂略向外张，形成平衡姿态；落地时略收。
+		var spread := _flight * 0.22 + _airborne * 0.10 - _landing * 0.06
+		_arms[0].rotation.z = spread + _turn * 0.18
+		_arms[1].rotation.z = -spread - _turn * 0.18
 	if _robe != null:
-		# 进行与御剑时袍摆向后（+Z 为身后）轻拖，幅度刻意保守。
-		_robe.rotation.x = -(clampf(speed * 0.020, 0.0, 0.10) + _flight * 0.10)
-		_robe.rotation.z = sin(_phase) * 0.03 * _gait
+		# 进行与御剑时袍摆向后（+Z 为身后）轻拖，下落与落地时再向前兜一下；幅度刻意保守。
+		_robe.rotation.x = -(clampf(speed * 0.020, 0.0, 0.10) + _flight * 0.10 + _airborne * 0.05)
+		_robe.rotation.z = sin(_phase) * 0.03 * _gait + _turn * 0.06
 	if _body != null:
-		# 整体前倾与厘米级起伏；脚底基准仍由 actor 的物理结果决定。
-		_body.rotation.x = -(_gait * 0.05 + _flight * flight_lean)
-		_body.rotation.z = sin(_phase) * 0.015 * _gait
-		_body.position.y = _flight * 0.035 * sin(_clock * 1.8) + _gait * 0.006 * (1.0 - cos(_phase * 2.0))
+		# 整体前倾与厘米级起伏；脚底基准仍由 actor 的物理结果决定，压缩只在身体局部。
+		var climb := clampf(vertical / maxf(fall_speed_reference, 0.01), -1.0, 1.0) * _flight
+		_body.rotation.x = -(_gait * 0.05 + _flight * flight_lean + _airborne * 0.06
+			+ climb * (flight_climb_pitch if vertical > 0.0 else flight_dive_pitch))
+		_body.rotation.z = sin(_phase) * 0.015 * _gait + _turn * 0.08
+		_body.position.y = (_flight * 0.035 * sin(_clock * 1.8)
+			+ _gait * 0.006 * (1.0 - cos(_phase * 2.0))
+			- _landing * 0.05)
+
+
+## 只读快照：工作台 HUD 与验收脚本据此读回姿态参数，不参与任何物理裁决。
+func _record_pose(velocity: Vector3, speed: float, grounded: bool, flying: bool) -> void:
+	var left_leg := _legs[0].rotation.x if _legs.size() >= 2 else 0.0
+	var right_leg := _legs[1].rotation.x if _legs.size() >= 2 else 0.0
+	var left_arm := _arms[0].rotation.x if _arms.size() >= 2 else 0.0
+	_pose = {
+		"gait": _gait,
+		"phase": _phase,
+		"flight": _flight,
+		"airborne": _airborne,
+		"landing": _landing,
+		"turn": _turn,
+		"leg_left": left_leg,
+		"leg_right": right_leg,
+		"arm_left": left_arm,
+		"body_pitch": _body.rotation.x if _body != null else 0.0,
+		"body_lift": _body.position.y if _body != null else 0.0,
+		"robe_pitch": _robe.rotation.x if _robe != null else 0.0,
+		"speed": speed,
+		"vertical_speed": velocity.y,
+		"grounded": grounded,
+		"flying": flying,
+	}
+
+
+## 表现层只读快照访问器；无快照时返回空字典，不制造默认姿态。
+func pose_state() -> Dictionary:
+	return _pose.duplicate()
 
 
 ## 模型根 = 首个网格节点的父节点（GLB 根）；枢轴建在它内部。

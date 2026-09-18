@@ -16,6 +16,9 @@ const LAYOUT_PATH := "res://levels/experiments/character_movement/mountain_realm
 const COURTYARD_COLLISION_PATH := "res://levels/experiments/character_movement/mountain_realm_courtyards_collision.json"
 const SWORD_NODE_PATH := "Visual/FlyingSword"
 const HUB_SCENE_NAME := "LabHub"
+const MOVEMENT_HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
+const MOVEMENT_HUB_NODE_NAME := "MovementLabHub"
+const SUBEXPERIMENTS_PATH := "res://data/content/character_movement_subexperiments.json"
 const MOVE_MODULE := "character_movement"
 const SWORD_MODULE := "sword_combat"
 const FLIGHT_TAG := &"sword_flight_block"
@@ -1293,15 +1296,32 @@ func _batch_hub() -> void:
 	await _reset_via_r()
 	await _open_flight()
 	await _frames(5)
+	# 返回层级语义：按钮与控制提示文本必须与实际目标（子实验目录）一致，防止漂移。
+	var return_button := current_scene.find_child("ReturnButton", true, false) as Button
+	_check(return_button != null and return_button.text == "返回子实验目录",
+		"群山返回按钮文本指向子实验目录：%s" % (return_button.text if return_button != null else "<缺失>"))
+	var controls := current_scene.find_child("Controls", true, false) as Label
+	_check(controls != null and controls.text.contains("返回子实验目录"),
+		"群山控制提示指向子实验目录：%s" % (controls.text if controls != null else "<缺失>"))
 	_key(KEY_ESCAPE, true)
 	await _frames(2)
 	_key(KEY_ESCAPE, false)
 	await _frames(10)
-	_check(current_scene != null and current_scene.name == HUB_SCENE_NAME, "Esc 返回实验目录")
+	_check(current_scene != null and current_scene.name == MOVEMENT_HUB_NODE_NAME,
+		"Esc 返回角色移动子实验目录（%s）" % (current_scene.name if current_scene != null else "<null>"))
 	_check(TagRegistry._blocks.is_empty(), "切场景后 TagRegistry 无跨场景残留")
+	# 子实验目录的 Esc 再回顶层实验目录（两级返回路径都真实可走）。
+	_key(KEY_ESCAPE, true)
+	await _frames(2)
+	_key(KEY_ESCAPE, false)
+	await _frames(10)
+	_check(current_scene != null and current_scene.name == HUB_SCENE_NAME, "子实验目录 Esc 返回顶层实验目录")
+	# 2026-09-18 子实验套件后：顶层角色移动入口改为 movement_lab_hub，本场景由子实验目录进入。
 	var entry := _module_entry(MOVE_MODULE)
-	_check(not entry.is_empty() and str(entry.get("scene", "")) == SCENE, "目录入口指向 mountain_realm")
+	_check(not entry.is_empty() and str(entry.get("scene", "")) == MOVEMENT_HUB_SCENE,
+		"顶层角色移动入口指向 movement_lab_hub：%s" % str(entry.get("scene", "")))
 	_check(LabCatalog.can_open(entry), "角色移动入口可打开")
+	_check(LabCatalog.can_open(_subexperiment_entry("mountain_realm")), "mountain_realm 子实验条目可打开")
 	current_scene.select_module(MOVE_MODULE)
 	_check(not current_scene.get_node("%LaunchButton").disabled, "角色移动有可运行入口")
 	current_scene.select_module(SWORD_MODULE)
@@ -1591,6 +1611,18 @@ func _scene_constant(name: String, fallback: float) -> float:
 	if not constants.has(name):
 		return fallback
 	return float(constants[name])
+
+
+## 子实验条目按角色移动子实验清单读取（顶层入口已改为子实验目录）。
+func _subexperiment_entry(id: String) -> Dictionary:
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SUBEXPERIMENTS_PATH))
+	if not parsed is Dictionary:
+		return {}
+	for value in (parsed as Dictionary).get("subexperiments", []) as Array:
+		var entry: Dictionary = value
+		if str(entry.get("id", "")) == id:
+			return entry
+	return {}
 
 
 func _module_entry(id: String) -> Dictionary:

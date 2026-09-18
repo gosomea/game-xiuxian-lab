@@ -20,6 +20,7 @@ python3 tools/verify/run_all.py --with-tests
 ## 目前可以看到什么
 
 - **实验目录**：八个模块的目标、范围与依赖；只有角色移动提供探索场景入口，剑法保持待设计。
+- **角色移动子实验目录**：顶层「角色移动」先进入本目录，七项子实验逐项回答问题；当前镜头实验室、人物动作工作台、移动庭院与群山宗门四项有真实场景入口（4 / 7），地形接触训练场、御剑飞行训练场、状态切换压力场保持待探索。每个子场景的 Esc 回到本目录，本目录的 Esc 回到顶层实验目录。
 - **群山宗门**：180×160 m、五峰三落脚点的 Blender 程序建模场景。WASD / 方向键移动，Space 跳跃 / 上升，Ctrl 下降，F 开关御剑，滚轮缩放，R 复位（含关闭飞行），Esc 返回；HUD 只显示步行 / 空中 / 御剑与高度。没有攻击、命中或战斗 UI。
 - **移动庭院（小场景回归）**：修士与风格化庭院的纯水平移动基线，可直接单独运行；控制只有 WASD 移动、滚轮缩放、R 重置、Esc 返回。
 - **空白 3D 工作台**：保留网格、正交相机与缩放，供其他模块独立起步。
@@ -49,7 +50,7 @@ python3 tools/verify/run_all.py --with-tests
 ```text
 src/levels/lab_hub.tscn        实验目录
 src/levels/empty_stage.tscn     空白 3D 工作台
-src/levels/experiments/        独立与组合实验场景（character_movement：mountain_realm + movement_garden）
+src/levels/experiments/        独立与组合实验场景（character_movement：movement_lab_hub + mountain_realm + movement_garden）
 src/game/                     供场景复用的模块实现
 src/core/                     从模板继承的核心设施
 src/data/content/experiments.json  模块清单
@@ -63,9 +64,10 @@ docs/playtest/                 运行验收证据
 
 ## 角色移动实验
 
-从目录选择「角色移动」进入群山宗门，或直接启动：
+从目录选择「角色移动」进入子实验目录，再由目录内条目进入具体子场景，或直接启动：
 
 ```sh
+./run.command res://levels/experiments/character_movement/movement_lab_hub.tscn
 ./run.command res://levels/experiments/character_movement/mountain_realm.tscn
 ```
 

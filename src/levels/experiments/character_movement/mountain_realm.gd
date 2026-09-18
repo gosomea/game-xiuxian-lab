@@ -10,7 +10,7 @@ extends Node3D
 ## - 美术资源均为 preload 硬依赖：资源缺失即脚本加载失败，不静默降级、不伪造可运行入口。
 ## - 御剑视觉由本场景实例化为角色 Visual 子节点，经 actor.bind_flight_visual() 交给角色统一显示/隐藏。
 
-const HUB_SCENE := "res://levels/lab_hub.tscn"
+const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
 const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
 
@@ -251,7 +251,7 @@ func _return_to_hub() -> void:
 	_clear_pressed()
 	var result := get_tree().change_scene_to_file(HUB_SCENE)
 	if result != OK:
-		push_error("mountain_realm: 返回实验目录失败，错误码 %d" % result)
+		push_error("mountain_realm: 返回子实验目录失败，错误码 %d" % result)
 
 # --- 布局装配 -------------------------------------------------------------
 
@@ -671,7 +671,7 @@ func _build_hud() -> void:
 
 	var return_button := Button.new()
 	return_button.name = "ReturnButton"
-	return_button.text = "返回实验目录"
+	return_button.text = "返回子实验目录"
 	return_button.custom_minimum_size = Vector2(140, 44)
 	return_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	# 按钮不抢键盘焦点：移动键事件始终抵达场景的 _unhandled_input。
@@ -702,7 +702,7 @@ func _build_hud() -> void:
 	controls.name = "Controls"
 	controls.theme_type_variation = "MutedLabel"
 	controls.add_theme_font_size_override("font_size", 14)
-	controls.text = "WASD / 方向键 移动  ·  Space 跳跃 / 上升  ·  Ctrl 下降  ·  F 御剑  ·  滚轮缩放  ·  R 复位  ·  Esc 返回"
+	controls.text = "WASD / 方向键 移动  ·  Space 跳跃 / 上升  ·  Ctrl 下降  ·  F 御剑  ·  滚轮缩放  ·  R 复位  ·  Esc 返回子实验目录"
 	controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	controls_panel.add_child(controls)
 
