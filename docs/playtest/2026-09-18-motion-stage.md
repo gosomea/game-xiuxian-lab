@@ -8,10 +8,14 @@
 
 ## 最终摘要
 
-- 工作台验收：**154 PASS / 0 FAIL**，stderr **0 行**（`motion-stage-final.log`，单进程完整跑）。这是本文件的最终计数。
+- 工作台验收：本文件落地时为 **154 PASS / 0 FAIL**，stderr **0 行**（`motion-stage-final.log`，单进程完整跑）。该计数**已被后续 surface 轮取代**：
+  surface 轮在同一场景上新增几何 / 材质 / 连续跟随 / 急转断言后，最终完整批次为 **304 PASS / 0 FAIL**（急转断言加强前的初测为 296）；
+  并已加入 `surface` 批次与 `test_motion_stage_geometry.gd`。最新口径一律以
+  [motion-stage-surface-shimmer](2026-09-18-motion-stage-surface-shimmer.md) 为准，本文件的 154 不再作为最终计数。
 - 以下三项为**开发时快照**，只证明本工作台开发当刻没有踩坏邻居，**不是最终交付口径**；
   跨套件最终集成口径一律不在此处复述，见
-  [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md)：
+  [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md)
+  （其中工作台行已更新为 surface 轮的最终口径 304）：
   - 运行时单元套件：开发时快照 177 通过 / 0 失败。
   - Tier 0 门禁 + 负向控制：开发时快照，全部通过、27/27。
   - 既有回归：开发时快照，庭院 33/33、顶层目录 13/13。
@@ -57,7 +61,7 @@
 
 | 证据 | 命令 | 结果 |
 |---|---|---|
-| 工作台验收（完整） | `Godot --headless --path src --script res://tests/motion_stage_playtest.gd` | 154 PASS / 0 FAIL，stderr 0 行 |
+| 工作台验收（完整，本文件落地时的快照） | `Godot --headless --path src --script res://tests/motion_stage_playtest.gd` | 154 PASS / 0 FAIL，stderr 0 行（**已被 surface 轮最终口径 304 取代**，见 [surface 轮报告](2026-09-18-motion-stage-surface-shimmer.md)） |
 | 门禁 + 单测（开发时快照） | `python3 tools/verify/run_all.py --with-tests` | 门禁全过、负向控制 27/27、单测 177/177 |
 | 庭院回归（开发时快照） | `Godot --headless --path src --script res://tests/character_movement_playtest.gd` | 33 PASS / 0 FAIL |
 | 顶层目录回归（开发时快照） | `Godot --headless --path src --script res://tests/lab_playtest.gd` | 13 PASS / 0 FAIL |
@@ -68,7 +72,8 @@
 **均非最终交付口径**，也不在此处复述任何最终数字；跨套件最终集成口径见
 [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md)。
 
-原始日志（不入仓，存 `~/.cache/game-xiuxian-lab/motion-stage/`）：`motion-stage-final.log`（工作台 154 项）、`motion-stage-capture.log`（截图运行）、`mountain-regression.log`（群山 42 项快照）。
+原始日志（不入仓，存 `~/.cache/game-xiuxian-lab/motion-stage/`）：`motion-stage-final.log`（工作台 154 项，本文件落地时）、`motion-stage-capture.log`（截图运行）、`mountain-regression.log`（群山 42 项快照）。
+surface 轮的 304（急转断言加强前初测 296）读数与截图日志见 [surface 轮报告](2026-09-18-motion-stage-surface-shimmer.md)「命令与结果」。
 
 ## 实际画面
 
@@ -101,5 +106,6 @@
 
 - 未改动 `experiments.json`、子实验清单、`movement_lab_hub.*`、`camera_lab*`、Capability / Component 字段与现有庭院 / 群山场景。
 - `cultivator_presentation.gd` 为既有文件的扩展：保留全部原有导出参数与枢轴断言，新增腾空 / 落地 / 转身 / 御剑俯仰增益与只读 `pose_state()`；`swordsman.tscn` 未改动。
-- `Esc` 返回目标优先移动子实验目录，未落地时回退顶层 `lab_hub.tscn`（不硬依赖并行文件）。
-  集成收口后子实验目录已落地，实际返回路径为移动子实验目录；本报告其余实测数字保持为当时快照。
+- `Esc` 返回目标优先移动子实验目录，未落地时回退顶层 `lab_hub.tscn`（不硬依赖并行文件）——这是本工作台**开发当刻**的行为快照。
+  集成收口后子实验目录已落地，当前 `motion_stage.gd` 已改为固定返回 `MOVEMENT_HUB_SCENE` 并在 `_ready` 断言其存在，**不再有顶层回退**；
+  本报告其余实测数字保持为当时快照。

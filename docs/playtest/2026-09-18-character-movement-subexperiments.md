@@ -8,6 +8,12 @@
 
 > **本文件是角色移动子实验的权威报告。** 七个子实验各自的报告保留其落地阶段的实测数字与结论，属**阶段快照**；
 > 与本文件的计数不一致时，以本文件为准。本文件的数值全部来自集成提交状态下的重新运行，不复制旧阶段计数。
+>
+> **计数版本（2026-09-18 共面闪烁修复轮）**：人物动作工作台由 154 更新为 **304**（surface 批次新增几何 / 材质 /
+> 连续跟随 / 急转断言；急转断言加强前的初测为 296），九项合计由 1068 更新为 **1218**（= 1068 − 154 + 304）；
+> 单元套件由 260 更新为 **395**（新增 `test_motion_stage_geometry.gd` 135 项）。
+> 296 / 1210 只是 surface 轮急转断言加强前的初测口径，已被本表的 **304 / 1218** 取代；细节依据见 surface 轮报告
+> `2026-09-18-motion-stage-surface-shimmer.md`。
 
 ## 范围（集成收口）
 
@@ -32,17 +38,17 @@
 
 | 检查 | 命令 | 结果 | stderr |
 |---|---|---|---|
-| Tier 0 门禁 + 负向控制 + 单元套件 | `python3 tools/verify/run_all.py --with-tests` | 12 项门禁全通过；负向控制 27/27；单元 **260 通过 / 0 失败** | 0 |
+| Tier 0 门禁 + 负向控制 + 单元套件 | `python3 tools/verify/run_all.py --with-tests` | 12 项门禁全通过；负向控制 27/27；单元 **395 通过 / 0 失败** | 0 |
 | 子实验目录 | `--script res://tests/movement_hub_playtest.gd` | **121 PASS / 0 FAIL** | 0 |
 | 顶层目录 | `--script res://tests/lab_playtest.gd` | 13 PASS / 0 FAIL | 0 |
 | 镜头实验室 | `--script res://tests/camera_lab_playtest.gd` | 101 PASS / 0 FAIL | 0 |
-| 人物动作工作台 | `--script res://tests/motion_stage_playtest.gd` | 154 PASS / 0 FAIL | 0 |
+| 人物动作工作台 | `--script res://tests/motion_stage_playtest.gd` | **304 PASS / 0 FAIL**（含增强急转断言） | 0 |
 | 地形接触训练场 | `--script res://tests/ground_contact_course_playtest.gd` | 178 PASS / 0 FAIL | 5 行（预期 warning，见下） |
 | 御剑飞行训练场 | `--script res://tests/sword_flight_course_playtest.gd` | 109 PASS / 0 FAIL | 5 行（预期 warning，见下） |
 | 状态切换压力场 | `--script res://tests/state_transition_lab_playtest.gd` | 133 PASS / 0 FAIL | 0 |
 | 移动庭院（回归） | `--script res://tests/character_movement_playtest.gd` | 39 PASS / 0 FAIL | 0 |
 | 群山宗门（回归） | `--script res://tests/mountain_traversal_playtest.gd` | 220 PASS / 0 FAIL | 5 行（预期 warning，见下） |
-| 九个运行验收合计 | 上列九项 | **1068 PASS / 0 FAIL** | — |
+| 九个运行验收合计 | 上列九项 | **1218 PASS / 0 FAIL** | — |
 | diff 卫生 | `git diff --check` | clean | — |
 
 **三个 standalone playtest 未注册进 `test_runner.gd`**：它们是 `SceneTree` 运行验收脚本（真实窗口 / 真实输入 / 场景切换），
