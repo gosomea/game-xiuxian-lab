@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://levels/experiments/character_movement/sword_flight_course.gd" id="1_root"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.847059, 0.882353, 0.901961, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.760784, 0.803922, 0.803922, 1)
+ambient_light_energy = 0.34
+fog_enabled = true
+fog_light_color = Color(0.847059, 0.882353, 0.901961, 1)
+fog_density = 0.0022
+tonemap_mode = 2
+tonemap_white = 1.0
+
+[node name="SwordFlightCourse" type="Node3D"]
+script = ExtResource("1_root")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-50, -40, 0)
+light_color = Color(1, 0.964706, 0.898039, 1)
+light_energy = 0.46
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+position = Vector3(17, 21, 18)
+projection = 1
+current = true
+size = 34.0
+near = 0.1
+far = 400.0

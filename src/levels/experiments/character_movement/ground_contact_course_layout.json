@@ -1,0 +1,748 @@
+{
+  "schema": "ground_contact_course/1",
+  "units": "meters",
+  "up_axis": "Y",
+  "note": "collision 与可见装置共用本文件的分区尺寸：Godot 由本文件建碰撞，Blender 由本文件建视觉，playtest 读回两者做对齐断言。",
+  "spawn": {
+    "position": [
+      -18,
+      0.05,
+      0
+    ],
+    "aim": [
+      1,
+      0,
+      0
+    ]
+  },
+  "bounds": {
+    "min": [
+      -24,
+      -10,
+      -20
+    ],
+    "max": [
+      32,
+      10,
+      20
+    ],
+    "fall_out_y": -5
+  },
+  "camera": {
+    "offset": [
+      0,
+      14,
+      12
+    ],
+    "size": 17,
+    "size_min": 6,
+    "size_max": 40,
+    "clamp_min": [
+      -19,
+      -15
+    ],
+    "clamp_max": [
+      27,
+      15
+    ],
+    "follow_speed": 5
+  },
+  "ground_pieces": [
+    {
+      "name": "ground_main",
+      "center": [
+        1,
+        -0.5,
+        0
+      ],
+      "size": [
+        46,
+        1,
+        36
+      ]
+    },
+    {
+      "name": "ground_east_n",
+      "center": [
+        27,
+        -0.5,
+        -10.5
+      ],
+      "size": [
+        6,
+        1,
+        15
+      ]
+    },
+    {
+      "name": "ground_east_s",
+      "center": [
+        27,
+        -0.5,
+        10.5
+      ],
+      "size": [
+        6,
+        1,
+        15
+      ]
+    }
+  ],
+  "void_gap": {
+    "title": "落下回收区",
+    "center": [
+      27,
+      0,
+      0
+    ],
+    "size": [
+      6,
+      0,
+      6
+    ],
+    "note": "x 24..30 / z -3..3 无地面：走入即掉出 fall_out_y 并触发回收"
+  },
+  "devices": [
+    {
+      "id": "flat_pad",
+      "kind": "pad",
+      "zone": "平地",
+      "title": "平地基线 8×8 m",
+      "center": [
+        -18,
+        0,
+        0
+      ],
+      "size": [
+        8,
+        0.02,
+        8
+      ],
+      "top_y": 0.02
+    },
+    {
+      "id": "ramp_gentle",
+      "kind": "ramp",
+      "zone": "坡道",
+      "title": "缓坡 28°",
+      "angle_deg": 28,
+      "base": [
+        -13,
+        0,
+        -3.4
+      ],
+      "slope_length": 4,
+      "width": 3,
+      "thickness": 0.6,
+      "landing_depth": 1.8,
+      "rail": true
+    },
+    {
+      "id": "ramp_critical",
+      "kind": "ramp",
+      "zone": "坡道",
+      "title": "临界坡 42°",
+      "angle_deg": 42,
+      "base": [
+        -13,
+        0,
+        0
+      ],
+      "slope_length": 3.2,
+      "width": 3,
+      "thickness": 0.6,
+      "landing_depth": 1.8,
+      "rail": true
+    },
+    {
+      "id": "ramp_steep",
+      "kind": "ramp",
+      "zone": "坡道",
+      "title": "陡坡 52°",
+      "angle_deg": 52,
+      "base": [
+        -13,
+        0,
+        3.4
+      ],
+      "slope_length": 2.4,
+      "width": 3,
+      "thickness": 0.6,
+      "landing_depth": 1.8,
+      "rail": true
+    },
+    {
+      "id": "step_025",
+      "kind": "step",
+      "zone": "台阶",
+      "title": "台阶 0.25 m",
+      "rise": 0.25,
+      "center": [
+        1.5,
+        0.125,
+        -3.4
+      ],
+      "size": [
+        3,
+        0.25,
+        3
+      ]
+    },
+    {
+      "id": "step_050",
+      "kind": "step",
+      "zone": "台阶",
+      "title": "台阶 0.50 m",
+      "rise": 0.5,
+      "center": [
+        1.5,
+        0.25,
+        0
+      ],
+      "size": [
+        3,
+        0.5,
+        3
+      ]
+    },
+    {
+      "id": "step_075",
+      "kind": "step",
+      "zone": "台阶",
+      "title": "台阶 0.75 m",
+      "rise": 0.75,
+      "center": [
+        1.5,
+        0.375,
+        3.4
+      ],
+      "size": [
+        3,
+        0.75,
+        3
+      ]
+    },
+    {
+      "id": "corner_inner_x",
+      "kind": "wall",
+      "zone": "墙角",
+      "title": "内角墙（东·朝西）",
+      "corner": "inner",
+      "center": [
+        6.2,
+        1,
+        -4
+      ],
+      "size": [
+        0.4,
+        2,
+        8
+      ]
+    },
+    {
+      "id": "corner_inner_z",
+      "kind": "wall",
+      "zone": "墙角",
+      "title": "内角墙（北·朝南）",
+      "corner": "inner",
+      "center": [
+        4.2,
+        1,
+        -8.2
+      ],
+      "size": [
+        4.4,
+        2,
+        0.4
+      ]
+    },
+    {
+      "id": "wall_outer",
+      "kind": "wall",
+      "zone": "墙角",
+      "title": "外墙角（可绕行）",
+      "corner": "outer",
+      "center": [
+        6.2,
+        1,
+        4
+      ],
+      "size": [
+        0.4,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "narrow_12_s",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 1.2 m 南墙",
+      "center": [
+        10.5,
+        1,
+        1.275
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 1.2,
+      "lane_z": 2
+    },
+    {
+      "id": "narrow_12_n",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 1.2 m 北墙",
+      "center": [
+        10.5,
+        1,
+        2.725
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 1.2,
+      "lane_z": 2
+    },
+    {
+      "id": "narrow_09_s",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 0.9 m 南墙",
+      "center": [
+        10.5,
+        1,
+        3.275
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 0.9,
+      "lane_z": 3.85
+    },
+    {
+      "id": "narrow_09_n",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 0.9 m 北墙",
+      "center": [
+        10.5,
+        1,
+        4.425
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 0.9,
+      "lane_z": 3.85
+    },
+    {
+      "id": "narrow_06_s",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 0.6 m 南墙",
+      "center": [
+        10.5,
+        1,
+        4.975
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 0.6,
+      "lane_z": 5.3
+    },
+    {
+      "id": "narrow_06_n",
+      "kind": "wall",
+      "zone": "窄路",
+      "title": "窄路 0.6 m 北墙",
+      "center": [
+        10.5,
+        1,
+        5.825
+      ],
+      "size": [
+        5,
+        2,
+        0.25
+      ],
+      "gap_m": 0.6,
+      "lane_z": 5.3
+    },
+    {
+      "id": "terrace",
+      "kind": "terrace",
+      "zone": "边缘",
+      "title": "无栏边缘台（顶 0.90 m）",
+      "center": [
+        17.5,
+        0.45,
+        -3
+      ],
+      "size": [
+        5,
+        0.9,
+        6
+      ],
+      "top_y": 0.9,
+      "open_side": "+X",
+      "note": "东面 x=20 无栏可走出；西/北/南有栏，西侧 z −4..−2 留坡道口"
+    },
+    {
+      "id": "terrace_ramp",
+      "kind": "ramp",
+      "zone": "边缘",
+      "title": "登台坡 26.57°",
+      "run_m": 1.8,
+      "rise_m": 0.9,
+      "base": [
+        13.2,
+        0,
+        -3
+      ],
+      "width": 2,
+      "thickness": 0.9,
+      "landing_depth": 0,
+      "rail": false,
+      "top_y": 0.9
+    },
+    {
+      "id": "terrace_parapet_n",
+      "kind": "wall",
+      "zone": "边缘",
+      "title": "边缘台北栏",
+      "center": [
+        17.5,
+        1.3,
+        -5.85
+      ],
+      "size": [
+        5,
+        0.8,
+        0.3
+      ]
+    },
+    {
+      "id": "terrace_parapet_s",
+      "kind": "wall",
+      "zone": "边缘",
+      "title": "边缘台南栏",
+      "center": [
+        17.5,
+        1.3,
+        -0.15
+      ],
+      "size": [
+        5,
+        0.8,
+        0.3
+      ]
+    },
+    {
+      "id": "terrace_parapet_wn",
+      "kind": "wall",
+      "zone": "边缘",
+      "title": "边缘台西栏（北段）",
+      "center": [
+        15.15,
+        1.3,
+        -5
+      ],
+      "size": [
+        0.3,
+        0.8,
+        2
+      ]
+    },
+    {
+      "id": "terrace_parapet_ws",
+      "kind": "wall",
+      "zone": "边缘",
+      "title": "边缘台西栏（南段）",
+      "center": [
+        15.15,
+        1.3,
+        -1
+      ],
+      "size": [
+        0.3,
+        0.8,
+        2
+      ]
+    },
+    {
+      "id": "wall_west",
+      "kind": "wall",
+      "zone": "边界",
+      "title": "院墙（西）",
+      "center": [
+        -22.2,
+        1.5,
+        0
+      ],
+      "size": [
+        0.4,
+        3,
+        36.8
+      ]
+    },
+    {
+      "id": "wall_north",
+      "kind": "wall",
+      "zone": "边界",
+      "title": "院墙（北）",
+      "center": [
+        3,
+        1.5,
+        -18.2
+      ],
+      "size": [
+        52.8,
+        3,
+        0.4
+      ]
+    },
+    {
+      "id": "wall_south",
+      "kind": "wall",
+      "zone": "边界",
+      "title": "院墙（南）",
+      "center": [
+        3,
+        1.5,
+        18.2
+      ],
+      "size": [
+        52.8,
+        3,
+        0.4
+      ]
+    },
+    {
+      "id": "wall_east_n",
+      "kind": "wall",
+      "zone": "边界",
+      "title": "院墙（东北）",
+      "center": [
+        30.2,
+        1.5,
+        -10.5
+      ],
+      "size": [
+        0.4,
+        3,
+        15.4
+      ]
+    },
+    {
+      "id": "wall_east_s",
+      "kind": "wall",
+      "zone": "边界",
+      "title": "院墙（东南）",
+      "center": [
+        30.2,
+        1.5,
+        10.5
+      ],
+      "size": [
+        0.4,
+        3,
+        15.4
+      ]
+    },
+    {
+      "id": "gate_pillar_w",
+      "kind": "wall",
+      "zone": "山门",
+      "title": "山门西柱",
+      "center": [
+        -21,
+        2,
+        -4.5
+      ],
+      "size": [
+        0.7,
+        4,
+        0.7
+      ],
+      "gate": true
+    },
+    {
+      "id": "gate_pillar_e",
+      "kind": "wall",
+      "zone": "山门",
+      "title": "山门东柱",
+      "center": [
+        -21,
+        2,
+        4.5
+      ],
+      "size": [
+        0.7,
+        4,
+        0.7
+      ],
+      "gate": true
+    }
+  ],
+  "decor": {
+    "gate": {
+      "lintel": [
+        -21,
+        4.35,
+        0
+      ],
+      "span": 10.3,
+      "height": 0.55,
+      "depth": 0.8,
+      "roof_peak": 5.35,
+      "title": "山门（视觉）"
+    },
+    "mist": [
+      {
+        "center": [
+          27,
+          -2.6,
+          0
+        ],
+        "size": [
+          7.5,
+          1.2,
+          7
+        ]
+      },
+      {
+        "center": [
+          31,
+          -2,
+          -9
+        ],
+        "size": [
+          6,
+          1.4,
+          8
+        ]
+      },
+      {
+        "center": [
+          31,
+          -2,
+          9
+        ],
+        "size": [
+          6,
+          1.4,
+          8
+        ]
+      },
+      {
+        "center": [
+          -2,
+          -2.8,
+          -21
+        ],
+        "size": [
+          22,
+          1.3,
+          3
+        ]
+      },
+      {
+        "center": [
+          -2,
+          -2.8,
+          21
+        ],
+        "size": [
+          22,
+          1.3,
+          3
+        ]
+      }
+    ]
+  },
+  "signs": [
+    {
+      "id": "sign_flat",
+      "zone": "平地",
+      "title": "平地基线",
+      "position": [
+        -18,
+        0,
+        5.6
+      ]
+    },
+    {
+      "id": "sign_ramp",
+      "zone": "坡道",
+      "title": "坡道区 · 28° / 42° / 52°",
+      "position": [
+        -9,
+        0,
+        7.4
+      ]
+    },
+    {
+      "id": "sign_step",
+      "zone": "台阶",
+      "title": "台阶区 · 0.25 / 0.50 / 0.75 m",
+      "position": [
+        1.5,
+        0,
+        7.4
+      ]
+    },
+    {
+      "id": "sign_corner",
+      "zone": "墙角",
+      "title": "墙角区 · 内角 / 外墙角",
+      "position": [
+        9.8,
+        0,
+        -3
+      ]
+    },
+    {
+      "id": "sign_narrow",
+      "zone": "窄路",
+      "title": "窄路区 · 1.2 / 0.9 / 0.6 m",
+      "position": [
+        12.6,
+        0,
+        8.6
+      ]
+    },
+    {
+      "id": "sign_edge",
+      "zone": "边缘",
+      "title": "边缘台 · 东面无栏",
+      "position": [
+        22,
+        0,
+        -3
+      ]
+    },
+    {
+      "id": "sign_void",
+      "zone": "回收",
+      "title": "落下回收区",
+      "position": [
+        27,
+        0,
+        5
+      ]
+    }
+  ]
+}

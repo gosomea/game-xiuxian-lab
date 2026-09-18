@@ -1,0 +1,1404 @@
+{
+  "schema": "sword_flight_course_collision/1",
+  "takeoff": {
+    "center": [
+      0.0,
+      0.0,
+      11.0
+    ],
+    "size": [
+      9.0,
+      1.2,
+      9.0
+    ],
+    "top_y": 0.6
+  },
+  "gates": [
+    {
+      "id": "gate_1",
+      "title": "初启",
+      "center": [
+        0.0,
+        5.0,
+        -2.0
+      ],
+      "yaw": 0.0,
+      "radius": 2.4
+    },
+    {
+      "id": "gate_2",
+      "title": "升云",
+      "center": [
+        6.5,
+        9.0,
+        -12.0
+      ],
+      "yaw": 35.0,
+      "radius": 2.3
+    },
+    {
+      "id": "gate_3",
+      "title": "揽月",
+      "center": [
+        16.5,
+        13.0,
+        -16.5
+      ],
+      "yaw": 80.0,
+      "radius": 2.1
+    },
+    {
+      "id": "gate_4",
+      "title": "穿隙",
+      "center": [
+        32.0,
+        11.0,
+        -10.0
+      ],
+      "yaw": 130.0,
+      "radius": 1.8
+    },
+    {
+      "id": "gate_5",
+      "title": "回风",
+      "center": [
+        34.0,
+        7.5,
+        2.0
+      ],
+      "yaw": 176.0,
+      "radius": 2.1
+    }
+  ],
+  "hover": {
+    "center": [
+      30.0,
+      8.0,
+      7.0
+    ],
+    "radius": 3.4,
+    "seconds": 2.5
+  },
+  "landings": [
+    {
+      "id": "landing_near",
+      "title": "落剑台·近",
+      "center": [
+        30.0,
+        3.0,
+        13.0
+      ],
+      "top_y": 4.5,
+      "radius": 3.2
+    },
+    {
+      "id": "landing_far",
+      "title": "云台·稳",
+      "center": [
+        13.0,
+        0.4,
+        14.5
+      ],
+      "top_y": 0.8,
+      "radius": 4.5
+    }
+  ],
+  "cloud_steps": [
+    {
+      "name": "step_low",
+      "center": [
+        5.5,
+        3.0,
+        3.0
+      ],
+      "top_y": 3.25
+    },
+    {
+      "name": "step_mid",
+      "center": [
+        18.0,
+        8.5,
+        -5.0
+      ],
+      "top_y": 8.75
+    },
+    {
+      "name": "step_high",
+      "center": [
+        28.0,
+        12.5,
+        -18.5
+      ],
+      "top_y": 12.75
+    }
+  ],
+  "colliders": [
+    {
+      "name": "takeoff_pad",
+      "kind": "takeoff",
+      "center": [
+        0.0,
+        0.0,
+        11.0
+      ],
+      "size": [
+        9.0,
+        1.2,
+        9.0
+      ]
+    },
+    {
+      "name": "gate_1_rim00",
+      "kind": "ring_rim",
+      "center": [
+        2.4,
+        5.0,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim01",
+      "kind": "ring_rim",
+      "center": [
+        2.2173,
+        5.9184,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim02",
+      "kind": "ring_rim",
+      "center": [
+        1.6971,
+        6.6971,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim03",
+      "kind": "ring_rim",
+      "center": [
+        0.9184,
+        7.2173,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim04",
+      "kind": "ring_rim",
+      "center": [
+        0.0,
+        7.4,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim05",
+      "kind": "ring_rim",
+      "center": [
+        -0.9184,
+        7.2173,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim06",
+      "kind": "ring_rim",
+      "center": [
+        -1.6971,
+        6.6971,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim07",
+      "kind": "ring_rim",
+      "center": [
+        -2.2173,
+        5.9184,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim08",
+      "kind": "ring_rim",
+      "center": [
+        -2.4,
+        5.0,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim09",
+      "kind": "ring_rim",
+      "center": [
+        -2.2173,
+        4.0816,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim10",
+      "kind": "ring_rim",
+      "center": [
+        -1.6971,
+        3.3029,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim11",
+      "kind": "ring_rim",
+      "center": [
+        -0.9184,
+        2.7827,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim12",
+      "kind": "ring_rim",
+      "center": [
+        -0.0,
+        2.6,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim13",
+      "kind": "ring_rim",
+      "center": [
+        0.9184,
+        2.7827,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim14",
+      "kind": "ring_rim",
+      "center": [
+        1.6971,
+        3.3029,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_1_rim15",
+      "kind": "ring_rim",
+      "center": [
+        2.2173,
+        4.0816,
+        -2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim00",
+      "kind": "ring_rim",
+      "center": [
+        8.384,
+        9.0,
+        -10.6808
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim01",
+      "kind": "ring_rim",
+      "center": [
+        8.2406,
+        9.8802,
+        -10.7812
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim02",
+      "kind": "ring_rim",
+      "center": [
+        7.8322,
+        10.6263,
+        -11.0672
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim03",
+      "kind": "ring_rim",
+      "center": [
+        7.221,
+        11.1249,
+        -11.4952
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim04",
+      "kind": "ring_rim",
+      "center": [
+        6.5,
+        11.3,
+        -12.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim05",
+      "kind": "ring_rim",
+      "center": [
+        5.779,
+        11.1249,
+        -12.5048
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim06",
+      "kind": "ring_rim",
+      "center": [
+        5.1678,
+        10.6263,
+        -12.9328
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim07",
+      "kind": "ring_rim",
+      "center": [
+        4.7594,
+        9.8802,
+        -13.2188
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim08",
+      "kind": "ring_rim",
+      "center": [
+        4.616,
+        9.0,
+        -13.3192
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim09",
+      "kind": "ring_rim",
+      "center": [
+        4.7594,
+        8.1198,
+        -13.2188
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim10",
+      "kind": "ring_rim",
+      "center": [
+        5.1678,
+        7.3737,
+        -12.9328
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim11",
+      "kind": "ring_rim",
+      "center": [
+        5.779,
+        6.8751,
+        -12.5048
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim12",
+      "kind": "ring_rim",
+      "center": [
+        6.5,
+        6.7,
+        -12.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim13",
+      "kind": "ring_rim",
+      "center": [
+        7.221,
+        6.8751,
+        -11.4952
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim14",
+      "kind": "ring_rim",
+      "center": [
+        7.8322,
+        7.3737,
+        -11.0672
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_2_rim15",
+      "kind": "ring_rim",
+      "center": [
+        8.2406,
+        8.1198,
+        -10.7812
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim00",
+      "kind": "ring_rim",
+      "center": [
+        16.8647,
+        13.0,
+        -14.4319
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim01",
+      "kind": "ring_rim",
+      "center": [
+        16.8369,
+        13.8036,
+        -14.5893
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim02",
+      "kind": "ring_rim",
+      "center": [
+        16.7579,
+        14.4849,
+        -15.0376
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim03",
+      "kind": "ring_rim",
+      "center": [
+        16.6395,
+        14.9401,
+        -15.7086
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim04",
+      "kind": "ring_rim",
+      "center": [
+        16.5,
+        15.1,
+        -16.5
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim05",
+      "kind": "ring_rim",
+      "center": [
+        16.3605,
+        14.9401,
+        -17.2914
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim06",
+      "kind": "ring_rim",
+      "center": [
+        16.2421,
+        14.4849,
+        -17.9624
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim07",
+      "kind": "ring_rim",
+      "center": [
+        16.1631,
+        13.8036,
+        -18.4107
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim08",
+      "kind": "ring_rim",
+      "center": [
+        16.1353,
+        13.0,
+        -18.5681
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim09",
+      "kind": "ring_rim",
+      "center": [
+        16.1631,
+        12.1964,
+        -18.4107
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim10",
+      "kind": "ring_rim",
+      "center": [
+        16.2421,
+        11.5151,
+        -17.9624
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim11",
+      "kind": "ring_rim",
+      "center": [
+        16.3605,
+        11.0599,
+        -17.2914
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim12",
+      "kind": "ring_rim",
+      "center": [
+        16.5,
+        10.9,
+        -16.5
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim13",
+      "kind": "ring_rim",
+      "center": [
+        16.6395,
+        11.0599,
+        -15.7086
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim14",
+      "kind": "ring_rim",
+      "center": [
+        16.7579,
+        11.5151,
+        -15.0376
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_3_rim15",
+      "kind": "ring_rim",
+      "center": [
+        16.8369,
+        12.1964,
+        -14.5893
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim00",
+      "kind": "ring_rim",
+      "center": [
+        30.843,
+        11.0,
+        -8.6211
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim01",
+      "kind": "ring_rim",
+      "center": [
+        30.9311,
+        11.6888,
+        -8.7261
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim02",
+      "kind": "ring_rim",
+      "center": [
+        31.1819,
+        12.2728,
+        -9.025
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim03",
+      "kind": "ring_rim",
+      "center": [
+        31.5572,
+        12.663,
+        -9.4723
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim04",
+      "kind": "ring_rim",
+      "center": [
+        32.0,
+        12.8,
+        -10.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim05",
+      "kind": "ring_rim",
+      "center": [
+        32.4428,
+        12.663,
+        -10.5277
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim06",
+      "kind": "ring_rim",
+      "center": [
+        32.8181,
+        12.2728,
+        -10.975
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim07",
+      "kind": "ring_rim",
+      "center": [
+        33.0689,
+        11.6888,
+        -11.2739
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim08",
+      "kind": "ring_rim",
+      "center": [
+        33.157,
+        11.0,
+        -11.3789
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim09",
+      "kind": "ring_rim",
+      "center": [
+        33.0689,
+        10.3112,
+        -11.2739
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim10",
+      "kind": "ring_rim",
+      "center": [
+        32.8181,
+        9.7272,
+        -10.975
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim11",
+      "kind": "ring_rim",
+      "center": [
+        32.4428,
+        9.337,
+        -10.5277
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim12",
+      "kind": "ring_rim",
+      "center": [
+        32.0,
+        9.2,
+        -10.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim13",
+      "kind": "ring_rim",
+      "center": [
+        31.5572,
+        9.337,
+        -9.4723
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim14",
+      "kind": "ring_rim",
+      "center": [
+        31.1819,
+        9.7272,
+        -9.025
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_4_rim15",
+      "kind": "ring_rim",
+      "center": [
+        30.9311,
+        10.3112,
+        -8.7261
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim00",
+      "kind": "ring_rim",
+      "center": [
+        31.9051,
+        7.5,
+        2.1465
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim01",
+      "kind": "ring_rim",
+      "center": [
+        32.0646,
+        8.3036,
+        2.1353
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim02",
+      "kind": "ring_rim",
+      "center": [
+        32.5187,
+        8.9849,
+        2.1036
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim03",
+      "kind": "ring_rim",
+      "center": [
+        33.1983,
+        9.4401,
+        2.0561
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim04",
+      "kind": "ring_rim",
+      "center": [
+        34.0,
+        9.6,
+        2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim05",
+      "kind": "ring_rim",
+      "center": [
+        34.8017,
+        9.4401,
+        1.9439
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim06",
+      "kind": "ring_rim",
+      "center": [
+        35.4813,
+        8.9849,
+        1.8964
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim07",
+      "kind": "ring_rim",
+      "center": [
+        35.9354,
+        8.3036,
+        1.8647
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim08",
+      "kind": "ring_rim",
+      "center": [
+        36.0949,
+        7.5,
+        1.8535
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim09",
+      "kind": "ring_rim",
+      "center": [
+        35.9354,
+        6.6964,
+        1.8647
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim10",
+      "kind": "ring_rim",
+      "center": [
+        35.4813,
+        6.0151,
+        1.8964
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim11",
+      "kind": "ring_rim",
+      "center": [
+        34.8017,
+        5.5599,
+        1.9439
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim12",
+      "kind": "ring_rim",
+      "center": [
+        34.0,
+        5.4,
+        2.0
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim13",
+      "kind": "ring_rim",
+      "center": [
+        33.1983,
+        5.5599,
+        2.0561
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim14",
+      "kind": "ring_rim",
+      "center": [
+        32.5187,
+        6.0151,
+        2.1036
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "gate_5_rim15",
+      "kind": "ring_rim",
+      "center": [
+        32.0646,
+        6.6964,
+        2.1353
+      ],
+      "size": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    {
+      "name": "step_low",
+      "kind": "step",
+      "center": [
+        5.5,
+        3.0,
+        3.0
+      ],
+      "size": [
+        3.4,
+        0.5,
+        3.4
+      ]
+    },
+    {
+      "name": "step_mid",
+      "kind": "step",
+      "center": [
+        18.0,
+        8.5,
+        -5.0
+      ],
+      "size": [
+        3.2,
+        0.5,
+        3.2
+      ]
+    },
+    {
+      "name": "step_high",
+      "kind": "step",
+      "center": [
+        28.0,
+        12.5,
+        -18.5
+      ],
+      "size": [
+        3.0,
+        0.5,
+        3.0
+      ]
+    },
+    {
+      "name": "landing_near",
+      "kind": "landing",
+      "center": [
+        30.0,
+        3.0,
+        13.0
+      ],
+      "size": [
+        6.4,
+        3.0,
+        6.4
+      ]
+    },
+    {
+      "name": "landing_far",
+      "kind": "landing",
+      "center": [
+        13.0,
+        0.4,
+        14.5
+      ],
+      "size": [
+        9.0,
+        0.8,
+        9.0
+      ]
+    }
+  ],
+  "visual_only": [
+    "takeoff_mark",
+    "takeoff_mark_cross",
+    "gate_1_glow",
+    "gate_1_lug0",
+    "gate_1_lug1",
+    "gate_1_lug2",
+    "gate_1_lug3",
+    "gate_2_glow",
+    "gate_2_lug0",
+    "gate_2_lug1",
+    "gate_2_lug2",
+    "gate_2_lug3",
+    "gate_3_glow",
+    "gate_3_lug0",
+    "gate_3_lug1",
+    "gate_3_lug2",
+    "gate_3_lug3",
+    "gate_4_glow",
+    "gate_4_lug0",
+    "gate_4_lug1",
+    "gate_4_lug2",
+    "gate_4_lug3",
+    "gate_5_glow",
+    "gate_5_lug0",
+    "gate_5_lug1",
+    "gate_5_lug2",
+    "gate_5_lug3",
+    "step_low_lip",
+    "step_mid_lip",
+    "step_high_lip",
+    "hover_zone_disc",
+    "hover_zone_column",
+    "landing_near_rim",
+    "landing_near_mark",
+    "landing_near_pole",
+    "landing_near_flag",
+    "landing_far_rim",
+    "landing_far_mark",
+    "landing_far_pole",
+    "landing_far_flag",
+    "rock_a",
+    "rock_b",
+    "rock_c",
+    "rock_d",
+    "rock_e",
+    "far_north",
+    "far_northeast",
+    "far_east",
+    "far_west"
+  ],
+  "bounds": {
+    "min": [
+      -26.0,
+      -1.0,
+      -30.0
+    ],
+    "max": [
+      48.0,
+      26.0,
+      24.0
+    ]
+  }
+}
