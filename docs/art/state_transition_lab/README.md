@@ -4,7 +4,7 @@
 **全部为程序原创几何**：没有下载资产、没有素材库、没有贴图，未调用图像/3D 生成服务，
 没有骨骼与动画。唯一外部依赖是 Blender 自带 Python（`bpy` / `mathutils`）。
 
-决策依据：[character-movement-subexperiments](../../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)。
+决策依据：[character-movement-subexperiments](../../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)。
 
 资产定位：**心境 / 身法试炼阵**——阴阳玉盘、石门（北）、断桥（东）、悬浮阵纹柱与外围阵环，
 为「状态切换压力场」子实验提供可读的修仙场景与三块**功能性**地形（墙 / 断桥缺口 / 边缘低台）。

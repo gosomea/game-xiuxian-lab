@@ -1,7 +1,7 @@
 # 御剑飞行训练场验收（2026-09-18）
 
 场景：`res://levels/experiments/character_movement/sword_flight_course.tscn`（可独立启动）。
-决策依据：[character-movement-subexperiments](../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「御剑飞行训练场」）。
+决策依据：[character-movement-subexperiments](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「御剑飞行训练场」）。
 美术台账：[asset_ledger.md](../art/sword_flight_course/asset_ledger.md)。
 验收档位：**CLI 档**（`godot --headless` + 真实键盘事件 + 窗口模式截图；编辑器桥不可用，未用 MCP）。
 

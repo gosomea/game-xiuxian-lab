@@ -1,7 +1,7 @@
 # 地形接触训练场验收（2026-09-18）
 
 场景：`res://levels/experiments/character_movement/ground_contact_course.tscn`（子实验「地形接触训练场」，返回目标固定为同目录 `movement_lab_hub.tscn`）。
-决策依据：[character-movement-subexperiments](../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)；三能力契约 [traversal-contract](../experiments/traversal-contract.md)。
+决策依据：[character-movement-subexperiments](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)；三能力契约 [traversal-contract](../experiments/traversal-contract.md)。
 验收档：**CLI 档**（`godot --headless` + 窗口模式截图；编辑器桥未用于本轮，不构成依赖）。
 本轮开发基线：`852308d`（`Extract movement lab input state`）。
 
@@ -119,8 +119,8 @@
 `test_runner.gd`、`AGENTS.md`、`README`、任何 `src/game/`、既有资产 / 场景 / 报告
 （含 `state_transition_lab*`、`sword_flight_course*`、`camera_lab*`、`motion_stage*`）。
 
-集成待办（**由 hub owner 处理，本轮不改**）：`character_movement_subexperiments.json`
-里 `ground_contact_course` 仍为 `planned` + 空 `scene`；本场景已落地，
-需要在该文件把状态改为 `exploring` 并填入
-`res://levels/experiments/character_movement/ground_contact_course.tscn`。
-在集成完成前，本场景可独立启动，但不显示在子实验目录里——这是刻意的「不伪造运行入口」。
+集成状态（2026-09-18 集成收口后）：`character_movement_subexperiments.json` 已把
+`ground_contact_course` 改为 `exploring` 并填入
+`res://levels/experiments/character_movement/ground_contact_course.tscn`，本场景现可从子实验目录进入。
+集成前的独立运行证据（上表计数与读数）保持为当时的实测快照，未改动。
+集成验证与最终计数见 [集成权威报告](2026-09-18-character-movement-subexperiments.md)。

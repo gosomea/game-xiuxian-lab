@@ -2,7 +2,7 @@ extends Node3D
 
 ## 状态切换压力场（心境 / 身法试炼阵）：回答「能力切换、失焦、重置、碰撞与边缘时机是否正确清账」。
 ##
-## 职责边界（依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md）：
+## 职责边界（依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）：
 ## - 只有三项既有 Capability；本场景不新增能力、不实现战斗、不实现通用状态机。
 ## - 场景只调用角色公开输入 API（set_move_input / set_vertical_input / press_jump /
 ##   press_flight_toggle / clear_input / set_camera_ground_basis / set_aim_direction /

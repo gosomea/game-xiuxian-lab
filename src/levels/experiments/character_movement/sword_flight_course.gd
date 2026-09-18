@@ -2,7 +2,7 @@ extends Node3D
 
 ## 御剑飞行训练场：起飞 / 升降 / 悬停 / 穿越 / 转向 / 落点选择是否可控。
 ##
-## 依据 [character-movement-subexperiments](../../../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)
+## 依据 [character-movement-subexperiments](../../../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)
 ## 「御剑飞行训练场」行：立体路线场，覆盖多层落点、升降、悬停、通道与低天花。
 ##
 ## 边界：
@@ -687,4 +687,3 @@ func motion() -> SwordsmanMotionComponent:
 
 func camera() -> Camera3D:
 	return _camera
-

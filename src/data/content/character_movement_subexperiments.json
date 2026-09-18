@@ -24,24 +24,24 @@
       "title": "地形接触训练场",
       "stage": "物理训练场",
       "question": "斜坡、台阶、墙角、窄路和边缘上的移动与碰撞是否稳定？",
-      "status": "planned",
-      "scene": ""
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/ground_contact_course.tscn"
     },
     {
       "id": "sword_flight_course",
       "title": "御剑飞行训练场",
       "stage": "立体路线场",
       "question": "起飞、升降、悬停、穿越、转向和落点选择是否可控？",
-      "status": "planned",
-      "scene": ""
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/sword_flight_course.tscn"
     },
     {
       "id": "state_transition_lab",
       "title": "状态切换压力场",
       "stage": "可视化压力场",
       "question": "能力切换、失焦、重置、碰撞和边缘时机是否正确清账？",
-      "status": "planned",
-      "scene": ""
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/state_transition_lab.tscn"
     },
     {
       "id": "movement_garden",

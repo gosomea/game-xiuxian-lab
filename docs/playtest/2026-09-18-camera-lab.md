@@ -1,15 +1,17 @@
 # 镜头实验室验收（2026-09-18）
 
 场景：`res://levels/experiments/character_movement/camera_lab.tscn`（可直接单独启动；`--path src --script res://tests/camera_lab_playtest.gd` 无头 / 窗口两档验收）。
-决策依据：[character-movement-subexperiments](../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「镜头实验室」行）。
+决策依据：[character-movement-subexperiments](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「镜头实验室」行）。
 执行：CLI 档（编辑器桥不可用，见下）。
 
 ## 最终摘要
 
-- 镜头实验室无头验收：**89 项 PASS / 0 FAIL**，stderr **0 字节**（`headless.log` / `headless.err`）。
+- 镜头实验室无头验收（**阶段快照**）：**89 项 PASS / 0 FAIL**，stderr **0 字节**（`headless.log` / `headless.err`）。
+  这是 `MovementLabInput` 抽取**之前**的实测数字，原样保留、不改写。
 - 窗口截图：**9 张**全部入仓（`2026-09-18-camera-lab-*.png`），保存前打印 `SNAPSHOT` 运行时读数（模式 / 相机 transform / 角色位移 / 焦点偏移 / 前视 / 缩放）。
 - 四模式同段输入对照：硬跟随 lag 0.000 m、平滑 0.826 m、死区 2.315 m、死区+前视相机瞄准点落后 1.31 m（前视 1.063 m）——四者相机位姿互不相同。
-- 跨套件计数不在本报告重复：本报告只对镜头实验室自身的 **89 / 0** 负责；其余套件的最终集成口径见 [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md)。该文会随集成推进更新，本报告不复制其数字，以免并行口径漂移。
+- 跨套件计数不在本报告重复：本报告只对镜头实验室自身**阶段快照**的 **89 / 0** 负责；其余套件的最终集成口径一律以 [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md) 为准，本报告不复制其数字，以免并行口径漂移。
+- **集成后的镜头实验室计数为 101 / 0**（`MovementLabInput` 抽取与透传断言之后的现状），同样以该权威报告的「镜头实验室」行为准；本报告的 89 是阶段快照，不是当前值。
 - 开发期快照（**非最终、不入结论**）：本实验开发过程中曾跑到运行时单测 177 / 0、庭院 33 / 0、群山 217 / 0；这些数字对应各自当时的中间工作区状态，与后续并行代理改动不在同一提交状态，仅作为「本实验未破坏既有套件」的过程记录，不得当作最终计数引用。
 - Tier 0 门禁：全部通过，负向控制 **27/27**（`gates.log`）。
 
@@ -27,7 +29,7 @@
 
 | 验收项 | 1 已实现 | 2 已运行通过（命令 + 日志） | 3 静态检查 | 4 未验证 | 5 外部阻塞 |
 |---|---|---|---|---|---|
-| A1 场景独立装配（角色 / 组件 / 相机 / 台架） |  | ✔ 89/0 |  |  |  |
+| A1 场景独立装配（角色 / 组件 / 相机 / 台架） |  | ✔ 89/0（阶段快照） |  |  |  |
 | A2 灰盒七类几何齐备（网格 / 标尺 / 墙+门洞 / 遮挡 / 高低柱 / 坡 / 高台） |  | ✔ 按节点身份断言 |  |  |  |
 | A3 门洞真可通行（两侧墙段留空 + 过梁） |  | ✔ |  |  |  |
 | A4 角色保持三能力（Jump / SwordFlight / SwordsmanMovement） |  | ✔ 运行时读回装配 | ✔ 未引用具体能力类名 |  |  |
@@ -67,7 +69,7 @@
 
 | 证据 | 命令 | 结果 |
 |---|---|---|
-| 无头验收 | `Godot --headless --path src --script res://tests/camera_lab_playtest.gd` | `headless.log`：89 PASS / 0 FAIL；`headless.err` 0 字节 |
+| 无头验收（阶段快照） | `Godot --headless --path src --script res://tests/camera_lab_playtest.gd` | `headless.log`：89 PASS / 0 FAIL；`headless.err` 0 字节（抽取前的实测，当前 101/0 见集成报告） |
 | 截图 9 张 | `Godot --path src --script res://tests/camera_lab_playtest.gd -- --capture-prefix=<abs>` | `capture.log` 全 PASS，`SNAPSHOT` 逐张打印 |
 | Tier 0 + 负向控制 | `python3 tools/verify/run_all.py` | `gates.log`：门禁全部通过，27/27 |
 | 运行时单测 | `Godot --headless --path src tests/test_runner.tscn` | `units.log`：开发期快照 177 / 0（**非最终**，最终口径见集成报告） |
@@ -127,6 +129,7 @@
 
 1. `src/data/content/character_movement_subexperiments.json`：`camera_lab` 已为 `exploring`，`scene` = `res://levels/experiments/character_movement/camera_lab.tscn`。
 2. `movement_lab_hub.tscn`（`MovementLabHub` 根节点）已接线，本场景 Esc 目标与之一致；集成运行的进入 / 返回路径结论见 [character-movement-subexperiments](2026-09-18-character-movement-subexperiments.md)。
+3. 集成后的本场景计数为 **101 / 0**，以该权威报告的「镜头实验室」行为准；本报告摘要里的 **89 / 0** 是 `MovementLabInput` 抽取前的阶段快照。
 
 ## 未通过项与归因
 

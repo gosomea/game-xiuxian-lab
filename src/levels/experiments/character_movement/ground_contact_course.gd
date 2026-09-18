@@ -3,7 +3,7 @@ extends Node3D
 ## 地形接触训练场（ground_contact_course）：用真实角色与真实碰撞回答
 ## 「斜坡、台阶、墙角、窄路、边缘上的移动与碰撞是否稳定」。
 ##
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md 的子实验条目。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md 的子实验条目。
 ##
 ## 职责边界：
 ## - 角色与三项能力归 res://game/actors/swordsman/ 与 res://game/abilities/；本场景不新增能力，

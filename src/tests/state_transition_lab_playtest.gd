@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## 状态切换压力场验收：真实场景 + 真实 Swordsman + 真实输入事件 + 账本读回。
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
 ##
 ## 用法（分批，单进程 <45s）：
 ##   Godot --headless --path src --script res://tests/state_transition_lab_playtest.gd -- --batch=assembly,runjump,flight,collision,edge,focus,reset,ledger,repeat,hub

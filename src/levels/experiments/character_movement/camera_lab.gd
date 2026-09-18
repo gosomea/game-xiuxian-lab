@@ -1,6 +1,6 @@
 extends Node3D
 
-## 镜头实验室（character_movement 子实验，见 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md）。
+## 镜头实验室（character_movement 子实验，见 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）。
 ##
 ## 唯一目标：在同一灰盒里比较跟随策略（固定偏移硬跟随 / 平滑跟随 / 死区 + 前视）
 ## 与手动缩放、镜头旋转对屏幕相对移动的影响。不修改角色与三项 Capability。
