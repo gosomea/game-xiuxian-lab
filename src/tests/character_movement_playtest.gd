@@ -13,8 +13,10 @@ extends SceneTree
 ## 与能力数量、输入行为判定。
 
 const SCENE := "res://levels/experiments/character_movement/movement_garden.tscn"
-## 本轮目录入口已切到群山场景；本文件直接运行庭院做小场景回归。
-const MODULE_ENTRY_SCENE := "res://levels/experiments/character_movement/mountain_realm.tscn"
+## 顶层入口已改为角色移动子实验目录；本文件直接运行庭院做小场景回归。
+const MODULE_ENTRY_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
+const SUBEXPERIMENTS_PATH := "res://data/content/character_movement_subexperiments.json"
+const MOVEMENT_HUB_NODE_NAME := "MovementLabHub"
 const SWORD_MODULE := "sword_combat"
 const MOVE_MODULE := "character_movement"
 ## 战斗装配只按实际战斗类/节点语义识别；不含 "sword"（角色历史命名，非战斗装配）。
@@ -177,12 +179,28 @@ func _run_input_and_physics() -> void:
 	await _frames(8)
 	_bind()
 	_check(_actor.global_position.distance_to(start) < 0.1, "R 重置到初始位置")
+	# 返回层级语义：按钮与控制提示文本必须与实际目标（子实验目录）一致，防止漂移。
+	var return_button := current_scene.find_child("ReturnButton", true, false) as Button
+	_check(return_button != null and return_button.text == "返回子实验目录",
+		"庭院返回按钮文本指向子实验目录：%s" % (return_button.text if return_button != null else "<缺失>"))
+	var controls := current_scene.find_child("Controls", true, false) as Label
+	_check(controls != null and controls.text.contains("返回子实验目录"),
+		"庭院控制提示指向子实验目录：%s" % (controls.text if controls != null else "<缺失>"))
 	_key(KEY_ESCAPE, true)
 	await _frames(1)
 	_key(KEY_ESCAPE, false)
 	await _frames(8)
-	_check(current_scene != null and current_scene.name == "LabHub", "Esc 返回目录")
+	_check(current_scene != null and current_scene.name == MOVEMENT_HUB_NODE_NAME,
+		"Esc 返回角色移动子实验目录（%s）" % (current_scene.name if current_scene != null else "<null>"))
 	_check(root.msaa_3d == _msaa_before, "返回目录后根视口 MSAA 恢复为进入场景前的值（%d）" % _msaa_before)
+	# 子实验目录的 Esc 再回顶层实验目录（两级返回路径都真实可走）。
+	var escape := InputEventKey.new()
+	escape.keycode = KEY_ESCAPE
+	escape.physical_keycode = KEY_ESCAPE
+	escape.pressed = true
+	Input.parse_input_event(escape)
+	await _frames(8)
+	_check(current_scene != null and current_scene.name == "LabHub", "子实验目录 Esc 返回顶层实验目录")
 
 
 ## 用真实角色形状向给定方向做一次有界 sweep：必须命中指定路径的碰撞体本体，且在行程内被截断。
@@ -205,13 +223,28 @@ func _check_blocked_by(from: Vector3, direction: Vector3, collider_path: String,
 func _run_hub_gate() -> void:
 	var entry := _module_entry(MOVE_MODULE)
 	_check(not entry.is_empty(), "实验清单存在角色移动条目")
-	_check(str(entry.get("scene", "")) == MODULE_ENTRY_SCENE, "角色移动入口指向本轮群山场景：%s" % str(entry.get("scene", "")))
+	_check(str(entry.get("scene", "")) == MODULE_ENTRY_SCENE, "顶层角色移动入口指向子实验目录：%s" % str(entry.get("scene", "")))
 	_check(ResourceLoader.exists(SCENE), "庭院回归场景仍可直接加载：%s" % SCENE)
-	_check(LabCatalog.can_open(entry), "角色移动场景通过目录门禁可打开")
+	_check(ResourceLoader.exists(MODULE_ENTRY_SCENE), "子实验目录场景真实可加载")
+	_check(LabCatalog.can_open(entry), "角色移动目录通过目录门禁可打开")
+	var garden := _subexperiment_entry("movement_garden")
+	_check(str(garden.get("scene", "")) == SCENE, "子实验清单登记庭院回归场景：%s" % str(garden.get("scene", "")))
+	_check(ResourceLoader.exists(str(garden.get("scene", ""))), "子实验清单场景路径有效")
 	current_scene.select_module(MOVE_MODULE)
 	_check(not current_scene.get_node("%LaunchButton").disabled, "角色移动有可运行入口")
 	current_scene.select_module(SWORD_MODULE)
 	_check(current_scene.get_node("%LaunchButton").disabled, "剑法保留待设计且无运行入口")
+
+
+func _subexperiment_entry(id: String) -> Dictionary:
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SUBEXPERIMENTS_PATH))
+	if not parsed is Dictionary:
+		return {}
+	for value in (parsed as Dictionary).get("subexperiments", []) as Array:
+		var entry: Dictionary = value
+		if str(entry.get("id", "")) == id:
+			return entry
+	return {}
 
 
 func _module_entry(id: String) -> Dictionary:

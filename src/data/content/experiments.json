@@ -20,17 +20,18 @@
       "id": "character_movement",
       "title": "角色移动",
       "category": "角色",
-      "summary": "在群山宗门场景中观察修士的平面移动、独立跳跃与御剑飞行，以及碰撞、高低差与跟随镜头；本场景不承担剑法与战斗设计。",
+      "summary": "角色移动子实验目录：镜头实验室、人物动作工作台、地形接触训练场、御剑飞行训练场与状态切换压力场逐项独立运行；移动庭院与群山宗门保留为回归与组合场景。本模块不承担剑法与战斗设计。",
       "question": "角色在 2.5D 空间的平面移动、跳跃与御剑飞行，怎样操作和落地才符合预期？",
       "scope": [
         "平面移动、跳跃与御剑飞行的操作与速度",
         "转向、碰撞、台阶与降落平台",
         "群山高低差、边界约束与跟随镜头",
-        "步行 / 空中 / 御剑状态呈现"
+        "步行 / 空中 / 御剑状态呈现",
+        "移动子实验目录与返回路径"
       ],
       "depends_on": [],
       "status": "exploring",
-      "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
+      "scene": "res://levels/experiments/character_movement/movement_lab_hub.tscn"
     },
     {
       "id": "sword_combat",

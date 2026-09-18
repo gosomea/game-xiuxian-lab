@@ -8,7 +8,7 @@ extends Node3D
 ## 本场景只做实验编排：屏幕相对输入、转向表现、地面/边界/障碍代理、相机与精简 HUD。
 ## 无鼠标瞄准、无左键攻击、无战斗 UI。关键依赖全部 preload：缺失即解析失败。
 
-const HUB_SCENE := "res://levels/lab_hub.tscn"
+const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
 const GARDEN_SCENE: PackedScene = preload("res://levels/experiments/character_movement/movement_garden.glb")
 const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
@@ -188,7 +188,7 @@ func _return_to_hub() -> void:
 	_clear_pressed()
 	var result := get_tree().change_scene_to_file(HUB_SCENE)
 	if result != OK:
-		push_error("movement_garden: 返回实验目录失败，错误码 %d" % result)
+		push_error("movement_garden: 返回子实验目录失败，错误码 %d" % result)
 
 
 func _build_garden() -> void:
@@ -322,7 +322,7 @@ func _build_hud() -> void:
 
 	var return_button := Button.new()
 	return_button.name = "ReturnButton"
-	return_button.text = "返回实验目录"
+	return_button.text = "返回子实验目录"
 	return_button.custom_minimum_size = Vector2(140, 44)
 	return_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	# 按钮不抢键盘焦点：移动键事件始终抵达场景的 _unhandled_input。
@@ -345,7 +345,7 @@ func _build_hud() -> void:
 	controls.name = "Controls"
 	controls.theme_type_variation = "MutedLabel"
 	controls.add_theme_font_size_override("font_size", 14)
-	controls.text = "WASD 屏幕相对移动（角色朝运动方向）  ·  滚轮缩放  ·  R 重置  ·  Esc 返回"
+	controls.text = "WASD 屏幕相对移动（角色朝运动方向）  ·  滚轮缩放  ·  R 重置  ·  Esc 返回子实验目录"
 	controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	controls.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(controls)

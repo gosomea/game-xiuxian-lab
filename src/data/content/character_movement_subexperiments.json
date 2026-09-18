@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "module": "character_movement",
+  "parent_scene": "res://levels/lab_hub.tscn",
+  "subexperiments": [
+    {
+      "id": "camera_lab",
+      "title": "镜头实验室",
+      "stage": "灰盒对比场",
+      "question": "跟随、缓动、死区、前视、缩放、旋转与遮挡怎样配合移动？",
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/camera_lab.tscn"
+    },
+    {
+      "id": "motion_stage",
+      "title": "人物动作工作台",
+      "stage": "空白动作棚",
+      "question": "待机、起步、跑动、转身、跳跃、御剑、降落及其过渡是否清楚？",
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/motion_stage.tscn"
+    },
+    {
+      "id": "ground_contact_course",
+      "title": "地形接触训练场",
+      "stage": "物理训练场",
+      "question": "斜坡、台阶、墙角、窄路和边缘上的移动与碰撞是否稳定？",
+      "status": "planned",
+      "scene": ""
+    },
+    {
+      "id": "sword_flight_course",
+      "title": "御剑飞行训练场",
+      "stage": "立体路线场",
+      "question": "起飞、升降、悬停、穿越、转向和落点选择是否可控？",
+      "status": "planned",
+      "scene": ""
+    },
+    {
+      "id": "state_transition_lab",
+      "title": "状态切换压力场",
+      "stage": "可视化压力场",
+      "question": "能力切换、失焦、重置、碰撞和边缘时机是否正确清账？",
+      "status": "planned",
+      "scene": ""
+    },
+    {
+      "id": "movement_garden",
+      "title": "移动庭院",
+      "stage": "已有基线",
+      "question": "小范围地面移动和旧资产呈现是否仍然成立？",
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/movement_garden.tscn"
+    },
+    {
+      "id": "mountain_realm",
+      "title": "群山宗门",
+      "stage": "已有综合场景",
+      "question": "三项移动能力在完整空间与美术中的组合体验是否成立？",
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
+    }
+  ]
+}
