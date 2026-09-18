@@ -8,9 +8,9 @@
 |---|---|
 | 资产名 | `movement_garden`（修士角色 + 修仙庭院） |
 | 来源 | AI 代理编写脚本 + 本地 Blender 5.2.1 LTS 程序建模；无外部素材、无下载、未调用图像/3D 生成服务 |
-| 生成脚本 | `tools/art/generate_movement_assets.py`（角色）、`tools/art/generate_movement_garden.py`（庭院） |
+| 生成脚本 | 庭院：`tools/art/generate_movement_garden.py`；角色（当前）：`tools/art/generate_cultivator_refined.py`。旧版角色生成器 `tools/art/generate_movement_assets.py` 保留、不再用于当前资产（两脚本写同一 GLB 路径，见下「角色来源漂移修正」） |
 | 复现命令 | 见 `README.md`「复现命令」（macOS 完整 Blender 路径，其他平台用小写 `blender`）；全程 `--background --factory-startup`，不操作用户打开的 .blend |
-| 源文件（source） | `docs/art/movement_garden/cultivator.blend`、`docs/art/movement_garden/movement_garden.blend` |
+| 源文件（source） | 庭院：`docs/art/movement_garden/movement_garden.blend`；角色（当前）：`docs/art/cultivator_refined/cultivator_refined.blend`；旧版角色源 `docs/art/movement_garden/cultivator.blend` 原位留档 |
 | 输出（output） | `src/game/actors/swordsman/models/cultivator.glb`、`src/levels/experiments/character_movement/movement_garden.glb`、`docs/art/movement_garden/garden_preview_surface_clearance.png` |
 | 生成日期 | 2026-09-18（庭院于 2026-09-18 二次修改：共面闪烁修复；三次修改：独立审计几何修正，均见下） |
 | 第三方素材 | 无 |
@@ -18,10 +18,10 @@
 | 授权记录 | 本仓根目录暂无 LICENSE 文件；对外分发前由使用者补充授权声明 |
 | 运行环境 | Blender 5.2.1 LTS（2026-08-25 构建），导出器 Khronos glTF Blender I/O v5.2.40 |
 | 二进制校验和 | 见 `README.md` 校验和表（sha256） |
-| 数值摘要 | 角色：17 网格 / 5080 三角形 / 7 材质 / 1.70 m；庭院：319 网格 / 40720 三角形 / 13 材质 / 18×14 m |
+| 数值摘要 | 角色（当前 refined）：**23 网格 / 4952 三角形 / 8 材质 / 1.70 m / 0 骨骼 0 动画**；庭院：319 网格 / 40720 三角形 / 13 材质 / 18×14 m。旧版角色读数（历史）为 17 / 5080 / 7 |
 | 生成方式声明 | AI 代理编写脚本，经 Blender 程序建模；未调用图像/3D 生成服务，无第三方素材（发布政策结论未在本轮研究，不在此断言） |
 | 验收 | Godot 最终验收已通过：32 项物理断言全 PASS、87 条单测通过、4 张截图，见 [角色移动庭院验收](../../playtest/2026-09-18-character-movement.md) |
-| 未完成 | 手感与配色审美待使用者实机判断；无骨骼、无动画、无碰撞体（Godot 侧自建代理） |
+| 未完成 | 手感与配色审美待使用者实机判断；无骨骼、无动画、无碰撞体（Godot 侧自建代理）。角色当前源的真源在 `docs/art/cultivator_refined/`，其读数以该目录台账为准 |
 
 ## 2026-09-18 第二次修改：庭院地面共面/穿插修复（surface clearance）
 
@@ -91,6 +91,28 @@
 角色资产 `src/game/actors/swordsman/models/cultivator.glb`（121736 字节
 `70fc5eb6a4cd60579ac06bde5e65da6cc22e32f48316eae53e813387ae36b426`）**不在本轮资产写集**，其读数不作变化断言。
 
+### 角色来源漂移修正（2026-09-18，统一角色文档漂移）
+
+本台账早期把运行时角色 `src/game/actors/swordsman/models/cultivator.glb` 记为
+`generate_movement_assets.py` 产出的 17 网格 / 5080 三角形 / 7 材质版本。该记录**当时正确**：
+庭院修复轮只改庭院，角色文件未被触碰。此后角色由独立的美术重建轮在原路径上更新为 refined 版
+（`generate_cultivator_refined.py`，源 `docs/art/cultivator_refined/cultivator_refined.blend`），
+本次修正只更正**归属与当前读数**，不重建模型、不覆盖历史记录、不删除任何归档件：
+
+| 项 | 旧版（历史，留档） | 当前（refined） |
+|---|---|---|
+| 生成器 | `tools/art/generate_movement_assets.py` | `tools/art/generate_cultivator_refined.py` |
+| 源文件 | `docs/art/movement_garden/cultivator.blend`（147621 B / `dff485c8…`） | `docs/art/cultivator_refined/cultivator_refined.blend`（155563 B / `0370960d…`） |
+| 网格 / 三角形 / 材质 | 17 / 5080 / 7 | **23 / 4952 / 8** |
+| 材质名 | Robe_Blue、Sash_Teal、Metal_Gold 等 7 个 | Robe_Indigo、Robe_Indigo_Dark、Sash_Wood_Gold、Hair_Black、Skin、Shoe_Dark、Inner_Ivory、Trim_Ivory |
+| 运行时 GLB | 同一路径 `src/game/actors/swordsman/models/cultivator.glb`（121736 B / `70fc5eb6…`） | 同左（原路径保留，旧庭院同样受益） |
+
+**两个生成器的 `CHAR_GLB` 指向同一路径**（`generate_movement_assets.py:32`、
+`generate_cultivator_refined.py:37`），因此重跑旧生成器会静默把运行时角色覆盖回 blocky 旧版。
+本目录的 `cultivator.blend` 与旧读数保留，仅作历史对照；角色当前源与完整差异见
+[cultivator_refined 台账](../cultivator_refined/asset_ledger.md) 与
+[其 README](../cultivator_refined/README.md)。
+
 验收证据：[庭院地表间距验收](../../playtest/2026-09-18-movement-garden-surface-clearance.md)。
 
-登记人：Blender 资产交付代理；日期 2026-09-18。数值与轴向的完整说明见 `README.md`。
+登记人：Blender 资产交付代理；日期 2026-09-18（角色来源漂移修正：2026-09-18）。数值与轴向的完整说明见 `README.md`。

@@ -145,6 +145,29 @@ func _batch_assembly() -> void:
 	_check(scene_source.contains("movement_lab_input.gd"), "场景使用 MovementLabInput helper")
 	_check(scene_source.contains("reset_motion()"), "重置走公开 reset_motion()")
 	_check(scene_source.contains("clear_input()"), "失焦走公开 clear_input()")
+	# 相机与御剑表现改走共享装配：场景不写相机位姿、不手动绑剑。
+	_check(scene_source.contains("camera_rig_sheet.tscn"), "场景装配共享 CameraRig")
+	_check(not scene_source.contains("set_camera_ground_basis"), "场景不转交相机地面基（由 rig 桥接）")
+	_check(not scene_source.contains("_camera.position ="), "场景不写相机位姿")
+	_check(not scene_source.contains("_camera.look_at"), "场景不写相机朝向")
+	_check(not scene_source.contains("FLYING_SWORD_SCENE"), "场景不手动实例化御剑视觉（由 FlightBundle 装配）")
+
+	# 高空跟随：压力场旧 y 夹取为 [0, 12]，焦点必须跟随高度而不是被压到地面。
+	var rig := current_scene.get_node_or_null("CameraRig") as CameraRig
+	_check(rig != null, "压力场装配共享 CameraRig")
+	if rig != null:
+		var restore: Vector3 = _actor.global_position
+		_actor.global_position = Vector3(0.0, 10.0, 2.6)
+		_motion.actual_velocity = Vector3.ZERO
+		await _frames(30)
+		var focus: Vector3 = rig.component().focus
+		_check(focus.y > 3.0, "高空（y=10）时相机焦点跟随升高（focus.y=%.2f，未被压到 0）" % focus.y)
+		var screen := _camera.unproject_position(_actor.global_position)
+		var view := _camera.get_viewport().get_visible_rect().size
+		_check(screen.x >= 0.0 and screen.x <= view.x and screen.y >= 0.0 and screen.y <= view.y,
+			"高空时角色仍在画面内（屏幕 %s）" % str(screen.round()))
+		_actor.global_position = restore
+		await _frames(10)
 
 	# 账本只格式化调用方传入的只读快照：不得认识运行时对象，也不得写任何运动量。
 	var ledger_source := _strip_comments(FileAccess.get_file_as_string(LEDGER_SOURCE))
@@ -260,6 +283,8 @@ func _batch_flight() -> void:
 	_check(_motion.flight_active, "F 边沿开启御剑")
 	_check(TagRegistry.block_count(_actor, FLIGHT_TAG) == 1, "御剑登记恰好一条阻塞")
 	_check(_actor.velocity.y > 2.0, "地面开启产生升起速度（vy=%.2f）" % _actor.velocity.y)
+	# 真实御剑表现：剑由 FlightBundle 装配，飞行时可见（不是只断 flight_active）。
+	_check_flight_visual(true)
 
 	# 上升：空格。
 	_key(KEY_SPACE, true)
@@ -300,6 +325,7 @@ func _batch_flight() -> void:
 	_key(KEY_F, false)
 	await _frames(1)
 	_check(not _motion.flight_active, "F 边沿关闭御剑")
+	_check_flight_visual(false)
 	_check(TagRegistry.block_count(_actor, FLIGHT_TAG) == 0, "关飞后阻塞清账")
 	var after_off := _actor.velocity.y
 	_check(after_off < before_off, "关飞当帧起竖直速度下降（%.2f → %.2f）" % [before_off, after_off])
@@ -667,11 +693,29 @@ func _batch_hub() -> void:
 	await _reset_via_r()
 	await _frames(5)
 	# 返回按钮文本与目标一致（层级语义防漂移）。
-	var return_button := current_scene.find_child("ReturnButton", true, false) as Button
-	_check(return_button != null and return_button.text == "返回子实验目录",
-		"返回按钮文本指向子实验目录：%s" % (return_button.text if return_button != null else "<缺失>"))
-	var controls := current_scene.find_child("Controls", true, false) as Label
-	_check(controls != null and controls.text.contains("返回子实验目录"), "控制提示指向子实验目录")
+	# 共享 HUD 只经公开读 API 断言（不抓内部节点）。
+	var hud := current_scene.get_node_or_null("LabHud") as LabHud
+	_check(hud != null, "压力场装配共享 LabHud")
+	if hud != null:
+		_check(hud.return_text() == "返回子实验目录",
+			"返回按钮文本指向子实验目录：%s" % hud.return_text())
+		_check(hud.controls_tooltip().contains("返回子实验目录"), "控制提示指向子实验目录")
+		# 核心账本指标必须常显（压力场的观测对象），而不是被折叠藏起来。
+		_check(hud.core_summary_text().contains("账本"), "核心账本指标常显：%s" % hud.core_summary_text())
+		# 必要时间线常显；逐条事件账本属明细层，默认折叠、H 展开。
+		var timeline_panel := current_scene.find_child("TimelinePanel", true, false) as CanvasItem
+		var ledger_panel := current_scene.find_child("LedgerPanel", true, false) as CanvasItem
+		_check(timeline_panel != null and timeline_panel.visible, "时间线为观测面常显")
+		_check(ledger_panel != null and not ledger_panel.visible, "逐条账本默认随详情折叠")
+		_check(not hud.details_visible(), "明细详情默认折叠")
+		hud.show_details()
+		await _frames(2)
+		_check("输入" in hud.debug_text(), "展开详情后显示输入明细：%s" % hud.debug_text())
+		_check(ledger_panel.visible, "展开详情后逐条账本出现")
+		_check(timeline_panel.visible, "展开详情不影响常显时间线")
+		hud.hide_details()
+		await _frames(2)
+		_check(not ledger_panel.visible and timeline_panel.visible, "折叠详情后逐条账本隐藏、时间线仍常显")
 
 	_key(KEY_ESCAPE, true)
 	await _frames(2)
@@ -981,6 +1025,16 @@ func _call_count(source: String, call: String) -> int:
 			continue
 		count += stripped.count(call)
 	return count
+
+
+## 真实御剑表现断言：剑节点由 FlightBundle 装配；expected 表示当前应否可见。
+func _check_flight_visual(expected: bool) -> void:
+	var sword := _actor.get_node_or_null("Visual/FlyingSword") as Node3D
+	_check(sword != null, "御剑视觉节点由装配包提供")
+	if sword == null:
+		return
+	_check(sword.visible == expected, "御剑剑可见性与 flight_active 一致（期望 %s）" % expected)
+	_check(sword.find_children("*", "MeshInstance3D", true, false).size() > 0, "御剑包含可见网格")
 
 
 func _check(ok: bool, message: String) -> bool:

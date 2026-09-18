@@ -42,6 +42,7 @@ var _actor: Swordsman
 var _motion: SwordsmanMotionComponent
 var _manager: CapabilityManager
 var _camera: Camera3D
+var _rig: CameraRig
 var _layout: Dictionary = {}
 var _spawn := Vector3.ZERO
 var _frame_drawn := false
@@ -243,12 +244,31 @@ func _batch_assembly() -> void:
 	_check(current_scene.get_node_or_null("World/Boundaries/Ceiling") != null, "按 bounds 建了天花约束高度")
 	_check(_actor.global_position.distance_to(_spawn) < 0.25, "角色出生于 JSON spawn（%s）" % str(_spawn))
 
+	# 御剑视觉由 ActorAssembly/FlightBundle 统一装配（场景不再手动绑剑）。
 	var sword := _actor.get_node_or_null(SWORD_NODE_PATH) as Node3D
-	_check(sword != null and not sword.visible, "御剑视觉已由场景绑定且初始隐藏")
+	_check(sword != null and not sword.visible, "御剑视觉已由装配包绑定且初始隐藏")
 	_check(sword != null and sword.find_children("*", "MeshInstance3D", true, false).size() > 0, "御剑 GLB 含可见网格")
-	var status := current_scene.find_child("Status", true, false) as Label
-	_check(status != null and status.text.begins_with("状态：步行"),
-		"HUD 初始状态为步行：%s" % (status.text if status != null else "<缺失>"))
+	_check(current_scene.get_node_or_null("CameraRig") != null, "群山装配共享 CameraRig")
+	var hud := current_scene.get_node_or_null("LabHud") as LabHud
+	_check(hud != null, "群山装配共享 LabHud")
+	_check(hud != null and hud.status_text().begins_with("状态：步行"),
+		"HUD 初始状态为步行：%s" % (hud.status_text() if hud != null else "<缺失>"))
+
+	# 高空跟随：群山是立体空间，抬到峰顶高度后相机焦点必须跟着升高（不能被压到 y=0）。
+	var rig := current_scene.get_node_or_null("CameraRig") as CameraRig
+	if rig != null:
+		var restore: Vector3 = _actor.global_position
+		_actor.global_position = Vector3(restore.x, 42.0, restore.z)
+		await _frames(30)
+		var focus: Vector3 = rig.component().focus
+		_check(focus.y > 20.0, "峰顶高度（y=42）时相机焦点跟随升高（focus.y=%.2f，未被压到 0）" % focus.y)
+		var screen := _camera.unproject_position(_actor.global_position)
+		var view := _camera.get_viewport().get_visible_rect().size
+		_check(screen.x >= 0.0 and screen.x <= view.x and screen.y >= 0.0 and screen.y <= view.y,
+			"峰顶高度时角色仍在画面内（屏幕 %s）" % str(screen.round()))
+		_actor.global_position = restore
+		_actor.reset_motion()
+		await _frames(10)
 	_check_no_combat_rig()
 	_check_single_commit_point()
 
@@ -437,6 +457,8 @@ func _batch_flight() -> void:
 	_key(KEY_F, false)
 	_check(_motion.flight_active, "F 边沿开启御剑")
 	_check(TagRegistry.block_count(_actor, FLIGHT_TAG) == 1, "御剑登记一条 %s" % FLIGHT_TAG)
+	# 真实御剑表现：剑由 FlightBundle 装配，飞行时可见（不是只断 flight_active）。
+	_check_flight_visual(true)
 	await _frames(25)
 	_check(_actor.global_position.y > floor_y + 0.5, "地面开启御剑产生真实升起（y=%.2f）" % _actor.global_position.y)
 
@@ -1297,12 +1319,11 @@ func _batch_hub() -> void:
 	await _open_flight()
 	await _frames(5)
 	# 返回层级语义：按钮与控制提示文本必须与实际目标（子实验目录）一致，防止漂移。
-	var return_button := current_scene.find_child("ReturnButton", true, false) as Button
-	_check(return_button != null and return_button.text == "返回子实验目录",
-		"群山返回按钮文本指向子实验目录：%s" % (return_button.text if return_button != null else "<缺失>"))
-	var controls := current_scene.find_child("Controls", true, false) as Label
-	_check(controls != null and controls.text.contains("返回子实验目录"),
-		"群山控制提示指向子实验目录：%s" % (controls.text if controls != null else "<缺失>"))
+	var hud := current_scene.get_node_or_null("LabHud") as LabHud
+	_check(hud != null and hud.return_text() == "返回子实验目录",
+		"群山返回按钮文本指向子实验目录：%s" % (hud.return_text() if hud != null else "<缺失>"))
+	_check(hud != null and hud.controls_tooltip().contains("返回子实验目录"),
+		"群山控制提示指向子实验目录：%s" % (hud.controls_tooltip() if hud != null else "<缺失>"))
 	_key(KEY_ESCAPE, true)
 	await _frames(2)
 	_key(KEY_ESCAPE, false)
@@ -1323,9 +1344,9 @@ func _batch_hub() -> void:
 	_check(LabCatalog.can_open(entry), "角色移动入口可打开")
 	_check(LabCatalog.can_open(_subexperiment_entry("mountain_realm")), "mountain_realm 子实验条目可打开")
 	current_scene.select_module(MOVE_MODULE)
-	_check(not current_scene.get_node("%LaunchButton").disabled, "角色移动有可运行入口")
+	_check(current_scene.get_node_or_null("%LaunchButton") == null, "旧「进入实验场景」按钮已移除（2 击直达）")
 	current_scene.select_module(SWORD_MODULE)
-	_check(current_scene.get_node("%LaunchButton").disabled, "剑法保持无运行入口")
+	_check(not LabCatalog.can_open(_module_entry(SWORD_MODULE)), "剑法保持无运行入口")
 
 
 # --- 截图（窗口模式；飞行画面必须由真实输入产生） -------------------------------
@@ -1371,7 +1392,7 @@ func _run_capture() -> void:
 		_check(await _walk_to(Vector3(10.0, 0.0, -21.0), 240), "截图：真实步行到月台开阔处")
 		_release_move_keys()
 		await _frames(4)
-		_camera.size = 55.0
+		_rig_zoom(55.0)
 		await _frames(10)
 		_capture_snapshot("sect-ground")
 		await _capture("sect-ground")
@@ -1383,7 +1404,7 @@ func _run_capture() -> void:
 		_check(await _open_flight_and_climb(14.0), "截图：真实按键御剑升空")
 		_check(_motion.flight_active, "御剑近景截图时御剑状态为真")
 		_check(_actor.global_position.y > _spawn.y + 8.0, "御剑近景截图时已明显离地")
-		_camera.size = 18.0
+		_rig_zoom(18.0)
 		await _frames(8)
 		_capture_snapshot("flight-close")
 		await _capture("flight-close")
@@ -1398,7 +1419,7 @@ func _run_capture() -> void:
 		# 小窗：960x640（项目固定 16:10 视口），在 spawn 庭院取景。
 		await _reset_via_r()
 		await _wait_floor(120, _spawn.y)
-		_camera.size = 60.0
+		_rig_zoom(60.0)
 		root.size = Vector2i(960, 640)
 		await _frames(10)
 		_capture_snapshot("small")
@@ -1423,6 +1444,12 @@ func _walk_to(target: Vector3, timeout_frames: int) -> bool:
 			return true
 	_release_move_keys()
 	return false
+
+
+## 缩放只经 rig 公开 API：验收不绕过唯一 executor 直写 Camera3D。
+func _rig_zoom(value: float) -> void:
+	if _rig != null:
+		_rig.set_zoom_size(value)
 
 
 ## 真实滚轮缩小视野到接近目标值（与玩家滚轮缩放同一条输入路径）。
@@ -1460,7 +1487,7 @@ func _landing_shot(suffix: String, landing_name: String, camera_size: float) -> 
 	if not await _wait_floor(300, top_y):
 		return false
 	await _frames(10)
-	_camera.size = camera_size
+	_rig_zoom(camera_size)
 	await _frames(8)
 	_capture_snapshot(suffix)
 	_check(_motion.on_floor and not _motion.flight_active and absf(_actor.global_position.y - top_y) < 0.25,
@@ -1516,6 +1543,7 @@ func _capture_snapshot(suffix: String) -> void:
 func _bind() -> void:
 	_actor = current_scene.get_node_or_null("Swordsman") as Swordsman
 	_camera = root.get_camera_3d()
+	_rig = current_scene.call("rig") as CameraRig
 	if _actor == null:
 		return
 	_manager = _actor.get_node_or_null("CapabilityManager") as CapabilityManager
@@ -1589,6 +1617,16 @@ func _wait_floor(timeout_frames: int, expected_y := NAN) -> bool:
 				await _frames(2)
 				return true
 	return false
+
+
+## 真实御剑表现断言：剑节点由 FlightBundle 装配；expected 表示当前应否可见。
+func _check_flight_visual(expected: bool) -> void:
+	var sword := _actor.get_node_or_null("Visual/FlyingSword") as Node3D
+	_check(sword != null, "御剑视觉节点由装配包提供")
+	if sword == null:
+		return
+	_check(sword.visible == expected, "御剑剑可见性与 flight_active 一致（期望 %s）" % expected)
+	_check(sword.find_children("*", "MeshInstance3D", true, false).size() > 0, "御剑包含可见网格")
 
 
 func _check_no_combat_rig() -> void:

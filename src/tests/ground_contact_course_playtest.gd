@@ -37,6 +37,7 @@ var _stage: Node3D
 var _actor: Swordsman
 var _motion: SwordsmanMotionComponent
 var _camera: Camera3D
+var _rig: CameraRig
 var _layout: Dictionary = {}
 var _frame_drawn := false
 
@@ -125,9 +126,16 @@ func _batch_assembly() -> void:
 	for forbidden in ["Swordsman", "Capability", "Component", "TagRegistry", "Camera3D", "move_and_slide"]:
 		_check(not _code_only(helper_source).contains(forbidden),
 			"input helper 不依赖角色 / 能力 / 相机：%s" % forbidden)
-	for api in ["set_move_input(", "set_vertical_input(", "press_jump(", "set_camera_ground_basis(",
+	for api in ["set_move_input(", "set_vertical_input(", "press_jump(",
 			"set_aim_direction(", "reset_motion(", "clear_input("]:
 		_check(stage_source.contains(api), "训练场经公开输入 API 驱动角色：%s" % api)
+	# 相机地面基不再由场景转交：场景挂共享 CameraRig，由 rig 桥接写入角色。
+	_check(not stage_source.contains("set_camera_ground_basis"),
+		"训练场不自行转交相机地面基（由 CameraRig 桥接）")
+	_check(stage_source.contains("camera_rig_sheet.tscn"), "训练场装配共享 CameraRig")
+	_check(stage_source.contains("RIG_SHEET.instantiate()"), "训练场实例化 CameraRig sheet")
+	_check(not stage_source.contains("_camera.position ="), "训练场不写相机位姿")
+	_check(not stage_source.contains("_camera.look_at"), "训练场不写相机朝向")
 
 	# 布局 → 碰撞：每个 device 都有碰撞体，数量一致，且命名可寻址。
 	var devices: Array = _stage.devices()
@@ -579,43 +587,71 @@ func _batch_recovery() -> void:
 
 
 func _batch_hud() -> void:
-	var zone := _hud_label("Zone")
-	var declared := _hud_label("Declared")
-	var motion := _hud_label("Motion")
-	var contact := _hud_label("Contact")
-	var recovery := _hud_label("Recovery")
-	_check(zone != null and "区域" in zone.text, "HUD 显示当前区域与装置（%s）" % ("" if zone == null else zone.text))
-	_check(declared != null and "装置声明" in declared.text,
-		"HUD 显示装置声明尺寸（%s）" % ("" if declared == null else declared.text))
-	_check(motion != null and "实测" in motion.text and "地面倾角" in motion.text,
-		"HUD 显示实测速度与地面倾角（%s）" % ("" if motion == null else motion.text))
-	_check(contact != null and "接触" in contact.text, "HUD 显示接触对象（%s）" % ("" if contact == null else contact.text))
-	_check(recovery != null and "回收" in recovery.text, "HUD 显示回收计数（%s）" % ("" if recovery == null else recovery.text))
+	var hud := _hud()
+	_check(hud != null, "场景装配共享 LabHud")
+	if hud == null:
+		return
+	# 常显：标题与核心状态（区域/着地/速度）；完整明细进折叠详情。
+	_check("地形接触训练场" in hud.title_text(), "HUD 标题为本场名称（%s）" % hud.title_text())
+	var status := hud.status_text()
+	_check("区域" in status and "着地" in status, "HUD 核心状态显示当前区域与着地（%s）" % status)
+	_check(not hud.details_visible(), "HUD 详情默认折叠")
+	hud.show_details()
+	await _frames(2)
+	var details := hud.debug_text()
+	_check("装置声明" in details, "展开详情后显示装置声明尺寸（%s）" % details)
+	_check("倾角" in details or "接触" in details, "展开详情后显示接触 / 倾角明细（%s）" % details)
+	hud.hide_details()
+	await _frames(2)
+	_check(not hud.details_visible(), "HUD 详情可再次折叠")
 
 	# 区域读数随位置真实变化（站上台阶 vs 平地）。
 	await _go_to("step_050", Vector3(-0.6, 0.05, 0.0))
-	var flat_zone := _hud_label("Zone").text
+	var flat_status := hud.status_text()
 	await _go_to("step_050", Vector3(1.5, 0.6, 0.0))
 	await _frames(10)
-	var step_zone := _hud_label("Zone").text
-	_check(flat_zone != step_zone, "HUD 区域随所在装置变化（%s → %s）" % [flat_zone, step_zone])
-	_check("台阶" in step_zone, "站上台面时区域读数含装置名（%s）" % step_zone)
+	var step_status := hud.status_text()
+	_check(flat_status != step_status, "HUD 区域随所在装置变化（%s → %s）" % [flat_status, step_status])
+	_check("台阶" in step_status, "站上台面时核心状态含装置名（%s）" % step_status)
 
-	# 小窗：改内容画布触发真实重排，HUD 不溢出。
+	# 小窗：改内容画布触发真实重排，HUD 真实面板不溢出（含展开态）。
 	_check(_hud_fits_canvas(), "1280x800 画布下 HUD 不溢出")
+	hud.show_details()
+	await _frames(4)
+	_check(_hud_fits_canvas(), "1280x800 画布下展开详情不溢出")
+	hud.hide_details()
 	var previous := root.content_scale_size
 	root.content_scale_size = Vector2i(960, 640)
 	await _frames(8)
 	_check(_hud_fits_canvas(), "960x640 画布下 HUD 不溢出")
+	hud.show_details()
+	await _frames(4)
+	_check(_hud_fits_canvas(), "960x640 画布下展开详情不溢出")
+	hud.hide_details()
 	root.content_scale_size = previous
 	await _frames(6)
 	_check(_hud_fits_canvas(), "画布恢复后 HUD 仍不溢出")
 
+	# 高空跟随：抬到场地高处后焦点必须跟着升高（旧 _follow_camera 的 y 软跟随不能丢）。
+	var rig := _stage.get_node_or_null("CameraRig") as CameraRig
+	_check(rig != null, "训练场装配共享 CameraRig")
+	if rig != null:
+		_stage.player().global_position = Vector3(-0.6, 12.0, 0.0)
+		await _frames(30)
+		var focus: Vector3 = rig.component().focus
+		_check(focus.y > 4.0, "高处（y=12）时相机焦点跟随升高（focus.y=%.2f，未被压到 0）" % focus.y)
+		var screen := _camera.unproject_position(_stage.player().global_position)
+		var view := _camera.get_viewport().get_visible_rect().size
+		_check(screen.x >= 0.0 and screen.x <= view.x and screen.y >= 0.0 and screen.y <= view.y,
+			"高处时角色仍在画面内（屏幕 %s）" % str(screen.round()))
+		# 用公开的回收路径回到出生点，避免手工摆放留下错误状态。
+		_stage.player().global_position = Vector3(-0.6, -20.0, 0.0)
+		await _frames(20)
+
 	# 返回文案与实际目标一致。
-	var return_text := _control_text("Overlay/Interface/Margin/Layout/Header/Buttons/ReturnButton")
-	_check(return_text == "返回子实验目录", "返回按钮文案为「返回子实验目录」（实际「%s」）" % return_text)
-	var controls := _control_text("Overlay/Interface/Margin/Layout/Footer/ControlsPanel/Controls")
-	_check(controls.contains("Esc 返回子实验目录"), "底部提示写明 Esc 返回子实验目录（实际「%s」）" % controls)
+	_check(hud.return_text() == "返回子实验目录", "返回按钮文案为「返回子实验目录」（实际「%s」）" % hud.return_text())
+	_check(hud.controls_tooltip().contains("Esc 返回子实验目录"),
+		"控制说明写明 Esc 返回子实验目录（实际「%s」）" % hud.controls_tooltip())
 	var stage_text := FileAccess.get_file_as_string(SCENE_SCRIPT)
 	_check(not stage_text.contains('"返回实验目录"'), "场景源码无旧返回文案")
 
@@ -660,12 +696,12 @@ func _run_capture() -> void:
 
 	# 全景：拉远看整个训练场分区。只为构图，不声称任何物理结论。
 	_place(Vector3(5.0, 0.05, 0.0))
-	_camera.size = 50.0
+	_rig_zoom(50.0)
 	await _frames(24)
 	await _capture("overview")
 
 	# 坡道：真实按键走上 42° 临界坡。
-	_camera.size = 17.0
+	_rig_zoom(17.0)
 	var critical := _device("ramp_critical")
 	await _go_to("ramp_critical", Vector3(float(critical["base"][0]) - 1.4, 0.05, float(critical["base"][2])))
 	_key(KEY_D, true)
@@ -697,7 +733,7 @@ func _run_capture() -> void:
 	await _capture("edge")
 
 	# 落下回收区。
-	_camera.size = 26.0
+	_rig_zoom(26.0)
 	await _go_to("void", Vector3(24.6, 0.05, 0.4))
 	_key(KEY_D, true)
 	await _frames(24)
@@ -726,6 +762,7 @@ func _bind() -> void:
 		return
 	_motion = _actor.motion()
 	_camera = root.get_camera_3d()
+	_rig = _stage.call("rig") as CameraRig
 	_layout = _stage.layout()
 
 
@@ -838,9 +875,15 @@ func _frames(count: int) -> void:
 	await process_frame
 
 
-func _hud_label(tag: String) -> Label:
-	var panel := _stage.get_node_or_null("Overlay/Interface/Margin/Layout/Header/ReadoutPanel/Readout/%s" % tag)
-	return panel as Label
+## 共享 HUD 只经公开读 API 断言，不抓内部节点。
+## 缩放只经 rig 公开 API：场景与验收都不再直写 Camera3D。
+func _rig_zoom(value: float) -> void:
+	if _rig != null:
+		_rig.set_zoom_size(value)
+
+
+func _hud() -> LabHud:
+	return _stage.get_node_or_null("LabHud") as LabHud
 
 
 func _control_text(path: String) -> String:
@@ -865,15 +908,21 @@ func _rect_fits(control: Control) -> bool:
 		and rect.end.x <= canvas.x + 0.5 and rect.end.y <= canvas.y + 0.5
 
 
+## 用 HUD 报告的真实矩形（标题面板 + 按钮）判断是否溢出画布，不把透明容器整行算作遮挡。
 func _hud_fits_canvas() -> bool:
-	for path in [
-		"Overlay/Interface/Margin/Layout/Header/ReadoutPanel",
-		"Overlay/Interface/Margin/Layout/Header/Buttons",
-		"Overlay/Interface/Margin/Layout/Footer/ControlsPanel",
-	]:
-		if not _rect_fits(_stage.get_node_or_null(path) as Control):
+	var hud := _hud()
+	if hud == null:
+		return false
+	for rect in hud.occlusion_rects():
+		if not _canvas_rect_fits(rect):
 			return false
 	return true
+
+
+func _canvas_rect_fits(rect: Rect2) -> bool:
+	var canvas := _canvas_size()
+	return rect.position.x >= -0.5 and rect.position.y >= -0.5 \
+		and rect.end.x <= canvas.x + 0.5 and rect.end.y <= canvas.y + 0.5
 
 
 func _has(name: String) -> bool:

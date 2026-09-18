@@ -8,19 +8,21 @@ extends Node3D
 ## - 布局坐标真源为同目录 mountain_realm_layout.json，本场景只消费不生成。
 ## - 山体碰撞壳 mountain_realm_collision.glb 只提取网格生成 StaticBody3D + trimesh，不做可见渲染。
 ## - 美术资源均为 preload 硬依赖：资源缺失即脚本加载失败，不静默降级、不伪造可运行入口。
-## - 御剑视觉由本场景实例化为角色 Visual 子节点，经 actor.bind_flight_visual() 交给角色统一显示/隐藏。
+## - 御剑视觉由 ActorAssembly/FlightBundle 随飞行行为统一装配（本场景不再手动绑剑）。
+## - 相机走共享 CameraRig（唯一 executor）+ bounds focus clamp；HUD 走共享 LabHud；
+##   移动/升降按住状态复用实验组共享 MovementLabInput。
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
+const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
+const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
+const InputHelper := preload("res://levels/experiments/character_movement/movement_lab_input.gd")
 
 const VISUAL_PATH := "res://levels/experiments/character_movement/mountain_realm.glb"
 const LAYOUT_PATH := "res://levels/experiments/character_movement/mountain_realm_layout.json"
-const SWORD_PATH := "res://game/abilities/sword_flight/models/flying_sword.glb"
 const VISUAL_SCENE: PackedScene = preload("res://levels/experiments/character_movement/mountain_realm.glb")
 const SHELL_PATH := "res://levels/experiments/character_movement/mountain_realm_collision.glb"
 const SHELL_SCENE: PackedScene = preload("res://levels/experiments/character_movement/mountain_realm_collision.glb")
-const FLYING_SWORD_SCENE: PackedScene = preload("res://game/abilities/sword_flight/models/flying_sword.glb")
 const LAYOUT_SCHEMA := "mountain_realm_layout/1"
 
 ## 庭院产物（正式依赖，随场景一起交付）。
@@ -44,27 +46,14 @@ const BRIGHT_MATERIAL_KEYS := ["ivory", "plaster", "limestone", "step stone"]
 const BRIGHT_ALBEDO_SCALE := 0.55
 
 ## 固定俯视方向，跟随目标 XYZ。默认取近景（能看清角色与脚边地面），滚轮到远景看群山。
-## 方向约定不变：相机地面基仍由本脚本每帧写入角色，屏幕相对移动不受数值影响。
+## 相机位姿由共享 CameraRig 独占写；本场景只提供构图参数与可选模式开关。
 const CAMERA_OFFSET := Vector3(15.0, 19.0, 16.5)
 const CAMERA_SIZE := 30.0
 const CAMERA_SIZE_MIN := 7.0
 ## 上限收紧：再远就会露出地形截断面，而不是"更开阔的群山"。
 const CAMERA_SIZE_MAX := 170.0
-const CAMERA_ZOOM_STEP := 6.0
 const CAMERA_FOLLOW_SPEED := 4.0
 const CAMERA_FAR := 600.0
-
-## 物理键 → 屏幕输入（x = 右，y = 下）；WASD 与方向键等价。
-const MOVE_KEYS := {
-	KEY_W: Vector2(0.0, -1.0),
-	KEY_UP: Vector2(0.0, -1.0),
-	KEY_S: Vector2(0.0, 1.0),
-	KEY_DOWN: Vector2(0.0, 1.0),
-	KEY_A: Vector2(-1.0, 0.0),
-	KEY_LEFT: Vector2(-1.0, 0.0),
-	KEY_D: Vector2(1.0, 0.0),
-	KEY_RIGHT: Vector2(1.0, 0.0),
-}
 
 var _camera: Camera3D
 var _viewport: Viewport
@@ -77,9 +66,10 @@ var _spawn_aim := Vector3.FORWARD
 var _bounds_min := Vector3.ZERO
 var _bounds_max := Vector3.ZERO
 var _fall_out_y := -6.0
-var _follow_target := Vector3.ZERO
-var _pressed: Dictionary = {}
-var _status: Label
+var _rig: CameraRig
+## 输入按住状态复用实验组共享 helper（与 camera_lab / motion_stage / ground / sword 同一实现）。
+var _input := InputHelper.new()
+var _hud: LabHud
 
 
 func _ready() -> void:
@@ -89,10 +79,7 @@ func _ready() -> void:
 	_viewport.msaa_3d = Viewport.MSAA_4X
 	_camera = %Camera3D as Camera3D
 	assert(_camera != null, "mountain_realm: 场景必须提供 Camera3D")
-	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_camera.size = CAMERA_SIZE
-	_camera.near = 0.1
-	_camera.far = CAMERA_FAR
+	# projection / size / near / far 由 CameraRig 按 Config 独占写；本场景不写相机参数。
 	_read_layout()
 	_build_visual()
 	_build_shell_collision()
@@ -102,8 +89,8 @@ func _ready() -> void:
 	_build_boundaries()
 	_build_landing_points()
 	_spawn_player()
+	_build_rig()
 	_build_hud()
-	_reset_camera()
 	_update_status()
 
 
@@ -122,20 +109,15 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		# 物理键码优先（不看键盘布局）；个别平台 Ctrl 只填逻辑键码时回退。
-		var code := key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
-		if MOVE_KEYS.has(code):
-			_pressed[code] = key_event.pressed
-			get_viewport().set_input_as_handled()
-			return
-		if code == KEY_SPACE or code == KEY_CTRL:
-			_pressed[code] = key_event.pressed
-			# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
-			if key_event.pressed and not key_event.echo and code == KEY_SPACE and _player != null:
+		# 共享 helper 管移动键与升降键的按住状态；本场景只决定语义边沿。
+		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS):
+			if InputHelper.key_code(key_event) == InputHelper.KEY_VERTICAL_UP \
+					and InputHelper.is_key_down_edge(key_event) and _player != null:
 				_player.press_jump()
 			get_viewport().set_input_as_handled()
 			return
-		if key_event.pressed and not key_event.echo:
+		if InputHelper.is_key_down_edge(key_event):
+			var code := InputHelper.key_code(key_event)
 			if code == KEY_F and _player != null:
 				_player.press_flight_toggle()
 				get_viewport().set_input_as_handled()
@@ -148,28 +130,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				_return_to_hub()
 				return
-	elif event is InputEventMouseButton:
-		var button := event as InputEventMouseButton
-		if not button.pressed:
-			return
-		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_camera.size = clampf(_camera.size - CAMERA_ZOOM_STEP, CAMERA_SIZE_MIN, CAMERA_SIZE_MAX)
-			get_viewport().set_input_as_handled()
-		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_camera.size = clampf(_camera.size + CAMERA_ZOOM_STEP, CAMERA_SIZE_MIN, CAMERA_SIZE_MAX)
-			get_viewport().set_input_as_handled()
+	# 滚轮缩放由共享 CameraRig 处理；本场景不再写相机 size。
 
 
 func _physics_process(delta: float) -> void:
 	if _player == null or _motion == null:
 		return
-	# 屏幕相对：相机右方/前方投影到水平面后规范化，退化时回退世界轴。
-	var right := _ground_vector(_camera.global_transform.basis.x, Vector3.RIGHT)
-	var forward := _ground_vector(-_camera.global_transform.basis.z, Vector3.FORWARD)
-	_player.set_camera_ground_basis(right, forward)
-	var move := _read_move_input()
+	# 相机地面基由 CameraRig 桥接写入角色；本场景只读它来定朝向。
+	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
+	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
+	var move := _input.move_input()
 	_player.set_move_input(move)
-	_player.set_vertical_input(_read_vertical_input())
+	_player.set_vertical_input(_input.vertical_input())
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y
@@ -177,29 +149,46 @@ func _physics_process(delta: float) -> void:
 		if direction.length_squared() > 0.0001:
 			_player.set_aim_direction(direction.normalized())
 	_check_fall_out()
-	_follow_camera(delta)
 
 
 func _process(_delta: float) -> void:
 	_update_status()
 
 
-## 场景先写输入、actor 子节点随后 tick（父节点 _physics_process 先于子节点）。
-func _read_move_input() -> Vector2:
-	var input_vector := Vector2.ZERO
-	for code in MOVE_KEYS:
-		if _pressed.get(code, false):
-			input_vector += MOVE_KEYS[code] as Vector2
-	return input_vector.limit_length(1.0)
-
-
-func _read_vertical_input() -> float:
-	var value := 0.0
-	if _pressed.get(KEY_SPACE, false):
-		value += 1.0
-	if _pressed.get(KEY_CTRL, false):
-		value -= 1.0
-	return clampf(value, -1.0, 1.0)
+## 装配共享 CameraRig：bounds 转 focus clamp，保留原构图、跟随速度与缩放范围；
+## 大空间不占用 1-4 模式键（群山自己的 R / F / 滚轮是实验控制）。
+func _build_rig() -> void:
+	var rig := RIG_SHEET.instantiate() as CameraRig
+	assert(rig != null, "mountain_realm: camera_rig_sheet.tscn 根节点必须是 CameraRig")
+	rig.name = "CameraRig"
+	add_child(rig)
+	_rig = rig
+	var config := CameraRigConfig.new()
+	var radius := CAMERA_OFFSET.length()
+	config.start_mode = "fixed_follow"
+	config.follow_preset = "smooth"
+	config.distance = radius
+	config.pitch_degrees = rad_to_deg(asin(CAMERA_OFFSET.y / maxf(radius, 0.001)))
+	config.yaw_degrees = rad_to_deg(atan2(CAMERA_OFFSET.x, CAMERA_OFFSET.z))
+	config.size = CAMERA_SIZE
+	config.size_min = CAMERA_SIZE_MIN
+	config.size_max = CAMERA_SIZE_MAX
+	config.zoom_step = 6.0
+	config.smooth_time = 1.0 / maxf(CAMERA_FOLLOW_SPEED, 0.001)
+	config.focus_clamp_enabled = true
+	config.focus_clamp_min = _bounds_min
+	config.focus_clamp_max = _bounds_max
+	# 高空必须跟随：不能把焦点压到 y=0（focus_clamp_y_enabled 保留真实 y，见镜头契约）。
+	config.focus_clamp_y_enabled = true
+	config.near = 0.1
+	config.far = CAMERA_FAR
+	config.mode_choices = PackedStringArray(["fixed_follow"])
+	config.enable_mode_selection_keys = false
+	config.enable_preset_key = false
+	config.enable_zoom_keys = false
+	config.enable_zoom_wheel = true
+	config.enable_yaw_keys = false
+	rig.bind(_camera, _player, config)
 
 
 func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
@@ -216,25 +205,13 @@ func _check_fall_out() -> void:
 		_reset_experiment()
 
 
-func _follow_camera(delta: float) -> void:
-	var target := _player.global_position
-	target.x = clampf(target.x, _bounds_min.x, _bounds_max.x)
-	target.z = clampf(target.z, _bounds_min.z, _bounds_max.z)
-	target.y = clampf(target.y, _bounds_min.y, _bounds_max.y)
-	_follow_target = _follow_target.lerp(target, clampf(delta * CAMERA_FOLLOW_SPEED, 0.0, 1.0))
-	_camera.position = _follow_target + CAMERA_OFFSET
-	_camera.look_at(_follow_target, Vector3.UP)
-
-
-func _reset_camera() -> void:
-	_follow_target = _spawn_position
-	_camera.size = CAMERA_SIZE
-	_camera.position = _follow_target + CAMERA_OFFSET
-	_camera.look_at(_follow_target, Vector3.UP)
+## 公开只读访问器：验收脚本经此读 CameraRig，而不是绕过它写 Camera3D。
+func rig() -> CameraRig:
+	return _rig
 
 
 func _clear_pressed() -> void:
-	_pressed.clear()
+	_input.clear()
 	if _player != null:
 		_player.clear_input()
 
@@ -244,7 +221,8 @@ func _reset_experiment() -> void:
 	_player.global_position = _spawn_position
 	_player.reset_motion()
 	_player.set_aim_direction(_spawn_aim)
-	_reset_camera()
+	if _rig != null:
+		_rig.reset_state()
 
 
 func _return_to_hub() -> void:
@@ -574,154 +552,36 @@ func _spawn_player() -> void:
 	actor.reset_motion()
 	actor.global_position = _spawn_position
 	actor.set_aim_direction(_spawn_aim)
-	_bind_flight_visual(actor)
-
-
-## 御剑视觉由场景绑定：作为角色 Visual 子节点，朝向随 Visual 同步；剑原点在顶面中心，无需偏移。
-func _bind_flight_visual(actor: Swordsman) -> void:
-	var sword := _instantiate_glb(FLYING_SWORD_SCENE, SWORD_PATH)
-	sword.name = "FlyingSword"
-	var visual := actor.get_node_or_null("Visual") as Node3D
-	assert(visual != null, "mountain_realm: 角色缺少 Visual 节点")
-	visual.add_child(sword)
-	actor.bind_flight_visual(sword)
+	# 御剑视觉不再由场景手动绑定：ActorAssembly 的 FlightBundle 随飞行行为一起装 flying_sword.glb，
+	# 场景重复实例化会撞上「拒绝覆盖绑定」的装配契约。
 
 
 # --- HUD ------------------------------------------------------------------
 
 
-## 文字衬底：纸白半透明薄面板（沿用 lab 主题的纸白/青绿描边），四周留内边距；
-## 只贴合文字块，不做覆盖中心的大面板。纯样式，不参与输入。
-func _make_text_backdrop() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.980392, 0.972549, 0.949020, 0.82)
-	style.border_color = Color(0.505882, 0.611765, 0.533333, 0.45)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(8)
-	style.content_margin_left = 16.0
-	style.content_margin_right = 16.0
-	style.content_margin_top = 10.0
-	style.content_margin_bottom = 10.0
-	return style
-
-
-## HUD 骨架沿用 movement_garden 的 CanvasLayer + Control + Margin/VBox；按钮不抢键盘焦点。
+## 共享 HUD：标题 + 状态 + 短提示常显；控制说明进详情按钮 tooltip。
 func _build_hud() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "Overlay"
-	add_child(layer)
-
-	var interface := Control.new()
-	interface.name = "Interface"
-	interface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interface.theme = LAB_THEME
-	layer.add_child(interface)
-	interface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var margin := MarginContainer.new()
-	margin.name = "Margin"
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 32)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_right", 32)
-	margin.add_theme_constant_override("margin_bottom", 20)
-	interface.add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var layout := VBoxContainer.new()
-	layout.name = "Layout"
-	layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(layout)
-
-	var header := HBoxContainer.new()
-	header.name = "Header"
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(header)
-
-	# 顶部信息块用贴合内容的纸白半透明底：只护住标题与状态文字，不铺满屏幕、不遮场景中心。
-	var titles_panel := PanelContainer.new()
-	titles_panel.name = "TitlesPanel"
-	titles_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	titles_panel.add_theme_stylebox_override("panel", _make_text_backdrop())
-	header.add_child(titles_panel)
-
-	var titles := VBoxContainer.new()
-	titles.name = "Titles"
-	titles.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	titles_panel.add_child(titles)
-
-	var kicker := Label.new()
-	kicker.name = "Kicker"
-	kicker.theme_type_variation = "AccentLabel"
-	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.text = "EXPERIMENT    /    CHARACTER MOVEMENT · MOUNTAIN"
-	titles.add_child(kicker)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 28)
-	title.text = "角色移动 · 群山宗门"
-	titles.add_child(title)
-
-	_status = Label.new()
-	_status.name = "Status"
-	_status.theme_type_variation = "MutedLabel"
-	_status.add_theme_font_size_override("font_size", 14)
-	titles.add_child(_status)
-
-	var return_button := Button.new()
-	return_button.name = "ReturnButton"
-	return_button.text = "返回子实验目录"
-	return_button.custom_minimum_size = Vector2(140, 44)
-	return_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	# 按钮不抢键盘焦点：移动键事件始终抵达场景的 _unhandled_input。
-	return_button.focus_mode = Control.FOCUS_NONE
-	return_button.pressed.connect(_return_to_hub)
-	header.add_child(return_button)
-
-	var spacer := Control.new()
-	spacer.name = "Space"
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(spacer)
-
-	var footer := HBoxContainer.new()
-	footer.name = "Footer"
-	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(footer)
-
-	# 底部按键说明同样加薄底衬；重置按钮留在面板外，避免按钮背景被衬底吞掉。
-	var controls_panel := PanelContainer.new()
-	controls_panel.name = "ControlsPanel"
-	controls_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	controls_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls_panel.add_theme_stylebox_override("panel", _make_text_backdrop())
-	footer.add_child(controls_panel)
-
-	var controls := Label.new()
-	controls.name = "Controls"
-	controls.theme_type_variation = "MutedLabel"
-	controls.add_theme_font_size_override("font_size", 14)
-	controls.text = "WASD / 方向键 移动  ·  Space 跳跃 / 上升  ·  Ctrl 下降  ·  F 御剑  ·  滚轮缩放  ·  R 复位  ·  Esc 返回子实验目录"
-	controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	controls_panel.add_child(controls)
-
+	_hud = HUD_SCRIPT.new()
+	add_child(_hud)
+	_hud.configure("MOUNTAIN", "角色移动 · 群山宗门", "WASD 移动 · Space 跳跃 · F 御剑 · R 复位 · Esc 返回 · H 详情")
+	_hud.set_controls("WASD / 方向键 移动 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 复位 · Esc 返回子实验目录")
+	_hud.set_question("三项移动能力在完整空间与美术中的组合体验是否成立？")
+	_hud.set_return_text("返回子实验目录")
+	_hud.return_pressed.connect(_return_to_hub)
 	var reset_button := Button.new()
 	reset_button.name = "ResetButton"
 	reset_button.text = "重置"
-	reset_button.custom_minimum_size = Vector2(96, 44)
-	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset_experiment)
-	footer.add_child(reset_button)
+	_hud.add_button(reset_button)
 
 
 ## 状态文本只读组件字段：御剑优先于着地判定，其次空中，最后步行。
 func _update_status() -> void:
-	if _status == null or _motion == null or _player == null:
+	if _hud == null or _motion == null or _player == null:
 		return
 	var state := "步行"
 	if _motion.flight_active:
 		state = "御剑"
 	elif not _motion.on_floor:
 		state = "空中"
-	_status.text = "状态：%s  ·  高度 %.1f m" % [state, _player.global_position.y]
+	_hud.set_status("状态：%s  ·  高度 %.1f m" % [state, _player.global_position.y])

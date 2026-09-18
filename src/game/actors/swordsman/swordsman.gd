@@ -22,6 +22,13 @@ func _ready() -> void:
 	# CapabilityManager 自带 _process 自动 tick；这里禁用，改由本根节点的物理 tick 驱动，
 	# 避免同一帧被推进两次。
 	_manager.set_process(false)
+	# 装配：能力由 ActorAssembly 按显式配置注册到本 manager 的直系子。
+	# 配置缺失与装配失败一律断言暴露，不静默降级；没有装配节点的裸 actor/测试夹具不走本路径。
+	var assembly := get_node_or_null("ActorAssembly") as ActorAssembly
+	if assembly == null:
+		return
+	var assembly_error := assembly.install_configured()
+	assert(assembly_error == "", "Swordsman: 角色装配失败：%s" % assembly_error)
 
 
 func _physics_process(delta: float) -> void:
@@ -57,7 +64,7 @@ func _physics_process(delta: float) -> void:
 	clear_intents(motion)
 	# 8. 表现同步。
 	_face_aim()
-	if _flight_visual != null:
+	if _flight_visual != null and is_instance_valid(_flight_visual):
 		_flight_visual.visible = motion.flight_active
 
 
@@ -114,10 +121,23 @@ func reset_motion() -> void:
 
 
 ## 场景装配 API：注入御剑视觉节点；可见性由本节点按 flight_active 同步。
+## 同一 actor 只应绑定一个御剑视觉：装配方（FlightBundle 或场景）负责保证唯一性。
 func bind_flight_visual(node: Node3D) -> void:
 	_flight_visual = node
 	if _flight_visual != null:
 		_flight_visual.visible = _motion.flight_active
+
+
+## 场景装配 API：解除御剑视觉绑定。只解除当前绑定的那个节点，避免误伤其它装配方的绑定；
+## 节点本身由它的所有者释放，本节点不销毁未知节点。
+func unbind_flight_visual(node: Node3D) -> void:
+	if _flight_visual == node or not is_instance_valid(_flight_visual):
+		_flight_visual = null
+
+
+## 只读：当前绑定的御剑视觉节点（未绑定返回 null）。
+func flight_visual_node() -> Node3D:
+	return _flight_visual if is_instance_valid(_flight_visual) else null
 
 
 func motion() -> SwordsmanMotionComponent:

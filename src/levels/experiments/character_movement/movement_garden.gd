@@ -11,7 +11,7 @@ extends Node3D
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
 const GARDEN_SCENE: PackedScene = preload("res://levels/experiments/character_movement/movement_garden.glb")
-const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
+const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 
 ## 庭院尺寸 18 x 14 米，地面 y = 0，中央为空地。
 const ARENA_HALF_X := 9.0
@@ -38,23 +38,29 @@ const MOVE_KEYS := {
 	KEY_D: Vector2(1.0, 0.0),
 }
 
-## 相机固定偏移，做轻柔跟随；正交俯视保证尺度可读。
-const CAMERA_OFFSET := Vector3(14.0, 17.0, 15.0)
+## 相机：正交俯视 + 软区跟随。数值由旧固定偏移 (14, 17, 15) 换算而来
+## （yaw≈43.0°、pitch≈39.6°、distance≈26.65），保持既有庭院构图不变。
+const CAMERA_YAW_DEGREES := 43.0
+const CAMERA_PITCH_DEGREES := 39.6
+const CAMERA_DISTANCE := 26.65
 const CAMERA_SIZE := 24.0
 const CAMERA_SIZE_MIN := 14.0
 const CAMERA_SIZE_MAX := 34.0
-## 跟随目标在场地内收缩，避免边界处构图漂移；0 表示硬跟随。
+## 跟随目标在场地内收缩，避免边界处构图漂移；对应旧的 FOLLOW_MARGIN。
 const FOLLOW_MARGIN := Vector3(3.0, 0.0, 2.5)
-const FOLLOW_SPEED := 3.5
+## 旧 lerp 速度 3.5 等价的时间常数 ≈ 1/3.5。
+const FOLLOW_SMOOTH_TIME := 0.29
+const CAMERA_FAR := 120.0
 
 var _camera: Camera3D
 var _viewport: Viewport
 var _previous_msaa: Viewport.MSAA = Viewport.MSAA_DISABLED
 var _player: Swordsman
 var _motion: SwordsmanMotionComponent
-var _follow_target := Vector3.ZERO
+var _rig: CameraRig
 var _pressed: Dictionary = {}
-var _status: Label
+var _hud: LabHud
+var _mode_button: Button
 
 
 func _ready() -> void:
@@ -65,14 +71,13 @@ func _ready() -> void:
 	_viewport.msaa_3d = Viewport.MSAA_4X
 	_camera = %Camera3D as Camera3D
 	assert(_camera != null, "movement_garden: 场景必须提供 Camera3D")
-	_camera.look_at(Vector3.ZERO, Vector3.UP)
 	_build_garden()
 	_build_ground_collision()
 	_build_boundaries()
 	_build_obstacles()
 	_spawn_player()
+	_build_rig()
 	_build_hud()
-	_reset_camera()
 	_update_status()
 
 
@@ -85,6 +90,8 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		_clear_pressed()
+		if _rig != null:
+			_rig.release_capture()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -105,24 +112,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				_return_to_hub()
 				return
-	elif event is InputEventMouseButton:
-		var button := event as InputEventMouseButton
-		if not button.pressed:
-			return
-		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_camera.size = clampf(_camera.size - 1.5, CAMERA_SIZE_MIN, CAMERA_SIZE_MAX)
-			get_viewport().set_input_as_handled()
-		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_camera.size = clampf(_camera.size + 1.5, CAMERA_SIZE_MIN, CAMERA_SIZE_MAX)
-			get_viewport().set_input_as_handled()
 
 
-func _physics_process(delta: float) -> void:
-	# 屏幕相对：相机右方/前方投影到 y=0 平面后规范化，退化时回退世界轴。
-	_player.set_camera_ground_basis(
-		_ground_vector(_camera.global_transform.basis.x, Vector3.RIGHT),
-		_ground_vector(-_camera.global_transform.basis.z, Vector3.FORWARD)
-	)
+func _physics_process(_delta: float) -> void:
+	# 相机地面基由 CameraRig 桥接写入角色（同帧一致）；本场景只做屏幕相对输入与朝向。
 	_player.set_move_input(_read_move_input())
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if _motion.move_input != Vector2.ZERO:
@@ -130,7 +123,6 @@ func _physics_process(delta: float) -> void:
 		direction.y = 0.0
 		if direction.length_squared() > 0.0001:
 			_player.set_aim_direction(direction.normalized())
-	_follow_camera(delta)
 
 
 func _process(_delta: float) -> void:
@@ -145,30 +137,6 @@ func _read_move_input() -> Vector2:
 	return input_vector.limit_length(1.0)
 
 
-func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
-	var flat := Vector3(value.x, 0.0, value.z)
-	if flat.length_squared() < 0.0001:
-		return fallback
-	return flat.normalized()
-
-
-func _follow_camera(delta: float) -> void:
-	var target := _player.global_position
-	target.x = clampf(target.x, -ARENA_HALF_X + FOLLOW_MARGIN.x, ARENA_HALF_X - FOLLOW_MARGIN.x)
-	target.z = clampf(target.z, -ARENA_HALF_Z + FOLLOW_MARGIN.z, ARENA_HALF_Z - FOLLOW_MARGIN.z)
-	target.y = 0.0
-	_follow_target = _follow_target.lerp(target, clampf(delta * FOLLOW_SPEED, 0.0, 1.0))
-	_camera.position = _follow_target + CAMERA_OFFSET
-	_camera.look_at(_follow_target, Vector3.UP)
-
-
-func _reset_camera() -> void:
-	_follow_target = Vector3.ZERO
-	_camera.size = CAMERA_SIZE
-	_camera.position = CAMERA_OFFSET
-	_camera.look_at(Vector3.ZERO, Vector3.UP)
-
-
 func _clear_pressed() -> void:
 	_pressed.clear()
 	if _player != null:
@@ -181,7 +149,7 @@ func _reset_experiment() -> void:
 	_player.global_position = PLAYER_START
 	_player.reset_motion()
 	_player.set_aim_direction(Vector3.FORWARD)
-	_reset_camera()
+	_rig.reset_state()
 
 
 func _return_to_hub() -> void:
@@ -263,103 +231,98 @@ func _spawn_player() -> void:
 	assert(actor.get_node_or_null("CapabilityManager") != null, "movement_garden: 角色缺少唯一 CapabilityManager")
 
 
+## 装配共享 CameraRig：正交 + 软区跟随，参数换算自旧的固定偏移相机，构图保持不变。
+func _build_rig() -> void:
+	var rig := RIG_SHEET.instantiate() as CameraRig
+	assert(rig != null, "movement_garden: camera_rig_sheet.tscn 根节点必须是 CameraRig")
+	rig.name = "CameraRig"
+	add_child(rig)
+	_rig = rig
+	var config := CameraRigConfig.new()
+	config.start_mode = "fixed_follow"
+	config.follow_preset = "smooth"
+	config.yaw_degrees = CAMERA_YAW_DEGREES
+	config.pitch_degrees = CAMERA_PITCH_DEGREES
+	config.distance = CAMERA_DISTANCE
+	config.size = CAMERA_SIZE
+	config.size_min = CAMERA_SIZE_MIN
+	config.size_max = CAMERA_SIZE_MAX
+	config.smooth_time = FOLLOW_SMOOTH_TIME
+	config.near = 0.1
+	config.far = CAMERA_FAR
+	# 庭院是地面小场景：显式打开 y 夹取并把 min/max y 设为 0，保持旧地平构图。
+	config.focus_clamp_enabled = true
+	config.focus_clamp_y_enabled = true
+	config.focus_clamp_min = Vector3(-ARENA_HALF_X + FOLLOW_MARGIN.x, 0.0, -ARENA_HALF_Z + FOLLOW_MARGIN.z)
+	config.focus_clamp_max = Vector3(ARENA_HALF_X - FOLLOW_MARGIN.x, 0.0, ARENA_HALF_Z - FOLLOW_MARGIN.z)
+	# 庭院默认仍是旧构图（fixed_follow + smooth），但允许切到 orbit 作为第二消费者验证；
+	# 不占数字键（模式切换只走可视按钮），Q/E 只在 orbit 内被消费。
+	config.mode_choices = PackedStringArray(["fixed_follow", "orbit"])
+	config.enable_mode_selection_keys = false
+	config.enable_preset_key = false
+	config.enable_zoom_keys = false
+	config.enable_yaw_keys = true
+	_rig.bind(_camera, _player, config)
+
+
+
+## 只读：本场的镜头 rig（测试与外部观察用）。
+func rig() -> CameraRig:
+	return _rig
+
+
+## 紧凑镜头模式切换：不占数字键，点击在 fixed_follow 与 orbit 之间切换。
+## 默认进入 fixed_follow，因此初始构图与旧庭院完全一致。
+func _on_mode_toggle() -> void:
+	var next := "orbit" if _rig.mode_id() == "fixed_follow" else "fixed_follow"
+	_rig.request_mode(next)
+	_update_status()
+
+
 func _build_hud() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "Overlay"
-	add_child(layer)
-
-	var interface := Control.new()
-	interface.name = "Interface"
-	interface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interface.theme = LAB_THEME
-	layer.add_child(interface)
-	interface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var margin := MarginContainer.new()
-	margin.name = "Margin"
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 32)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_right", 32)
-	margin.add_theme_constant_override("margin_bottom", 20)
-	interface.add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var layout := VBoxContainer.new()
-	layout.name = "Layout"
-	layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(layout)
-
-	var header := HBoxContainer.new()
-	header.name = "Header"
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(header)
-
-	var titles := VBoxContainer.new()
-	titles.name = "Titles"
-	titles.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	titles.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	header.add_child(titles)
-
-	var kicker := Label.new()
-	kicker.name = "Kicker"
-	kicker.theme_type_variation = "AccentLabel"
-	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.text = "EXPERIMENT    /    CHARACTER MOVEMENT"
-	titles.add_child(kicker)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 28)
-	title.text = "角色移动 · 庭院"
-	titles.add_child(title)
-
-	_status = Label.new()
-	_status.name = "Status"
-	_status.theme_type_variation = "MutedLabel"
-	_status.add_theme_font_size_override("font_size", 14)
-	titles.add_child(_status)
-
-	var return_button := Button.new()
-	return_button.name = "ReturnButton"
-	return_button.text = "返回子实验目录"
-	return_button.custom_minimum_size = Vector2(140, 44)
-	return_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	# 按钮不抢键盘焦点：移动键事件始终抵达场景的 _unhandled_input。
-	return_button.focus_mode = Control.FOCUS_NONE
-	return_button.pressed.connect(_return_to_hub)
-	header.add_child(return_button)
-
-	var spacer := Control.new()
-	spacer.name = "Space"
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(spacer)
-
-	var footer := HBoxContainer.new()
-	footer.name = "Footer"
-	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(footer)
-
-	var controls := Label.new()
-	controls.name = "Controls"
-	controls.theme_type_variation = "MutedLabel"
-	controls.add_theme_font_size_override("font_size", 14)
-	controls.text = "WASD 屏幕相对移动（角色朝运动方向）  ·  滚轮缩放  ·  R 重置  ·  Esc 返回子实验目录"
-	controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	controls.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	footer.add_child(controls)
-
+	_hud = LabHud.new()
+	add_child(_hud)
+	_hud.configure("移动庭院", "角色移动 · 庭院", "WASD 移动 · 滚轮缩放 · 镜头按钮切换环绕 · H 详情")
+	_hud.set_controls("WASD 屏幕相对移动（角色朝运动方向）· 滚轮缩放 · 镜头按钮在固定跟随与 RMB 环绕间切换 · R 重置 · Esc 返回子实验目录")
+	_hud.set_question("小范围地面移动和既有庭院美术与构图是否仍然成立？")
+	_hud.return_pressed.connect(_return_to_hub)
+	_hud.set_return_text("返回子实验目录")
+	var mode_button := Button.new()
+	mode_button.name = "ModeToggleButton"
+	mode_button.text = "镜头：固定跟随"
+	mode_button.focus_mode = Control.FOCUS_NONE
+	mode_button.tooltip_text = "在固定跟随与 RMB 环绕之间切换（不占用数字键）"
+	mode_button.pressed.connect(_on_mode_toggle)
+	_hud.add_button(mode_button)
+	_mode_button = mode_button
 	var reset_button := Button.new()
 	reset_button.name = "ResetButton"
 	reset_button.text = "重置"
-	reset_button.custom_minimum_size = Vector2(96, 44)
 	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset_experiment)
-	footer.add_child(reset_button)
+	_hud.add_button(reset_button)
 
 
 func _update_status() -> void:
-	if _status == null:
+	if _hud == null or _rig == null or _player == null:
 		return
-	_status.text = "观察移动、转向与空间尺度"
+	var snapshot := _rig.snapshot()
+	var focus: Vector3 = snapshot["focus"]
+	var focus_offset := Vector2(focus.x - _player.global_position.x, focus.z - _player.global_position.z).length()
+	if _mode_button != null:
+		_mode_button.text = "镜头：固定跟随" if _rig.mode_id() == "fixed_follow" else "镜头：RMB 环绕"
+	var mode_name := "固定跟随" if _rig.mode_id() == "fixed_follow" else "RMB 环绕"
+	_hud.set_status("%s · 偏航 %d° · 缩放 %.1f · 焦点偏移 %.2f m · 速度 %.2f m/s" % [
+		mode_name,
+		int(round(float(snapshot["yaw_degrees"]))),
+		float(snapshot["zoom_size"]),
+		focus_offset,
+		_motion.actual_velocity.length(),
+	])
+	_hud.set_debug_lines(PackedStringArray([
+		"相机由共享 CameraRig 独占写；本场景不写 Camera3D 姿态",
+		"相机位置 (%.2f, %.2f, %.2f)" % [
+			_camera.global_position.x, _camera.global_position.y, _camera.global_position.z],
+		"角色位置 (%.2f, %.2f, %.2f)" % [
+			_player.global_position.x, _player.global_position.y, _player.global_position.z],
+	]))

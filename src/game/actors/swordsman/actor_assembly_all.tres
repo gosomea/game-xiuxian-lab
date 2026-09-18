@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ActorAssemblyConfig" load_steps=2 format=3]
+
+; 角色默认装配：Move + Jump + Flight（行为与 flying_sword.glb 视觉一起装）。
+; 场景需要子集时复制本文件并关闭对应开关，或代码里构造 ActorAssemblyConfig 传给 install()。
+[ext_resource type="Script" path="res://game/actors/swordsman/actor_assembly_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+move_enabled = true
+jump_enabled = true
+flight_enabled = true
+flight_visual = true

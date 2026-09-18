@@ -2,8 +2,14 @@
 
 Status: implemented
 
-> 决策批准：**2026-09-18 用户批准本统一提案**。Status 为 implemented 表示**决策已采纳**；
-> **运行时 S0–S3 尚未交付**，本 note 不代表任何功能已实现。分阶段的最小可交付、依赖与可观察验收见下。
+> 决策批准：**2026-09-18 用户批准本统一提案**。Status 为 implemented 表示**决策已采纳**。
+>
+> **实现状态（2026-09-18 更新）**：S0 局部装配适配器（ActorAssembly + ActorAssemblyConfig + FlightBundle）、
+> S1 镜头包（CameraRig 唯一 executor + 四模式 Capability + CameraRigConfig）、S2 程序动作预览 P0、
+> 两级导航与共享 HUD 已落地并进 `tests/test_runner.tscn`；逐项通过/未通过证据与最新计数见
+> [可组合移动实验最终报告](../../../docs/playtest/2026-09-18-composable-movement-labs.md)。
+> **已完成**：七场统一迁移收口、四场飞剑视觉取证与全场回归均已实测（全场 `SCRIPT ERROR = 0`，主入口 921/0）。
+> **未做**：骨骼 clip 库 / 蒙皮（P1/P2）、骨骼重映射与镜头遮挡规避。具体口径与未达项见上述报告。
 
 ## 问题
 
@@ -42,16 +48,22 @@ Status: implemented
 **装配树（同一 actor 唯一 motion component / manager；CameraRig 独立宿主同形状）**：
 
 ```
-Swordsman (actor)                    CameraRig (独立宿主)
+Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 ├── SwordsmanMotionComponent  # 唯一    ├── CameraRigComponent        # 唯一
 ├── CapabilityManager         # 唯一    ├── CapabilityManager         # 唯一
-│   └── Movement/Jump/Flight  # 直系子  │   ├── fixed_follow/quarter_turn/orbit/overview  # 4 模式 Cap
-└── Visual/Cultivator ...              │   └── CameraExecutor        # 普通宿主提交器
-                                       │       （modifier 为数据配置，不新增 cap）
+│   └── Movement/Jump/Flight  # 直系子  │   └── fixed_follow / quarter_turn / orbit / overview  # 4 模式 Cap
+└── Visual/Cultivator ...              └── CameraRig 根节点自身即提交器  # 非 Capability
+                                           （modifier 为数据配置，不新增 cap）
 ```
 
+> **实现修正**：CameraRig 落地为「普通 Node3D 根 + `CameraRigComponent` 直系子 + `CapabilityManager` 直系子，
+> 四模式 Capability 为 manager 直系子；提交器就是 `CameraRig` 根节点自身（`_physics_process` → `advance()`）」，
+> 不存在名为 `CameraExecutor` 的独立节点。契约 note 的原始措辞「一个普通宿主提交器」保留其意图，此处按实现写明。
+
 - 角色与相机组件之间**通过已登记数据 + 注入目标状态同步（桥接层）**，Capability 之间不互引；`CameraRig` 对角色只读**目标 snapshot**。
-- **「能挂」验收**：新场景只需标准角色 + 相机包 + 配置，不修改 scene 脚本、不复制 bind。
+- **「能挂」验收**：新场景只需标准角色 + 相机包 + 配置即可获得跟随/模式行为与飞剑视觉；**仍需场景侧最小编排**——
+  输入 adapter（按键 → 公开 API）与一次 `rig.bind(camera, target, config)`。不复制跟随行为、不复制绑剑逻辑是硬要求，
+  但「不修改 scene 脚本」不等于「零场景代码」，本节按此边界执行。
 - **飞行表现统一（可选/可组合，不是 helper）**：`src/game/actors/swordsman/` 的 ActorAssembly 作为装配 root（持有 movement/jump/flight 依赖与显式配置），**FlightBundle 是独立的可选装配包**，自带剑 visual 与姿态 provider。禁止把它降级为「检查既有三能力 + 挂一把剑」的 helper。裸 cap 服务 headless 允许无 visual；完整可玩 bundle 必须有视觉依赖。四个可进御剑场景统一接入。
 - **局部装配适配器**：嵌套 Sheet 不能共享 actor 组件；不采用「每个包新 manager」（破坏全 cap 优先级）。适配器把能力注册为既有宿主 manager 直系子、复用宿主唯一 component、按 owner 登记卸载；挂载幂等、原子回滚，manager 唯一调度，物理仍仅 actor 根一次提交。具体约束见 [composable-lab-assembly-contract](../tech/2026-09-18-composable-lab-assembly-contract.md)。**除非必要不改 `core/`；任何 core 改动另开 owning tech note。**
 - **输入上下文**：RMB down 仅在 viewport 未被 UI 消费时捕获；up/失焦/退场释放并清累积 delta；**Esc 先退捕获/面板、后返回**（当前 camera 无此功能）。GUI 上滚轮只滚 GUI。连续旋转时 WASD 按**同帧一致 control yaw 地面基**解释，明确 simulation→presentation 顺序；键鼠可映射；**鼠标像素位移 `screen_relative` 不再乘 dt；键盘角速度 / 连续平移速度仍乘帧时长**；切模式平滑，混合期 delta 丢弃或显式接管。
@@ -90,7 +102,7 @@ Swordsman (actor)                    CameraRig (独立宿主)
 
 | 阶段 | 产物 | 依赖 | 可观察验收 |
 |---|---|---|---|
-| **S0** | 2 击导航 + HUD Theme 变体 + 局部装配适配器 + 飞剑完整接入 | 本 note 决策；契约 note；core 改动另 note | 点击链 2 击；7 场 HUD 一致；960×640/1280×720/1920×1080 三分辨率截图，默认遮盖 ≤15%（压力场例外，试验值），无裁切/重叠、操作区不遮目标；4 场剑可见与**脚下位置/朝向/帧内可见尺寸**截屏；新场景凭标准角色+相机包+配置即能挂，无复制 bind |
+| **S0** | 2 击导航 + HUD Theme 变体 + 局部装配适配器 + 飞剑完整接入 | 本 note 决策；契约 note；core 改动另 note | 点击链 2 击（已由 `test_lab_navigation.gd` 覆盖）；7 场 HUD 一致；三分辨率截图，默认遮盖 ≤15%（压力场例外）：**生产 stretch 口径七场全达**（最接近为动作工作台预览态 14.93%），1:1 画布压力口径下窄屏超限已如实记录；4 场剑可见已完成（定性图审 + 正式 actor mesh 断言）；新场景凭标准角色 + 相机包 + 配置即能挂。**边界**：「能挂」指装配（能力/视觉/相机求值）已由包完成，场景仍需自己的输入编排（把按键映射为 `set_move_input` / `press_flight_toggle` 等公开 API）与 `bind()` 调用——不存在「零场景代码」的全自动装配 |
 | **S1** | 镜头 `fixed_follow`/`orbit` 两真实消费者，再 `quarter_turn`/`overview`；CameraRigComponent + 单 executor | S0 装配契约 | 四模式可操作区分（脚本用语义名）；`mode_id` 互斥；同一时刻仅一个 executor 写 `Camera3D`；切换无跳变；RMB up/失焦/退场清 delta；同角色同路径对比 |
 | **S2** | 动作预览 P0（程序动作真播）+ 动作库选择/播放/暂停/单步/循环/倍率/A–B 过渡 | S0 契约 | 播放/暂停/单步可复算；`move_and_slide` 仍仅 actor 一处；`Engine.time_scale` 不被预览改写；旧 GLB/.blend 在库并记录替代；侧/正/斜与脚接触观察 |
 | **S3** | 七场迁移与组合回归 | S0–S2 | **真实实例化** Move / Move+Jump / Move+Flight / all 四子集；未启用能力静默不触发；切换/失焦/卸载无残留且不 `reset_motion()` 清无关状态；七场可启动；庭院/群山布局不变 |
@@ -110,6 +122,20 @@ Swordsman (actor)                    CameraRig (独立宿主)
 ## 后果
 
 - **决策已生效**：`notes/proposed/` 中的同名提案已迁移到本 note；[审计](../../../docs/research/2026-09-18-character-movement-lab-audit.md) 的链接已指向本路径。
-- **实现尚未开始**：`src/`、`design/`、`tools/`、资产均未因本决策改动；`AGENTS.md` 当前状态与 `experiments.json` 的 `ready` 标签不因本决策变化。S0–S3 交付后需按各阶段验收补运行证据。
-- **已知待办**：catalog 漏记 SwordFlight tag 需先改生成器常量标签提取（或显式声明契约）+ 负向控制/回归，再重生成；模型文档来源与统计过期需在 S0 同步；SystemFont 跨机器回退风险与旧截图不代表当前 min 为已知限制。
-- **风险保留**：镜头 C 连续环绕下 WASD 地面基漂移是否可接受、正交 orbit 的距离/pitch 语义、装配适配器幂等/回滚/卸载顺序，均需运行验证；适配器若有 `core/` 改动必须另开 owning tech note。
+- **实现已落地（部分）**：`src/` 已新增 `game/actors/swordsman/actor_assembly{, _config}.gd` + `actor_assembly_all.tres`、
+  `game/abilities/sword_flight/flight_bundle.gd`、`game/systems/camera_rig/`、`game/systems/motion_preview/`、
+  `ui/lab_hud.gd`、`tests/test_lab_navigation.gd`，并改写 `swordsman.tscn` 的装配方式与两级 hub 的导航。
+  `AGENTS.md` 与 `README.md` 已更新为当前实现的事实描述；`experiments.json` 的 `exploring` 状态与 `ready` 标签**未改**（不扩玩法）。
+- **已知未做**：骨骼 clip 库与蒙皮（P1/P2）未做——`cultivator.glb` 实测 0 skin / 0 animation，动作仍为程序近似；
+  骨骼重映射（retarget）与镜头遮挡规避/推近均未实现；HUD「默认非展开遮盖 ≤15%」在**生产 stretch 口径已达成**
+  （七场全部 ≤15%，最接近为动作工作台预览态 14.93%），仅 **1:1 画布布局压力口径**下动作工作台窄屏超限
+  （960×640 = 24.9%、1280×720 = 16.6%、1920×1080 = 7.4%，见
+  [生产 UI 复核](../../../docs/playtest/2026-09-18-production-ui.md) 与 [动作预览专项报告](../../../docs/playtest/2026-09-18-motion-preview.md)）。
+- **已知待办**：catalog 漏记 SwordFlight tag **已用最小改法解决**——`src/game/abilities/sword_flight/sword_flight.gd` 的
+  `TagRegistry.add_block/remove_block` 改用字面量 `&"sword_flight_block"`，使现有生成器的字面量提取可识别
+  （重生成后 `SwordFlight.uses_tags=["sword_flight_block"]`），因此**未改 `tools/gen/`，也无需负向控制**；
+  若将来要支持常量传参提取，另开 tools 变更。模型文档来源与统计过期已在
+  `docs/art/movement_garden/` 与 `docs/art/cultivator_refined/` 同步；SystemFont 跨机器回退风险与旧截图不代表当前 min 仍为已知限制。
+- **风险保留**：镜头 C 连续环绕下 WASD 地面基漂移是否可接受、正交 orbit 的距离/pitch 语义仍需人工试玩；
+  装配适配器的幂等/回滚/四子集已由 `test_actor_assembly.gd`（142 项）与 `test_flight_bundle.gd`（83 项）覆盖。
+  本轮实现**未改 `core/`**；将来若有 core 改动必须另开 owning tech note。

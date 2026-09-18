@@ -12,8 +12,10 @@ extends Node3D
 ##   Blender 资产由同一份 devices 推导可见几何，两边共用同一套公式，因此
 ##   「看得见的装置」与「走得上去的装置」是同一个数学对象；playtest 再回读两侧做对齐断言。
 ## - 输入状态由 MovementLabInput 承担（按键映射 / 按住状态 / 二维归一化 / 升降）；
-##   相机地面基、跳跃边沿、公开 API 调用、重置与返回由本场景负责。
-## - 相机是固定偏移跟随，不做镜头实验（那是 camera_lab 的职责）。
+##   跳跃边沿、公开 API 调用、重置与返回由本场景负责。
+## - 相机走共享 CameraRig（唯一 executor）：本场景只提供 CameraRigConfig 构图参数与 focus clamp，
+##   不写相机位姿、不转交地面基（由 rig 桥接写入角色）。不做镜头实验（那是 camera_lab 的职责）。
+## - HUD 走共享 LabHud：标题 / 核心状态 / 短提示常显，明细进折叠详情。
 ##
 ## 只读语义：场景 _physics_process 早于子节点 actor，因此本帧读到的
 ## is_on_floor / get_floor_normal / get_slide_collision 都是**上一帧** move_and_slide 的结果，
@@ -21,7 +23,8 @@ extends Node3D
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
+const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
+const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const VISUAL_SCENE: PackedScene = preload("res://levels/experiments/character_movement/ground_contact_course.glb")
 const LAYOUT_PATH := "res://levels/experiments/character_movement/ground_contact_course_layout.json"
 const LAYOUT_SCHEMA := "ground_contact_course/1"
@@ -58,15 +61,15 @@ var _spawn_position := Vector3.ZERO
 var _fall_out_y := -6.0
 var _bounds_min := Vector3.ZERO
 var _bounds_max := Vector3.ZERO
+## 构图参数：来自布局 JSON 的 camera 段，喂给共享 CameraRig 的 Config（本场景不写相机位姿）。
 var _camera_offset := Vector3.ZERO
 var _camera_size := 17.0
 var _camera_size_min := 6.0
 var _camera_size_max := 40.0
-var _camera_zoom_step := 1.5
 var _camera_follow_speed := 5.0
 var _camera_clamp_min := Vector2.ZERO
 var _camera_clamp_max := Vector2.ZERO
-var _follow_target := Vector3.ZERO
+var _rig: CameraRig
 
 var _devices: Array[Dictionary] = []
 var _device_colliders: Dictionary = {}
@@ -75,11 +78,8 @@ var _jump_edges := 0
 var _recoveries := 0
 var _physics_ticks := 0
 
-var _hud_zone: Label
-var _hud_declared: Label
-var _hud_motion: Label
-var _hud_contact: Label
-var _hud_recovery: Label
+## 共享 HUD（src/ui/lab_hud.gd）：标题 / 核心状态 / 短提示常显，密度读数进折叠详情。
+var _hud: LabHud
 
 
 func _ready() -> void:
@@ -98,8 +98,8 @@ func _ready() -> void:
 	_shade_ground()
 	_build_distant_plate()
 	_spawn_player()
+	_build_rig()
 	_build_hud()
-	_reset_camera()
 	_update_hud()
 
 
@@ -137,16 +137,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				_return_to_hub()
 				return
-	elif event is InputEventMouseButton:
-		var button := event as InputEventMouseButton
-		if not button.pressed:
-			return
-		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_camera.size = clampf(_camera.size - _camera_zoom_step, _camera_size_min, _camera_size_max)
-			get_viewport().set_input_as_handled()
-		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_camera.size = clampf(_camera.size + _camera_zoom_step, _camera_size_min, _camera_size_max)
-			get_viewport().set_input_as_handled()
+	# 滚轮缩放由共享 CameraRig 处理（GUI 消费的面板滚轮不会到 rig）；本场景不再写相机 size。
 
 
 ## 场景先写输入、actor 子节点随后 tick（父节点 _physics_process 先于子节点）。
@@ -154,9 +145,9 @@ func _physics_process(delta: float) -> void:
 	if _player == null or _motion == null:
 		return
 	_physics_ticks += 1
-	var right := _ground_vector(_camera.global_transform.basis.x, Vector3.RIGHT)
-	var forward := _ground_vector(-_camera.global_transform.basis.z, Vector3.FORWARD)
-	_player.set_camera_ground_basis(right, forward)
+	# 相机地面基由 CameraRig 桥接写入角色（rig 优先级 -10，先于本帧）；本场景不转交、不复制跟随。
+	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
+	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
 	var move := _input.move_input()
 	_player.set_move_input(move)
 	_player.set_vertical_input(_input.vertical_input())
@@ -172,7 +163,6 @@ func _physics_process(delta: float) -> void:
 		if direction.length_squared() > 0.0001:
 			_player.set_aim_direction(direction.normalized())
 	_check_fall_out()
-	_follow_camera(delta)
 
 
 func _process(_delta: float) -> void:
@@ -423,24 +413,38 @@ func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
 	return flat.normalized()
 
 
-func _follow_camera(delta: float) -> void:
-	var target := _player.global_position
-	target.x = clampf(target.x, _camera_clamp_min.x, _camera_clamp_max.x)
-	target.z = clampf(target.z, _camera_clamp_min.y, _camera_clamp_max.y)
-	target.y = maxf(target.y * 0.5, 0.0)
-	if _follow_target.distance_squared_to(target) > 400.0:
-		_follow_target = target
-	else:
-		_follow_target = _follow_target.lerp(target, clampf(delta * _camera_follow_speed, 0.0, 1.0))
-	_camera.position = _follow_target + _camera_offset
-	_camera.look_at(_follow_target, Vector3.UP)
-
-
-func _reset_camera() -> void:
-	_follow_target = _spawn_position
-	_camera.size = _camera_size
-	_camera.position = _follow_target + _camera_offset
-	_camera.look_at(_follow_target, Vector3.UP)
+## 装配共享 CameraRig：布局 JSON 的偏移换算成球面参数，保留原构图与跟随速度；
+## 场地范围转成 focus clamp（原 _follow_camera 的 clamp 语义）。本场景不再写相机位姿。
+func _build_rig() -> void:
+	var rig := RIG_SHEET.instantiate() as CameraRig
+	assert(rig != null, "ground_contact_course: camera_rig_sheet.tscn 根节点必须是 CameraRig")
+	rig.name = "CameraRig"
+	add_child(rig)
+	_rig = rig
+	var config := CameraRigConfig.new()
+	# 旧固定偏移 offset=(x, y, z) → 球面：distance=length、pitch=asin(y/d)、yaw=atan2(x, z)。
+	var radius := _camera_offset.length()
+	config.start_mode = "fixed_follow"
+	config.follow_preset = "smooth"
+	config.distance = radius
+	config.pitch_degrees = rad_to_deg(asin(_camera_offset.y / maxf(radius, 0.001)))
+	config.yaw_degrees = rad_to_deg(atan2(_camera_offset.x, _camera_offset.z))
+	config.size = _camera_size
+	config.size_min = _camera_size_min
+	config.size_max = _camera_size_max
+	config.smooth_time = 1.0 / maxf(_camera_follow_speed, 0.001)
+	config.focus_clamp_enabled = true
+	# 旧的 _follow_camera 对 y 做 max(y*0.5, 0) 的软跟随（不是压到地面）：
+	# x/z 用布局 clamp，y 用 [0, bounds_max.y] 保留高低跟随。
+	config.focus_clamp_min = Vector3(_camera_clamp_min.x, 0.0, _camera_clamp_min.y)
+	config.focus_clamp_max = Vector3(_camera_clamp_max.x, _bounds_max.y, _camera_clamp_max.y)
+	config.focus_clamp_y_enabled = true
+	config.near = 0.1
+	config.far = 220.0
+	rig.bind(_camera, _player, config)
+	# 地面接触场只要一个固定跟随模式：不占 1-4 模式键（避免抢实验控制）。
+	rig.mode_cycle = PackedStringArray(["fixed_follow"])
+	rig.preset_cycle = PackedStringArray(["smooth"])
 
 
 # --- 重置 / 回收 / 返回 ------------------------------------------------------
@@ -454,7 +458,8 @@ func _reset_experiment() -> void:
 	_jump_edge_pending = false
 	_jump_edges = 0
 	_physics_ticks = 0
-	_reset_camera()
+	if _rig != null:
+		_rig.reset_state()
 	_update_hud()
 
 
@@ -473,6 +478,11 @@ func _return_to_hub() -> void:
 
 
 # --- 公开只读接口（供 HUD 与验收脚本读取，不写任何状态） ---------------------
+
+
+## 公开只读访问器：验收脚本经此读 CameraRig，而不是绕过它写 Camera3D。
+func rig() -> CameraRig:
+	return _rig
 
 
 func player() -> Swordsman:
@@ -630,165 +640,44 @@ func stage_state() -> Dictionary:
 # --- HUD --------------------------------------------------------------------
 
 
+## 共享 HUD：标题 + 核心状态 + 短提示常显；区域/声明/接触/回收明细进折叠详情。
 func _build_hud() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "Overlay"
-	add_child(layer)
-
-	var interface := Control.new()
-	interface.name = "Interface"
-	interface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interface.theme = LAB_THEME
-	layer.add_child(interface)
-	interface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var margin := MarginContainer.new()
-	margin.name = "Margin"
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 20)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_right", 20)
-	margin.add_theme_constant_override("margin_bottom", 14)
-	interface.add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var layout := VBoxContainer.new()
-	layout.name = "Layout"
-	layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(layout)
-
-	var header := HBoxContainer.new()
-	header.name = "Header"
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(header)
-
-	var panel := PanelContainer.new()
-	panel.name = "ReadoutPanel"
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _backdrop())
-	header.add_child(panel)
-
-	var readout := VBoxContainer.new()
-	readout.name = "Readout"
-	readout.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	readout.add_theme_constant_override("separation", 2)
-	panel.add_child(readout)
-
-	var kicker := Label.new()
-	kicker.name = "Kicker"
-	kicker.theme_type_variation = "AccentLabel"
-	kicker.add_theme_font_size_override("font_size", 12)
-	kicker.text = "EXPERIMENT    /    CHARACTER MOVEMENT · GROUND CONTACT"
-	readout.add_child(kicker)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 22)
-	title.text = "地形接触训练场"
-	readout.add_child(title)
-
-	_hud_zone = _make_readout_label(readout, "Zone")
-	_hud_declared = _make_readout_label(readout, "Declared")
-	_hud_motion = _make_readout_label(readout, "Motion")
-	_hud_contact = _make_readout_label(readout, "Contact")
-	_hud_recovery = _make_readout_label(readout, "Recovery")
-
-	var buttons := VBoxContainer.new()
-	buttons.name = "Buttons"
-	buttons.add_theme_constant_override("separation", 8)
-	header.add_child(buttons)
-
-	var return_button := Button.new()
-	return_button.name = "ReturnButton"
-	return_button.text = "返回子实验目录"
-	return_button.custom_minimum_size = Vector2(132, 40)
-	return_button.focus_mode = Control.FOCUS_NONE
-	return_button.pressed.connect(_return_to_hub)
-	buttons.add_child(return_button)
-
-	var reset_button := Button.new()
-	reset_button.name = "ResetButton"
-	reset_button.text = "重置 (R)"
-	reset_button.custom_minimum_size = Vector2(132, 40)
-	reset_button.focus_mode = Control.FOCUS_NONE
-	reset_button.pressed.connect(_reset_experiment)
-	buttons.add_child(reset_button)
-
-	var spacer := Control.new()
-	spacer.name = "Space"
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(spacer)
-
-	var footer := HBoxContainer.new()
-	footer.name = "Footer"
-	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	footer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	layout.add_child(footer)
-
-	var controls_panel := PanelContainer.new()
-	controls_panel.name = "ControlsPanel"
-	controls_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	controls_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls_panel.add_theme_stylebox_override("panel", _backdrop())
-	footer.add_child(controls_panel)
-
-	var controls := Label.new()
-	controls.name = "Controls"
-	controls.theme_type_variation = "MutedLabel"
-	controls.add_theme_font_size_override("font_size", 13)
-	controls.text = "WASD / 方向键 地面移动  ·  Space 跳跃  ·  滚轮缩放  ·  R 重置  ·  Esc 返回子实验目录"
-	# 中文没有词间空格，WORD_SMART 会把整句当一个长词并撑出最小宽度；小窗会顶穿右边界。
-	controls.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	controls.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls_panel.add_child(controls)
+	_hud = HUD_SCRIPT.new()
+	add_child(_hud)
+	# 顺序为 configure(kicker, title, hint)：短类目标记在后（小字），中文标题在前（大字）。
+	_hud.configure("TERRAIN CONTACT", "地形接触训练场", "WASD 移动 · Space 跳跃 · Esc 返回 · H 详情")
+	_hud.set_controls("WASD / 方向键 地面移动 · Space 跳跃 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
+	_hud.set_question(_question_text())
+	_hud.set_return_text("返回子实验目录")
+	_hud.return_pressed.connect(_return_to_hub)
 
 
-func _make_readout_label(parent: Node, tag: String) -> Label:
-	var label := Label.new()
-	label.name = tag
-	label.theme_type_variation = "MutedLabel"
-	label.add_theme_font_size_override("font_size", 13)
-	label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	parent.add_child(label)
-	return label
-
-
-func _backdrop() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.980392, 0.972549, 0.949020, 0.86)
-	style.border_color = Color(0.505882, 0.611765, 0.533333, 0.45)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(8)
-	style.content_margin_left = 14.0
-	style.content_margin_right = 14.0
-	style.content_margin_top = 9.0
-	style.content_margin_bottom = 9.0
-	return style
+## 本场问题：与子实验清单一致（场景只读文本，不复制清单逻辑）。
+func _question_text() -> String:
+	return "斜坡、台阶、墙角、窄路和边缘上的移动与碰撞是否稳定？"
 
 
 ## 只读组件与场景读数；不伪造能力状态，不写任何运动数据。
+## 核心状态常显一行设备/速度；完整明细进折叠详情（H / F1）。
 func _update_hud() -> void:
-	if _hud_zone == null or _motion == null or _player == null:
+	if _hud == null or _motion == null or _player == null:
 		return
 	var device := current_device()
 	var zone := str(device.get("zone", "—"))
 	var title := str(device.get("title", "—"))
-	_hud_zone.text = "区域  %s  ·  %s" % [zone, title]
-	_hud_declared.text = "装置声明  " + device_declared_text(device)
 	var velocity := _motion.actual_velocity
 	var horizontal := Vector2(velocity.x, velocity.z).length()
 	var angle := _measured_floor_angle()
-	_hud_motion.text = "实测  着地=%s  水平 %.2f m/s  vy=%+.2f  高度 %.2f m  地面倾角=%s" % [
-		"是" if _motion.on_floor else "否", horizontal, velocity.y,
-		_player.global_position.y,
+	_hud.set_status("区域 %s · %s  着地=%s  水平 %.2f m/s  倾角 %s" % [
+		zone, title,
+		"是" if _motion.on_floor else "否", horizontal,
 		"%.1f°" % angle if angle >= 0.0 else "未着地",
-	]
+	])
 	var contacts := contact_names()
-	_hud_contact.text = "接触  贴墙=%s  滑动碰撞=%s" % [
-		"是" if _player.is_on_wall() else "否",
-		"—" if contacts.is_empty() else ", ".join(contacts),
-	]
-	_hud_recovery.text = "输入  移动=(%+.2f, %+.2f)  跳跃边沿=%d  回收=%d  物理帧=%d" % [
-		_motion.move_input.x, _motion.move_input.y, _jump_edges, _recoveries, _physics_ticks,
-	]
+	_hud.set_debug_lines(PackedStringArray([
+		"装置声明  " + device_declared_text(device),
+		"实测  水平 %.2f m/s  vy=%+.2f  高度 %.2f m" % [horizontal, velocity.y, _player.global_position.y],
+		"接触  贴墙=%s  滑动碰撞=%s" % ["是" if _player.is_on_wall() else "否", "—" if contacts.is_empty() else ", ".join(contacts)],
+		"输入  移动=(%+.2f, %+.2f)  跳跃边沿=%d  回收=%d  物理帧=%d" % [
+			_motion.move_input.x, _motion.move_input.y, _jump_edges, _recoveries, _physics_ticks],
+	]))

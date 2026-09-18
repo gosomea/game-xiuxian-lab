@@ -110,15 +110,16 @@ text = "子实验清单"
 layout_mode = 2
 theme_type_variation = &"MutedLabel"
 theme_override_font_sizes/font_size = 13
-text = "上下键选择；可进入项用「进入子实验」"
+text = "点击卡片直接进入子实验；详情用 I 键或「说明」按钮"
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/Layout/Body/Entries"]
+[node name="EntryScroll" type="ScrollContainer" parent="Margin/Layout/Body/Entries"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 follow_focus = true
 
-[node name="EntryGrid" type="GridContainer" parent="Margin/Layout/Body/Entries/Scroll"]
+[node name="EntryGrid" type="GridContainer" parent="Margin/Layout/Body/Entries/EntryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -126,6 +127,8 @@ size_flags_vertical = 0
 columns = 2
 
 [node name="Details" type="PanelContainer" parent="Margin/Layout/Body"]
+unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(310, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -193,12 +196,7 @@ theme_override_font_sizes/font_size = 12
 text = "待探索条目只登记核心问题与定位；场景落地后才会出现运行入口。"
 autowrap_mode = 3
 
-[node name="LaunchButton" type="Button" parent="Margin/Layout/Body/Details/Margin/Layout"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-disabled = true
-text = "场景尚未搭建"
+
 
 [node name="Footer" type="HBoxContainer" parent="Margin/Layout"]
 layout_mode = 2
@@ -208,8 +206,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"MutedLabel"
 theme_override_font_sizes/font_size = 14
-text = "子场景各自返回本目录；Esc 返回顶层实验目录"
+text = "子场景各自返回本目录；Esc 先关详情、再返回顶层实验目录"
 autowrap_mode = 3
+
+[node name="DetailsButton" type="Button" parent="Margin/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 40)
+layout_mode = 2
+text = "说明 (I)"
 
 [node name="BackButton" type="Button" parent="Margin/Layout/Footer"]
 unique_name_in_owner = true

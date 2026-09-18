@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+; 共享角色视觉装配（S2 P0）：庭院同一模型的唯一可复用 Visual 子树。
+; 依据 notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md
+; 「真预览：同 Visual 子场景（建议抽共享 Visual scene）」。
+;
+; 使用方实例化本场景即得到与正式角色完全相同的模型与表现系统；本场景不装配
+; CollisionShape3D、SwordsmanMotionComponent、CapabilityManager，
+; 因此不会产生第二个物理 actor。
+;
+; 装配契约：CultivatorPresentation 的默认 actor_path 是 ^"../.."、auto_read_actor=true，
+; 即「本节点挂在 Visual 下、Visual 的父是 actor」的正式形态。
+; 预览展示实例在 add_child 之前显式改写这两个属性：
+;   var visual := CULTIVATOR_VISUAL.instantiate()
+;   var presentation := visual.get_node("CultivatorPresentation")
+;   presentation.auto_read_actor = false
+;   presentation.actor_path = NodePath("")
+; 正式角色 swordsman.tscn 由 actor 代理替换为同一装配；本文件不修改 swordsman.tscn。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorVisual" type="Node3D"]
+
+[node name="Cultivator" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")

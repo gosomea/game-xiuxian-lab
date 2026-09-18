@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CameraRigConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/systems/camera_rig/camera_rig_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+projection = 1
+size = 24.0
+size_min = 8.0
+size_max = 44.0
+zoom_step = 2.0
+fov = 60.0
+start_mode = "fixed_follow"
+follow_preset = "hard"
+yaw_speed_degrees = 90.0
+yaw_degrees = -35.0
+pitch_degrees = 42.0
+distance = 16.0
+pitch_min_degrees = 12.0
+pitch_max_degrees = 78.0
+smooth_time = 0.35
+deadzone_half_width = 4.0
+deadzone_half_height = 2.5
+lookahead_time = 0.45
+lookahead_max = 5.0
+lookahead_smooth_time = 0.3
+focus_clamp_enabled = false
+focus_clamp_min = Vector3(0, 0, 0)
+focus_clamp_max = Vector3(0, 0, 0)
+transition_time = 0.25

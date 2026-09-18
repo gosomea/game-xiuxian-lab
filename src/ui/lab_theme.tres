@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=15 format=3]
+[gd_resource type="Theme" load_steps=17 format=3]
 
 [sub_resource type="SystemFont" id="Font"]
 font_names = PackedStringArray("PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC")
@@ -139,6 +139,38 @@ corner_radius_top_right = 5
 corner_radius_bottom_left = 5
 corner_radius_bottom_right = 5
 
+[sub_resource type="StyleBoxFlat" id="HudButtonCompact"]
+content_margin_left = 12.0
+content_margin_top = 7.0
+content_margin_right = 12.0
+content_margin_bottom = 7.0
+bg_color = Color(0.972549, 0.964706, 0.937255, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.839216, 0.850980, 0.796078, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="HudPanelFlat"]
+content_margin_left = 14.0
+content_margin_top = 9.0
+content_margin_right = 14.0
+content_margin_bottom = 9.0
+bg_color = Color(0.980392, 0.972549, 0.949020, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.505882, 0.611765, 0.533333, 0.45)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
 [sub_resource type="StyleBoxFlat" id="TooltipPanel"]
 content_margin_left = 14.0
 content_margin_top = 10.0
@@ -200,3 +232,22 @@ VScrollBar/styles/grabber_pressed = SubResource("ScrollGrabberHover")
 TooltipPanel/styles/panel = SubResource("TooltipPanel")
 TooltipLabel/colors/font_color = Color(0.145098, 0.239216, 0.211765, 1)
 TooltipLabel/colors/font_shadow_color = Color(0, 0, 0, 0)
+; 共享紧凑 HUD 变体（src/ui/lab_hud.gd 使用）。
+; 只新增 Hud* 变体，不改 default_font_size 与全局控件默认值，主菜单/既有场景不受影响。
+HudTitle/base_type = &"Label"
+HudTitle/font_sizes/font_size = 20
+HudReadout/base_type = &"Label"
+HudReadout/font_sizes/font_size = 14
+HudHint/base_type = &"Label"
+HudHint/font_sizes/font_size = 13
+HudHint/colors/font_color = Color(0.356863, 0.411765, 0.364706, 1)
+HudPanel/base_type = &"PanelContainer"
+HudPanel/styles/panel = SubResource("HudPanelFlat")
+HudButton/base_type = &"Button"
+HudButton/font_sizes/font_size = 13
+HudButton/styles/normal = SubResource("HudButtonCompact")
+HudButton/styles/hover = SubResource("HudButtonCompact")
+HudButton/styles/pressed = SubResource("HudButtonCompact")
+HudButton/colors/font_color = Color(0.145098, 0.239216, 0.211765, 1)
+HudButton/colors/font_hover_color = Color(0.145098, 0.239216, 0.211765, 1)
+HudButton/colors/font_pressed_color = Color(0.145098, 0.239216, 0.211765, 1)

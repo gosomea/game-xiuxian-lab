@@ -44,7 +44,9 @@
       "summary": "御剑飞行：F key-down 边沿切换；飞行期间写水平与竖直速度意图并阻塞普通移动与跳跃。",
       "test": "src/game/abilities/sword_flight/test_sword_flight.gd",
       "uses_groups": [],
-      "uses_tags": []
+      "uses_tags": [
+        "sword_flight_block"
+      ]
     },
     {
       "axis_implemented": [
@@ -68,17 +70,115 @@
       "uses_tags": [
         "sword_flight_block"
       ]
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "FixedFollow",
+      "domain": "systems",
+      "package": "systems/camera_rig",
+      "parameters": [],
+      "reads_components": [
+        "CameraRigComponent"
+      ],
+      "script": "src/game/systems/camera_rig/fixed_follow.gd",
+      "signals": [],
+      "summary": "固定正交跟随（镜头模式 A，长期语义名 fixed_follow）。",
+      "test": "src/game/systems/camera_rig/test_fixed_follow.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "Orbit",
+      "domain": "systems",
+      "package": "systems/camera_rig",
+      "parameters": [
+        {
+          "default": "0.18",
+          "name": "drag_sensitivity",
+          "type": "float"
+        }
+      ],
+      "reads_components": [
+        "CameraRigComponent"
+      ],
+      "script": "src/game/systems/camera_rig/orbit.gd",
+      "signals": [],
+      "summary": "受限 RMB 环绕（镜头模式 C，长期语义名 orbit）。",
+      "test": "src/game/systems/camera_rig/test_orbit.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "Overview",
+      "domain": "systems",
+      "package": "systems/camera_rig",
+      "parameters": [],
+      "reads_components": [
+        "CameraRigComponent"
+      ],
+      "script": "src/game/systems/camera_rig/overview.gd",
+      "signals": [],
+      "summary": "总览平移 + 回中（镜头模式 D，长期语义名 overview）。",
+      "test": "src/game/systems/camera_rig/test_overview.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "QuarterTurn",
+      "domain": "systems",
+      "package": "systems/camera_rig",
+      "parameters": [
+        {
+          "default": "0.18",
+          "name": "turn_smooth_time",
+          "type": "float"
+        }
+      ],
+      "reads_components": [
+        "CameraRigComponent"
+      ],
+      "script": "src/game/systems/camera_rig/quarter_turn.gd",
+      "signals": [],
+      "summary": "固定俯角四向切换（镜头模式 B，长期语义名 quarter_turn）。",
+      "test": "src/game/systems/camera_rig/test_quarter_turn.gd",
+      "uses_groups": [],
+      "uses_tags": []
     }
   ],
-  "count": 3,
+  "count": 7,
   "domains": [
     "abilities",
-    "actors"
+    "actors",
+    "systems"
   ],
   "packages": [
     "abilities/jump",
     "abilities/sword_flight",
-    "actors/swordsman"
+    "actors/swordsman",
+    "systems/camera_rig"
   ],
   "schema_version": 2
 }
