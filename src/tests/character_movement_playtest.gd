@@ -16,6 +16,7 @@ const SCENE := "res://levels/experiments/character_movement/movement_garden.tscn
 ## 顶层入口已改为角色移动子实验目录；本文件直接运行庭院做小场景回归。
 const MODULE_ENTRY_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SUBEXPERIMENTS_PATH := "res://data/content/character_movement_subexperiments.json"
+const HUB_SCENE := "res://levels/lab_hub.tscn"
 const MOVEMENT_HUB_NODE_NAME := "MovementLabHub"
 const SWORD_MODULE := "sword_combat"
 const MOVE_MODULE := "character_movement"
@@ -59,8 +60,8 @@ func _run() -> void:
 		return
 
 	await _run_input_and_physics()
-	await _run_orbit_second_consumer()
-	_run_hub_gate()
+	await _run_orbit_combined_mode()
+	await _run_hub_gate()
 	_finish()
 
 
@@ -94,14 +95,18 @@ func _run_capture() -> void:
 
 func _run_input_and_physics() -> void:
 	var start := _actor.global_position
-	var screen_start := _camera.unproject_position(start)
 
-	# 方向：D → 屏幕右；松键 → 停止；A → 屏幕左；停下保留朝向。
+	# 方向：D → 相机地面右方；松键 → 停止；A → 相机地面左方；停下保留朝向。
+	# 默认组合环绕软跟随目标，角色在屏幕上保持居中，因此断言世界位移沿已发布的地面基，
+	# 而不是固定的屏幕像素位移（那是 fixed_follow 软区滞后的产物，不是移动语义）。
 	_key(KEY_D, true)
 	await _frames(12)
 	_key(KEY_D, false)
 	await _frames(2)
-	_check(_camera.unproject_position(_actor.global_position).x > screen_start.x + 5.0, "D 输入产生屏幕向右实际位移")
+	var right_delta := _actor.global_position - start
+	right_delta.y = 0.0
+	_check(right_delta.length() > 0.15 and right_delta.normalized().dot(_motion.camera_right) > 0.95,
+		"D 输入产生沿相机地面右方的真实位移 %.2f m（dot %.3f）" % [right_delta.length(), right_delta.normalized().dot(_motion.camera_right)])
 	_check(_actor.velocity.length() < 0.01, "松键停止")
 	_check(_motion.aim_direction.dot(_motion.camera_right) > 0.95, "角色朝行进方向转向")
 
@@ -208,9 +213,9 @@ func _run_input_and_physics() -> void:
 	_check(current_scene != null and current_scene.name == "LabHub", "子实验目录 Esc 返回顶层实验目录")
 
 
-## 第二消费者验收：庭院除默认 fixed_follow 外还能真实切到 orbit，
-## 且 orbit 下 RMB 旋转后相机基与 WASD 地面基一致（回到 fixed_follow 也一致）。
-func _run_orbit_second_consumer() -> void:
+## 第二消费者验收：庭院默认进入组合环绕（orbit），RMB 旋转后相机基与 WASD 地面基一致，
+## 组合模式可切回 fixed_follow（旧构图对照），且常显 HUD 完整广告四组输入。
+func _run_orbit_combined_mode() -> void:
 	# 上一段输入验收结尾会真实返回子实验目录，因此这里重新进入庭院再测第二消费者。
 	if change_scene_to_file(SCENE) != OK:
 		_check(false, "无法重新加载庭院场景：%s" % SCENE)
@@ -222,18 +227,20 @@ func _run_orbit_second_consumer() -> void:
 	_check(rig != null, "庭院装配共享 CameraRig")
 	if rig == null:
 		return
-	_check(rig.mode_id() == "fixed_follow", "庭院默认仍是 fixed_follow（旧构图不变）")
-	var baseline := rig.snapshot()
-	var baseline_size := float(baseline["zoom_size"])
+	_check(rig.mode_id() == "orbit", "庭院默认进入组合环绕（orbit）")
 	var baseline_distance := float(rig.component().distance)
 
-	# 可视按钮切换（不占数字键）：按钮存在且点击真的切模式。
+	# 可发现性（庭院自身入口，不镜像 camera_lab 的四词逐项断言）：常显提示写出四组输入
+	# 关键项，且可视按钮使用组合环绕命名。
+	var hint := current_scene.find_child("Hint", true, false) as Label
+	var hint_text := hint.text if hint != null else ""
+	var missing := PackedStringArray()
+	for keyword in ["WASD", "Q/E", "滚轮", "右键"]:
+		if not hint_text.contains(keyword):
+			missing.append(keyword)
+	_check(missing.is_empty(), "庭院常显提示完整写出四组输入%s（%s）" % ["" if missing.is_empty() else "（缺 %s）" % ",".join(missing), hint_text])
 	var button := current_scene.find_child("ModeToggleButton", true, false) as Button
-	_check(button != null, "庭院提供紧凑镜头模式切换控件")
-	if button != null:
-		button.pressed.emit()
-	await _frames(4)
-	_check(rig.mode_id() == "orbit", "点击切换后进入 orbit（实际 %s）" % rig.mode_id())
+	_check(button != null and button.text.contains("组合环绕"), "庭院提供组合环绕命名的模式切换控件（%s）" % (button.text if button != null else "<缺失>"))
 
 	# 数字键必须仍然不被镜头包抢占（庭院不启用模式选择键）。
 	var key := InputEventKey.new()
@@ -244,11 +251,31 @@ func _run_orbit_second_consumer() -> void:
 	await _frames(3)
 	_check(rig.mode_id() == "orbit", "庭院不因数字键改变模式（镜头包不抢场景按键）")
 
+	# Q/E 连续偏航：按住 E 多帧连续增大（保留现状，不是离散 90°）。
+	var yaw_before_qe := float(rig.snapshot()["yaw_degrees"])
+	_key(KEY_E, true)
+	await _frames(12)
+	_key(KEY_E, false)
+	await _frames(2)
+	var qe_delta := absf(float(rig.snapshot()["yaw_degrees"]) - yaw_before_qe)
+	_check(qe_delta > 5.0, "组合环绕：Q/E 按住连续偏航 %.1f°（非离散一次转）" % qe_delta)
+	_key(KEY_Q, true)
+	await _frames(6)
+	_key(KEY_Q, false)
+	await _frames(2)
+
+	# 滚轮缩放：组合模式下仍可缩放（庭院 enable_zoom_keys=false，滚轮不受该开关限制）。
+	var zoom_before := float(rig.snapshot()["zoom_size"])
+	_press_mouse(MOUSE_BUTTON_WHEEL_UP, true)
+	await _frames(3)
+	_check(float(rig.snapshot()["zoom_size"]) < zoom_before,
+		"组合环绕：滚轮缩放生效（%.1f → %.1f）" % [zoom_before, float(rig.snapshot()["zoom_size"])])
+
 	# RMB 旋转：相机基必须与真实相机一致，且角色 WASD 沿新的相机地面基移动。
 	var yaw_before := float(rig.snapshot()["yaw_degrees"])
 	_press_mouse(MOUSE_BUTTON_RIGHT, true)
 	await _frames(2)
-	_check(rig.is_captured(), "orbit 下 RMB 取得捕获")
+	_check(rig.is_captured(), "组合环绕：RMB 取得捕获")
 	_move_mouse(Vector2(-120.0, 0.0))
 	await _frames(4)
 	_press_mouse(MOUSE_BUTTON_RIGHT, false)
@@ -267,19 +294,29 @@ func _run_orbit_second_consumer() -> void:
 	_key(KEY_W, false)
 	var displacement := _actor.global_position - start
 	displacement.y = 0.0
-	_check(displacement.length() > 0.15, "orbit 下 W 产生真实位移 %.2f m" % displacement.length())
+	_check(displacement.length() > 0.15, "组合环绕：W 产生真实位移 %.2f m" % displacement.length())
 	_check(displacement.normalized().dot(forward) > 0.95,
-		"orbit 下 W 位移沿旋转后的相机地面前方（dot %.3f）" % displacement.normalized().dot(forward))
+		"组合环绕：W 位移沿旋转后的相机地面前方（dot %.3f）" % displacement.normalized().dot(forward))
 
-	# 回 fixed_follow：构图参数恢复到进入 orbit 之前的读数。
+	# fixed_follow fallback（庭院场景级冒烟；穷尽矩阵在 camera_lab_playtest 与
+	# test_camera_rig_executor）：切回后世界区域右键不捕获、不改 mouse mode、不写偏航。
 	if button != null:
 		button.pressed.emit()
 	await _frames(6)
-	_check(rig.mode_id() == "fixed_follow", "可回到 fixed_follow")
-	var restored := rig.snapshot()
-	_check(absf(float(restored["zoom_size"]) - baseline_size) < 0.001, "回固定跟随后缩放读数与初始一致")
-	# 偏航是模式间共享参数（orbit 转过之后刻意保留，供fixed_follow继续使用），
-	# 因此这里核对的是 fixed_follow 的构图不变量：距离与缩放回到配置值，且焦点贴目标。
+	_check(rig.mode_id() == "fixed_follow", "可切回 fixed_follow（旧构图对照）")
+	var mouse_mode_before := Input.get_mouse_mode()
+	var fallback_yaw := float(rig.snapshot()["yaw_degrees"])
+	_press_mouse(MOUSE_BUTTON_RIGHT, true)
+	await _frames(2)
+	_move_mouse(Vector2(60.0, 20.0))
+	await _frames(3)
+	_check(not rig.is_captured() and Input.get_mouse_mode() == mouse_mode_before
+		and absf(float(rig.snapshot()["yaw_degrees"]) - fallback_yaw) < 0.01,
+		"fixed_follow fallback：不捕获 / 不改 mouse mode / 不写偏航")
+	_press_mouse(MOUSE_BUTTON_RIGHT, false)
+	await _frames(2)
+	_check(not rig.is_captured(), "fixed_follow fallback：右键抬起后仍未捕获")
+
 	var camera_to_actor := _camera.global_position.distance_to(_actor.global_position)
 	_check(absf(camera_to_actor - baseline_distance) < 1.5,
 		"回固定跟随后相机距离回到配置值（%.2f m vs %.2f m）" % [camera_to_actor, baseline_distance])
@@ -327,7 +364,14 @@ func _check_blocked_by(from: Vector3, direction: Vector3, collider_path: String,
 
 
 ## 目录门禁：本轮真实入口已写入，硬断言角色移动入口有效、剑法保持无入口。
+## 本用例必须在顶层实验目录上运行（select_module 是 LabHub 的公开 API）；
+## 前面的用例会停在其他场景，因此先真实切回顶层目录再断言。
 func _run_hub_gate() -> void:
+	if change_scene_to_file(HUB_SCENE) != OK:
+		_check(false, "无法切回顶层实验目录：%s" % HUB_SCENE)
+		return
+	await scene_changed
+	await _frames(5)
 	var entry := _module_entry(MOVE_MODULE)
 	_check(not entry.is_empty(), "实验清单存在角色移动条目")
 	_check(str(entry.get("scene", "")) == MODULE_ENTRY_SCENE, "顶层角色移动入口指向子实验目录：%s" % str(entry.get("scene", "")))

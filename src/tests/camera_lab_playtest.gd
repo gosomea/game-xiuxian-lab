@@ -11,7 +11,9 @@ extends SceneTree
 ## - 静态边界：本实验脚本不写 velocity / 意图 / 能力内部状态，不引用具体能力类名；
 ## - Esc 返回角色移动子实验目录。
 ##
-## 未覆盖（交使用者）：跟随舒适度、缩放手感与遮挡观感等主观判断。
+## 未覆盖（交使用者）：跟随舒适度、缩放手感与遮挡观感等主观判断；
+## 编辑器嵌入 Game 视图下的「UI 上方右键不劫持」「世界区域右键不泄漏为编辑器上下文操作」需窗口 + 编辑器双形态人工验收。
+## 本轮补充：默认组合环绕（orbit）、四组输入常显可发现、组合输入同帧路径、未归属 RMB fallback（不捕获 / 不改 mouse mode）。
 
 const SCENE := "res://levels/experiments/character_movement/camera_lab.tscn"
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
@@ -107,6 +109,9 @@ func _run() -> void:
 		await _run_capture()
 		return
 
+	await _run_combo_discoverability()
+	await _run_combo_input_path()
+	await _run_rmb_fallback()
 	await _run_mode_comparison()
 	await _run_capture_lifecycle()
 	await _run_screen_relative()
@@ -120,10 +125,11 @@ func _run() -> void:
 
 
 func _check_assembly() -> void:
+	# 默认模式必须在其它按键用例之前断言：_check_unrelated_keys_not_swallowed 会把 rig 切回 fixed_follow。
+	_check(_rig != null, "场景装配共享 CameraRig（唯一 executor）")
+	_check(_rig.mode_id() == "orbit", "默认模式为 orbit（组合环绕/自由跟随）")
 	await _check_unrelated_keys_not_swallowed()
 	_check(_actor != null and _motion != null and _camera != null, "镜头实验室装配完成（角色 / 组件 / 相机）")
-	_check(_rig != null, "场景装配共享 CameraRig（唯一 executor）")
-	_check(_rig.mode_id() == "fixed_follow", "默认模式为 fixed_follow")
 	_check(_rig.preset() == "hard", "默认预设为 hard")
 	_check(_camera.projection == Camera3D.PROJECTION_ORTHOGONAL, "相机为正交投影（尺度可读）")
 	var required := ["Ground", "Ruler", "WallWithDoor", "Occluders", "Pillars", "Slope", "HighPlatform"]
@@ -279,6 +285,145 @@ func _capability_names() -> Array:
 	return names
 
 
+# --- 组合环绕（orbit）可发现性与组合输入 ---------------------------------
+
+
+## 组合环绕必须以「组合环绕/自由跟随」命名出现，且常显提示完整写出四组输入。
+## 判据由 MODE_LABELS / MODE_SHORT 同源派生（模式列表改名时这里会立刻失败）。
+func _run_combo_discoverability() -> void:
+	await _prepare(Vector3(0.0, 0.1, -10.0), "hard", "orbit")
+	var constants: Dictionary = current_scene.get_script().get_script_constant_map()
+	var labels: Dictionary = constants.get("MODE_LABELS", {})
+	var orbit_label := str(labels.get("orbit", ""))
+	_check(orbit_label.contains("组合环绕") and orbit_label.contains("自由跟随"),
+		"orbit 按钮文案使用组合环绕/自由跟随（%s）" % orbit_label)
+	var orbit_button := current_scene.find_child("OrbitButton", true, false) as Button
+	_check(orbit_button != null and orbit_button.text == orbit_label,
+		"orbit 按钮真实存在且与 MODE_LABELS 文案一致")
+	# 四组输入必须一次读全（WASD / Q-E / 滚轮 / 右键）：缺任一项玩家就无法不查文档发现组合模式。
+	var hint := current_scene.find_child("Hint", true, false) as Label
+	var hint_text := hint.text if hint != null else ""
+	_check(_contains_all(hint_text, ["WASD", "Q/E", "滚轮", "右键"]),
+		"组合环绕常显提示完整写出四组输入（%s）" % hint_text)
+	var toggle := current_scene.find_child("DetailsToggle", true, false) as Button
+	var details := toggle.tooltip_text if toggle != null else ""
+	_check(_contains_all(details, ["WASD", "Q/E", "滚轮", "RMB"]),
+		"详情键表保留四组输入说明（%s）" % details)
+
+
+## 组合环绕四组输入在同一条路径上互不覆盖：Q/E 连续偏航 + RMB 拖动 yaw/pitch +
+## 滚轮缩放 + WASD 沿发布后的相机地面基移动；结束后 1 键切回 fixed_follow。
+func _run_combo_input_path() -> void:
+	await _prepare(Vector3(0.0, 0.1, -10.0), "hard", "orbit")
+	var mouse_mode_before := Input.get_mouse_mode()
+
+	# Q/E 连续偏航：按住 E 多帧应连续增大偏航（不是一次性 90° 步进）。
+	var yaw_start: float = float(_rig.snapshot()["yaw_degrees"])
+	_key(KEY_E, true)
+	await _frames(12)
+	_key(KEY_E, false)
+	await _frames(2)
+	var yaw_after_hold: float = float(_rig.snapshot()["yaw_degrees"])
+	var held_delta := absf(yaw_after_hold - yaw_start)
+	_check(held_delta > 5.0, "组合环绕：按住 E 连续偏航 %.1f°（> 单帧步进）" % held_delta)
+	_key(KEY_Q, true)
+	await _frames(12)
+	_key(KEY_Q, false)
+	await _frames(2)
+	_check(absf(float(_rig.snapshot()["yaw_degrees"]) - yaw_start) < held_delta,
+		"组合环绕：Q 反向偏航把偏航拉回（%.1f° → %.1f°）" % [yaw_after_hold, float(_rig.snapshot()["yaw_degrees"])])
+
+	# 早期捕获：UI 未占用的 RMB 按下必须在同一输入事件内进入捕获，不依赖下一物理帧。
+	var early := InputEventMouseButton.new()
+	early.button_index = MOUSE_BUTTON_RIGHT
+	early.pressed = true
+	_check(_rig.handle_input(early), "组合环绕：RMB 按下事件被提交器消费")
+	_check(_rig.is_captured(), "组合环绕：同一事件内即进入捕获（早期捕获，不等物理帧）")
+	var early_release := early.duplicate() as InputEventMouseButton
+	early_release.pressed = false
+	_check(_rig.handle_input(early_release), "组合环绕：RMB 抬起事件被提交器消费")
+	_check(not _rig.is_captured(), "组合环绕：抬起事件内即释放捕获")
+
+	# RMB 拖动：按下捕获 → 像素位移同时改 yaw 与 pitch（受限幅）。
+	var yaw_before_drag: float = float(_rig.snapshot()["yaw_degrees"])
+	var pitch_before_drag: float = float(_rig.snapshot()["pitch_degrees"])
+	_press_mouse(MOUSE_BUTTON_RIGHT, true)
+	await _frames(2)
+	_check(_rig.is_captured(), "组合环绕：按住右键进入捕获")
+	_move_mouse(Vector2(90.0, -40.0))
+	await _frames(4)
+	var yaw_after_drag: float = float(_rig.snapshot()["yaw_degrees"])
+	var pitch_after_drag: float = float(_rig.snapshot()["pitch_degrees"])
+	_check(absf(yaw_after_drag - yaw_before_drag) > 1.0,
+		"组合环绕：右键拖动改偏航（%.1f° → %.1f°）" % [yaw_before_drag, yaw_after_drag])
+	_check(absf(pitch_after_drag - pitch_before_drag) > 1.0,
+		"组合环绕：右键拖动改俯角（%.1f° → %.1f°）" % [pitch_before_drag, pitch_after_drag])
+	if DisplayServer.get_name() != "headless":
+		_check(Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED, "组合环绕：窗口模式下拖动处于捕获态")
+
+	# WASD：拖动导致的偏航必须由同帧地面基解释，位移沿新相机前方
+	# （地面基与真实相机 basis 的一致性由 _run_screen_relative 覆盖，此处只测组合路径本身）。
+	var forward := _ground(-_camera.global_transform.basis.z)
+	var start := _actor.global_position
+	_key(KEY_W, true)
+	await _frames(12)
+	_key(KEY_W, false)
+	var displacement := _actor.global_position - start
+	displacement.y = 0.0
+	_check(displacement.normalized().dot(forward) > 0.95,
+		"组合环绕：拖动中 W 仍沿新地面基（dot %.3f）" % displacement.normalized().dot(forward))
+
+	# 滚轮：与拖动并存，缩放读数变化；随后释放右键。
+	var zoom_before := _rig.zoom_size()
+	_wheel(MOUSE_BUTTON_WHEEL_UP)
+	await _frames(3)
+	_check(_rig.zoom_size() < zoom_before, "组合环绕：拖动中滚轮仍能缩放（%.1f → %.1f）" % [zoom_before, _rig.zoom_size()])
+	_press_mouse(MOUSE_BUTTON_RIGHT, false)
+	await _frames(3)
+	_check(not _rig.is_captured(), "组合环绕：释放右键退出捕获")
+	_check(Input.get_mouse_mode() == mouse_mode_before, "组合环绕：释放右键恢复进入捕获前的 mouse mode")
+
+	# 可切回 fixed_follow，且组合模式产生的偏航作为共享参数保留（不重置回种子值）。
+	var yaw_before_switch: float = float(_rig.snapshot()["yaw_degrees"])
+	var zoom_before_switch := _rig.zoom_size()
+	_key(KEY_1, true)
+	await _frames(1)
+	_key(KEY_1, false)
+	await _frames(8)
+	_check(_rig.mode_id() == "fixed_follow", "组合环绕后可切回 fixed_follow")
+	_check(absf(float(_rig.snapshot()["yaw_degrees"]) - yaw_before_switch) < 0.01,
+		"切回固定跟随后保留组合模式偏航（共享参数，不重播种）")
+	_check(absf(_rig.zoom_size() - zoom_before_switch) < 0.01,
+		"切回固定跟随后保留组合模式缩放读数（%.1f）" % _rig.zoom_size())
+
+
+## 未归属 RMB fallback：非 orbit 模式在未被 UI 消费时消费世界区域右键，但不捕获 / 不改 mouse mode。
+func _run_rmb_fallback() -> void:
+	await _prepare(Vector3(0.0, 0.1, -10.0), "hard", "fixed_follow")
+	var mouse_mode_before := Input.get_mouse_mode()
+	var yaw_before: float = float(_rig.snapshot()["yaw_degrees"])
+	var pitch_before: float = float(_rig.snapshot()["pitch_degrees"])
+	_press_mouse(MOUSE_BUTTON_RIGHT, true)
+	await _frames(2)
+	_check(not _rig.is_captured(), "fixed_follow：世界区域右键不进入捕获（组合模式之外无拖动语义）")
+	_check(Input.get_mouse_mode() == mouse_mode_before, "fixed_follow：右键不改 mouse mode")
+	_move_mouse(Vector2(60.0, 30.0))
+	await _frames(3)
+	_check(absf(float(_rig.snapshot()["yaw_degrees"]) - yaw_before) < 0.01
+		and absf(float(_rig.snapshot()["pitch_degrees"]) - pitch_before) < 0.01,
+		"fixed_follow：右键位移不写 yaw/pitch（不产生未归属拖动）")
+	_press_mouse(MOUSE_BUTTON_RIGHT, false)
+	await _frames(2)
+	_check(not _rig.is_captured(), "fixed_follow：右键抬起后仍未捕获")
+	_check(Input.get_mouse_mode() == mouse_mode_before, "fixed_follow：右键抬起后 mouse mode 仍不变")
+
+	# 负对照：fallback 只针对 RMB，不吞与组合模式无关的 MMB。
+	var middle := InputEventMouseButton.new()
+	middle.button_index = MOUSE_BUTTON_MIDDLE
+	middle.pressed = true
+	_check(not _rig.handle_input(middle), "fixed_follow：MMB 仍不被消费（fallback 只针对 RMB）")
+
+
 # --- 四种策略的比较 ------------------------------------------------------
 
 
@@ -394,6 +539,15 @@ func _run_capture_lifecycle() -> void:
 	await _frames(2)
 	_check(not _rig.is_captured(), "非 active rig 不取得捕获")
 	_rig.set_active(true)
+	# 失焦退出恢复：捕获态下失焦必须释放捕获并恢复 mouse mode。
+	await _prepare(Vector3(0.0, 0.1, -10.0), "hard", "orbit")
+	_press_mouse(MOUSE_BUTTON_RIGHT, true)
+	await _frames(2)
+	_check(_rig.is_captured(), "前置：失焦前处于捕获态")
+	current_scene.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	await _frames(2)
+	_check(not _rig.is_captured(), "失焦释放捕获")
+	_check(Input.get_mouse_mode() == mode_before, "失焦后 mouse mode 恢复为进入捕获前的值")
 	await _prepare(Vector3(0.0, 0.1, -10.0), "hard")
 
 
@@ -421,8 +575,27 @@ func _prepare(position: Vector3, preset: String, mode := "fixed_follow") -> void
 	_rig.reset_state()
 	_rig.request_mode(mode)
 	_rig.request_preset(preset)
-	await _frames(3)
+	# reset_state 回到播种模式后，这里的 request_mode 可能触发真实混合（transition_time）。
+	# 断言读的是实际渲染姿态，必须等混合收敛，否则读到中间帧。
+	await _settle_blend()
 	_check(_rig.preset() == preset, "预设切换到 %s 并读回" % preset)
+
+
+## 等待模式 / 预设混合收敛（有界），保证实际渲染姿态已到位。
+func _settle_blend() -> void:
+	for _index in range(40):
+		if not bool(_rig.snapshot()["blending"]):
+			break
+		await physics_frame
+	await _frames(2)
+
+
+## 关键词全含：HUD 四组输入文案的单次判定（逐词断言是同一事实的镜像，无独立信息）。
+func _contains_all(text: String, keywords: Array) -> bool:
+	for keyword in keywords:
+		if not text.contains(str(keyword)):
+			return false
+	return true
 
 
 func _focus_lag() -> float:
@@ -528,12 +701,19 @@ func _run_zoom() -> void:
 	_check(_rig.zoom_size() > zoomed_out - 0.01, "X 键拉远：size 回到 %.1f" % _rig.zoom_size())
 	_check(absf(_screen_radius() - screen_before) < 0.5, "X 键拉远后取景回到拉近前（%.1f px）" % _screen_radius())
 	# 限幅：连续拉近 / 拉远都停在声明范围内。
+	# 限幅值从组件公开边界读取（rig 不暴露 zoom_min/max）。
+	# 限幅值从组件公开边界读取（rig 不暴露 zoom_min/max）；缩放请求由模式在物理帧消费，
+	# 因此每步推进一步物理帧后才能读到限幅结果。
+	var zoom_min := (_rig.component() as CameraRigComponent).size_min
+	var zoom_max := (_rig.component() as CameraRigComponent).size_max
 	for _index in range(30):
 		_rig.adjust_zoom(1.0)
-	_check(is_equal_approx(_rig.zoom_size(), _rig.zoom_min), "连续拉近被限幅在 zoom_min=%.1f" % _rig.zoom_min)
+		await _frames(1)
+	_check(is_equal_approx(_rig.zoom_size(), zoom_min), "连续拉近被限幅在 size_min=%.1f" % zoom_min)
 	for _index in range(60):
 		_rig.adjust_zoom(-1.0)
-	_check(is_equal_approx(_rig.zoom_size(), _rig.zoom_max), "连续拉远被限幅在 zoom_max=%.1f" % _rig.zoom_max)
+		await _frames(1)
+	_check(is_equal_approx(_rig.zoom_size(), zoom_max), "连续拉远被限幅在 size_max=%.1f" % zoom_max)
 	await _frames(2)
 
 
@@ -615,11 +795,14 @@ func _run_reset_and_exit() -> void:
 	await _frames(1)
 	_key(KEY_R, false)
 	await _frames(6)
+	# R 复位会 request_mode 回默认模式并触发过渡；断言实际渲染姿态前必须等混合收敛。
+	await _settle_blend()
 	_bind()
 	_check(_actor.global_position.distance_to(Vector3(0.0, 0.1, -10.0)) < 0.2, "R 复位角色到出生点")
+	_check(_rig.mode_id() == "orbit", "R 复位回到绑定时播种的默认模式（组合环绕）")
 	_check(absf(_rig.snapshot()["yaw_degrees"] - (-35.0)) < 0.01, "R 复位镜头偏航到 -35°")
 	_check(_focus_lag() < 0.05, "R 复位焦点贴回角色")
-	_check(_rig.zoom_size() > 0.0 and _rig.zoom_size() <= _rig.zoom_max, "R 后缩放仍在限幅内（%.1f）" % _rig.zoom_size())
+	_check(_rig.zoom_size() > 0.0 and _rig.zoom_size() <= (_rig.component() as CameraRigComponent).size_max, "R 后缩放仍在限幅内（%.1f）" % _rig.zoom_size())
 	_key(KEY_ESCAPE, true)
 	await _frames(1)
 	_key(KEY_ESCAPE, false)

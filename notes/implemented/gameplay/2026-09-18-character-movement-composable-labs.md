@@ -11,10 +11,13 @@ Status: implemented
 > **已完成**：七场统一迁移收口、四场飞剑视觉取证与全场回归均已实测（全场 `SCRIPT ERROR = 0`，主入口 921/0）。
 > **未做**：骨骼 clip 库 / 蒙皮（P1/P2）、骨骼重映射与镜头遮挡规避。具体口径与未达项见上述报告。
 >
-> **补充决策（2026-09-18 第二轮，先决策后实现）**：本轮采纳「orbit 正式定义为组合环绕 / 自由跟随」、
-> 「镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出四组输入」、「提交器可配置的未归属 RMB 消费策略」、
-> 「镜头输入组合测试契约」与「独立窗口 + 编辑器嵌入 Game 视图双形态验收」。
-> 以上决策的 `src/` 实现与运行证据**尚未落地**；实现前不得把本 note 当作已实现事实引用。
+> **补充实现状态（2026-09-18 第二轮，已落地）**：本轮采纳并实现「orbit 正式定义为组合环绕 / 自由跟随」、
+> 「镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出四组输入」、「提交器可配置的未归属 RMB 消费策略」
+> 与「镜头输入组合测试契约」。`camera_lab.gd` / `movement_garden.gd` 默认 `orbit`，常显提示与详情键表
+> 完整写出 WASD / Q-E / 滚轮 / 右键四组输入（`ORBIT_HINT`）；`CameraRigConfig.consume_unowned_rmb`
+> 默认关闭、两场显式开启，非 orbit 世界区域 RMB 只消费不捕获、不改 `mouse_mode`、不写 `look_delta`。
+> 实现、测试命令与逐项证据见 [镜头组合与 RMB 归属验收](../../../docs/playtest/2026-09-18-camera-combo-rmb.md)。
+> **未完成**：编辑器嵌入 Game 视图的人工验收仍待主代理执行（决策中的双形态要求只完成独立窗口一侧）。
 
 ## 问题
 
@@ -113,7 +116,7 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 |---|---|---|---|
 | **S0** | 2 击导航 + HUD Theme 变体 + 局部装配适配器 + 飞剑完整接入 | 本 note 决策；契约 note；core 改动另 note | 点击链 2 击（已由 `test_lab_navigation.gd` 覆盖）；7 场 HUD 一致；三分辨率截图，默认遮盖 ≤15%（压力场例外）：**生产 stretch 口径七场全达**（最接近为动作工作台预览态 14.93%），1:1 画布压力口径下窄屏超限已如实记录；4 场剑可见已完成（定性图审 + 正式 actor mesh 断言）；新场景凭标准角色 + 相机包 + 配置即能挂。**边界**：「能挂」指装配（能力/视觉/相机求值）已由包完成，场景仍需自己的输入编排（把按键映射为 `set_move_input` / `press_flight_toggle` 等公开 API）与 `bind()` 调用——不存在「零场景代码」的全自动装配 |
 | **S1** | 镜头 `fixed_follow`/`orbit` 两真实消费者，再 `quarter_turn`/`overview`；CameraRigComponent + 单 executor | S0 装配契约 | 四模式可操作区分（脚本用语义名）；`mode_id` 互斥；同一时刻仅一个 executor 写 `Camera3D`；切换无跳变；RMB up/失焦/退场清 delta；同角色同路径对比 |
-| **S1-b（2026-09-18 第二轮补充，未实现）** | `orbit` 组合环绕（WASD + Q/E 连续 + 滚轮 + RMB）、未归属 RMB 消费策略、两场景默认可发现 | S1 | 五条测试契约（早期捕获 / 非 orbit fallback / 不改 mouse mode / 组合输入集成 / 退出恢复）全绿；`camera_lab` 与 `movement_garden` 默认 orbit 且 HUD 完整写出四组输入；独立窗口与编辑器嵌入 Game 视图**两种宿主**各验一次；未新增 Capability（仍 4） |
+| **S1-b（2026-09-18 第二轮，已实现）** | `orbit` 组合环绕（WASD + Q/E 连续 + 滚轮 + RMB）、未归属 RMB 消费策略、两场景默认可发现 | S1 | **已完成**：五条测试契约全绿（`test_camera_rig_executor.gd` 83/0、`camera_lab_playtest.gd` 152/0、`character_movement_playtest.gd` 58/0，见 [验收报告](../../../docs/playtest/2026-09-18-camera-combo-rmb.md)）；`camera_lab` 与 `movement_garden` 默认 orbit 且 HUD 完整写出四组输入；未新增 Capability（仍 4）。**未完成**：编辑器嵌入 Game 视图人工验收待主代理 |
 | **S2** | 动作预览 P0（程序动作真播）+ 动作库选择/播放/暂停/单步/循环/倍率/A–B 过渡 | S0 契约 | 播放/暂停/单步可复算；`move_and_slide` 仍仅 actor 一处；`Engine.time_scale` 不被预览改写；旧 GLB/.blend 在库并记录替代；侧/正/斜与脚接触观察 |
 | **S3** | 七场迁移与组合回归 | S0–S2 | **真实实例化** Move / Move+Jump / Move+Flight / all 四子集；未启用能力静默不触发；切换/失焦/卸载无残留且不 `reset_motion()` 清无关状态；七场可启动；庭院/群山布局不变 |
 
@@ -149,6 +152,6 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 - **风险保留**：镜头 C 连续环绕下 WASD 地面基漂移是否可接受、正交 orbit 的距离/pitch 语义仍需人工试玩；
   装配适配器的幂等/回滚/四子集已由 `test_actor_assembly.gd`（142 项）与 `test_flight_bundle.gd`（83 项）覆盖。
   本轮实现**未改 `core/`**；将来若有 core 改动必须另开 owning tech note。
-- **追加风险（2026-09-18 第二轮，实现前保留）**：嵌入 Game 视图下「世界区域右键消费 vs 编辑器上下文操作」的边界、
-  早期捕获是否与控件焦点争夺冲突、组合环绕里 Q/E 连续偏航与 RMB 拖动叠加的操作舒适度，均需真实宿主验收与人工试玩；
-  本轮只落地决策，`src/` 与证据未动。
+- **追加风险（2026-09-18 第二轮，实现后仍保留）**：嵌入 Game 视图下「世界区域右键消费 vs 编辑器上下文操作」的边界
+  与组合环绕的操作舒适度仍需真实宿主验收与人工试玩；独立窗口侧的自动证据已落地（见验收报告），
+  编辑器嵌入 Game 视图一侧**未验收**，不得据本 note 声称双形态已通过。

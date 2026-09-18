@@ -441,6 +441,8 @@ func _build_rig() -> void:
 	config.focus_clamp_y_enabled = true
 	config.near = 0.1
 	config.far = 220.0
+	# 未归属 RMB：fixed_follow 下消费世界区域右键但不捕获，避免右键泄漏到宿主视图。
+	config.consume_unowned_rmb = true
 	rig.bind(_camera, _player, config)
 	# 地面接触场只要一个固定跟随模式：不占 1-4 模式键（避免抢实验控制）。
 	rig.mode_cycle = PackedStringArray(["fixed_follow"])

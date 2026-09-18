@@ -17,9 +17,12 @@ extends Node3D
 ## 因此平滑混合期间移动方向与实际渲染一致。
 ##
 ## 输入分相：
-## - 开始 RMB 捕获、数字键选模式、Q/E 偏航、滚轮缩放走 _unhandled_input：GUI 已消费的
-##   事件（面板上的滚轮、按钮点击）不会到这里，GUI 滚轮不缩放、点按钮不捕获。
-## - 捕获态的 RMB 释放与 Esc 走 _input：即使 GUI 消费了事件也能退出捕获。
+## - RMB 归属走 _input 早期路径：世界区域的 RMB press 在同一事件内捕获（orbit 且
+##   enable_yaw_keys）或按 consume_unowned_rmb 消费（其余模式），避免未消费的右键泄漏为
+##   编辑器嵌入 Game 视图的上下文操作；交互 GUI 上方的右键归 GUI。捕获态的 RMB 释放与
+##   Esc 也走 _input，即使 GUI 消费了事件也能退出捕获。
+## - 数字键选模式、Q/E 偏航、滚轮缩放、MMB 平移走 _unhandled_input：GUI 已消费的事件
+##   （面板上的滚轮、按钮点击）不会到这里，GUI 滚轮不缩放、点按钮不捕获。
 
 signal mode_changed(mode_id: String)
 
@@ -208,6 +211,10 @@ func _zoom_wheel_enabled() -> bool:
 
 func _yaw_keys_enabled() -> bool:
 	return _seed_config == null or _seed_config.enable_yaw_keys
+
+
+func _consume_unowned_rmb() -> bool:
+	return _seed_config != null and _seed_config.consume_unowned_rmb
 
 
 # --- 只读访问（HUD / 测试） --------------------------------------------------
@@ -405,7 +412,9 @@ func _ground_axis(value: Vector3, fallback: Vector3) -> Vector3:
 	return flat.normalized()
 
 
-## 复位：回默认模式与初值、清输入与捕获、焦点贴回目标、姿态立即生效（不做混合）。
+## 复位：回 mode_cycle[0] 与初值、清输入与捕获、焦点贴回目标、姿态立即生效（不做混合）。
+## 场景的默认模式可与 mode_cycle[0] 不同（如默认组合环绕、1 号键仍是 fixed_follow），
+## 这类场景在 reset_state() 之后自行 request_mode 回默认模式。
 func reset_state() -> void:
 	if _rig == null:
 		return
@@ -486,7 +495,7 @@ func begin_blend() -> void:
 # --- 输入 -------------------------------------------------------------------
 
 
-## 拖拽结束兜底：MMB 抬起走这里（平移不捕获鼠标，但释放事件可能被 GUI 消费）。
+## 拖拽结束：MMB 抬起走 _input；平移不捕获鼠标，但释放事件可能被 GUI 消费。
 ## 只在本节点确实处于平移中时消费，避免影响其它 UI 的拖拽。
 func handle_drag_end_input(event: InputEvent) -> bool:
 	if not active or _rig == null or not _rig.pan_active:
@@ -520,7 +529,8 @@ func handle_captured_input(event: InputEvent) -> bool:
 	return false
 
 
-## 未被视图消费的事件：RMB 开始捕获、数字键选模式、Q/E 偏航、滚轮 / Z / X 缩放。
+## 未被视图消费的事件：数字键选模式、Q/E 偏航、MMB 平移、滚轮 / Z / X 缩放。
+## RMB 走 _input 早期路径（见 handle_rmb_input），保证嵌入 Game 视图不先看到世界区域右键。
 func handle_input(event: InputEvent) -> bool:
 	if not active or _rig == null:
 		return false
@@ -533,7 +543,48 @@ func handle_input(event: InputEvent) -> bool:
 	return false
 
 
+## 交互 GUI 上方：控件可见且非 mouse_filter=IGNORE 时右键归 GUI，镜头包不劫持。
+## 无控件或悬停控件不接收鼠标（如 LabHud 的 IGNORE 根 / 标签）时按世界区域处理。
+func _gui_wants_mouse() -> bool:
+	var hovered := get_viewport().gui_get_hovered_control()
+	return hovered != null and hovered.visible and hovered.mouse_filter != Control.MOUSE_FILTER_IGNORE
+
+
+## RMB 早期路径（_input，早于 GUI / 嵌入 Game 视图的视图输入）：
+## - orbit 且 enable_yaw_keys：UI 未占用时同一事件内捕获（按下）/ 释放（抬起）；
+## - 其余模式且 consume_unowned_rmb：消费世界区域 press / release，但不捕获、
+##   不写 mouse_mode、不写 look_delta；默认关闭时原样放行。
+## 返回 true 表示事件已被本 rig 处理。
+func handle_rmb_input(event: InputEvent) -> bool:
+	if not active or _rig == null or not (event is InputEventMouseButton):
+		return false
+	var button := event as InputEventMouseButton
+	if button.button_index != MOUSE_BUTTON_RIGHT:
+		return false
+	# 捕获态下的释放由 handle_captured_input 兜底（即使 GUI 消费也不丢）；此处不重复处理。
+	if not button.pressed and _capture_owned:
+		return false
+	if _gui_wants_mouse():
+		return false
+	if _rig.mode_id == "orbit" and _yaw_keys_enabled():
+		# 组合环绕：同一输入事件内进入 / 退出捕获，不延迟到物理帧。
+		if button.pressed:
+			_rig.drag_active = true
+			_begin_capture()
+		else:
+			release_capture()
+		return true
+	if _consume_unowned_rmb():
+		# 未归属 RMB 策略：只消费事件，不捕获、不改 mouse_mode、不写 look_delta。
+		return true
+	return false
+
+
 func _input(event: InputEvent) -> void:
+	# 早期 RMB：世界区域 press 先于嵌入 Game 视图的上下文操作被本 rig 处理。
+	if handle_rmb_input(event):
+		get_viewport().set_input_as_handled()
+		return
 	if handle_drag_end_input(event):
 		return
 	handle_captured_input(event)
@@ -587,16 +638,17 @@ func _handle_key(key_event: InputEventKey) -> bool:
 
 func _handle_button(button: InputEventMouseButton) -> bool:
 	if button.button_index == MOUSE_BUTTON_RIGHT:
-		# RMB 只属于 orbit：其他模式下放行给场景，不改 mouse_mode、不抢事件。
-		if _rig.mode_id != "orbit" or not _yaw_keys_enabled():
-			return false
-		if button.pressed:
-			# 只有未被 GUI 消费的 RMB 按下才开始捕获。
-			_rig.drag_active = true
-			_begin_capture()
-		else:
-			release_capture()
-		return true
+		# RMB 的唯一归属路径：orbit + enable_yaw_keys 捕获 / 拖动；其余模式由
+		# consume_unowned_rmb 决定是否只消费事件。默认关闭时返回 false 放行给场景。
+		# 世界区域的早期处理（含 GUI 优先）在 _input 的 handle_rmb_input。
+		if _rig.mode_id == "orbit" and _yaw_keys_enabled():
+			if button.pressed:
+				_rig.drag_active = true
+				_begin_capture()
+			else:
+				release_capture()
+			return true
+		return _consume_unowned_rmb()
 	if button.button_index == MOUSE_BUTTON_MIDDLE:
 		# MMB 只属于 overview：按住拖拽平移焦点，抬起结束。
 		if _rig.mode_id != "overview":

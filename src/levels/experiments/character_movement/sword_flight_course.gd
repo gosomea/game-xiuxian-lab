@@ -281,6 +281,8 @@ func _build_rig() -> void:
 	config.focus_clamp_y_enabled = true
 	config.near = 0.1
 	config.far = CAMERA_FAR
+	# 未归属 RMB：fixed_follow 下消费世界区域右键但不捕获，避免右键泄漏到宿主视图。
+	config.consume_unowned_rmb = true
 	rig.bind(_camera, _player, config)
 	# 垂直航线：焦距随高度自适应（modifier 数据，不是模式）；本场只要一个跟随模式。
 	config.height_distance_bias = 0.6
