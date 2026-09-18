@@ -109,4 +109,43 @@
 - 未做战斗 / 通用状态机（刻意不做，见任务边界）；无第四能力。
 - `edge-flight-priority` 截图里角色恰在低台附近，御剑接管瞬间的**竖直限幅**由断言而非画面证明。
 - 阵盘 GLB 只含视觉；物理由场景 BoxShape3D 精确装配，改几何需同步两侧（见美术 README）。
-- 未 commit（按任务约定）；未改任何共享文件与 hub 集成文件。
+- 本地提交状态：本文件描述的修复已随**最终集成轮的本地提交**入库；未改任何共享文件与 hub 集成文件。
+
+## 共面闪烁修复复验（2026-09-18 追加，同一场景专属）
+
+修复对象：`Jade disc body` ↔ `Jade disc rim band` 顶面共面（322.56 m²）及其他 A 类装饰面。
+修法全部落在生成器 `tools/art/generate_state_transition_lab.py`，GLB 由 Blender 重导，**未改碰撞与状态代码**。
+详见 `docs/art/state_transition_lab/README.md`「共面闪烁修复」小节与 `asset_ledger.md`。
+
+### 五问分类（本轮修复）
+
+| 项 | 1 已实现 | 2 已运行通过（命令 + 结果） | 3 静态检查 | 4 未验证 | 5 外部阻塞 |
+|---|---|---|---|---|---|
+| rim 改为真环带并高出盘顶 | ✔ `ring()` 生成内外半径 8.40 / 8.98 的封闭环带 | | ✔ GLB 实测 rim 水平面 y = −0.108 / **+0.012**，盘顶 y = 0.0 | | |
+| 其余 A 类装饰面脱开 | ✔ 门槛 −10 mm、墙身 −12 mm、柱 −14 mm、栏杆 −10 mm、柱顶 −10 mm；桥面可见顶 −5 mm | | ✔ GLB 实测各件水平面互不重合 | | |
+| 全 GLB 共面机械扫描 | | ✔ 两两扫描（水平面 \|Δy\| ≤ 1.5 mm 且水平重叠 ≥ 0.05 m²）**命中 0 组**（修复前 22 组 / 最大 322.56 m²） | ✔ 扫描为只读、纯标准库，不改资产 | | |
+| 同相机前后对照 | | ✔ 同一次运行、同相机同区域：帧 2–22 近景变化像素 **24.20% / 26.94% → 9.87% / 10.51%** | | | |
+| 静止冻结稳定 | | ✔ 相机收敛后冻结物理，连续 6 帧差异 **0 px** | | | |
+| 隐藏 rim 不再显著改变画面 | | ✔ 修复后 control 与 rim-hidden 差异比约 **1.1×**（修复前约 18×，即共面已不是主因） | | | |
+| 碰撞 / 站立高度 / 缺口 / 状态语义不变 | | ✔ 专属 playtest **133 PASS / 0 FAIL**；跳跃顶点 1.05 m、跑速 4.00 m/s 等读数与修复前一致 | ✔ `state_transition_lab.gd` **零改动**（`git diff` 无此文件） | | |
+| 旧资产保留 | | | ✔ 旧预览存 `trial_preview_pre_surface_clearance.png`；修复前源/导出用 `git show HEAD:<path>` 另存为 `pre_surface_clearance_state_transition_lab.blend` / `.glb`（逐字节等于 HEAD 旧字节）；`state_transition_lab.blend1` 是覆盖保存轮转出的中间态备份，非修复前源。三者均入仓跟踪 | | |
+| 截图 | | ✔ 新增 `trial_preview_surface_clearance.png`（修复后 Blender 预览） | | 场景内运行时截图未重拍 | |
+
+### 原始日志（不入 Git）
+
+`~/.cache/game-xiuxian-lab/surface-clearance/state-transition/`：
+`blender-regenerate.log`、`godot-import.log`、`full-scan-post-fix.txt`、`before_after.log`/`.txt`、
+`abab_moving.log`/`.txt`、`static_freeze.log`/`.txt`、`playtest.log`、`runtime-tests.log`，
+以及探针脚本 `before_after_probe.gd` / `abab_moving_probe.gd` / `static_freeze_probe.gd`
+与对照用旧 GLB `prefix-glb/state_transition_lab_pre_fix.glb`。
+
+### 已知限制（本轮）
+
+- 残余帧间变化（约 10%）经归因为**相机跟随收敛**与正常视差，不是深度冲突；判定依据是静止冻结 0 px
+  与 control/rim-hidden 差异比 1.1×。未做逐像素归因到相机分量。
+- 扫描口径为「同向水平面共面」；倾斜面与竖直面的近共面不在本轮口径内。
+- **B 类允许项**：竖直构件埋入盘体的端盖底面彼此同高（门槛 −10 mm / 墙身 −12 mm / 柱 −14 mm 等）
+  被实体包住、不可见，列为**不可见 B 类允许项**；口径与地形接触训练场台账一致。
+- 修复前源状态以库内归档 `pre_surface_clearance_state_transition_lab.blend`（195965 字节 / `f00fe206…`）
+  为准；`state_transition_lab.blend1`（205559 字节 / `7605faf5…`）是修复重导过程中的中间态备份，
+  既非修复前源也非当前 `.blend`。

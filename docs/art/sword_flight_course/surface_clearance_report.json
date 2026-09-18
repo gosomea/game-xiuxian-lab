@@ -1,0 +1,123 @@
+{
+  "asset": "sword_flight_course",
+  "generated": "2026-09-18",
+  "clearance_m": 0.02,
+  "bury_depth_m": 0.005,
+  "style_contract": {
+    "accent_on_structure": [
+      0.02,
+      0.12
+    ],
+    "buried_member": [
+      -0.02,
+      -0.002
+    ]
+  },
+  "coplanar_threshold": {
+    "gap_m": 0.0015,
+    "area_m2": 0.05
+  },
+  "pairs": [
+    {
+      "child": "takeoff_mark",
+      "host": "takeoff_pad",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "takeoff_mark_cross",
+      "host": "takeoff_pad",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "step_low_lip",
+      "host": "step_low",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "step_mid_lip",
+      "host": "step_mid",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "step_high_lip",
+      "host": "step_high",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "landing_near_rim",
+      "host": "landing_near",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "landing_near_mark",
+      "host": "landing_near_rim",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "landing_near_pole",
+      "host": "landing_near",
+      "style": "buried_member",
+      "gap_m": -0.005,
+      "min_m": -0.02,
+      "max_m": -0.002,
+      "ok": true
+    },
+    {
+      "child": "landing_far_rim",
+      "host": "landing_far",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "landing_far_mark",
+      "host": "landing_far_rim",
+      "style": "accent_on_structure",
+      "gap_m": 0.02,
+      "min_m": 0.02,
+      "max_m": 0.12,
+      "ok": true
+    },
+    {
+      "child": "landing_far_pole",
+      "host": "landing_far",
+      "style": "buried_member",
+      "gap_m": -0.005,
+      "min_m": -0.02,
+      "max_m": -0.002,
+      "ok": true
+    }
+  ],
+  "unregistered_coplanar_hits": [],
+  "result": "ok"
+}

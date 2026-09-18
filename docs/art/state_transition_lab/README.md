@@ -25,7 +25,7 @@
 |---|---|---|
 | 玉盘主平台 | 半径 9 m，顶面 Z=0 | 半径 9 m，顶面 Y=0 |
 | 石门北墙 | Y=-5.5，面宽约 10 m | Z=-5.5；门洞 x ∈ [-1.5, 1.5] |
-| 断桥 | +X 方向两段，缺口 X ∈ [9.5, 11.5] | +X 方向两段，缺口 x ∈ [9.5, 11.5] |
+| 断桥 | +X 方向两段，缺口 X ∈ [9.1, 11.5] | +X 方向两段，缺口 x ∈ [9.1, 11.5] |
 | 边缘低台 | （由 Godot 侧装配） | 西南侧 2×2 m、高 0.5 m |
 
 **碰撞不在 GLB 内**：`state_transition_lab.gd` 用 BoxShape3D 精确装配，保证数值可控可测。
@@ -41,11 +41,35 @@ macOS（Blender 5.2.1 LTS）；其他平台把可执行文件换成 PATH 中的�
 
 **重跑会覆盖 .blend 与 GLB 导出文件**（导出前会重新生成同名几何，属原模型上的继续修改）。
 
+2026-09-18 共面闪烁修复（rim 环带 + 装饰面脱开）后重导，见 `asset_ledger.md`「共面修复」小节。
+
 | 文件 | 字节 | sha256 |
 |---|---|---|
-| `state_transition_lab.blend` | 195965 | `f00fe206f07ec7ec4450960b30df0667007b8affb8e3f3ae4cc85c56377ac6d4` |
-| `state_transition_lab.glb` | 2311704 | `43f77a9c37979be81f799a3add3451f16170a1ea3d1fe0d3667e777aec6daa4a` |
-| `trial_preview.png` | 1042749 | `33f50173deb348bf21795db3beafc141c3e71788cab34edeaf77da39d1fdb949` |
+| `state_transition_lab.blend` | 205314 | `8e5996d98129c4d090fcb9246b06cceeb69383ca128979e9a61f75215085c40c` |
+| `state_transition_lab.glb` | 2373848 | `47a2d754bd724ba29a3057669a828edf4670f31e5cc54e309f4429d6304a8cc3` |
+| `trial_preview.png` | 1121430 | `da9fa644854988b6480f039be2fc7c0c612c3505aa7711e59fa83e4074623ece` |
+| `trial_preview_surface_clearance.png`（修复后预览，保留） | 1121430 | `da9fa644854988b6480f039be2fc7c0c612c3505aa7711e59fa83e4074623ece` |
+| `trial_preview_pre_surface_clearance.png`（修复前旧预览，保留） | 1042749 | `33f50173deb348bf21795db3beafc141c3e71788cab34edeaf77da39d1fdb949` |
+| `state_transition_lab.blend1`（自动备份的中间态，非修复前源，保留） | 205559 | `7605faf5f88fd90bc84ed43e3b3ec940b7d7e8c3c1629187c789ea9645fba6d3` |
+| `pre_surface_clearance_state_transition_lab.blend`（修复前源归档，= HEAD 旧字节） | 195965 | `f00fe206f07ec7ec4450960b30df0667007b8affb8e3f3ae4cc85c56377ac6d4` |
+| `pre_surface_clearance_state_transition_lab.glb`（修复前导出归档，= HEAD 旧字节） | 2311704 | `43f77a9c37979be81f799a3add3451f16170a1ea3d1fe0d3667e777aec6daa4a` |
+
+### 共面闪烁修复（2026-09-18）
+
+根因：`Jade disc rim band` 原为与盘顶严格同高（Blender Z=0，即 Godot y=0）的实心圆盘，
+与 `Jade disc body` 顶面共面 322.56 m²，运行帧 2–22 近景变化像素约 20%（隐藏 rim 后降至约 1.09%）。
+
+| 件 | 修法 | 修后关键高度 |
+|---|---|---|
+| `Jade disc rim band` | 实心圆盘 → **真环带**（`ring()`，内外半径 8.40/8.98） | 顶 +0.012（高出盘顶 12 mm），底 −0.108 埋入 |
+| `Gate threshold` | 下沉 10 mm 埋入盘体 | 底 −0.010 |
+| `Gate wall slab` / `Gate pillar` | 下沉 10 mm | 底 −0.010 |
+| `Bridge near/far span` | **可走面顶面下沉 5 mm**（不抬高） | 可见顶 −0.005；碰撞盒顶仍 y=0 |
+| `Bridge rail post` | 下沉 10 mm | 底 −0.01 |
+| `Pillar cap` | 下沉 10 mm | 底 = 柱顶 −0.01 |
+
+**未改**：碰撞常量、角色站立高度、断桥缺口 x ∈ [9.1, 11.5]（与 `state_transition_lab.gd` 的 `GAP_MIN_X` / `GAP_MAX_X` 一致）与状态切换语义。
+碰撞仍在 `state_transition_lab.gd` 本地装配，GLB 只做视觉。
 
 ## 未完成
 
