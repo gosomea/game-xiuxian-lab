@@ -1,6 +1,36 @@
 {
   "_generated_by": "由 tools/gen/gen_vocabulary_index.py 生成，请勿手改；编辑 tags/ events/ components.json 后重跑。",
   "components": {
+    "SwordsmanMotionComponent": {
+      "_source": "swordsman.json",
+      "added": "2026-09-17",
+      "description": "修士移动、跳跃与御剑飞行的输入、状态、意图与参数共享数据",
+      "fields": {
+        "actual_velocity": "最近一次物理 tick 后的完整速度（含竖直），供表现层读取",
+        "aim_direction": "世界地面朝向单位向量，初始 FORWARD(0,0,-1)；由场景写入，只影响朝向表现",
+        "camera_forward": "相机前方在地面的投影（单位向量）",
+        "camera_right": "相机右方向在地面的投影（单位向量）",
+        "desired_horizontal": "水平速度意图（y 恒为 0）；Movement 或 SwordFlight 每 tick 写入",
+        "desired_vertical": "竖直速度意图（m/s，正上）；仅 SwordFlight 每 tick 写入",
+        "flight_active": "御剑状态唯一真源；SwordFlight 激活/失活与 reset_motion() 写入",
+        "flight_launch_speed": "地面启动御剑的短促升起速度（米/秒）",
+        "flight_launch_time": "地面启动御剑的升起窗口（秒）",
+        "flight_lift_speed": "御剑上升速度（米/秒）",
+        "flight_sink_speed": "御剑下降速度（米/秒）",
+        "flight_speed": "御剑水平最大速度（米/秒）",
+        "flight_toggle_pressed": "F key-down 边沿，仅按下那一帧为 true；由场景 press_flight_toggle() 写入，actor 帧末清零",
+        "gravity": "非御剑时的重力加速度（米/秒^2），由 actor 统一施加",
+        "jump_pressed": "空格 key-down 边沿，仅按下那一帧为 true；由场景 press_jump() 写入，actor 帧末清零",
+        "jump_speed": "起跳初速（米/秒）",
+        "move_input": "屏幕相对输入（x=右，y=下，长度不超过 1）；由场景写入",
+        "move_speed": "步行水平最大速度（米/秒）",
+        "on_floor": "上一帧物理结果的着地状态；能力在 tick 中读到的是该值",
+        "vertical_impulse": "竖直冲量意图（m/s，正上）；仅 Jump 写入，actor 覆盖 velocity.y 不累加",
+        "vertical_input": "升降输入：+1 空格上升，-1 Ctrl 下降，0 悬停；由场景写入"
+      },
+      "script": "src/game/actors/swordsman/swordsman_motion_component.gd",
+      "signals": {}
+    },
     "VitalsComponent": {
       "_source": "components.json",
       "added": "2026-08-28",
@@ -38,6 +68,11 @@
       "_source": "tags/vitals.json",
       "added": "2026-08-28",
       "description": "再生封锁：目标被禁止自然恢复生命数值（TagRegistry 阻塞，带 instigator）"
+    },
+    "sword_flight_block": {
+      "_source": "tags/movement.json",
+      "added": "2026-09-18",
+      "description": "御剑封锁：御剑期间禁止普通水平移动与跳跃（TagRegistry 阻塞，instigator 为 SwordFlight 能力自身）"
     }
   }
 }

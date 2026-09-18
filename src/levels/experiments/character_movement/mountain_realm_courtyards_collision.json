@@ -1,0 +1,437 @@
+{
+ "schema": "peak_courtyards_collision/1",
+ "generated_by": "tools/art/generate_peak_courtyards.py",
+ "units": "meters",
+ "up_axis": "Y",
+ "boxes": [
+  {
+   "name": "spawn_gate_plinth_w",
+   "center": [
+    -34.6,
+    12.15,
+    25.0
+   ],
+   "size": [
+    0.95,
+    0.3,
+    0.95
+   ]
+  },
+  {
+   "name": "spawn_gate_pillar_w",
+   "center": [
+    -34.6,
+    13.55,
+    25.0
+   ],
+   "size": [
+    0.62,
+    2.5,
+    0.62
+   ]
+  },
+  {
+   "name": "spawn_gate_plinth_e",
+   "center": [
+    -25.4,
+    12.15,
+    25.0
+   ],
+   "size": [
+    0.95,
+    0.3,
+    0.95
+   ]
+  },
+  {
+   "name": "spawn_gate_pillar_e",
+   "center": [
+    -25.4,
+    13.55,
+    25.0
+   ],
+   "size": [
+    0.62,
+    2.5,
+    0.62
+   ]
+  },
+  {
+   "name": "spawn_wall_w",
+   "center": [
+    -39.4,
+    12.45,
+    25.0
+   ],
+   "size": [
+    8.4,
+    0.9,
+    0.42
+   ]
+  },
+  {
+   "name": "spawn_wall_e",
+   "center": [
+    -20.6,
+    12.45,
+    25.0
+   ],
+   "size": [
+    8.4,
+    0.9,
+    0.42
+   ]
+  },
+  {
+   "name": "spawn_lantern_w_footing",
+   "center": [
+    -38.6,
+    12.12,
+    42.6
+   ],
+   "size": [
+    0.8,
+    0.24,
+    0.8
+   ]
+  },
+  {
+   "name": "spawn_lantern_e_footing",
+   "center": [
+    -21.4,
+    12.12,
+    42.6
+   ],
+   "size": [
+    0.8,
+    0.24,
+    0.8
+   ]
+  },
+  {
+   "name": "main_hall_front_column_base_0",
+   "center": [
+    -0.6,
+    36.66,
+    -46.1
+   ],
+   "size": [
+    0.62,
+    0.28,
+    0.62
+   ]
+  },
+  {
+   "name": "main_hall_front_column_base_1",
+   "center": [
+    1.5,
+    36.66,
+    -46.1
+   ],
+   "size": [
+    0.62,
+    0.28,
+    0.62
+   ]
+  },
+  {
+   "name": "main_hall_front_column_base_2",
+   "center": [
+    6.5,
+    36.66,
+    -46.1
+   ],
+   "size": [
+    0.62,
+    0.28,
+    0.62
+   ]
+  },
+  {
+   "name": "main_hall_front_column_base_3",
+   "center": [
+    8.6,
+    36.66,
+    -46.1
+   ],
+   "size": [
+    0.62,
+    0.28,
+    0.62
+   ]
+  },
+  {
+   "name": "north_lantern_w_footing",
+   "center": [
+    -50.6,
+    28.138,
+    -45.4
+   ],
+   "size": [
+    0.92,
+    0.276,
+    0.92
+   ]
+  },
+  {
+   "name": "north_lantern_e_footing",
+   "center": [
+    -41.4,
+    28.138,
+    -45.4
+   ],
+   "size": [
+    0.92,
+    0.276,
+    0.92
+   ]
+  },
+  {
+   "name": "west_pavilion_column_wn",
+   "center": [
+    -71.9,
+    21.5,
+    -7.9
+   ],
+   "size": [
+    0.34,
+    3.0,
+    0.34
+   ]
+  },
+  {
+   "name": "west_pavilion_column_en",
+   "center": [
+    -68.1,
+    21.5,
+    -7.9
+   ],
+   "size": [
+    0.34,
+    3.0,
+    0.34
+   ]
+  },
+  {
+   "name": "west_pavilion_column_es",
+   "center": [
+    -68.1,
+    21.5,
+    -4.1
+   ],
+   "size": [
+    0.34,
+    3.0,
+    0.34
+   ]
+  },
+  {
+   "name": "west_pavilion_column_ws",
+   "center": [
+    -71.9,
+    21.5,
+    -4.1
+   ],
+   "size": [
+    0.34,
+    3.0,
+    0.34
+   ]
+  },
+  {
+   "name": "west_screen_wall",
+   "center": [
+    -75.6,
+    20.5,
+    -6.6
+   ],
+   "size": [
+    0.45,
+    1.0,
+    6.0
+   ]
+  },
+  {
+   "name": "west_lantern_n_footing",
+   "center": [
+    -69.4,
+    20.132,
+    -10.2
+   ],
+   "size": [
+    0.88,
+    0.264,
+    0.88
+   ]
+  },
+  {
+   "name": "west_lantern_s_footing",
+   "center": [
+    -72.6,
+    20.132,
+    -1.8
+   ],
+   "size": [
+    0.88,
+    0.264,
+    0.88
+   ]
+  },
+  {
+   "name": "east_table_top",
+   "center": [
+    56.0,
+    16.78,
+    20.0
+   ],
+   "size": [
+    1.9,
+    0.16,
+    1.9
+   ]
+  },
+  {
+   "name": "east_wall_n",
+   "center": [
+    61.0,
+    16.5,
+    15.0
+   ],
+   "size": [
+    7.0,
+    1.0,
+    0.42
+   ]
+  },
+  {
+   "name": "east_wall_s",
+   "center": [
+    51.0,
+    16.5,
+    25.0
+   ],
+   "size": [
+    7.0,
+    1.0,
+    0.42
+   ]
+  },
+  {
+   "name": "east_shelter_plinth_w",
+   "center": [
+    53.6,
+    16.14,
+    23.6
+   ],
+   "size": [
+    0.7,
+    0.28,
+    0.7
+   ]
+  },
+  {
+   "name": "east_shelter_column_w",
+   "center": [
+    53.6,
+    17.5,
+    23.6
+   ],
+   "size": [
+    0.34,
+    2.7,
+    0.34
+   ]
+  },
+  {
+   "name": "east_shelter_plinth_e",
+   "center": [
+    58.4,
+    16.14,
+    23.6
+   ],
+   "size": [
+    0.7,
+    0.28,
+    0.7
+   ]
+  },
+  {
+   "name": "east_shelter_column_e",
+   "center": [
+    58.4,
+    17.5,
+    23.6
+   ],
+   "size": [
+    0.34,
+    2.7,
+    0.34
+   ]
+  },
+  {
+   "name": "east_bench_0",
+   "center": [
+    52.6,
+    16.26,
+    18.0
+   ],
+   "size": [
+    1.5,
+    0.52,
+    0.6
+   ]
+  },
+  {
+   "name": "east_bench_1",
+   "center": [
+    59.4,
+    16.26,
+    18.0
+   ],
+   "size": [
+    1.5,
+    0.52,
+    0.6
+   ]
+  },
+  {
+   "name": "east_bench_2",
+   "center": [
+    54.4,
+    16.26,
+    16.4
+   ],
+   "size": [
+    1.5,
+    0.52,
+    0.6
+   ]
+  },
+  {
+   "name": "east_lantern_w_footing",
+   "center": [
+    48.6,
+    16.138,
+    17.0
+   ],
+   "size": [
+    0.92,
+    0.276,
+    0.92
+   ]
+  },
+  {
+   "name": "east_lantern_e_footing",
+   "center": [
+    63.4,
+    16.138,
+    23.0
+   ],
+   "size": [
+    0.92,
+    0.276,
+    0.92
+   ]
+  }
+ ]
+}

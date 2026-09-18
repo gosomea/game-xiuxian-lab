@@ -1,8 +1,84 @@
 {
   "_generated_by": "由 tools/gen/gen_capability_catalog.py 生成，请勿手改；改动能力源码后重跑。",
-  "capabilities": [],
-  "count": 0,
-  "domains": [],
-  "packages": [],
+  "capabilities": [
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "Jump",
+      "domain": "abilities",
+      "package": "abilities/jump",
+      "parameters": [],
+      "reads_components": [
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/jump/jump.gd",
+      "signals": [],
+      "summary": "跳跃：空格 key-down 边沿且上一帧着地时，写一帧竖直冲量。",
+      "test": "src/game/abilities/jump/test_jump.gd",
+      "uses_groups": [],
+      "uses_tags": [
+        "sword_flight_block"
+      ]
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "SwordFlight",
+      "domain": "abilities",
+      "package": "abilities/sword_flight",
+      "parameters": [],
+      "reads_components": [
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/sword_flight/sword_flight.gd",
+      "signals": [],
+      "summary": "御剑飞行：F key-down 边沿切换；飞行期间写水平与竖直速度意图并阻塞普通移动与跳跃。",
+      "test": "src/game/abilities/sword_flight/test_sword_flight.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "SwordsmanMovement",
+      "domain": "actors",
+      "package": "actors/swordsman",
+      "parameters": [],
+      "reads_components": [
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/actors/swordsman/swordsman_movement.gd",
+      "signals": [],
+      "summary": "修士水平移动：把屏幕相对输入映射到相机地面基，按 move_speed 只写水平速度意图。",
+      "test": "src/game/actors/swordsman/test_swordsman_movement.gd",
+      "uses_groups": [],
+      "uses_tags": [
+        "sword_flight_block"
+      ]
+    }
+  ],
+  "count": 3,
+  "domains": [
+    "abilities",
+    "actors"
+  ],
+  "packages": [
+    "abilities/jump",
+    "abilities/sword_flight",
+    "actors/swordsman"
+  ],
   "schema_version": 2
 }
