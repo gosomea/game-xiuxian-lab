@@ -1,6 +1,6 @@
 # 角色移动实验组：集成审计记录（基线 99e4894）
 
-**本轮只记录研究与提案；不包含运行时修复。** 只读研究，未改 `src/`/`design/`/工具/资产/旧 notes，未运行 Godot。四路研究（UX、装配复用、镜头、动作）合并后的证据基线：仓库 `99e4894`；统一提案见 [composable-labs](../../notes/proposed/gameplay/2026-09-18-character-movement-composable-labs.md)（**proposed**）。
+**本轮只记录研究与提案；不包含运行时修复。** 只读研究，未改 `src/`/`design/`/工具/资产/旧 notes，未运行 Godot。四路研究（UX、装配复用、镜头、动作）合并后的证据基线：仓库 `99e4894`；统一决策见 [composable-labs](../../notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md)（**implemented，运行时 S0–S3 尚未交付**）；装配与镜头契约见 [composable-lab-assembly-contract](../../notes/implemented/tech/2026-09-18-composable-lab-assembly-contract.md)。
 
 **阅读约定**：`[事实]`（有源码行/GLB 解析/官方文档）；`[推断]`（由事实推出、未运行验证）；`[待验证]`（需运行/实拍才能定）。
 
@@ -76,7 +76,7 @@ S9 只使用 Godot 4.6 已存在的 AnimationTree / AnimationNodeBlendSpace1D / 
 
 ## 7. 本文件不构成决策
 
-所有方案在 [composable-labs](../../notes/proposed/gameplay/2026-09-18-character-movement-composable-labs.md)（proposed）中受理；核心 `core/` 改动须另开 owning tech note，本轮不写 core、不写 src。
+所有方案已在 [composable-labs](../../notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md)（implemented，决策已采纳、实现未开始）受理；本文件保持为研究记录，不随实现更新。核心 `core/` 改动须另开 owning tech note。
 
 ## 8. 限制
 
