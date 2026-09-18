@@ -36,6 +36,27 @@ const WALL_HEIGHT := 8.0
 ## 高度上限：给御剑起降留 12 m 净空，同时兜住失控上升。
 const CEILING_Y := 12.0
 
+## 地面标记分层：物理地面碰撞盒顶严格 y = 0，可见标记整体抬到地面之上，不靠下沉可见面回避共面。
+## 抬升约定沿用 mountain_realm / peak_courtyards 的 2 cm；相邻可见层净空 ≥ MARK_LAYER_CLEARANCE。
+const GROUND_MARK_BASE := 0.02
+const MARK_LAYER_CLEARANCE := 0.004
+
+## 各层只写「底面 + 顶面」，中心由两端推出，杜绝「承托面 + 自身半高」的零间隙写法。
+const RUNWAY_BED_BOTTOM := GROUND_MARK_BASE
+const RUNWAY_BED_TOP := RUNWAY_BED_BOTTOM + 0.006
+const RUNWAY_CENTER_BOTTOM := RUNWAY_BED_TOP + MARK_LAYER_CLEARANCE
+const RUNWAY_CENTER_TOP := RUNWAY_CENTER_BOTTOM + 0.004
+const STRIPE_BOTTOM := RUNWAY_CENTER_TOP + MARK_LAYER_CLEARANCE
+const STRIPE_TOP := STRIPE_BOTTOM + 0.006
+const PAD_DISC_BOTTOM := GROUND_MARK_BASE
+const PAD_DISC_TOP := PAD_DISC_BOTTOM + 0.006
+const SPOKE_BOTTOM := PAD_DISC_TOP + MARK_LAYER_CLEARANCE
+const SPOKE_TOP := SPOKE_BOTTOM + 0.005
+const PAD_RING_BOTTOM := SPOKE_TOP + MARK_LAYER_CLEARANCE
+const PAD_RING_TOP := PAD_RING_BOTTOM + 0.006
+const RULER_BASE_BOTTOM := GROUND_MARK_BASE
+const RULER_BASE_TOP := RULER_BASE_BOTTOM + 0.004
+
 ## 出生点：跑道西端视线内，初始朝 +X（沿跑道方向，侧面机位因此能读到跑动侧影）。
 const SPAWN_POSITION := Vector3(-6.0, 0.05, 0.0)
 const SPAWN_AIM := Vector3.RIGHT
@@ -89,14 +110,16 @@ const CAMERA_ZOOM_STEP := 1.5
 const CAMERA_FOLLOW_SPEED := 6.0
 
 ## 场地配色（不依赖主题，标记本身即说明）。
+## 7 个地面量具颜色由半透明改为等效不透明（原 alpha 合成到最近承托面），避免透明排序参与地面绘制；
+## 合成口径见 notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md 的「第五场」。
 const COLOR_FLOOR := Color(0.847059, 0.839216, 0.811765, 1.0)
-const COLOR_RUNWAY := Color(0.941176, 0.929412, 0.898039, 0.9)
-const COLOR_STRIPE := Color(0.243137, 0.278431, 0.309804, 0.85)
-const COLOR_RUNWAY_CENTER := Color(0.454902, 0.549020, 0.478431, 0.75)
-const COLOR_TURN_PAD := Color(0.647059, 0.356863, 0.243137, 0.35)
-const COLOR_TURN_SPOKE := Color(0.815686, 0.482353, 0.321569, 0.9)
-const COLOR_FLIGHT_PAD := Color(0.223529, 0.482353, 0.529412, 0.35)
-const COLOR_FLIGHT_RING := Color(0.352941, 0.760784, 0.788235, 0.75)
+const COLOR_RUNWAY := Color(0.932, 0.920, 0.889, 1.0)
+const COLOR_STRIPE := Color(0.346, 0.375, 0.397, 1.0)
+const COLOR_RUNWAY_CENTER := Color(0.574, 0.642, 0.581, 1.0)
+const COLOR_TURN_PAD := Color(0.777, 0.670, 0.613, 1.0)
+const COLOR_TURN_SPOKE := Color(0.812, 0.501, 0.351, 1.0)
+const COLOR_FLIGHT_PAD := Color(0.629, 0.714, 0.713, 1.0)
+const COLOR_FLIGHT_RING := Color(0.445, 0.764, 0.786, 1.0)
 const COLOR_RULER_POLE := Color(0.913725, 0.905882, 0.878431, 1.0)
 const COLOR_RULER_BAND := Color(0.317647, 0.337255, 0.360784, 1.0)
 const COLOR_RULER_APEX := Color(0.847059, 0.309804, 0.243137, 1.0)
@@ -320,10 +343,11 @@ func _build_runway() -> void:
 	add_child(root)
 	var length := RUNWAY_MAX_X - RUNWAY_MIN_X
 	var center_x := (RUNWAY_MIN_X + RUNWAY_MAX_X) * 0.5
-	_add_mark_to(root, "RunwayBed", Vector3(center_x, 0.006, 0.0), Vector3(length, 0.012, RUNWAY_HALF_Z * 2.0), COLOR_RUNWAY)
+	_add_mark_layer_to(root, "RunwayBed", Vector2(center_x, 0.0), Vector2(length, RUNWAY_HALF_Z * 2.0),
+		RUNWAY_BED_BOTTOM, RUNWAY_BED_TOP, COLOR_RUNWAY)
 	# 中线：让跑道方向一眼可读，也作为八方向区之外的直行参照。
-	_add_mark_to(root, "RunwayCenterLine", Vector3(center_x, 0.010, 0.0),
-		Vector3(length, 0.010, 0.10), COLOR_RUNWAY_CENTER)
+	_add_mark_layer_to(root, "RunwayCenterLine", Vector2(center_x, 0.0), Vector2(length, 0.10),
+		RUNWAY_CENTER_BOTTOM, RUNWAY_CENTER_TOP, COLOR_RUNWAY_CENTER)
 	var index := 0
 	var x := RUNWAY_MIN_X
 	while x <= RUNWAY_MAX_X + 0.001:
@@ -331,7 +355,8 @@ func _build_runway() -> void:
 		var is_end := index == 0 or x >= RUNWAY_MAX_X - 0.001
 		var width := RUNWAY_HALF_Z * 2.0 if is_end else (0.16 if metre % 10 == 0 else 0.08)
 		var colour := COLOR_STRIPE
-		_add_mark_to(root, "Stripe%02d" % index, Vector3(x, 0.014, 0.0), Vector3(width, 0.012, RUNWAY_HALF_Z * 2.0), colour)
+		_add_mark_layer_to(root, "Stripe%02d" % index, Vector2(x, 0.0), Vector2(width, RUNWAY_HALF_Z * 2.0),
+			STRIPE_BOTTOM, STRIPE_TOP, colour)
 		# 每 8 m 才落一个数字：刻度线保持每 2 m，文字稀疏到不互相遮挡。
 		if metre % 8 == 0:
 			_add_label_to(root, "StripeLabel%02d" % index, Vector3(x, 0.18, RUNWAY_HALF_Z + 0.62),
@@ -345,15 +370,16 @@ func _build_turn_pad() -> void:
 	var root := Node3D.new()
 	root.name = "TurnPad"
 	add_child(root)
-	_add_disc_to(root, "TurnPadDisc", TURN_PAD_CENTER, TURN_PAD_RADIUS, COLOR_TURN_PAD)
+	_add_disc_to(root, "TurnPadDisc", TURN_PAD_CENTER, TURN_PAD_RADIUS, PAD_DISC_BOTTOM, PAD_DISC_TOP, COLOR_TURN_PAD)
 	for index in range(8):
 		var angle := TAU * float(index) / 8.0
 		var direction := Vector3(sin(angle), 0.0, cos(angle))
 		var centre := TURN_PAD_CENTER + direction * (TURN_PAD_RADIUS * 0.5)
-		var spoke := _add_mark_to(root, "Spoke%d" % index, centre + Vector3(0.0, 0.016, 0.0),
-			Vector3(0.14, 0.012, TURN_PAD_RADIUS), COLOR_TURN_SPOKE)
+		var spoke := _add_mark_layer_to(root, "Spoke%d" % index, Vector2(centre.x, centre.z),
+			Vector2(0.14, TURN_PAD_RADIUS), SPOKE_BOTTOM, SPOKE_TOP, COLOR_TURN_SPOKE)
 		spoke.rotation.y = angle
-	_add_ring_to(root, "TurnPadRing", TURN_PAD_CENTER, TURN_PAD_RADIUS, 0.10, 0.014, COLOR_TURN_SPOKE)
+	_add_ring_to(root, "TurnPadRing", TURN_PAD_CENTER, TURN_PAD_RADIUS - 0.10, TURN_PAD_RADIUS + 0.10,
+		PAD_RING_BOTTOM, PAD_RING_TOP, COLOR_TURN_SPOKE)
 	_add_label_to(root, "TurnPadLabel", TURN_PAD_CENTER + Vector3(0.0, 0.22, -TURN_PAD_RADIUS - 0.8),
 		"八方向 / 急转区", 0.28, Color(0.360784, 0.219608, 0.160784, 1.0))
 
@@ -363,8 +389,9 @@ func _build_flight_pad() -> void:
 	var root := Node3D.new()
 	root.name = "FlightPad"
 	add_child(root)
-	_add_disc_to(root, "FlightPadDisc", FLIGHT_PAD_CENTER, FLIGHT_PAD_RADIUS, COLOR_FLIGHT_PAD)
-	_add_ring_to(root, "FlightPadRing", FLIGHT_PAD_CENTER, FLIGHT_PAD_RADIUS, 0.12, 0.016, COLOR_FLIGHT_RING)
+	_add_disc_to(root, "FlightPadDisc", FLIGHT_PAD_CENTER, FLIGHT_PAD_RADIUS, PAD_DISC_BOTTOM, PAD_DISC_TOP, COLOR_FLIGHT_PAD)
+	_add_ring_to(root, "FlightPadRing", FLIGHT_PAD_CENTER, FLIGHT_PAD_RADIUS - 0.12, FLIGHT_PAD_RADIUS + 0.12,
+		PAD_RING_BOTTOM, PAD_RING_TOP, COLOR_FLIGHT_RING)
 	for index in range(FLIGHT_RING_HEIGHTS.size()):
 		var height := FLIGHT_RING_HEIGHTS[index] as float
 		_add_torus_to(root, "HeightRing%d" % index, FLIGHT_PAD_CENTER + Vector3(0.0, height, 0.0),
@@ -382,8 +409,8 @@ func _build_ruler() -> void:
 	var root := Node3D.new()
 	root.name = "JumpRuler"
 	add_child(root)
-	_add_mark_to(root, "RulerBase", Vector3(RULER_X, 0.016, RULER_Z), Vector3(RULER_BAND_WIDTH + 0.5, 0.02, 0.5),
-		Color(0.733333, 0.725490, 0.701961, 1.0))
+	_add_mark_layer_to(root, "RulerBase", Vector2(RULER_X, RULER_Z), Vector2(RULER_BAND_WIDTH + 0.5, 0.5),
+		RULER_BASE_BOTTOM, RULER_BASE_TOP, Color(0.733333, 0.725490, 0.701961, 1.0))
 	_add_mark_to(root, "RulerPole", Vector3(RULER_X, apex * 0.85, RULER_Z), Vector3(0.10, apex * 1.7 + 0.4, 0.10), COLOR_RULER_POLE)
 	for index in range(RULER_BAND_FACTORS.size()):
 		var factor := RULER_BAND_FACTORS[index] as float
@@ -726,12 +753,13 @@ func _pose_text() -> String:
 
 
 ## 标记材质：不受光、关闭高光与背面剔除，保证量具在任何光照下清晰。
+## 一律不透明：transparency 强制关闭、alpha 归一为 1.0，透明排序不参与地面绘制。
 func _mark_material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
-	material.albedo_color = color
+	material.albedo_color = Color(color.r, color.g, color.b, 1.0)
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if color.a < 1.0 else BaseMaterial3D.TRANSPARENCY_DISABLED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return material
 
@@ -753,11 +781,28 @@ func _add_mark_to(parent: Node, mark_name: String, centre: Vector3, size: Vector
 	return instance
 
 
-func _add_disc_to(parent: Node, disc_name: String, centre: Vector3, radius: float, color: Color) -> MeshInstance3D:
+## 水平量具：底面 / 顶面显式给定，中心由两端推出，结构上不可能出现零间隙或体积交叠。
+func _add_mark_layer_to(parent: Node, mark_name: String, centre_xz: Vector2, footprint: Vector2,
+		bottom: float, top: float, color: Color) -> MeshInstance3D:
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(footprint.x, top - bottom, footprint.y)
+	var instance := MeshInstance3D.new()
+	instance.name = mark_name
+	instance.mesh = mesh
+	instance.material_override = _mark_material(color)
+	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	instance.position = Vector3(centre_xz.x, (bottom + top) * 0.5, centre_xz.y)
+	parent.add_child(instance)
+	return instance
+
+
+## 圆盘：同样只接受底面 / 顶面，中心由两端推出。
+func _add_disc_to(parent: Node, disc_name: String, centre: Vector3, radius: float,
+		bottom: float, top: float, color: Color) -> MeshInstance3D:
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = radius
 	mesh.bottom_radius = radius
-	mesh.height = 0.02
+	mesh.height = top - bottom
 	mesh.radial_segments = 48
 	mesh.rings = 0
 	var instance := MeshInstance3D.new()
@@ -765,26 +810,58 @@ func _add_disc_to(parent: Node, disc_name: String, centre: Vector3, radius: floa
 	instance.mesh = mesh
 	instance.material_override = _mark_material(color)
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	instance.position = centre + Vector3(0.0, 0.012, 0.0)
+	instance.position = centre + Vector3(0.0, (bottom + top) * 0.5, 0.0)
 	parent.add_child(instance)
 	return instance
 
 
-## 平放的圆环：用 TorusMesh 转 90° 使其落在水平面。
-func _add_ring_to(parent: Node, ring_name: String, centre: Vector3, radius: float, thickness: float, lift: float, color: Color) -> MeshInstance3D:
-	var mesh := TorusMesh.new()
-	mesh.inner_radius = maxf(radius - thickness, 0.01)
-	mesh.outer_radius = radius + thickness
-	mesh.rings = 48
-	mesh.ring_segments = 6
+## 平放的圆环：真实矩形截面环带（内 / 外半径 + 厚度），替代原先管半径 0.10 的 Torus。
+## 顶面 / 底面严格落在给定高度，不再穿地或切进盘体。
+func _add_ring_to(parent: Node, ring_name: String, centre: Vector3, inner_radius: float, outer_radius: float,
+		bottom: float, top: float, color: Color) -> MeshInstance3D:
 	var instance := MeshInstance3D.new()
 	instance.name = ring_name
-	instance.mesh = mesh
+	instance.mesh = _flat_ring_mesh(inner_radius, outer_radius, top - bottom)
 	instance.material_override = _mark_material(color)
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	instance.position = centre + Vector3(0.0, lift, 0.0)
+	instance.position = centre + Vector3(0.0, (bottom + top) * 0.5, 0.0)
 	parent.add_child(instance)
 	return instance
+
+
+## SurfaceTool 程序生成矩形截面水平环带：外壁 / 内壁 / 顶面 / 底面四个环面。
+## 网格以原点为中心、厚度沿 ±Y 各占一半；节点位置负责把顶 / 底面落到目标高度。
+func _flat_ring_mesh(inner_radius: float, outer_radius: float, thickness: float) -> ArrayMesh:
+	var segments := 64
+	var half := thickness * 0.5
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for index in range(segments):
+		var angle0 := TAU * float(index) / float(segments)
+		var angle1 := TAU * float(index + 1) / float(segments)
+		var inner0 := Vector3(cos(angle0) * inner_radius, 0.0, sin(angle0) * inner_radius)
+		var inner1 := Vector3(cos(angle1) * inner_radius, 0.0, sin(angle1) * inner_radius)
+		var outer0 := Vector3(cos(angle0) * outer_radius, 0.0, sin(angle0) * outer_radius)
+		var outer1 := Vector3(cos(angle1) * outer_radius, 0.0, sin(angle1) * outer_radius)
+		var up := Vector3(0.0, half, 0.0)
+		var down := Vector3(0.0, -half, 0.0)
+		var outward := Vector3(cos(angle0), 0.0, sin(angle0))
+		_ring_quad(tool, inner0 + up, outer0 + up, outer1 + up, inner1 + up, Vector3.UP)
+		_ring_quad(tool, inner1 + down, outer1 + down, outer0 + down, inner0 + down, Vector3.DOWN)
+		_ring_quad(tool, outer0 + up, outer0 + down, outer1 + down, outer1 + up, outward)
+		_ring_quad(tool, inner0 + down, inner0 + up, inner1 + up, inner1 + down, -outward)
+	return tool.commit() as ArrayMesh
+
+
+## 把四边形拆成两个三角形；法线显式给定，不依赖 generate_normals 的绕序推断。
+func _ring_quad(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3) -> void:
+	tool.set_normal(normal)
+	tool.add_vertex(a)
+	tool.add_vertex(b)
+	tool.add_vertex(c)
+	tool.add_vertex(a)
+	tool.add_vertex(c)
+	tool.add_vertex(d)
 
 
 ## 竖直圆环：高度环保持竖直方向，从正面 / 斜侧可读。

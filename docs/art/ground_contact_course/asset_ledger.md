@@ -112,7 +112,7 @@
 
 ## 共面修复（surface clearance，2026-09-18）
 
-依据 [装饰面共面导致的跨场景地面闪烁](../../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)
+依据 [装饰面共面与透明穿叠导致的跨场景地面闪烁](../../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)
 的 A/B 分类，本轮在**原模型上继续修改**：只改可见几何的高度关系，**碰撞 JSON 数值一字未动**
 （`ground_contact_course_layout.json` 哈希仍为 `2031097455bfecf43bece8ec8f819818739470fabe5442bd81e7a19d3fc5ae7d`，
 0.25/0.5/0.75 m 台阶、28/42/52° 斜坡、0.6 m 窄路与全部碰撞盒均不变）。

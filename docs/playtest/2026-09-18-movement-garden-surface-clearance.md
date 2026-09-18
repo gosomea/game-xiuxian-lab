@@ -3,7 +3,7 @@
 场景：`res://levels/experiments/character_movement/movement_garden.tscn`（子实验「移动庭院」，小场景回归）。
 修复对象：砂地 / 台基 / 50 块手工铺砖的穿插与近共面闪烁；第三次修改追加独立审计命中的
 Scholar rock base 顶面过低与 Pavilion column base 底面近共面（见「独立审计修正轮」）。
-决策依据：[装饰面共面导致的跨场景地面闪烁](../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)（本场景为该 note 表内第 3 行）。
+决策依据：[装饰面共面与透明穿叠导致的跨场景地面闪烁](../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)（本场景为该 note 表内第 3 行）。
 资产台账与几何变更表：[movement_garden/asset_ledger.md](../art/movement_garden/asset_ledger.md)。
 验收档：**CLI 档**（`godot --headless` + 窗口模式截图）。
 所有权边界：只动 `tools/art/generate_movement_garden.py`、`docs/art/movement_garden/**`、`movement_garden.glb` 与其 `.import`；

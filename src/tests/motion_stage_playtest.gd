@@ -24,7 +24,21 @@ const CAPABILITY_SCRIPTS := [
 	"res://game/abilities/sword_flight/sword_flight.gd",
 ]
 const EXPECTED_CAPABILITIES := ["SwordsmanMovement", "Jump", "SwordFlight"]
+## 地面几何 / 材质机械判据：与 src/tests/test_motion_stage_geometry.gd 共用同一实现，
+## 避免 playtest 与单元测试各写一套阈值。
+const GeometryTest := preload("res://tests/test_motion_stage_geometry.gd")
 const CAPTURE_TIMEOUT_MSEC := 15000
+## 斜侧机位（VIEW_OFFSETS[2]）偏移；surface 批次读回跟随相机是否稳定在该偏移附近。
+const VIEW_SHOT_OFFSET := Vector3(10.5, 5.6, -10.5)
+## 长跑道横穿候选按键组合（屏幕输入 x=右、y=下）；哪个组合真的指向世界 +X 由实时
+## camera basis 决定，不在此写死——首轮写死 A+S 正是沿 −X 跑偏的原因。
+const RUN_KEY_CANDIDATES: Array[Array] = [
+	[KEY_A, KEY_S], [KEY_D, KEY_S], [KEY_D, KEY_W], [KEY_A, KEY_W],
+	[KEY_D], [KEY_S], [KEY_A], [KEY_W],
+]
+## 选键的最低方向一致性：合成方向与目标方向的点积必须 > 该值；否则 _run_keys_towards
+## 返回空数组，调用方必须显式失败并中止该方向上的后续断言。
+const MIN_RUN_DIRECTION_DOT := 0.5
 const POS_TOL := 0.08
 const VERT_TOL := 0.06
 
@@ -99,6 +113,9 @@ func _run_batches() -> void:
 	if _has("hud"):
 		print("--- batch hud ---")
 		await _batch_hud()
+	if _has("surface"):
+		print("--- batch surface ---")
+		await _batch_surface()
 	if _has("exit"):
 		print("--- batch exit ---")
 		await _batch_exit()
@@ -242,17 +259,43 @@ func _batch_run() -> void:
 
 
 func _batch_turn() -> void:
-	_place(Vector3(-6.0, 0.05, 0.0))
+	# 急转测试在八方向盘心进行：先记录 D 段真实位移与速度，再验证 A 段速度 / 位移与之反号，
+	# 最后要求角色仍在盘内——不再只读「转身增益对称回零」就当反转成立。
+	var pad_center := Vector3(-11.5, 0.05, 5.0)
+	_place(pad_center)
+	await _frames(6)
+	_check(_motion.on_floor, "急转测试起点已稳定着地（离盘心 %.2f m）" % _actor.global_position.distance_to(pad_center))
+	var d_start := _actor.global_position
 	_key(KEY_D, true)
 	await _frames(18)
+	var d_travel := _actor.global_position - d_start
+	var d_velocity := _motion.actual_velocity
 	_key(KEY_D, false)
+	var d_end := _actor.global_position
 	_key(KEY_A, true)
 	var peak := 0.0
 	for index in range(12):
 		await _frames(1)
 		peak = maxf(peak, float(_pose().get("turn", 0.0)))
+	var a_velocity := _motion.actual_velocity
+	var a_travel := _actor.global_position - d_end
 	_key(KEY_A, false)
+	var d_horizontal := Vector2(d_travel.x, d_travel.z)
+	var a_horizontal := Vector2(a_travel.x, a_travel.z)
+	var d_speed := Vector2(d_velocity.x, d_velocity.z)
+	var a_speed := Vector2(a_velocity.x, a_velocity.z)
+	_check(d_horizontal.length() > 0.2, "D 段产生真实位移（%.2f m，实际速度 %.2f m/s）" % [
+		d_horizontal.length(), d_speed.length()])
+	_check(a_horizontal.length() > 0.05, "A 段产生反向位移（%.2f m，实际速度 %.2f m/s）" % [
+		a_horizontal.length(), a_speed.length()])
+	_check(d_speed.length() > 0.5 and a_speed.length() > 0.5, "D / A 两段都带回非零速度读数（%.2f / %.2f m/s）" % [
+		d_speed.length(), a_speed.length()])
+	_check(d_speed.dot(a_speed) < 0.0, "A 段速度与 D 段速度反号（点积 %.2f）" % d_speed.dot(a_speed))
+	_check(d_horizontal.dot(a_horizontal) < 0.0, "A 段位移与 D 段位移反号（点积 %.2f）" % d_horizontal.dot(a_horizontal))
 	_check(peak > 0.05, "方向反转触发转身响应（峰值 %.3f）" % peak)
+	var reversal_drift := Vector2(_actor.global_position.x + 11.5, _actor.global_position.z - 5.0).length()
+	_check(reversal_drift <= 3.0, "急转后角色仍在八方向盘内（离盘心 %.2f m）" % reversal_drift)
+	_check(_motion.on_floor, "急转后仍着地")
 	await _frames(24)
 	var settled := _pose()
 	_check(float(settled.get("turn", 1.0)) < 0.02, "转身响应衰减回零（%.3f）" % float(settled.get("turn", 1.0)))
@@ -591,6 +634,98 @@ func _batch_hud() -> void:
 	_check(_motion.flight_active == before_flight, "切换视角不改变御剑状态")
 
 
+# --- 批次：地面几何 / 材质与连续移动跟随 ------------------------------------
+
+
+## 共面闪烁修复（note「第五场」）的运行验收：
+## 1) 对运行中的真实场景执行 geometry 专项测试的同一组判据（Floor 顶 y=0、层间净空、材质不透明）；
+## 2) 用物理射线独立回读地面高度，证明可走面未被可见标记改动；
+## 3) 斜侧视角下长跑道连续跑动 + 急转盘硬反转，验证固定正交跟随相机与贴地状态。
+## 像素级「是否仍在闪」需要移动中的视觉观察；本批次不做像素判别（见 playtest 文档限制口径）。
+func _batch_surface() -> void:
+	var assertions := SurfaceAssert.new(self)
+	GeometryTest.assert_stage(assertions, _stage)
+
+	var space := _actor.get_world_3d().direct_space_state
+	var query := PhysicsRayQueryParameters3D.create(
+		_actor.global_position + Vector3(0.0, 1.2, 0.0),
+		_actor.global_position + Vector3(0.0, -2.0, 0.0))
+	query.collision_mask = 1
+	var hit := space.intersect_ray(query)
+	_check(not hit.is_empty(), "向下射线命中物理地面（Floor 碰撞盒顶）")
+	if not hit.is_empty():
+		var hit_y := (hit["position"] as Vector3).y
+		_check(absf(hit_y) <= 0.0005, "运行中地面碰撞顶面严格 y=0（射线命中 %.6f）" % hit_y)
+
+	# 斜侧视角 + 长跑道连续跟随：先读实时 camera basis 推导能合成世界 +X 的按键组合，再沿整条跑道横穿。
+	# 首轮把 A+S 写死在这里，实测它沿世界 −X 跑到 x=-13.07，两条 +X 断言失败——错的是输入/起点侧，
+	# 不是阈值；这里改为按基向量选键，断言仍要求真实 +X 位移，阈值一律不放宽。
+	# 相机是固定偏移 + 平滑跟随，因此移动中偏移有界、停下后回到稳定斜侧机位。
+	await _press(KEY_3)
+	_check(_stage.view_index() == 2, "切换到斜侧视角（实际 %d）" % _stage.view_index())
+	await _frames(2)
+	var run_keys := _run_keys_towards(Vector3.RIGHT)
+	_check(not run_keys.is_empty(),
+		"斜侧 camera basis 下存在与 +X 点积 > %.1f 的按键组合（实际 %s）" % [MIN_RUN_DIRECTION_DOT, str(run_keys)])
+	if run_keys.is_empty():
+		# 方向不明时不得继续：后续横穿与急转断言会以错误方向运行并产生误导读数。
+		return
+	_place(Vector3(-15.0, 0.05, 0.0))
+	await _frames(12)
+	_check(_motion.on_floor, "长跑道西端已稳定着地（x=%.2f）" % _actor.global_position.x)
+	var start_position := _actor.global_position
+	var camera_start := _camera.global_position
+	var view_offset := VIEW_SHOT_OFFSET
+	for code in run_keys:
+		_key(code, true)
+	var max_offset_error := 0.0
+	var on_floor_frames := 0
+	var sampled_frames := 0
+	for index in range(32):
+		await _frames(14)
+		sampled_frames += 1
+		if _motion.on_floor:
+			on_floor_frames += 1
+		var offset := _camera.global_position - (_actor.global_position + Vector3(0.0, 0.9, 0.0))
+		max_offset_error = maxf(max_offset_error, (offset - view_offset).length())
+		if _actor.global_position.x > 10.0:
+			break
+	for code in run_keys:
+		_key(code, false)
+	var travel := _actor.global_position - start_position
+	var travelled := travel.x
+	await _frames(45)
+	var settled := _camera.global_position - (_actor.global_position + Vector3(0.0, 0.9, 0.0))
+	_check(travel.length() > 0.05 and Vector3(travel.x, 0.0, travel.z).normalized().dot(Vector3.RIGHT) > 0.9,
+		"跑动位移沿真实世界 +X（Δ=(%.2f, %.2f, %.2f)）" % [travel.x, travel.y, travel.z])
+	_check(travelled >= 20.0, "长跑道连续跑动横穿 %.2f m（起点 x=%.2f，终点 x=%.2f）" % [
+		travelled, start_position.x, _actor.global_position.x])
+	_check(_actor.global_position.x > 8.0, "角色沿长跑道跑过东段（x=%.2f）" % _actor.global_position.x)
+	_check(_camera.global_position.distance_to(camera_start) > 15.0,
+		"跟随相机随角色一起位移（%.2f m，采样 %d 次）" % [
+			_camera.global_position.distance_to(camera_start), sampled_frames])
+	_check(max_offset_error < 2.5, "运动中机位偏移有界（最大 %.3f m）" % max_offset_error)
+	_check(settled.distance_to(view_offset) < 0.6,
+		"停下后机位回到稳定的斜侧偏移（误差 %.3f m）" % settled.distance_to(view_offset))
+	_check(on_floor_frames == sampled_frames, "跑动全程贴地（%d/%d 采样）" % [on_floor_frames, sampled_frames])
+	_check(absf(_actor.global_position.y) < 0.2, "跑动结束仍贴地（y=%.3f）" % _actor.global_position.y)
+
+	# 急转盘硬反转：八方向区中心连续反向，角色不出盘、不失稳，视角不变。
+	_place(Vector3(-11.5, 0.05, 5.0))
+	await _frames(30)
+	_key(KEY_D, true)
+	await _frames(16)
+	_key(KEY_D, false)
+	_key(KEY_A, true)
+	await _frames(16)
+	_key(KEY_A, false)
+	await _frames(10)
+	var pad_drift := Vector2(_actor.global_position.x + 11.5, _actor.global_position.z - 5.0).length()
+	_check(pad_drift <= 3.0, "急转盘硬反转后仍在盘内（离圆心 %.2f m）" % pad_drift)
+	_check(_motion.on_floor, "急转盘硬反转后仍着地")
+	_check(_stage.view_index() == 2, "验收全程保持斜侧视角（实际 %d）" % _stage.view_index())
+
+
 # --- 批次：退出 -------------------------------------------------------------
 
 
@@ -720,6 +855,47 @@ func _run_capture() -> void:
 		await _capture("small")
 		root.content_scale_size = previous_canvas
 		await _frames(6)
+	if _shots.has("surface"):
+		# surface 只在本分支显式请求（--shot=surface）时运行：默认完整截图不再额外生成这 6 张。
+		# 斜侧视角移动留档：长跑道连续跟随 4 帧 + 急转盘硬反转 1 帧（真实按键驱动，非摆拍）。
+		await _switch_view(KEY_3, 2)
+		_place(Vector3(-14.0, 0.05, 0.0))
+		await _frames(10)
+		await _capture("surface-rest")
+		# 定量像素对照（口径见 playtest 文档）：
+		# - 静止组：角色与相机稳定后连续两帧比较地面区域（HUD 会逐帧刷新，故只取地面区域）；
+		# - 移动组：跟随跑动中连续两帧比较同一区域，读数不可归因到闪烁，只作原始记录。
+		var static_a := await _grab_frame()
+		var static_b := await _grab_frame()
+		_record_ground_delta("静止", static_a, static_b)
+		# 与 surface 批次同一口径：按实时 camera basis 选出指向世界 +X 的按键，不写死组合。
+		var capture_keys := _run_keys_towards(Vector3.RIGHT)
+		_check(not capture_keys.is_empty(),
+			"截图路径存在与 +X 点积 > %.1f 的按键组合（实际 %s）" % [MIN_RUN_DIRECTION_DOT, str(capture_keys)])
+		if capture_keys.is_empty():
+			_finish()
+			return
+		for code in capture_keys:
+			_key(code, true)
+		for index in range(4):
+			await _frames(14)
+			await _capture("surface-follow-%d" % index)
+		var moving_a := await _grab_frame()
+		var moving_b := await _grab_frame()
+		_record_ground_delta("移动", moving_a, moving_b)
+		for code in capture_keys:
+			_key(code, false)
+		await _frames(8)
+		_place(Vector3(-11.5, 0.05, 5.0))
+		await _frames(12)
+		_key(KEY_D, true)
+		await _frames(18)
+		_key(KEY_D, false)
+		_key(KEY_A, true)
+		await _frames(6)
+		await _capture("surface-turn")
+		_key(KEY_A, false)
+		await _frames(10)
 	_finish()
 
 
@@ -773,6 +949,35 @@ func _press(code: Key) -> void:
 	_key(code, true)
 	await _frames(1)
 	_key(code, false)
+
+
+## 按实时 camera basis 选出一组屏幕输入键，使其合成方向最接近 target（世界 +X）。
+## 复刻场景与移动能力的映射公式（right * x - forward * y），不直接读组件字段，
+## 也不写死任何按键——基向量换成正面视角时同一函数会给出别的键。
+## 最佳组合与 target 的点积必须 > MIN_RUN_DIRECTION_DOT，否则返回空数组；
+## 调用方必须据此显式失败并中止，不得在方向不明时继续跑。
+func _run_keys_towards(target: Vector3) -> Array:
+	var basis := _camera.global_transform.basis
+	var right := Vector3(basis.x.x, 0.0, basis.x.z).normalized()
+	var forward := Vector3(-basis.z.x, 0.0, -basis.z.z).normalized()
+	var best: Array = []
+	var best_dot := -2.0
+	for candidate in RUN_KEY_CANDIDATES:
+		var intent := Vector2.ZERO
+		for code in candidate:
+			intent += MovementLabInput.MOVE_KEYS[code] as Vector2
+		intent = intent.limit_length(1.0)
+		var direction := right * intent.x - forward * intent.y
+		direction.y = 0.0
+		if direction.length_squared() < 0.0001:
+			continue
+		var dot := direction.normalized().dot(target.normalized())
+		if dot > best_dot:
+			best_dot = dot
+			best = candidate
+	if best_dot > MIN_RUN_DIRECTION_DOT:
+		return best
+	return []
 
 
 func _frames(count: int) -> void:
@@ -878,12 +1083,7 @@ func _code_only(source: String) -> String:
 
 
 func _capture(suffix: String) -> void:
-	_frame_drawn = false
-	RenderingServer.frame_post_draw.connect(_on_frame_drawn, CONNECT_ONE_SHOT)
-	var deadline := Time.get_ticks_msec() + CAPTURE_TIMEOUT_MSEC
-	while not _frame_drawn and Time.get_ticks_msec() < deadline:
-		await process_frame
-	if not _frame_drawn:
+	if not await _await_draw():
 		_check(false, "等待渲染帧超时，未能截图：" + suffix)
 		return
 	var path := "%s-%s.png" % [_prefix, suffix]
@@ -907,6 +1107,54 @@ func _on_frame_drawn() -> void:
 	_frame_drawn = true
 
 
+## 等待一个真实绘制帧并抓取当前视口画面（截图路径专用）。
+func _grab_frame() -> Image:
+	if not await _await_draw():
+		return null
+	return root.get_texture().get_image()
+
+
+## 等待一个真实绘制帧；超时返回 false，并清掉未触发的 one-shot 连接（否则下次 connect 直接报错）。
+func _await_draw() -> bool:
+	_frame_drawn = false
+	if RenderingServer.frame_post_draw.is_connected(_on_frame_drawn):
+		RenderingServer.frame_post_draw.disconnect(_on_frame_drawn)
+	RenderingServer.frame_post_draw.connect(_on_frame_drawn, CONNECT_ONE_SHOT)
+	var deadline := Time.get_ticks_msec() + CAPTURE_TIMEOUT_MSEC
+	while not _frame_drawn and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if not _frame_drawn and RenderingServer.frame_post_draw.is_connected(_on_frame_drawn):
+		RenderingServer.frame_post_draw.disconnect(_on_frame_drawn)
+	return _frame_drawn
+
+
+## 地面区域（避开逐帧刷新的 HUD）连续两帧差异：静止组应为 0；
+## 移动组读数受相机跟随主导，不可归因于闪烁，只作原始记录。
+func _record_ground_delta(label: String, a: Image, b: Image) -> void:
+	if a == null or b == null:
+		_check(false, "%s组：抓帧失败" % label)
+		return
+	var region := Rect2i(320, 300, 640, 240)
+	var crop_a := a.get_region(region)
+	var crop_b := b.get_region(region)
+	var data_a := crop_a.get_data()
+	var data_b := crop_b.get_data()
+	var count := mini(data_a.size(), data_b.size())
+	var changed := 0
+	var strong := 0
+	for index in range(count):
+		var delta := absi(int(data_a[index]) - int(data_b[index]))
+		if delta != 0:
+			changed += 1
+		if delta > 24:
+			strong += 1
+	print("PIXEL %s组：地面区域 %s 连续两帧 字节差异 %d / %d（%.3f%%），其中差值 >24 的字节 %d（%.3f%%）" % [
+		label, str(region), changed, count, 100.0 * float(changed) / float(maxi(count, 1)),
+		strong, 100.0 * float(strong) / float(maxi(count, 1))])
+	# 读数只作原始记录，不判 PASS/FAIL：窗口模式（Metal swapchain）帧间字节逐次不同，
+	# 且实测静止组读数不低于移动组，该口径对「是否仍在闪烁」无判别力（见 playtest 文档「像素证据」）。
+
+
 func _check(ok: bool, message: String) -> void:
 	print("%s %s" % ["PASS" if ok else "FAIL", message])
 	if not ok:
@@ -916,3 +1164,17 @@ func _check(ok: bool, message: String) -> void:
 func _finish() -> void:
 	print("MOTION_STAGE_PLAYTEST 完成：失败 %d" % _failed)
 	quit(1 if _failed > 0 else 0)
+
+
+## 把 geometry 专项测试的断言接口适配到 playtest 的 _check：同一份判据、同一份失败计数。
+class SurfaceAssert extends RefCounted:
+	var _host: Object
+
+	func _init(host: Object) -> void:
+		_host = host
+
+	func assert_true(condition: bool, message: String) -> void:
+		_host.call("_check", condition, message)
+
+	func assert_false(condition: bool, message: String) -> void:
+		_host.call("_check", not condition, message)

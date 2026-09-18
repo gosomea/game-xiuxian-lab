@@ -18,6 +18,7 @@ const SUITES := [
 	"res://game/systems/lab_catalog/test_lab_catalog.gd",
 	"res://tests/test_movement_lab_hub.gd",
 	"res://tests/test_movement_lab_input.gd",
+	"res://tests/test_motion_stage_geometry.gd",
 ]
 
 

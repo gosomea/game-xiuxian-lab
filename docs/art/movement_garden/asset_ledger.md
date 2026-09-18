@@ -25,7 +25,7 @@
 
 ## 2026-09-18 第二次修改：庭院地面共面/穿插修复（surface clearance）
 
-依据 [装饰面共面导致的跨场景地面闪烁](../../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)
+依据 [装饰面共面与透明穿叠导致的跨场景地面闪烁](../../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)
 与 [mountain-traversal](../../../notes/implemented/gameplay/2026-09-18-mountain-traversal.md) 已实现的
 「装饰面高出承载面」约定。**属于「在原模型上继续修改」，因此原位更新同一 `.blend` 与 GLB，同时保留旧件。**
 
