@@ -898,10 +898,21 @@ func _step_preview() -> void:
 	_update_hud()
 
 
+## 动作选择后的场景级反馈：点击动作按钮必须马上「看得见角色动起来」。
+## 这是本场景的编排补充，不改变通用状态机语义——
+## MotionPreviewState.select() 仍是「选择不自动播放」（独立展示实例与单测依赖该语义）；
+## 显式播放 / 暂停 / 单步控件保持原样，单步仍与 playing 无关。
+## 只有真正切换了动作才自动开播：重复点同一动作是幂等切换（select_action 返回 false），
+## 不得把用户刚做的显式暂停又改回播放。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md
+## 「右下控件命中与动作选择反馈」（2026-09-18 第三轮纠错）。
 func _on_action_selected(action_id: StringName) -> void:
 	if _preview == null:
 		return
-	_preview.call("select_action", action_id)
+	var changed: bool = bool(_preview.call("select_action", action_id))
+	if changed:
+		var state: MotionPreviewState = _preview.state()
+		state.playing = true
 	_update_hud()
 
 

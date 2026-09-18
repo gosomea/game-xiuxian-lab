@@ -4,12 +4,17 @@ extends SceneTree
 ## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
 ##
 ## 用法（分批，单进程 <45s）：
-##   Godot --headless --path src --script res://tests/motion_stage_playtest.gd -- --batch=assembly,idle,run,turn,jump,flight,landing,removal,hud,exit
+##   Godot --headless --path src --script res://tests/motion_stage_playtest.gd -- --batch=assembly,idle,run,turn,jump,flight,landing,removal,hud,exit,clicks
 ## 窗口截图（真实输入，非传送摆拍）：
 ##   Godot --path src --script res://tests/motion_stage_playtest.gd -- --capture-prefix=/abs/prefix --shot=run,flight,landing,small
 ##
 ## 断言纪律：只经角色公开输入 API 驱动；读回 components 公共字段与表现层 pose_state()；
 ## 失败即退出码 1，不吞错、不放宽阈值。
+##
+## clicks 批次（右下预览控件真实鼠标回归）：只经 Viewport.push_input() 送真实
+## InputEventMouseMotion / InputEventMouseButton 到控件 get_global_rect() 中心，走 GUI 管线；
+## 禁止 pressed.emit()、禁止直接调用场景 handler、禁止直接写 preview state ——
+## 状态变化必须由引擎的 GUI 事件派发与控件信号链自然产生。
 
 const SCENE := "res://levels/experiments/character_movement/motion_stage.tscn"
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
@@ -131,6 +136,9 @@ func _run_batches() -> void:
 	if _has("focus"):
 		print("--- batch focus ---")
 		await _batch_focus()
+	if _has("clicks"):
+		print("--- batch clicks ---")
+		await _batch_clicks()
 	if _has("surface"):
 		print("--- batch surface ---")
 		await _batch_surface()
@@ -976,6 +984,275 @@ func _batch_focus() -> void:
 	_check(int(_stage.stage_state().get("jump_edges", 0)) == jump_before, "预览模式下空格始终不产生跳跃边沿")
 	_press(KEY_M)
 	await _frames(6)
+
+
+# --- 批次：右下预览控件真实鼠标回归（真实 GUI 管线 + 动作选择反馈） ----------
+
+
+## 右下预览控件真实鼠标回归（2026-09-18 第三轮纠错后重锚定）。
+##
+## 首要回归是**用户可见问题**：真实点击动作按钮后动作切换、随即真的动起来
+## （playing 为真、local_time 持续推进、模型读数变化），再用播放按钮暂停并验证时钟停止。
+## 只经 Viewport.push_input() 送真实鼠标事件走 GUI 管线；不使用 pressed.emit()，
+## 不直接调用场景 handler，也不直接写 state 字段；状态一律经 preview_snapshot() 回读。
+##
+## 不作为门禁的项：面板 mouse_filter 取值（已被可见窗口实测证伪：父 Control 为 IGNORE
+## 不阻断子按钮命中，本仓 LabHud 同形结构一直可点），只打印、不判失败。
+func _batch_clicks() -> void:
+	await _clicks_body()
+	await _clicks_teardown()
+
+
+## 批次主体：任何提前 return 都不会跳过收尾（收尾由 _batch_clicks 保证执行）。
+func _clicks_body() -> void:
+	var panel := _find_named(_stage, "PreviewPanel") as Control
+	_check(panel != null, "工作台装配右下预览面板")
+	if panel == null:
+		return
+
+	# 预览面板只在预览模式可见；先切模式，且必须等可见性真正生效再取矩形。
+	_press(KEY_M)
+	await _frames(8)
+	_check(_stage.mode() == 1, "clicks 批次切到预览模式（实际 %d）" % _stage.mode())
+	_check(panel.visible, "预览模式下右下预览面板可见")
+	# 几何稳定：面板必须在画布内，否则中心点会落到视口外（真实点击的前提，仍作门禁）。
+	_check(_rect_fits(panel), "预览面板在画布内（%s）" % _rect_text(panel))
+	# 诊断输出（非门禁）：filter 取值只用于排查，不参与判定。
+	print("DIAG panel.mouse_filter=%d（仅供参考，非门禁）" % panel.mouse_filter)
+
+	# --- 首要回归：点动作按钮 → 动作切换 + 真的动起来 -------------------------
+	var walk_button := _find_named(panel, "Action_walk") as Button
+	var run_button := _find_named(panel, "Action_run") as Button
+	var play_button := _find_named(panel, "PlayButton") as Button
+	_check(walk_button != null and run_button != null and play_button != null,
+		"面板提供动作与播放控件")
+	if walk_button == null or run_button == null or play_button == null:
+		return
+
+	# 点击动作按钮：action_id 必须切换。
+	await _click_control(run_button)
+	var selected: Dictionary = _stage.preview_snapshot()
+	_check(str(selected.get("action_id", "")) == "run",
+		"点击动作按钮后 action_id 切到 run（实际 %s）" % str(selected.get("action_id", "")))
+	_check(run_button.button_pressed and not walk_button.button_pressed,
+		"被点动作按钮显示选中态，另一个未选中")
+	# 动作选择必须立即带来可见运动：playing 为真且局部时钟持续推进。
+	_check(bool(selected.get("playing", false)),
+		"点击动作按钮后进入播放态（用户可见「动起来」的前提）")
+	var motion_a: Dictionary = _stage.preview_snapshot()
+	var time_a := float(motion_a.get("local_time", 0.0))
+	var pose_a: Dictionary = motion_a.get("pose", {})
+	await _frames(14)
+	var motion_b: Dictionary = _stage.preview_snapshot()
+	var time_b := float(motion_b.get("local_time", 0.0))
+	var pose_b: Dictionary = motion_b.get("pose", {})
+	_check(time_b > time_a, "点动作后 local_time 持续推进（%.4f -> %.4f）" % [time_a, time_b])
+	# 模型读数必须真的变：对比两个时刻的完整 pose（与 preview 批次同一判据）。
+	_check(not _pose_equal(pose_a, pose_b),
+		"点动作后模型读数随播放变化（phase %.3f -> %.3f）" % [
+			float(pose_a.get("phase", 0.0)), float(pose_b.get("phase", 0.0))])
+
+	# 点击播放按钮暂停：时钟必须随即停止。
+	await _click_control(play_button)
+	var paused_a: Dictionary = _stage.preview_snapshot()
+	_check(not bool(paused_a.get("playing", true)), "点击播放按钮暂停后 playing 为假")
+	_check(play_button.text == "播放", "暂停后播放按钮文案为「播放」（实际 %s）" % play_button.text)
+	await _frames(20)
+	var paused_b: Dictionary = _stage.preview_snapshot()
+	_check(absf(float(paused_a.get("local_time", 0.0)) - float(paused_b.get("local_time", 0.0))) < 0.000001,
+		"暂停后 20 帧 local_time 逐位不变（%.6f）" % float(paused_b.get("local_time", -1.0)))
+	# 暂停态的公开读数：consumed_delta 必须为 0（只读 snapshot 字段，不窥私有）。
+	_check(float(paused_b.get("consumed_delta", -1.0)) <= 0.0,
+		"暂停态 consumed_delta == 0（实际 %.6f）" % float(paused_b.get("consumed_delta", -1.0)))
+	# 显式暂停后重复点击「当前」动作：select() 幂等返回未变化，自动播放不得把它唤醒。
+	var repeat_a: Dictionary = _stage.preview_snapshot()
+	_check(str(repeat_a.get("action_id", "")) == "run", "重复点击前 current 仍是 run")
+	await _click_control(run_button)
+	await _frames(10)
+	var repeat_b: Dictionary = _stage.preview_snapshot()
+	_check(not bool(repeat_b.get("playing", true)),
+		"显式暂停后重复点击当前动作仍保持暂停（锁 changed 判断）")
+	_check(absf(float(repeat_b.get("local_time", 0.0)) - float(repeat_a.get("local_time", 0.0))) < 0.000001,
+		"重复点击当前动作后 local_time 不推进（%.6f）" % float(repeat_b.get("local_time", -1.0)))
+	# 切到另一个动作才应重新自动播放（对照：证明上面的暂停不是按钮失效）。
+	await _click_control(walk_button)
+	await _frames(6)
+	_check(bool(_stage.preview_snapshot().get("playing", false)),
+		"切到不同动作时恢复自动播放（对照）")
+	await _click_control(play_button)
+	await _frames(2)
+
+	# --- 倍率：真实点击后 rate 生效且按钮反馈正确（不做帧长比值，避免帧敏感） ---
+	var rate_button := _button_by_text(panel, "0.25x")
+	var rate_full := _button_by_text(panel, "1.0x")
+	_check(rate_button != null and rate_full != null, "面板提供 0.25x 与 1.0x 倍率按钮")
+	if rate_button == null or rate_full == null:
+		return
+	await _click_control(rate_button)
+	var slowed: Dictionary = _stage.preview_snapshot()
+	_check(absf(float(slowed.get("rate", 1.0)) - 0.25) < 0.0001,
+		"点击 0.25x 后 rate 生效（实际 %.3f）" % float(slowed.get("rate", -1.0)))
+	_check(rate_button.button_pressed and not rate_full.button_pressed,
+		"0.25x 按钮按下、1.0x 未按下（单选反馈）")
+	# 回到 1.0x：rate 与按钮反馈同步回位。
+	await _click_control(rate_full)
+	var restored: Dictionary = _stage.preview_snapshot()
+	_check(absf(float(restored.get("rate", 0.25)) - 1.0) < 0.0001,
+		"点击 1.0x 后 rate 回到 1.0（实际 %.3f）" % float(restored.get("rate", -1.0)))
+	_check(rate_full.button_pressed and not rate_button.button_pressed,
+		"1.0x 按钮按下、0.25x 未按下（单选反馈回位）")
+
+	# --- 单步：暂停态点单步，local_time 恰好推进 STEP_SECONDS × rate ---
+	var step_button := _find_named(panel, "StepButton") as Button
+	_check(step_button != null, "面板提供单步按钮")
+	if step_button == null:
+		return
+	_check(not bool(_stage.preview_snapshot().get("playing", true)), "单步前处于暂停态（单步与播放无关）")
+	var step_before := float(_stage.preview_snapshot().get("local_time", 0.0))
+	var step_rate := float(_stage.preview_snapshot().get("rate", 1.0))
+	await _click_control(step_button)
+	var step_after := float(_stage.preview_snapshot().get("local_time", 0.0))
+	var expected_step := MotionPreviewState.STEP_SECONDS * step_rate
+	_check(absf(step_after - step_before - expected_step) < 0.0001,
+		"点击单步恰好推进 STEP_SECONDS × 倍率（%.4f）" % expected_step)
+
+	# --- 循环：点击切换 looping，且按钮按下态与读数一致 ---
+	var loop_button := _find_named(panel, "LoopButton") as Button
+	_check(loop_button != null, "面板提供循环按钮")
+	if loop_button == null:
+		return
+	var loop_before := bool(_stage.preview_snapshot().get("looping", true))
+	await _click_control(loop_button)
+	await _frames(4)
+	var loop_after := bool(_stage.preview_snapshot().get("looping", true))
+	_check(loop_after != loop_before, "点击循环按钮切换 looping（%s -> %s）" % [str(loop_before), str(loop_after)])
+	_check(loop_button.button_pressed == loop_after, "循环按钮按下态与 looping 读数一致")
+
+	# --- A-B 过渡：必须先真实点两个动作（产生 previous != current）再点 A-B ---
+	var ab_button := _find_named(panel, "AbButton") as Button
+	_check(ab_button != null, "面板提供 A-B 过渡按钮")
+	if ab_button == null:
+		return
+	await _click_control(walk_button)
+	await _frames(4)
+	await _click_control(run_button)
+	await _frames(4)
+	# 先把上一次切换的过渡走完（只读 snapshot 的公开 transition 字段，有界等待）。
+	var settle := 0
+	while float(_stage.preview_snapshot().get("transition", 1.0)) < 1.0 and settle < 120:
+		await _frames(1)
+		settle += 1
+	var ab_ready: Dictionary = _stage.preview_snapshot()
+	_check(str(ab_ready.get("action_id", "")) == "run" and str(ab_ready.get("previous_id", "")) == "walk",
+		"前置：两个动作已真实点击切换（current=%s previous=%s）" % [
+			str(ab_ready.get("action_id", "")), str(ab_ready.get("previous_id", ""))])
+	_check(float(ab_ready.get("transition", 0.0)) >= 1.0,
+		"前置：A-B 点击前过渡已收敛（transition=%.3f）" % float(ab_ready.get("transition", 0.0)))
+	# A-B 的相对判据：点击后 transition 必须从收敛值重置变小（不依赖固定 0.35s 窗口时长）。
+	var ab_before := float(ab_ready.get("transition", 1.0))
+	await _click_control(ab_button)
+	var ab_after: Dictionary = _stage.preview_snapshot()
+	var ab_transition := float(ab_after.get("transition", -1.0))
+	_check(ab_transition < ab_before,
+		"点击 A-B 后 transition 重置变小（%.3f -> %.3f）" % [ab_before, ab_transition])
+	_check(bool(ab_after.get("transitioning", false)), "点击 A-B 后处于过渡态")
+	_check(str(ab_after.get("action_id", "")) == "run", "A-B 后仍停在目标动作 run（实际 %s）" % str(ab_after.get("action_id", "")))
+
+	# --- 负向对照：面板矩形外的点击不改变预览状态 ---
+	await _click_control(play_button)  # 先制造一个确定可观察的已变状态
+	await _frames(4)
+	var outside_before: Dictionary = _stage.preview_snapshot()
+	await _click_outside(panel)
+	await _frames(4)
+	var outside_after: Dictionary = _stage.preview_snapshot()
+	_check(str(outside_after.get("action_id", "")) == str(outside_before.get("action_id", ""))
+		and absf(float(outside_after.get("rate", 1.0)) - float(outside_before.get("rate", 1.0))) < 0.0001
+		and bool(outside_after.get("looping", true)) == bool(outside_before.get("looping", true)),
+		"面板矩形外点击不改变 action_id / rate / looping")
+	_check(not panel.get_global_rect().has_point(_outside_point(panel)),
+		"负向对照点确实在面板矩形之外")
+
+
+## 批次收尾（由 _batch_clicks 无条件调用，即使主体提前 return）：
+## 释放控件焦点（按钮 FOCUS_ALL，点击后会持有焦点）→ 用真实 M 键回 REALTIME
+## （_apply_mode 内部会暂停预览时钟、复位预览、清角色输入并隐藏面板）→ 逐项回读确认无泄漏。
+## 后续 surface 批次对相机跟随与输入状态敏感，这里的泄漏会表现为无关批次失败。
+func _clicks_teardown() -> void:
+	var focus := root.gui_get_focus_owner()
+	if focus != null:
+		focus.release_focus()
+		await process_frame
+	if _stage.mode() != 0:
+		_press(KEY_M)
+		await _frames(8)
+	# 再等几帧让模式切换的暂停 / 复位在引擎侧完全生效。
+	await _frames(4)
+	_check(_stage.mode() == 0, "clicks 收尾：回到实时运动模式（实际 %d）" % _stage.mode())
+	_check(not bool(_stage.preview_snapshot().get("playing", true)), "clicks 收尾：预览时钟已暂停")
+	_check(root.gui_get_focus_owner() == null,
+		"clicks 收尾：无控件持有键盘焦点（实际 %s）" % _control_name(root.gui_get_focus_owner()))
+	_check(_motion.move_input.length() < 0.001 and _motion.vertical_input * _motion.vertical_input < 0.001,
+		"clicks 收尾：角色移动 / 升降输入已清零")
+
+
+## 把鼠标移到屏幕上某点并等 GUI 处理 hover（真实 motion 事件，走 Viewport 管线）。
+func _move_mouse_to_point(point: Vector2) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	motion.global_position = point
+	root.push_input(motion)
+	await process_frame
+	await process_frame
+
+
+## 真实左键点击屏幕某点：motion（hover）-> press -> release，全部经 Viewport.push_input()。
+## 正负用例共用同一条管线，避免"负向对照走了另一条不真实的路径"。
+func _click_point(point: Vector2) -> void:
+	await _move_mouse_to_point(point)
+	for pressed in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
+		click.pressed = pressed
+		click.position = point
+		click.global_position = point
+		root.push_input(click)
+		await process_frame
+	await _frames(2)
+
+
+## 真实左键点击控件中心。
+func _click_control(control: Control) -> void:
+	await _click_point(control.get_global_rect().get_center())
+
+
+## 面板之外的世界区域点击（负向对照）；点必须落在面板矩形外且仍在视口内。
+func _click_outside(panel: Control) -> void:
+	await _click_point(_outside_point(panel))
+
+
+## 面板外的稳定取点：面板左边界之左 24px、竖直居中；越界时退到左上角安全点。
+func _outside_point(panel: Control) -> Vector2:
+	var rect := panel.get_global_rect()
+	var viewport := root.get_visible_rect()
+	var point := Vector2(maxf(rect.position.x - 24.0, 4.0), clampf(rect.get_center().y, 4.0, viewport.size.y - 4.0))
+	if rect.has_point(point):
+		point = Vector2(4.0, 4.0)
+	return point
+
+
+func _control_name(control: Control) -> String:
+	return "<null>" if control == null else str(control.name)
+
+
+## 按可见文案找按钮：Godot 会把节点名里的 "." 消毒成 "_"（Rate0.25x -> Rate0_25x），
+## 因此倍率按钮不能用假设的节点名查找；文案是用户实际看到、也最稳定的标识。
+func _button_by_text(root_node: Node, text: String) -> Button:
+	for node in root_node.find_children("*", "Button", true, false):
+		var button := node as Button
+		if button != null and button.text == text:
+			return button
+	return null
 
 
 # --- 批次：地面几何 / 材质与连续移动跟随 ------------------------------------
