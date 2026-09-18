@@ -26,17 +26,12 @@ const CAMERA_FAR := 220.0
 ## Q / E 按住时的偏航角速度（度/秒）。
 const YAW_SPEED := 90.0
 
-## 物理键 → 屏幕输入（x = 右，y = 下）；WASD 与方向键等价。
-const MOVE_KEYS := {
-	KEY_W: Vector2(0.0, -1.0),
-	KEY_UP: Vector2(0.0, -1.0),
-	KEY_S: Vector2(0.0, 1.0),
-	KEY_DOWN: Vector2(0.0, 1.0),
-	KEY_A: Vector2(-1.0, 0.0),
-	KEY_LEFT: Vector2(-1.0, 0.0),
-	KEY_D: Vector2(1.0, 0.0),
-	KEY_RIGHT: Vector2(1.0, 0.0),
-}
+## 本场景专有的"按住生效"键：Q / E 转镜头。
+## 本场景只跟踪移动键（WASD / 方向键）与这里的 YAW_KEYS，不消费空格 / Ctrl——
+## 镜头实验室没有跳跃与升降语义；升降键由需要它的场景自行声明 VERTICAL_KEYS。
+## 移动键映射、按住状态与失焦清账统一由 MovementLabInput 承担
+## （两个消费者验证后抽取；见同目录 movement_lab_input.gd）。
+const YAW_KEYS: Array[Key] = [KEY_Q, KEY_E]
 
 ## 直接切换策略的数字键（1/2/3/4 依次对应 HARD / SMOOTH / DEADZONE / LOOKAHEAD），Tab 循环。
 const MODE_KEYS := {
@@ -52,7 +47,7 @@ var _previous_msaa: Viewport.MSAA = Viewport.MSAA_DISABLED
 var _player: Swordsman
 var _motion: SwordsmanMotionComponent
 var _rig: CameraLabRig
-var _pressed: Dictionary = {}
+var _input := MovementLabInput.new()
 var _status: Label
 var _mode_label: Label
 var _occluded := false
@@ -83,7 +78,7 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	# 失焦只清输入；不改变镜头策略、不改变角色能力状态。
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
-		_pressed.clear()
+		_input.clear()
 		if _player != null:
 			_player.clear_input()
 
@@ -96,9 +91,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		# 物理键码优先（不看键盘布局）；个别平台修饰键只填逻辑键码时回退。
-		var code := key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
-		if MOVE_KEYS.has(code) or code == KEY_Q or code == KEY_E:
-			_pressed[code] = key_event.pressed
+		var code := MovementLabInput.key_code(key_event)
+		# 移动键与 Q / E 都只是"按住状态"；语义（移动 vs 转镜头）留在本场景。
+		if _input.track_key(key_event, YAW_KEYS):
 			viewport.set_input_as_handled()
 			return
 		if key_event.pressed and not key_event.echo:
@@ -138,13 +133,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if _player == null or _motion == null or _rig == null:
 		return
-	if _pressed.get(KEY_Q, false):
+	if _input.is_down(KEY_Q):
 		_rig.add_yaw_degrees(-YAW_SPEED * delta)
-	if _pressed.get(KEY_E, false):
+	if _input.is_down(KEY_E):
 		_rig.add_yaw_degrees(YAW_SPEED * delta)
 	# 镜头旋转后，屏幕相对移动仍由相机地面基解释（与相机实际 basis 同源）。
 	_player.set_camera_ground_basis(_rig.right_axis(), _rig.forward_axis())
-	var move := _read_move_input()
+	var move := _input.move_input()
 	_player.set_move_input(move)
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if move != Vector2.ZERO:
@@ -158,14 +153,6 @@ func _physics_process(delta: float) -> void:
 func _process(_delta: float) -> void:
 	_update_occlusion()
 	_update_status()
-
-
-func _read_move_input() -> Vector2:
-	var input_vector := Vector2.ZERO
-	for code in MOVE_KEYS:
-		if _pressed.get(code, false):
-			input_vector += MOVE_KEYS[code] as Vector2
-	return input_vector.limit_length(1.0)
 
 
 ## 相机 → 角色之间的遮挡读数：纯观察项，不改变镜头行为。
@@ -183,7 +170,7 @@ func _update_occlusion() -> void:
 
 
 func _reset_experiment() -> void:
-	_pressed.clear()
+	_input.clear()
 	_player.global_position = SPAWN_POSITION
 	_player.reset_motion()
 	_player.set_aim_direction(SPAWN_AIM)
@@ -192,7 +179,7 @@ func _reset_experiment() -> void:
 
 
 func _return_to_hub() -> void:
-	_pressed.clear()
+	_input.clear()
 	if _player != null:
 		_player.clear_input()
 	var result := get_tree().change_scene_to_file(HUB_SCENE)
@@ -397,3 +384,9 @@ func camera() -> Camera3D:
 ## 相机 → 角色视线是否被灰盒几何挡住（只读观察项）。
 func is_occluded() -> bool:
 	return _occluded
+
+
+## 只读：本场景的输入 helper 是否登记了该键（用于验证"不吞与本场景无关的键"）。
+## 不写任何状态，仅供验收脚本读回。
+func input_held(code: Key) -> bool:
+	return _input.is_down(code)

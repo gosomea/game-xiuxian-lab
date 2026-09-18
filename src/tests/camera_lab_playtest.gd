@@ -82,7 +82,7 @@ func _run() -> void:
 	await scene_changed
 	await _frames(5)
 	_bind()
-	_check_assembly()
+	await _check_assembly()
 	_check_static_boundaries()
 
 	if not _prefix.is_empty():
@@ -101,6 +101,7 @@ func _run() -> void:
 
 
 func _check_assembly() -> void:
+	await _check_unrelated_keys_not_swallowed()
 	_check(_actor != null and _motion != null and _camera != null, "镜头实验室装配完成（角色 / 组件 / 相机）")
 	_check(_rig != null, "场景装配 CameraLabRig 跟随台架")
 	_check(_rig.mode() == CameraLabRig.Mode.HARD, "默认策略为固定偏移硬跟随")
@@ -171,6 +172,49 @@ func _read_source(path: String) -> String:
 	if file == null:
 		return ""
 	return file.get_as_text()
+
+
+## 本场景不使用跳跃 / 升降，因此空格与 Ctrl 必须原样透传，不得被输入 helper 吞掉。
+## 回归防线：共享 helper 一旦把升降键默认纳入跟踪（而非由场景显式声明），这里会立刻失败。
+## 注意判据选择：is_input_handled() 不可用作本检查——实测它对未跟踪键（Y/P）也返回 true
+## 且读后保持粘滞（见报告「验收方法的坑」），因此改为直接读回 helper 的登记状态。
+func _check_unrelated_keys_not_swallowed() -> void:
+	# 事件经 Input.parse_input_event 入队后要等一帧才派发到 _unhandled_input：
+	# 每次推送后 await 一帧再读，否则所有"未登记"断言都会vacuous成立。
+	for code in [KEY_SPACE, KEY_CTRL, KEY_P, KEY_Y]:
+		var name := OS.get_keycode_string(code)
+		_push_key(code, true)
+		await process_frame
+		_check(not _input_held(code), "%s 未被镜头实验室登记（不吞无关输入）" % name)
+		_push_key(code, false)
+		await process_frame
+		_check(not _input_held(code), "%s 释放后仍未被登记" % name)
+	# 对照组：本场景真正跟踪的 Q 必须登记，证明事件确实派发、读数确实能区分两者。
+	_push_key(KEY_Q, true)
+	await process_frame
+	var tracked: bool = _input_held(KEY_Q)
+	_push_key(KEY_Q, false)
+	await process_frame
+	_check(tracked, "对照组：本场景跟踪的 Q 被登记（读数有效）")
+	_check(not _input_held(KEY_Q), "Q 释放后登记清除")
+	# 未登记跳 / 升降，角色不应因此起跳或产生升降意图。
+	_check(absf(_motion.vertical_input) < 0.001, "空格 / Ctrl 不产生升降意图（%.3f）" % _motion.vertical_input)
+	await _frames(30)
+	_check(_motion.on_floor and absf(_motion.actual_velocity.y) < 0.01,
+		"空格未触发跳跃：等待 30 帧后角色仍着地（vy=%.3f）" % _motion.actual_velocity.y)
+
+
+## 读回场景 helper 的按键登记状态（场景只读 API；镜头实验室不消费跳 / 升降键）。
+func _input_held(code: Key) -> bool:
+	return bool(_lab.call("input_held", code))
+
+
+func _push_key(code: Key, pressed: bool) -> void:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.physical_keycode = code
+	event.pressed = pressed
+	Input.parse_input_event(event)
 
 
 ## HUD 文案必须与 MODE_KEYS 实际支持的按键数量一致（防止"四模式却只写三个键"）。
