@@ -19,8 +19,13 @@ Status: implemented
 > 实现、测试命令与逐项证据见 [镜头组合与 RMB 归属验收](../../../docs/playtest/2026-09-18-camera-combo-rmb.md)。
 > **未完成**：编辑器嵌入 Game 视图的人工验收仍待主代理执行（决策中的双形态要求只完成独立窗口一侧）。
 >
-> **待修复缺陷（2026-09-18 第三轮，先决策后实现）**：人物动作工作台预览面板根 `MOUSE_FILTER_IGNORE` 使整棵按钮子树退出 GUI hit test，右下角播放 / 单步 / 循环 / A–B / 倍率 / 动作按钮的真实鼠标点击零响应；
-> 修复决策与回归判据见 §4「右下控件命中」。**`src/` 修复与运行证据尚未落地**，实现前不得把本 note 当作已修复事实引用。
+> **第三轮纠错（2026-09-18，先决策后实现）**：上一轮把「动作工作台右下控件无响应」的根因记为
+> 预览面板根 `mouse_filter = MOUSE_FILTER_IGNORE` 阻断子按钮 hit test。**该根因已被可见窗口实测证伪**：
+> Godot 4.6 下父 Control 为 `IGNORE` 不会阻断子按钮命中，`IGNORE` 祖先上的按钮仍可正常 hover 与点击。
+> 真实产品缺口是**动作选择缺少立即可见反馈**——点动作按钮后 `action_id` 已切换、按钮已显示选中态，
+> 但 `MotionPreviewState.select()` 保持暂停语义（`playing` 仍为 false），角色因此不动，用户读到的是
+> 「跑动 · 已暂停」的错觉。修复决策见 §4「右下控件命中与动作选择反馈」；**`src/` 修复与运行证据尚未落地**，
+> 实现前不得把本 note 当作已修复事实引用。
 
 ## 问题
 
@@ -95,11 +100,12 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 | G4 御剑 | 上剑/悬停/加速/转向/刹停/落剑 | `_flight` 增益 + climb/dive 俯仰 + 微起伏 | mount/hover/accel/turn/brake/dismount | P2–P3 |
 
 - **操控与观察**：动作库选择、播放/暂停/单步/循环/倍率（.25 / .5 / 1）、A–B 混合过渡、侧/正/斜视角与脚接触观察。**控件不是空壳**：P0 用现有程序化动作即能真播、真停、单步；P1/P2 分批接骨骼库，**本轮不承诺完成**。
-- **右下控件命中（2026-09-18 第三轮：缺陷、根因与修复决策；`src/` 修复尚未落地）**：
-  - **缺陷事实**：`src/game/systems/motion_preview/motion_preview_panel.gd` 的根节点（`MotionPreviewPanel`，extends `PanelContainer`）自身设置 `mouse_filter = Control.MOUSE_FILTER_IGNORE`，导致 `ActionRow` / `PlaybackRow` / `RateRow` 的整棵按钮子树不参与 GUI hit test——真实探针测得按钮中心 `gui_get_hovered_control() == null`，播放 / 单步 / 循环 / A–B / 倍率 / 动作按钮的**真实鼠标点击零状态变化**。
-  - **验收缺口（为何此前全绿）**：现有自动化只经 `state.playing = …`、`step_once()`、`grab_focus()` 等**旁路命中测试**的路径，没有一条真实鼠标点击用例，因此该缺陷未在 953/0 中被暴露。
-  - **修复决策**：面板根**必须参与命中测试**（`MOUSE_FILTER_PASS`，必要时对按钮交互区改 `STOP`），不得以 `IGNORE` 让自身及按钮子树整体退出 hit test；**外围透明容器**（`PreviewOverlay` / `PreviewMargin` / `PreviewColumn` / `PreviewRow`）保持 `IGNORE`，使面板矩形之外仍可操作 3D 视口。命中面积仍受 §1「命中区 ≥32×32」约束。
-  - **回归判据（必须真实鼠标，不得用 `pressed.emit()` 或直接改状态代替）**：经 `Viewport.push_input()` 把含位置的真实鼠标事件送到按钮中心，先断言 `gui_get_hovered_control()` 解析到该按钮，再断言 `preview_snapshot()` 的 `playing` / `local_time` / `looping` / `rate` / `action_id` / `transitioning` 至少一项按预期变化；反向用例：面板矩形外点击不得改变预览状态。
+- **右下控件命中与动作选择反馈（2026-09-18 第三轮，含同轮纠错；`src/` 修复尚未落地）**：
+  - **已证伪的根因（纠错记录，避免未来重新引入）**：曾把缺陷归因为 `MotionPreviewPanel` 根节点的 `mouse_filter = Control.MOUSE_FILTER_IGNORE` 阻断子按钮 hit test。**可见窗口实测证伪**：Godot 4.6 下父 Control 为 `IGNORE` 不阻断子按钮命中，按钮中心 `gui_get_hovered_control()` 正常解析到按钮，真实点击可触发控件信号。本仓另一处同类结构同样证伪：`src/ui/lab_hud.gd` 的根 `Control` 与其内部容器均为 `MOUSE_FILTER_IGNORE`，但 HUD 顶部按钮一直可点、从未需要改 filter。**因此『根节点必须改 `PASS` 才能点』不是正确结论，不构成本轮修复依据。**
+  - **真实缺口（用户可见证据）**：动作工作台截图显示顶部状态为「跑动 · 已暂停」，且被点的动作按钮已显示选中态——说明动作选择**已经生效**（`action_id` 已切换、按钮选中反馈正确），但 `MotionPreviewState.select()` 保持「选择动作不自动播放」的通用暂停语义，`playing` 仍为 false，预览角色因此不动。用户读到的现状是「点了按钮没反应」，**产品缺口是动作选择缺少立即可见反馈**，不是事件没到控件。
+  - **验收缺口（为何此前全绿，仍然成立）**：现有自动化只经 `state.playing = …`、`step_once()`、`grab_focus()` 等**旁路控件信号链**的路径，没有一条真实鼠标点击用例，因此「点了按钮没反应」这类缺口未在 953/0 中被暴露。补真实鼠标用例是必要的；但用例的断言必须落在**用户问题**上，不能只断言某个 `mouse_filter` 取值护栏（见下条）。
+  - **修复决策（在场景编排层，不改通用语义）**：`motion_stage.gd` 的 `_on_action_selected()` 在动作选择**成功**（`select_action()` 返回真、`action_id` 确实变化）后**自动进入播放**，使点击动作按钮立即可见角色动起来，并同步刷新按钮文案与读数。**不修改 `MotionPreviewState.select()` 的通用暂停语义**（独立展示实例与单测依赖「选择不自动播放」）；**保留显式播放 / 暂停 / 单步控件与语义**，自动播放只是选择动作后的场景级补充。**不改 `motion_preview_panel.gd` 的 `mouse_filter`**：面板根保持 `IGNORE`、按钮自身保持可命中，外围透明容器（`PreviewOverlay` / `PreviewMargin` / `PreviewColumn` / `PreviewRow`）同样保持 `IGNORE`，既不新增遮挡 3D 视口的命中区，也不为迁就一条已被证伪的根因放宽 filter。命中面积仍受 §1「命中区 ≥32×32」约束。
+  - **回归判据（必须真实鼠标，不得用 `pressed.emit()` 或直接改状态代替）**：经 `Viewport.push_input()` 把含位置的真实鼠标事件送到按钮中心，**首要断言是用户问题**——点击动作按钮后 `action_id` 变化、`playing` 为真、`local_time` 在随后若干帧推进，且对应按钮显示选中态；再覆盖播放 / 暂停 / 单步 / 循环 / 倍率 / A–B 整条控件链各自的可观察状态变化。**护栏类断言（`mouse_filter` 取值、hover 对象）只作诊断输出，不得作为修复是否成立的判据**；反向用例：面板矩形外点击不得改变预览状态。
 - **真预览**：同 `Visual` 子场景（建议抽共享 Visual scene）+ 局部预览时钟 + 显式 preview state provider；真实输入模式用 physical snapshot。**不操纵全局 `TimeKeeper`、不写真实 actor 意图**。
 - **职责边界**：`AnimationTree`/状态机负责姿态选择与过渡，**不取代 Capability 的并发行为**；读数只经 `stage_state()/pose_state()`，测试不再抓私有 `_legs/_arms`；步幅匹配与真足滑分开度量，socket 未建立前足滑标「待建立」。
 - **后续骨骼化（P1/P2，另立资产切片）**：Blender 在庭院同形象上重建 Armature/蒙皮，另存新目录与新 `.blend`/`.glb`/`Action`，保留旧源与导出；AnimationLibrary/Tree 是表现资源，不一 clip 一 Capability。in-place 是迁移成本选择、非架构禁止；root motion 可经唯一 executor 消费。
@@ -125,7 +131,7 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 | **S0** | 2 击导航 + HUD Theme 变体 + 局部装配适配器 + 飞剑完整接入 | 本 note 决策；契约 note；core 改动另 note | 点击链 2 击（已由 `test_lab_navigation.gd` 覆盖）；7 场 HUD 一致；三分辨率截图，默认遮盖 ≤15%（压力场例外）：**生产 stretch 口径七场全达**（最接近为动作工作台预览态 14.93%），1:1 画布压力口径下窄屏超限已如实记录；4 场剑可见已完成（定性图审 + 正式 actor mesh 断言）；新场景凭标准角色 + 相机包 + 配置即能挂。**边界**：「能挂」指装配（能力/视觉/相机求值）已由包完成，场景仍需自己的输入编排（把按键映射为 `set_move_input` / `press_flight_toggle` 等公开 API）与 `bind()` 调用——不存在「零场景代码」的全自动装配 |
 | **S1** | 镜头 `fixed_follow`/`orbit` 两真实消费者，再 `quarter_turn`/`overview`；CameraRigComponent + 单 executor | S0 装配契约 | 四模式可操作区分（脚本用语义名）；`mode_id` 互斥；同一时刻仅一个 executor 写 `Camera3D`；切换无跳变；RMB up/失焦/退场清 delta；同角色同路径对比 |
 | **S1-b（2026-09-18 第二轮，已实现）** | `orbit` 组合环绕（WASD + Q/E 连续 + 滚轮 + RMB）、未归属 RMB 消费策略、两场景默认可发现 | S1 | **已完成**：五条测试契约全绿（`test_camera_rig_executor.gd` 83/0、`camera_lab_playtest.gd` 152/0、`character_movement_playtest.gd` 58/0，见 [验收报告](../../../docs/playtest/2026-09-18-camera-combo-rmb.md)）；`camera_lab` 与 `movement_garden` 默认 orbit 且 HUD 完整写出四组输入；未新增 Capability（仍 4）。**未完成**：编辑器嵌入 Game 视图人工验收待主代理 |
-| **S2** | 动作预览 P0（程序动作真播）+ 动作库选择/播放/暂停/单步/循环/倍率/A–B 过渡 | S0 契约 | **右下控件必须可被真实鼠标命中**：按钮中心 `gui_get_hovered_control()` 解析到该按钮，真实点击产生可观察状态变化（见 §4「右下控件命中」；`pressed.emit()` / 直接改状态不算）；播放/暂停/单步可复算；`move_and_slide` 仍仅 actor 一处；`Engine.time_scale` 不被预览改写；旧 GLB/.blend 在库并记录替代；侧/正/斜与脚接触观察 |
+| **S2** | 动作预览 P0（程序动作真播）+ 动作库选择/播放/暂停/单步/循环/倍率/A–B 过渡 | S0 契约 | **点动作按钮必须立即“看得见动作”**：真实鼠标点击动作按钮后 `action_id` 变化、`playing` 为真、`local_time` 持续推进、按钮显示选中态（见 §4「右下控件命中与动作选择反馈」；`pressed.emit()` / 直接改状态 / 仅断言 `mouse_filter` 取值都不算）；播放 / 暂停 / 单步 / 循环 / 倍率 / A–B 各自可观察量可复算；`move_and_slide` 仍仅 actor 一处；`Engine.time_scale` 不被预览改写；旧 GLB/.blend 在库并记录替代；侧/正/斜与脚接触观察 |
 | **S3** | 七场迁移与组合回归 | S0–S2 | **真实实例化** Move / Move+Jump / Move+Flight / all 四子集；未启用能力静默不触发；切换/失焦/卸载无残留且不 `reset_motion()` 清无关状态；七场可启动；庭院/群山布局不变 |
 
 ## 备选方案
@@ -160,8 +166,9 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 - **风险保留**：镜头 C 连续环绕下 WASD 地面基漂移是否可接受、正交 orbit 的距离/pitch 语义仍需人工试玩；
   装配适配器的幂等/回滚/四子集已由 `test_actor_assembly.gd`（142 项）与 `test_flight_bundle.gd`（83 项）覆盖。
   本轮实现**未改 `core/`**；将来若有 core 改动必须另开 owning tech note。
-- **待修复缺陷（2026-09-18 第三轮，已记录未实现）**：动作工作台右下 `PreviewPanel` 的按钮真实鼠标点击无响应，根因与修复决策见 §4「右下控件命中」；
-  `src/game/systems/motion_preview/motion_preview_panel.gd` 的修复、真实鼠标回归用例与运行证据**尚未落地**，落地前不得在状态报告与 README 中声称该缺陷已修复。
+- **待修复缺陷（2026-09-18 第三轮，纠错后重记，未实现）**：动作工作台「点动作按钮没反应」的真实缺口是**动作选择缺少立即可见反馈**（选择已生效但 `playing` 仍为 false），见 §4「右下控件命中与动作选择反馈」；
+  上一轮记录的面板 `MOUSE_FILTER_IGNORE` 阻断子按钮命中**已被证伪**，不得再作为修复依据；本轮修复落在 `motion_stage.gd` 的选择后自动播放编排，
+  其实现、真实鼠标回归用例与运行证据**尚未落地**，落地前不得在状态报告与 README 中声称该缺陷已修复。
 - **追加风险（2026-09-18 第二轮，实现后仍保留）**：嵌入 Game 视图下「世界区域右键消费 vs 编辑器上下文操作」的边界
   与组合环绕的操作舒适度仍需真实宿主验收与人工试玩；独立窗口侧的自动证据已落地（见验收报告），
   编辑器嵌入 Game 视图一侧**未验收**，不得据本 note 声称双形态已通过。
