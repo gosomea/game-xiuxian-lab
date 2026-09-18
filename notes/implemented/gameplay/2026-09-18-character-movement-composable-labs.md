@@ -10,6 +10,11 @@ Status: implemented
 > [可组合移动实验最终报告](../../../docs/playtest/2026-09-18-composable-movement-labs.md)。
 > **已完成**：七场统一迁移收口、四场飞剑视觉取证与全场回归均已实测（全场 `SCRIPT ERROR = 0`，主入口 921/0）。
 > **未做**：骨骼 clip 库 / 蒙皮（P1/P2）、骨骼重映射与镜头遮挡规避。具体口径与未达项见上述报告。
+>
+> **补充决策（2026-09-18 第二轮，先决策后实现）**：本轮采纳「orbit 正式定义为组合环绕 / 自由跟随」、
+> 「镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出四组输入」、「提交器可配置的未归属 RMB 消费策略」、
+> 「镜头输入组合测试契约」与「独立窗口 + 编辑器嵌入 Game 视图双形态验收」。
+> 以上决策的 `src/` 实现与运行证据**尚未落地**；实现前不得把本 note 当作已实现事实引用。
 
 ## 问题
 
@@ -35,10 +40,13 @@ Status: implemented
 - **返回记忆**：首页/子目录各记 last selected + 滚动可见；实验内记视角/模式；独立启动场景各有明确返回目标。
 - **尺寸验收**：960×640（真实 min）、1280×720、1920×1080 三分辨率各取图；旧的 960×600 截图是历史批，不代表当前 min。
 - **HUD 遮盖与布局目标（试验值，需实拍校准，未证实）**：默认非展开状态下 HUD / 操作面板总遮盖目标 **≤15% viewport**；**压力场因核心账本常显为例外**，可另定更宽目标。要求目标区域无裁切、面板零重叠、操作区不遮实验目标；验收按 UI 缩放逐档截图判定，不只看占屏读数回落。
+- **组合模式可发现（2026-09-18 第二轮）**：`camera_lab` 与 `movement_garden` **默认进入 `orbit`（组合环绕 / 自由跟随）**，且 HUD 必须**完整写出四组输入**——WASD 移动、Q/E 连续偏航、滚轮 / Z / X 缩放、RMB 拖动 yaw/pitch（受限俯角）。四组是玩家进入场景后不查文档即可读到的常显 / 详情文案，不得只写其中一两项。`fixed_follow` / `quarter_turn` / `overview` 仍可切回（按钮与数字键按各场景现有归属），组合模式不吞并其余模式的单一交互。
 
 ### 2. 镜头：四模式 + modifier，单 executor（S1）
 
-- 四模式（括号内为**长期命名**，脚本必须用语义名，A–D 仅本文档例图简称）：**A `fixed_follow` 固定俯视软区跟随**（现有 hard/smooth/deadzone/lookahead 是它的参数与比较预设，不是四种交互模式）；**B `quarter_turn` 固定俯角、偏航每次 90° 的四向切换**（Q/E 及按钮）；**C `orbit` 受限俯角 RMB 连续环绕 + 滚轮**；**D `overview` 总览平移**（中键拖拽 / 可选边缘平移 / 回中）。**D 是本 demo 适配建议，不虚构商业游戏先例**；初推荐 **A 为基准、C 为主要新增探索**，B/D 为比较项。
+- 四模式（括号内为**长期命名**，脚本必须用语义名，A–D 仅本文档例图简称）：**A `fixed_follow` 固定俯视软区跟随**（现有 hard/smooth/deadzone/lookahead 是它的参数与比较预设，不是四种交互模式）；**B `quarter_turn` 固定俯角、偏航每次 90° 的四向切换**（Q/E 及按钮）；**C `orbit` 组合环绕 / 自由跟随**（WASD + Q/E 连续偏航 + 滚轮缩放 + RMB 拖动 yaw/pitch，见下）；**D `overview` 总览平移**（中键拖拽 / 可选边缘平移 / 回中）。**D 是本 demo 适配建议，不虚构商业游戏先例**；初推荐 **A 为基准、C 为主要新增探索**，B/D 为比较项。
+- **组合环绕（2026-09-18 第二轮正式定义）**：`orbit` 不再只是「受限 RMB 环绕」，正式定义为**组合环绕 / 自由跟随**——同一模式内同时支持 **WASD 屏幕相对移动**（仍归 actor / 场景输入，rig 只发布相机地面基）、**Q/E 连续偏航**、**滚轮 / Z / X 缩放**、**RMB 拖动 yaw + pitch（受限俯角）**。**不新增第 5 个相机 Capability**（4-cap 预算见装配契约 note §3）；输入组合是模式内行为组合，`camera_lab` / `movement_garden` 默认进入该模式并完整广告四组输入。§3 的「能挂」边界不变：场景仍需自己的输入 adapter 与一次 `bind()`。
+- **未归属 RMB 消费策略（2026-09-18 第二轮）**：`CameraRigConfig` 新增可配置开关（默认关闭 = 现状：镜头包不抢场景按键）。实验场景显式启用后，**非 `orbit` 模式**在 **UI 未占用**的世界区域消费 RMB press/release，但**不捕获、不改 `mouse_mode`、不写拖动 delta**，避免未消费的右键泄漏为 Godot 编辑器嵌入 Game 视图的上下文操作；`orbit` 的 RMB press 在 UI 未占用时**同一输入事件内尽早捕获**，release / Esc / 失焦 / 离树 / 切模式必须释放并恢复进入前的 `mouse_mode`；**UI 上方右键由 GUI 优先，镜头包不劫持**。
 - **鼠标位置前瞻**是独立于现有「速度前视」的新候选；**点击地面移动**属另一输入能力候选，不默认新增。
 - **高度/速度自适应是叠加 modifier**，作为**数据配置**由 executor 读取，**不是第 5 个 Capability**；**正交/有限透视是 projection Resource 配置**，不做模式组合爆炸。
 - 业界参考仅供思想（Cinemachine 3.1.7 Brain/Orbital Follow、Phantom Camera host 独占写入），不接 Unity 包、不照搬 API。
@@ -67,6 +75,7 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 - **飞行表现统一（可选/可组合，不是 helper）**：`src/game/actors/swordsman/` 的 ActorAssembly 作为装配 root（持有 movement/jump/flight 依赖与显式配置），**FlightBundle 是独立的可选装配包**，自带剑 visual 与姿态 provider。禁止把它降级为「检查既有三能力 + 挂一把剑」的 helper。裸 cap 服务 headless 允许无 visual；完整可玩 bundle 必须有视觉依赖。四个可进御剑场景统一接入。
 - **局部装配适配器**：嵌套 Sheet 不能共享 actor 组件；不采用「每个包新 manager」（破坏全 cap 优先级）。适配器把能力注册为既有宿主 manager 直系子、复用宿主唯一 component、按 owner 登记卸载；挂载幂等、原子回滚，manager 唯一调度，物理仍仅 actor 根一次提交。具体约束见 [composable-lab-assembly-contract](../tech/2026-09-18-composable-lab-assembly-contract.md)。**除非必要不改 `core/`；任何 core 改动另开 owning tech note。**
 - **输入上下文**：RMB down 仅在 viewport 未被 UI 消费时捕获；up/失焦/退场释放并清累积 delta；**Esc 先退捕获/面板、后返回**（当前 camera 无此功能）。GUI 上滚轮只滚 GUI。连续旋转时 WASD 按**同帧一致 control yaw 地面基**解释，明确 simulation→presentation 顺序；键鼠可映射；**鼠标像素位移 `screen_relative` 不再乘 dt；键盘角速度 / 连续平移速度仍乘帧时长**；切模式平滑，混合期 delta 丢弃或显式接管。
+- **RMB 归属的追加规则（2026-09-18 第二轮）**：未启用新开关时保持本 bullet 原文语义（默认不抢按键）。启用后，非 `orbit` 模式消费世界区域 RMB 但不捕获（不改 `mouse_mode`）；`orbit` 在 UI 未占用时同一事件内尽早捕获，release / Esc / 失焦 / 离树 / 切模式恢复；UI 上方右键不劫持。四模式与两个真实消费者的输入矩阵、实现落点与测试契约见装配契约 note §2/§4。
 
 ### 4. 动作工作台与动作库（S2）
 
@@ -104,6 +113,7 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 |---|---|---|---|
 | **S0** | 2 击导航 + HUD Theme 变体 + 局部装配适配器 + 飞剑完整接入 | 本 note 决策；契约 note；core 改动另 note | 点击链 2 击（已由 `test_lab_navigation.gd` 覆盖）；7 场 HUD 一致；三分辨率截图，默认遮盖 ≤15%（压力场例外）：**生产 stretch 口径七场全达**（最接近为动作工作台预览态 14.93%），1:1 画布压力口径下窄屏超限已如实记录；4 场剑可见已完成（定性图审 + 正式 actor mesh 断言）；新场景凭标准角色 + 相机包 + 配置即能挂。**边界**：「能挂」指装配（能力/视觉/相机求值）已由包完成，场景仍需自己的输入编排（把按键映射为 `set_move_input` / `press_flight_toggle` 等公开 API）与 `bind()` 调用——不存在「零场景代码」的全自动装配 |
 | **S1** | 镜头 `fixed_follow`/`orbit` 两真实消费者，再 `quarter_turn`/`overview`；CameraRigComponent + 单 executor | S0 装配契约 | 四模式可操作区分（脚本用语义名）；`mode_id` 互斥；同一时刻仅一个 executor 写 `Camera3D`；切换无跳变；RMB up/失焦/退场清 delta；同角色同路径对比 |
+| **S1-b（2026-09-18 第二轮补充，未实现）** | `orbit` 组合环绕（WASD + Q/E 连续 + 滚轮 + RMB）、未归属 RMB 消费策略、两场景默认可发现 | S1 | 五条测试契约（早期捕获 / 非 orbit fallback / 不改 mouse mode / 组合输入集成 / 退出恢复）全绿；`camera_lab` 与 `movement_garden` 默认 orbit 且 HUD 完整写出四组输入；独立窗口与编辑器嵌入 Game 视图**两种宿主**各验一次；未新增 Capability（仍 4） |
 | **S2** | 动作预览 P0（程序动作真播）+ 动作库选择/播放/暂停/单步/循环/倍率/A–B 过渡 | S0 契约 | 播放/暂停/单步可复算；`move_and_slide` 仍仅 actor 一处；`Engine.time_scale` 不被预览改写；旧 GLB/.blend 在库并记录替代；侧/正/斜与脚接触观察 |
 | **S3** | 七场迁移与组合回归 | S0–S2 | **真实实例化** Move / Move+Jump / Move+Flight / all 四子集；未启用能力静默不触发；切换/失焦/卸载无残留且不 `reset_motion()` 清无关状态；七场可启动；庭院/群山布局不变 |
 
@@ -139,3 +149,6 @@ Swordsman (actor)                    CameraRig (独立宿主，普通 Node3D)
 - **风险保留**：镜头 C 连续环绕下 WASD 地面基漂移是否可接受、正交 orbit 的距离/pitch 语义仍需人工试玩；
   装配适配器的幂等/回滚/四子集已由 `test_actor_assembly.gd`（142 项）与 `test_flight_bundle.gd`（83 项）覆盖。
   本轮实现**未改 `core/`**；将来若有 core 改动必须另开 owning tech note。
+- **追加风险（2026-09-18 第二轮，实现前保留）**：嵌入 Game 视图下「世界区域右键消费 vs 编辑器上下文操作」的边界、
+  早期捕获是否与控件焦点争夺冲突、组合环绕里 Q/E 连续偏航与 RMB 拖动叠加的操作舒适度，均需真实宿主验收与人工试玩；
+  本轮只落地决策，`src/` 与证据未动。
