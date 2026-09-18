@@ -42,6 +42,12 @@ extends Resource
 @export var enable_zoom_wheel: bool = true
 ## Q / E：只在 quarter_turn（离散 ±90°）与 orbit（连续）下消费，其余模式放行给场景。
 @export var enable_yaw_keys: bool = true
+## 未归属 RMB 消费策略（默认关闭 = 现状：镜头包不抢场景按键）。
+## 显式开启后：非 orbit 模式在 UI 未占用的世界区域消费 RMB press / release，但不捕获、
+## 不写 Input.set_mouse_mode、不写 look_delta；orbit 的 RMB press 在 UI 未占用时尽早进入捕获。
+## UI 上方的右键由 GUI 优先，本包不劫持。避免未消费的右键泄漏为编辑器嵌入 Game 视图的上下文操作。
+## 依据 notes/implemented/tech/2026-09-18-composable-lab-assembly-contract.md §2「未归属 RMB 消费策略」。
+@export var consume_unowned_rmb: bool = false
 ## 透视模式的视场角由 fov 与 distance 共同决定；滚轮调 distance（见下）。
 @export var fov_is_configurable: bool = false
 

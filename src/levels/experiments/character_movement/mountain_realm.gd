@@ -188,6 +188,8 @@ func _build_rig() -> void:
 	config.enable_zoom_keys = false
 	config.enable_zoom_wheel = true
 	config.enable_yaw_keys = false
+	# 未归属 RMB：fixed_follow 下消费世界区域右键但不捕获，避免右键泄漏到宿主视图。
+	config.consume_unowned_rmb = true
 	rig.bind(_camera, _player, config)
 
 

@@ -51,6 +51,8 @@ const FOLLOW_MARGIN := Vector3(3.0, 0.0, 2.5)
 ## 旧 lerp 速度 3.5 等价的时间常数 ≈ 1/3.5。
 const FOLLOW_SMOOTH_TIME := 0.29
 const CAMERA_FAR := 120.0
+## 默认模式：组合环绕/自由跟随。reset_state 会回到 mode_cycle[0]，因此 R 重置后显式请求它。
+const DEFAULT_MODE := "orbit"
 
 var _camera: Camera3D
 var _viewport: Viewport
@@ -150,6 +152,8 @@ func _reset_experiment() -> void:
 	_player.reset_motion()
 	_player.set_aim_direction(Vector3.FORWARD)
 	_rig.reset_state()
+	# reset_state 按 mode_cycle[0] 复位（fixed_follow）；R 重置后回到庭院默认的组合环绕。
+	_rig.request_mode(DEFAULT_MODE)
 
 
 func _return_to_hub() -> void:
@@ -231,7 +235,8 @@ func _spawn_player() -> void:
 	assert(actor.get_node_or_null("CapabilityManager") != null, "movement_garden: 角色缺少唯一 CapabilityManager")
 
 
-## 装配共享 CameraRig：正交 + 软区跟随，参数换算自旧的固定偏移相机，构图保持不变。
+## 装配共享 CameraRig：正交 + 默认组合环绕（可切回 fixed_follow 软区跟随）；
+## 球面参数与软区换算自旧的固定偏移相机，构图数值保持不变。
 func _build_rig() -> void:
 	var rig := RIG_SHEET.instantiate() as CameraRig
 	assert(rig != null, "movement_garden: camera_rig_sheet.tscn 根节点必须是 CameraRig")
@@ -239,7 +244,9 @@ func _build_rig() -> void:
 	add_child(rig)
 	_rig = rig
 	var config := CameraRigConfig.new()
-	config.start_mode = "fixed_follow"
+	# 默认进入组合环绕（WASD + Q/E 连续旋转 + 滚轮缩放 + 按住右键拖动）；
+	# fixed_follow 仍是可切回的对照模式（见 _on_mode_toggle）。
+	config.start_mode = DEFAULT_MODE
 	config.follow_preset = "smooth"
 	config.yaw_degrees = CAMERA_YAW_DEGREES
 	config.pitch_degrees = CAMERA_PITCH_DEGREES
@@ -255,13 +262,15 @@ func _build_rig() -> void:
 	config.focus_clamp_y_enabled = true
 	config.focus_clamp_min = Vector3(-ARENA_HALF_X + FOLLOW_MARGIN.x, 0.0, -ARENA_HALF_Z + FOLLOW_MARGIN.z)
 	config.focus_clamp_max = Vector3(ARENA_HALF_X - FOLLOW_MARGIN.x, 0.0, ARENA_HALF_Z - FOLLOW_MARGIN.z)
-	# 庭院默认仍是旧构图（fixed_follow + smooth），但允许切到 orbit 作为第二消费者验证；
+	# 两个模式都可切：默认组合环绕，fixed_follow（smooth）作为旧构图对照；
 	# 不占数字键（模式切换只走可视按钮），Q/E 只在 orbit 内被消费。
 	config.mode_choices = PackedStringArray(["fixed_follow", "orbit"])
 	config.enable_mode_selection_keys = false
 	config.enable_preset_key = false
 	config.enable_zoom_keys = false
 	config.enable_yaw_keys = true
+	# 未归属 RMB：切回 fixed_follow 后世界区域右键仍不泄漏到宿主视图（只消费、不捕获）。
+	config.consume_unowned_rmb = true
 	_rig.bind(_camera, _player, config)
 
 
@@ -271,8 +280,8 @@ func rig() -> CameraRig:
 	return _rig
 
 
-## 紧凑镜头模式切换：不占数字键，点击在 fixed_follow 与 orbit 之间切换。
-## 默认进入 fixed_follow，因此初始构图与旧庭院完全一致。
+## 紧凑镜头模式切换：不占数字键，点击在组合环绕（orbit）与 fixed_follow 之间切换。
+## 默认进入组合环绕；fixed_follow 保留旧庭院的固定构图作为对照。
 func _on_mode_toggle() -> void:
 	var next := "orbit" if _rig.mode_id() == "fixed_follow" else "fixed_follow"
 	_rig.request_mode(next)
@@ -282,16 +291,16 @@ func _on_mode_toggle() -> void:
 func _build_hud() -> void:
 	_hud = LabHud.new()
 	add_child(_hud)
-	_hud.configure("移动庭院", "角色移动 · 庭院", "WASD 移动 · 滚轮缩放 · 镜头按钮切换环绕 · H 详情")
-	_hud.set_controls("WASD 屏幕相对移动（角色朝运动方向）· 滚轮缩放 · 镜头按钮在固定跟随与 RMB 环绕间切换 · R 重置 · Esc 返回子实验目录")
+	_hud.configure("移动庭院", "角色移动 · 庭院", "组合环绕 · WASD 移动 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 · H 详情")
+	_hud.set_controls("组合环绕（默认）：WASD 屏幕相对移动（角色朝运动方向）· Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 yaw/pitch · 镜头按钮切到固定跟随 · R 重置 · Esc 返回子实验目录")
 	_hud.set_question("小范围地面移动和既有庭院美术与构图是否仍然成立？")
 	_hud.return_pressed.connect(_return_to_hub)
 	_hud.set_return_text("返回子实验目录")
 	var mode_button := Button.new()
 	mode_button.name = "ModeToggleButton"
-	mode_button.text = "镜头：固定跟随"
+	mode_button.text = "镜头：组合环绕"
 	mode_button.focus_mode = Control.FOCUS_NONE
-	mode_button.tooltip_text = "在固定跟随与 RMB 环绕之间切换（不占用数字键）"
+	mode_button.tooltip_text = "在组合环绕（WASD + Q/E + 滚轮 + 按住右键拖动）与固定跟随之间切换（不占用数字键）"
 	mode_button.pressed.connect(_on_mode_toggle)
 	_hud.add_button(mode_button)
 	_mode_button = mode_button
@@ -310,8 +319,8 @@ func _update_status() -> void:
 	var focus: Vector3 = snapshot["focus"]
 	var focus_offset := Vector2(focus.x - _player.global_position.x, focus.z - _player.global_position.z).length()
 	if _mode_button != null:
-		_mode_button.text = "镜头：固定跟随" if _rig.mode_id() == "fixed_follow" else "镜头：RMB 环绕"
-	var mode_name := "固定跟随" if _rig.mode_id() == "fixed_follow" else "RMB 环绕"
+		_mode_button.text = "镜头：固定跟随" if _rig.mode_id() == "fixed_follow" else "镜头：组合环绕"
+	var mode_name := "固定跟随" if _rig.mode_id() == "fixed_follow" else "组合环绕"
 	_hud.set_status("%s · 偏航 %d° · 缩放 %.1f · 焦点偏移 %.2f m · 速度 %.2f m/s" % [
 		mode_name,
 		int(round(float(snapshot["yaw_degrees"]))),

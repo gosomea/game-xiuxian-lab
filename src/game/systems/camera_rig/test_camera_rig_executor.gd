@@ -2,9 +2,11 @@ extends RefCounted
 ## test_camera_rig_executor：CameraRig（唯一 executor）的行为测试。
 ##
 ## 覆盖：混合起点取真实渲染状态（含焦点迁移，deadzone 离目标切 orbit 不跳）、
-## 连续切换不跳、切换清捕获与旧 delta、RMB 仅 orbit / MMB 仅 overview、
-## 模式选择键默认关闭（不抢场景按键）、Q/E 按模式消费、透视缩放改 distance、
-## 唯一写 Camera3D（其它写者不存在）、focus_offset 取景但速度仍用真实位置。
+## 连续切换不跳、切换清捕获与旧 delta、RMB 仅 orbit（组合环绕）/ MMB 仅 overview、
+## 未归属 RMB fallback（默认放行 / 开启后消费但不捕获、不改 mouse_mode、不写 look_delta）、
+## orbit + enable_yaw_keys 的早期捕获与释放、模式选择键默认关闭（不抢场景按键）、
+## Q/E 按模式消费、透视缩放改 distance、唯一写 Camera3D（其它写者不存在）、
+## focus_offset 取景但速度仍用真实位置。
 
 const CAMERA_SCRIPT := "res://game/systems/camera_rig/camera_rig.gd"
 const RIG_SHEET := "res://game/systems/camera_rig/camera_rig_sheet.tscn"
@@ -14,6 +16,9 @@ static func run(t) -> void:
 	_test_blend_starts_from_real_render_state(t)
 	_test_chained_switch_is_continuous(t)
 	_test_capture_is_orbit_only_and_released_on_switch(t)
+	_test_rmb_default_passthrough_when_not_configured(t)
+	_test_unowned_rmb_fallback_consumes_without_capture_or_mouse_mode(t)
+	_test_orbit_early_capture_and_release(t)
 	_test_mmb_is_overview_only(t)
 	_test_pan_ends_even_when_release_is_swallowed(t)
 	_test_pan_cleared_on_focus_loss_and_mode_switch(t)
@@ -41,6 +46,114 @@ static func _host(t) -> Dictionary:
 	config.mode_choices = PackedStringArray(["fixed_follow", "quarter_turn", "orbit", "overview"])
 	rig.bind(camera, target, config)
 	return {"root": root, "camera": camera, "target": target, "rig": rig, "config": config}
+
+
+static func _rmb_button(pressed: bool) -> InputEventMouseButton:
+	var button := InputEventMouseButton.new()
+	button.button_index = MOUSE_BUTTON_RIGHT
+	button.pressed = pressed
+	return button
+
+
+static func _mouse_mode() -> int:
+	return Input.get_mouse_mode()
+
+
+## 默认配置（consume_unowned_rmb = false）保持放行：非 orbit 的 press / release 都不被消费，
+## 也不写 look_delta / drag_active（独立场景不被镜头包抢按键）。
+static func _test_rmb_default_passthrough_when_not_configured(t) -> void:
+	t.begin_case()
+	var scene := _host(t)
+	var rig := scene["rig"] as CameraRig
+	var camera := scene["camera"] as Camera3D
+	var config := scene["config"] as CameraRigConfig
+	t.assert_false(config.consume_unowned_rmb, "consume_unowned_rmb 默认关闭")
+	config.start_mode = "fixed_follow"
+	rig.bind(camera, scene["target"] as Node3D, config)
+	rig.process_mode = Node.PROCESS_MODE_DISABLED
+	rig.advance(0.016)
+	t.assert_false(rig.handle_rmb_input(_rmb_button(true)), "默认关闭：非 orbit 的 RMB 按下不被消费")
+	t.assert_false(rig.handle_rmb_input(_rmb_button(false)), "默认关闭：非 orbit 的 RMB 抬起不被消费")
+	t.assert_false(rig.is_captured(), "默认关闭：不因 RMB 进入捕获")
+	var component := rig.component() as CameraRigComponent
+	t.assert_eq(component.look_delta, Vector2.ZERO, "默认关闭：不写 look_delta")
+	t.assert_false(component.drag_active, "默认关闭：不进拖动态")
+
+
+## 开启 consume_unowned_rmb 后的 fallback：非 orbit 模式消费世界区域 RMB press / release，
+## 但不捕获、不改 mouse_mode、不写 look_delta / drag_active（只堵右键泄漏）。
+static func _test_unowned_rmb_fallback_consumes_without_capture_or_mouse_mode(t) -> void:
+	t.begin_case()
+	var scene := _host(t)
+	var rig := scene["rig"] as CameraRig
+	var camera := scene["camera"] as Camera3D
+	var config := scene["config"] as CameraRigConfig
+	config.consume_unowned_rmb = true
+	config.start_mode = "fixed_follow"
+	rig.bind(camera, scene["target"] as Node3D, config)
+	rig.process_mode = Node.PROCESS_MODE_DISABLED
+	rig.advance(0.016)
+	var mouse_mode_before := _mouse_mode()
+	var component := rig.component() as CameraRigComponent
+	var press := _rmb_button(true)
+	t.assert_true(rig.handle_rmb_input(press), "fallback：世界区域 RMB 按下被消费")
+	t.assert_false(rig.is_captured(), "fallback：消费不等于捕获")
+	t.assert_eq(_mouse_mode(), mouse_mode_before, "fallback：不改 mouse_mode")
+	t.assert_false(component.drag_active, "fallback：不进拖动态")
+	var drag := InputEventMouseMotion.new()
+	drag.screen_relative = Vector2(70.0, -30.0)
+	t.assert_false(rig.handle_input(drag), "fallback：拖动位移不被镜头包消费")
+	t.assert_eq(component.look_delta, Vector2.ZERO, "fallback：不写 look_delta")
+	# 同一 fallback 也覆盖 MMB 之外的其它模式分支：quarter_turn 同样只消费 RMB 本身。
+	rig.request_mode("quarter_turn")
+	rig.advance(0.016)
+	var release := _rmb_button(false)
+	t.assert_true(rig.handle_rmb_input(release), "fallback：quarter_turn 的 RMB 抬起被消费")
+	t.assert_eq(_mouse_mode(), mouse_mode_before, "fallback 抬起后 mouse_mode 仍不变")
+	t.assert_false(rig.is_captured(), "fallback 抬起后仍未捕获")
+
+
+## orbit + enable_yaw_keys：UI 未占用的 RMB 按下在同一事件内捕获（不依赖物理帧），
+## 抬起释放并恢复进入前的 mouse_mode；拖动位移写 look_delta 供 orbit 消费。
+static func _test_orbit_early_capture_and_release(t) -> void:
+	t.begin_case()
+	var scene := _host(t)
+	var rig := scene["rig"] as CameraRig
+	var camera := scene["camera"] as Camera3D
+	var config := scene["config"] as CameraRigConfig
+	config.start_mode = "orbit"
+	config.enable_yaw_keys = true
+	rig.bind(camera, scene["target"] as Node3D, config)
+	rig.process_mode = Node.PROCESS_MODE_DISABLED
+	rig.advance(0.016)
+	var mouse_mode_before := _mouse_mode()
+	t.assert_true(rig.handle_rmb_input(_rmb_button(true)), "orbit：RMB 按下被消费")
+	t.assert_true(rig.is_captured(), "orbit：同一事件内即进入捕获（不依赖物理帧）")
+	t.assert_true((rig.component() as CameraRigComponent).drag_active, "orbit：进入拖动态")
+	var drag := InputEventMouseMotion.new()
+	drag.screen_relative = Vector2(90.0, -40.0)
+	t.assert_true(rig.handle_input(drag), "orbit：拖动位移被消费")
+	t.assert_eq((rig.component() as CameraRigComponent).look_delta, Vector2(90.0, -40.0), "orbit：拖动位移写入 look_delta")
+	# 捕获态的抬起由 _input 的兜底路径处理（handle_rmb_input 不重复处理捕获释放）。
+	var release := _rmb_button(false)
+	t.assert_false(rig.handle_rmb_input(release), "orbit：捕获态的早期 RMB 路径让位给兜底")
+	t.assert_true(rig.handle_captured_input(release), "orbit：捕获态 RMB 抬起被兜底消费")
+	t.assert_false(rig.is_captured(), "orbit：抬起事件内即释放捕获")
+	t.assert_eq(_mouse_mode(), mouse_mode_before, "orbit：释放后恢复进入捕获前的 mouse_mode")
+	t.assert_false((rig.component() as CameraRigComponent).drag_active, "orbit：释放后清拖动态")
+	# 未捕获时同一抬起也可经 _unhandled_input 路径处理（与既有 handle_input 契约一致）。
+	t.assert_true(rig.handle_rmb_input(_rmb_button(true)), "orbit：再次按下仍可捕获")
+	t.assert_true(rig.is_captured(), "orbit：二次捕获生效")
+	t.assert_true(rig.handle_input(_rmb_button(false)), "orbit：未消费路径的 RMB 抬起被消费")
+	t.assert_false(rig.is_captured(), "orbit：未消费路径抬起释放捕获")
+	t.assert_eq(_mouse_mode(), mouse_mode_before, "orbit：二次释放仍恢复 mouse_mode")
+	# enable_yaw_keys 关闭时 orbit 不再有 RMB 拖动语义（Q/E 与拖动同开关）。
+	config.enable_yaw_keys = false
+	config.consume_unowned_rmb = false
+	rig.bind(camera, scene["target"] as Node3D, config)
+	rig.advance(0.016)
+	t.assert_false(rig.handle_rmb_input(_rmb_button(true)), "orbit 且 enable_yaw_keys=false：RMB 放行")
+	t.assert_false(rig.is_captured(), "orbit 且 enable_yaw_keys=false：不捕获")
 
 
 ## 混合起点必须是真实渲染状态：deadzone 让焦点停在别处时切 orbit，位置不得跳。
