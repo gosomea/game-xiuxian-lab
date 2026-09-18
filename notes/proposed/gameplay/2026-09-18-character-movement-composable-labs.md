@@ -50,7 +50,7 @@ Swordsman (actor)                    CameraRig (独立宿主)
 - **「能挂」验收**：新场景只需标准角色 + 相机包 + 配置，不修改 scene 脚本、不复制 bind。
 - **飞行表现统一**：把「实例化 `flying_sword.glb` → 命名 `FlyingSword` → 挂 `Visual` → `bind_flight_visual()`」抽成可安装包；可安装御剑 bundle 默认行为 + 剑 visual + 姿态 provider 一体（裸 cap 服务 headless 允许无 visual，完整可玩 bundle 必须有视觉依赖）。四个可进御剑场景统一接入。
 - **局部装配适配器（提案待验证）**：嵌套 Sheet 不能共享 actor 组件；不采用「每个包新 manager」（破坏全 cap 优先级）。适配器把能力注册为既有宿主 manager 直系子、复用宿主唯一 component、按 owner 登记卸载；挂载幂等/原子回滚，manager 唯一调度，物理仅 actor 根一次提交。**core 改动另开 owning tech note，本轮不改 core。**
-- **输入上下文**：RMB down 仅在 viewport 未被 UI 消费时捕获；up/失焦/退场释放并清累积 delta；**Esc 先退捕获/面板、后返回**（当前 camera 无此功能）。GUI 上滚轮只滚 GUI。连续旋转时 WASD 按**同帧一致 control yaw 地面基**解释，明确 simulation→presentation 顺序；键鼠可映射；**逐帧 delta 不乘 dt**；切模式平滑，混合期 delta 丢弃或显式接管。
+- **输入上下文**：RMB down 仅在 viewport 未被 UI 消费时捕获；up/失焦/退场释放并清累积 delta；**Esc 先退捕获/面板、后返回**（当前 camera 无此功能）。GUI 上滚轮只滚 GUI。连续旋转时 WASD 按**同帧一致 control yaw 地面基**解释，明确 simulation→presentation 顺序；键鼠可映射；**鼠标像素位移 `screen_relative` 不再乘 dt；键盘角速度 / 连续平移速度仍乘帧时长**；切模式平滑，混合期 delta 丢弃或显式接管。
 
 ### 4. 动作工作台与动作库（S2）
 
