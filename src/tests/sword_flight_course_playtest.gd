@@ -34,6 +34,7 @@ var _course: Node3D
 var _actor: CharacterBody3D
 var _motion: SwordsmanMotionComponent
 var _camera: Camera3D
+var _rig: CameraRig
 var _route: Dictionary = {}
 var _frame_drawn := false
 var _msaa_before: Viewport.MSAA = Viewport.MSAA_DISABLED
@@ -59,6 +60,11 @@ func _run() -> void:
 	_check_assembly()
 	_check_route_data()
 	_check_ownership_boundaries()
+	await _check_high_altitude_follow()
+	# 高空探针后回到起飞坪，避免影响后续批次的初始状态。
+	_actor.global_position = _spawn_position()
+	_actor.reset_motion()
+	await _frames(6)
 
 	if not _prefix.is_empty():
 		await _run_capture()
@@ -81,7 +87,14 @@ func _bind() -> void:
 		break
 	_motion = _actor.get_node("SwordsmanMotionComponent")
 	_camera = root.get_camera_3d()
+	_rig = current_scene.call("rig") as CameraRig
 	_route = JSON.parse_string(FileAccess.get_file_as_string(ROUTE_PATH))
+
+
+## 缩放只经 rig 公开 API：场景与验收都不再直写 Camera3D。
+func _rig_zoom(value: float) -> void:
+	if _rig != null:
+		_rig.set_zoom_size(value)
 
 
 # ---------------------------------------------------------------- 装配与边界
@@ -94,6 +107,25 @@ func _check_assembly() -> void:
 	_check(current_scene.get_node_or_null("CourseCollision") != null, "场景装配了课程碰撞根节点")
 	_check(_capability_names() == EXPECTED_CAPABILITIES, "角色保持三项移动能力：%s" % str(_capability_names()))
 	_check(_motion.flight_speed > 0.0 and _motion.flight_lift_speed > 0.0, "御剑参数由组件提供（未内联）")
+	_check(current_scene.get_node_or_null("CameraRig") != null, "场景装配共享 CameraRig（不写相机位姿）")
+
+
+## 高空跟随：把角色真实抬到航线高度，相机焦点必须跟着升高（不能被压到 y=0）。
+## 只断言「目标高度 + 相机焦点高度 + 角色在画面内」，不冒充完整视觉验收。
+func _check_high_altitude_follow() -> void:
+	var rig := current_scene.get_node_or_null("CameraRig") as CameraRig
+	_check(rig != null, "高空用例读到 CameraRig")
+	if rig == null:
+		return
+	_actor.global_position = Vector3(0.0, 24.0, 0.0)
+	_motion.actual_velocity = Vector3.ZERO
+	await _frames(30)
+	var focus: Vector3 = rig.component().focus
+	_check(focus.y > 8.0, "高空（y=24）时相机焦点跟随升高（focus.y=%.2f，未被压到 0）" % focus.y)
+	var screen := _camera.unproject_position(_actor.global_position)
+	var view := _camera.get_viewport().get_visible_rect().size
+	_check(screen.x >= 0.0 and screen.x <= view.x and screen.y >= 0.0 and screen.y <= view.y,
+		"高空时角色仍在画面内（屏幕 %s / 视口 %s）" % [str(screen.round()), str(view)])
 
 
 func _check_route_data() -> void:
@@ -154,8 +186,14 @@ func _check_ownership_boundaries() -> void:
 	_check(source.contains("VERTICAL_KEYS"), "场景显式声明升降键")
 	# 只调用公开输入 API。
 	for api in ["set_move_input", "set_vertical_input", "press_jump", "press_flight_toggle",
-			"set_camera_ground_basis", "reset_motion", "clear_input"]:
+			"reset_motion", "clear_input"]:
 		_check(source.contains(api), "场景调用公开 API %s" % api)
+	# 相机地面基不再由场景转交：场景挂共享 CameraRig，由 rig 桥接写入角色。
+	_check(not source.contains("set_camera_ground_basis"), "场景不自行转交相机地面基（由 CameraRig 桥接）")
+	_check(source.contains("camera_rig_sheet.tscn"), "场景装配共享 CameraRig")
+	_check(not source.contains("_camera.position ="), "场景不写相机位姿")
+	_check(not source.contains("_camera.look_at"), "场景不写相机朝向")
+	_check(not source.contains("_camera.size ="), "场景不写相机缩放（由 rig 独占）")
 	_check(_read_source("res://game/actors/swordsman/swordsman.gd").count("move_and_slide(") == 1,
 		"角色根仍是唯一 move_and_slide 提交点")
 	_check(code.count("move_and_slide(") == 0, "场景无第二个物理提交点（注释不计）")
@@ -770,15 +808,15 @@ func _run_capture() -> void:
 	root.get_texture().get_image()
 	await _frames(4)
 
-	# 全景：起飞前俯瞰整条航线。
+	# 全景：起飞前俯瞰整条航线（缩放只经 rig 的公开 API，不绕过 executor 直写相机）。
 	await _reset_route()
-	_camera.size = 74.0
+	_rig_zoom(74.0)
 	await _frames(12)
 	_print_snapshot("overview")
 	await _capture("overview")
 
 	# 起飞：真实起飞到 5 m 以上。
-	_camera.size = CAMERA_SIZE_CAPTURE
+	_rig_zoom(CAMERA_SIZE_CAPTURE)
 	await _reset_route()
 	var took_off := await _take_off(5.0, 300)
 	_check(took_off, "截图批次：真实起飞成功")

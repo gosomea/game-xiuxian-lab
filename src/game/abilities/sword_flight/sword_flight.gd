@@ -9,6 +9,10 @@ extends Capability
 ## 节点退出场景树（_exit_tree）。任何一条都不得让宿主继续处于御剑状态。
 
 ## 御剑期间封锁普通移动与跳跃的 tag；只登记 instigator 为自身，不影响其他 instigator。
+## 说明：下面两个 TagRegistry 调用使用**字面量**而不是本常量——catalog 生成器当前只从调用点
+## 提取字面量 tag（tools/gen/gen_capability_catalog.py:31），经常量传参会漏登记，
+## 使 SwordFlight 在 design/capability_catalog.json 里错误地显示 uses_tags=[]。
+## 常量保留给文档与阅读；修生成器以支持常量提取需另开 tools 变更（已报告，本轮不动）。
 const BLOCK_TAG := &"sword_flight_block"
 
 ## 升起窗口结束的逻辑时刻（manager_time），仅地面启动时有意义。
@@ -39,7 +43,7 @@ func _on_activated() -> void:
 	_host_ref = host
 	_motion_ref = motion
 	motion.flight_active = true
-	TagRegistry.add_block(host, BLOCK_TAG, self)
+	TagRegistry.add_block(host, &"sword_flight_block", self)
 	_first_tick = true
 	_launching = motion.on_floor
 	if _launching:
@@ -95,7 +99,7 @@ func _clear_flight_state() -> void:
 	if host == null or not is_instance_valid(host):
 		host = game_object()
 	if host != null and is_instance_valid(host):
-		TagRegistry.remove_block(host, BLOCK_TAG, self)
+		TagRegistry.remove_block(host, &"sword_flight_block", self)
 	_launching = false
 	_launch_until = 0.0
 	_first_tick = false

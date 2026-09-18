@@ -15,6 +15,8 @@ const SCENE := "res://levels/experiments/character_movement/motion_stage.tscn"
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTOR_SOURCE := "res://game/actors/swordsman/swordsman.gd"
 const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_presentation.gd"
+const ACTOR_SCENE_SOURCE := "res://game/actors/swordsman/swordsman.tscn"
+const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_visual.tscn"
 ## 工作台的固定返回目标（同提交依赖，不设顶层目录回退）。
 const MOVEMENT_HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 ## 三份能力脚本本体；actor 根是唯一物理提交点，不在其中。
@@ -27,6 +29,10 @@ const EXPECTED_CAPABILITIES := ["SwordsmanMovement", "Jump", "SwordFlight"]
 ## 地面几何 / 材质机械判据：与 src/tests/test_motion_stage_geometry.gd 共用同一实现，
 ## 避免 playtest 与单元测试各写一套阈值。
 const GeometryTest := preload("res://tests/test_motion_stage_geometry.gd")
+## 预览状态类型：只用于读常量 STEP_SECONDS 与运行状态的类型标注。
+const MotionPreviewState := preload("res://game/systems/motion_preview/motion_preview_state.gd")
+const MotionPreviewAction := preload("res://game/systems/motion_preview/motion_preview_action.gd")
+const MotionPreviewDisplay := preload("res://game/systems/motion_preview/motion_preview_display.gd")
 const CAPTURE_TIMEOUT_MSEC := 15000
 ## 斜侧机位（VIEW_OFFSETS[2]）偏移；surface 批次读回跟随相机是否稳定在该偏移附近。
 const VIEW_SHOT_OFFSET := Vector3(10.5, 5.6, -10.5)
@@ -46,6 +52,8 @@ var _failed := 0
 var _prefix := ""
 var _only: PackedStringArray = []
 var _shots: PackedStringArray = []
+## 目标内容画布尺寸（--canvas=WxH）；为 0 时沿用工程默认。
+var _canvas := Vector2i.ZERO
 var _stage: Node3D
 var _actor: Swordsman
 var _motion: SwordsmanMotionComponent
@@ -61,6 +69,10 @@ func _initialize() -> void:
 			_only = argument.trim_prefix("--batch=").split(",", false)
 		elif argument.begins_with("--shot="):
 			_shots = argument.trim_prefix("--shot=").split(",", false)
+		elif argument.begins_with("--canvas="):
+			var parts := argument.trim_prefix("--canvas=").split("x", false)
+			if parts.size() == 2:
+				_canvas = Vector2i(int(parts[0]), int(parts[1]))
 	_run.call_deferred()
 
 
@@ -113,6 +125,12 @@ func _run_batches() -> void:
 	if _has("hud"):
 		print("--- batch hud ---")
 		await _batch_hud()
+	if _has("preview"):
+		print("--- batch preview ---")
+		await _batch_preview()
+	if _has("focus"):
+		print("--- batch focus ---")
+		await _batch_focus()
 	if _has("surface"):
 		print("--- batch surface ---")
 		await _batch_surface()
@@ -162,9 +180,18 @@ func _batch_assembly() -> void:
 	for axis in ["_should_activate", "_tick_active", "_on_activated", "_should_deactivate", "_on_deactivated"]:
 		_check(not stage_source.contains(axis), "工作台不触碰能力五函数轴：%s" % axis)
 	_check(not stage_source.contains("CapabilityManager"), "工作台不直接访问 CapabilityManager")
+	# set_camera_ground_basis 已移交 CameraRig 桥接层（_publish_ground_basis），场景不再自行发布，
+	# 因此这里只要求镜头外的输入 API；镜头所有权另有专门断言。
 	for api in ["set_move_input(", "set_vertical_input(", "press_jump(", "press_flight_toggle(",
-			"set_camera_ground_basis(", "set_aim_direction(", "reset_motion(", "clear_input("]:
+			"set_aim_direction(", "reset_motion(", "clear_input("]:
 		_check(stage_source.contains(api), "工作台经公开输入 API 驱动角色：%s" % api)
+	# 镜头唯一 executor：场景必须绑定 camera_rig sheet，而不得自己写 Camera3D 的变换。
+	_check(stage_source.contains("CAMERA_RIG_SHEET"), "工作台经 camera_rig sheet 装配镜头（唯一 executor）")
+	for camera_write in [".look_at(", "camera.position =", "camera.global_position ="]:
+		_check(not stage_source.contains(camera_write), "工作台不手写镜头变换：%s" % camera_write)
+	_check(_stage.rig() != null, "工作台持有 CameraRig 引用")
+	_check(_stage.rig().is_bound(), "CameraRig 已绑定相机与目标")
+	_check(_stage.rig().mode_id() == "fixed_follow", "CameraRig 使用 fixed_follow 跟随（实际 %s）" % _stage.rig().mode_id())
 
 	# 场地标记：直跑道 / 八方向区 / 跳跃标尺 / 御剑起降区。
 	_check(_stage.get_node_or_null("Runway") != null, "工作台含直跑道标记")
@@ -565,57 +592,71 @@ func _batch_removal() -> void:
 	_check(not _motion.flight_active, "删除表现节点后御剑仍可关闭")
 	_check(_stage.flight_visual() != null and not _stage.flight_visual().visible, "关飞后剑随状态隐藏")
 
-	# 工作台在缺表现节点时 HUD 不崩，如实标注缺失。
-	var hud_pose := _stage.get_node_or_null("Overlay/Interface/Margin/Layout/Header/ReadoutPanel/Readout/Pose")
-	_check(hud_pose != null and "缺失" in (hud_pose as Label).text,
-		"表现节点缺失时 HUD 如实标注（%s）" % ("" if hud_pose == null else (hud_pose as Label).text))
+	# 工作台在缺表现节点时不崩：公开快照如实给出空表现，且实时读数仍可取。
 	_check(_stage.presentation_state().is_empty(), "缺表现节点时 pose_state() 返回空快照")
+	var state_without_presentation: Dictionary = _stage.stage_state()
+	_check(not state_without_presentation.is_empty(), "缺表现节点时 stage_state() 仍可用（读数不依赖表现层）")
+	_check((state_without_presentation.get("realtime", {}) as Dictionary).has("velocity"),
+		"缺表现节点时实时物理真值仍可读")
 
 
 # --- 批次：HUD 与小窗 -------------------------------------------------------
 
 
 func _batch_hud() -> void:
-	var input := _hud_label("Input")
-	var velocity := _hud_label("Velocity")
-	var state := _hud_label("State")
-	var view := _hud_label("View")
-	_check(input != null and "move=" in input.text, "HUD 显示输入意图（%s）" % ("" if input == null else input.text))
-	_check(velocity != null and "v=" in velocity.text, "HUD 显示 actual_velocity（%s）" % ("" if velocity == null else velocity.text))
-	_check(state != null and "着地=" in state.text and "御剑=" in state.text,
-		"HUD 显示 on_floor 与 flight_active（%s）" % ("" if state == null else state.text))
-	_check(view != null and "视角" in view.text, "HUD 显示当前观察视角（%s）" % ("" if view == null else view.text))
+	# 读数只经公开快照（stage_state / preview_snapshot / lab_hud 文本），
+	# 不读私有节点路径、不访问 _legs / _arms。
+	var state: Dictionary = _stage.stage_state()
+	var realtime: Dictionary = state.get("realtime", {})
+	_check(state.has("mode") and state.has("mode_name"), "stage_state() 暴露当前模式（%s）" % str(state.get("mode_name", "")))
+	_check(realtime.has("velocity") and realtime.has("on_floor") and realtime.has("flight_active"),
+		"stage_state() 暴露 actor 物理真值（速度 / 着地 / 御剑）")
+	_check(realtime.has("move_input") and realtime.has("vertical_input"), "stage_state() 暴露输入意图")
+	_check(state.has("view") and not str(state.get("view", "")).is_empty(), "stage_state() 暴露当前观察视角（%s）" % str(state.get("view", "")))
+	var preview: Dictionary = state.get("preview", {})
+	_check(not preview.is_empty(), "stage_state() 暴露预览快照（动作 / 时钟 / 过渡）")
+	_check(preview.has("clock") and preview.has("local_time"), "预览快照含 local_time 与表现层 clock 两个时钟读数")
 
-	# 返回按钮与底部提示的文案必须与真实返回目标一致（子实验目录，不是顶层实验目录）。
-	var return_text := _control_text("Overlay/Interface/Margin/Layout/Header/Buttons/ReturnButton")
-	_check(return_text == "返回子实验目录",
-		"返回按钮文案为「返回子实验目录」（实际「%s」）" % return_text)
-	_check(not return_text.contains("返回实验目录"),
-		"返回按钮不写「返回实验目录」（会与实际目标不符）")
-	var controls_text := _control_text("Overlay/Interface/Margin/Layout/Footer/ControlsPanel/Controls")
-	_check(controls_text.contains("Esc 返回子实验目录"),
-		"底部提示写明 Esc 返回子实验目录（实际「%s」）" % controls_text)
+	# 共享 HUD：返回按钮与提示文案必须与真实目标一致。
+	var return_button := _find_named(_stage, "ReturnButton") as Button
+	_check(return_button != null and return_button.text == "返回子实验目录",
+		"返回按钮文案为「返回子实验目录」（实际「%s」）" % ("" if return_button == null else return_button.text))
+	_check(return_button != null and not return_button.pressed.get_connections().is_empty(),
+		"返回按钮已接线到返回处理（点击不会静默失效）")
+	_check(_find_named(_stage, "ReturnButton") != null and not _hint_text().is_empty(), "共享 HUD 提供了短提示文本")
+	# 短提示刻意保持一行（LabHud 的 Label 不自动换行）；完整操作含 Esc 说明在折叠详情里。
+	var hud := _find_named(_stage, "LabHud")
+	var controls_text := ""
+	if hud != null and hud.has_method("debug_text"):
+		controls_text = str(hud.call("debug_text"))
+	var controls_tip := ""
+	if hud != null:
+		var toggle := _find_named(_stage, "DetailsToggle") as Button
+		if toggle != null:
+			controls_tip = toggle.tooltip_text
+	_check(controls_tip.contains("Esc 返回子实验目录"),
+		"完整操作说明（详情 tooltip）写明 Esc 返回子实验目录（实际「%s」）" % controls_tip)
+	_check(not _hint_text().contains("WASD"), "常显短提示不放全操作文案（实际「%s」）" % _hint_text())
 
-	# 小窗不溢出：工程用 canvas_items 拉伸，改窗口尺寸只会等比缩放画布、不会重排 Control，
-	# 因此这里临时把内容画布改成 960×640 做真实重排，断言 HUD 仍落在画布内。
-	_check(_hud_fits_canvas(), "1280x800 画布下 HUD 全部不溢出")
+	# 小窗不溢出：内容画布 960x640 下 HUD 与预览面板都必须落在画布内。
+	_check(_hud_fits_canvas(), "1280x800 画布下 HUD 与预览面板都不溢出")
 	var previous_canvas := root.content_scale_size
 	root.content_scale_size = Vector2i(960, 640)
 	await _frames(8)
 	_check(_canvas_size() == Vector2(960, 640), "小窗画布已切到 960x640（实际 %s）" % str(_canvas_size()))
-	_check(_hud_fits_canvas(), "960x640 画布下 HUD 全部不溢出")
-	var footer := _stage.get_node("Overlay/Interface/Margin/Layout/Footer/ControlsPanel") as Control
-	_check(_rect_fits(footer), "960x640 画布下底部说明不溢出（%s）" % _rect_text(footer))
-	# 读数区不遮住舞台中心：HUD 面板宽度不超过画布七成，底部说明不高于画布三成。
-	var readout_panel := _stage.get_node("Overlay/Interface/Margin/Layout/Header/ReadoutPanel") as Control
-	_check(readout_panel.get_global_rect().size.x <= _canvas_size().x * 0.7,
-		"小窗下读数面板不遮住舞台中心（宽 %.0f / 画布 %.0f）" % [readout_panel.get_global_rect().size.x, _canvas_size().x])
+	_check(_hud_fits_canvas(), "960x640 画布下 HUD 与预览面板都不溢出")
+	var hint := _find_named(_stage, "Hint") as Control
+	_check(_rect_fits(hint), "960x640 画布下短提示不溢出（%s）" % _rect_text(hint))
+	# 读数区不遮住舞台中心：标题块宽度不超过画布七成。
+	var title_panel := _find_named(_stage, "TitlePanel") as Control
+	_check(title_panel != null and title_panel.get_global_rect().size.x <= _canvas_size().x * 0.7,
+		"小窗下标题块不遮住舞台中心（宽 %.0f / 画布 %.0f）" % [
+			0.0 if title_panel == null else title_panel.get_global_rect().size.x, _canvas_size().x])
 	root.content_scale_size = previous_canvas
 	await _frames(6)
 	_check(_canvas_size() == Vector2(previous_canvas), "画布尺寸已恢复为 %s" % str(previous_canvas))
 
-	# 视角切换：只改相机，不改角色与能力状态。先把角色放回稳定着地状态，
-	# 否则自由落体造成的位移会被误判成「切换视角移动了角色」。
+	# 视角切换：只改相机，不改角色与能力状态。
 	_place(Vector3(-6.0, 0.05, 0.0))
 	await _frames(12)
 	_check(_motion.on_floor, "视角切换检查前角色已稳定着地")
@@ -632,6 +673,309 @@ func _batch_hud() -> void:
 	_check(_stage.view_index() == 0, "数字键 1 切回正面视角（实际 %d）" % _stage.view_index())
 	_check(_actor.global_position.distance_to(before_position) < POS_TOL, "切换视角不移动角色")
 	_check(_motion.flight_active == before_flight, "切换视角不改变御剑状态")
+
+
+# --- 批次：程序动作预览（S2 P0 真实可播链） ----------------------------------
+
+
+## 走通一条真实可播链：预览播放 -> 暂停（pose/clock 不变）-> 单步（固定量）-> 循环。
+## 同时验证两模式互不污染：预览不写正式 actor 的 motion，真实输入路由在预览下关闭。
+func _batch_preview() -> void:
+	var preview: Node3D = _stage.preview()
+	_check(preview != null, "工作台装配了预览展示实例")
+	if preview == null:
+		return
+	# 装配边界：预览不是 actor（无 CharacterBody3D / 无碰撞 / 无 CapabilityManager）。
+	_check(preview is Node3D and not (preview is CharacterBody3D), "预览展示实例不是 CharacterBody3D")
+	_check(preview.find_children("*", "CollisionShape3D", true, false).is_empty(), "预览实例没有碰撞体")
+	_check(preview.find_children("*", "CharacterBody3D", true, false).is_empty(), "预览子树没有第二个物理 actor")
+	var preview_script := str((preview.get_script() as Script).resource_path)
+	_check(preview_script.ends_with("motion_preview_display.gd"), "预览实例由 motion_preview 包提供（%s）" % preview_script)
+
+	# 预览与正式角色共用同一模型 + 同一表现系统。
+	var visual := preview.get_node_or_null("CultivatorVisual")
+	_check(visual != null and visual.get_node_or_null("Cultivator") != null, "预览复用共享 Visual 装配的庭院模型")
+	var presentation: Node = preview.presentation()
+	_check(presentation != null and str((presentation.get_script() as Script).resource_path)
+		.ends_with("cultivator_presentation.gd"), "预览复用同一表现系统脚本")
+	_check(presentation.get("auto_read_actor") == false, "预览表现层已切到显式 state provider 驱动")
+	# 「两条路径同脚本、不同驱动」的判据必须是批次无关的：removal 批次会删掉 actor 的表现节点，
+	# 因此这里比对正式角色 prefab 的声明（swordsman.tscn 引用的表现脚本）与预览实例实际脚本。
+	# prefab 可以直接引用表现脚本，也可以通过共享 Visual 场景间接引用；两条都算「同源」，
+	# 判据是这份引用链最终指向同一个表现脚本。
+	var swordsman_scene := FileAccess.get_file_as_string(ACTOR_SCENE_SOURCE)
+	var shared_visual := FileAccess.get_file_as_string(SHARED_VISUAL_SOURCE)
+	var prefab_shares := swordsman_scene.contains(PRESENTATION_SOURCE) or (
+		swordsman_scene.contains(SHARED_VISUAL_SOURCE) and shared_visual.contains(PRESENTATION_SOURCE))
+	_check(prefab_shares, "正式角色 prefab 经共享 Visual 场景引用同一表现脚本（%s）" % PRESENTATION_SOURCE)
+	_check(presentation.get_script() != null
+		and str((presentation.get_script() as Script).resource_path) == PRESENTATION_SOURCE,
+		"预览实例实际运行同一表现脚本（%s）" % PRESENTATION_SOURCE)
+
+	# 切到预览模式。
+	_press(KEY_M)
+	await _frames(6)
+	_check(_stage.mode() == 1, "M 键切到程序动作预览模式（实际 %d）" % _stage.mode())
+	_check(_stage.mode_name() == "程序动作预览", "模式名称如实显示为程序动作预览（%s）" % _stage.mode_name())
+
+	# 选动作 + 播放。
+	var state: MotionPreviewState = preview.state()
+	preview.select_action("walk")
+	state.playing = true
+	var start: Dictionary = _stage.preview_snapshot()
+	var start_time := float(start.get("local_time", 0.0))
+	await _frames(20)
+	var running: Dictionary = _stage.preview_snapshot()
+	var running_pose: Dictionary = running.get("pose", {})
+	_check(float(running.get("local_time", 0.0)) > start_time, "预览播放推进局部时钟（%.3f -> %.3f）" % [
+		start_time, float(running.get("local_time", 0.0))])
+	_check(float(running_pose.get("phase", 0.0)) > 0.0, "行走预览推进步态相位（%.3f）" % float(running_pose.get("phase", 0.0)))
+	var clock_sync := absf(float(running.get("local_time", 0.0)) - float(running_pose.get("clock", 0.0)))
+	_check(clock_sync < 0.1, "local_time 与表现层 clock 同步（差值 %.4f）" % clock_sync)
+
+	# 暂停：完整 pose 与两个时钟逐位不变。
+	state.playing = false
+	var paused_before: Dictionary = _stage.preview_snapshot()
+	await _frames(30)
+	var paused_after: Dictionary = _stage.preview_snapshot()
+	_check(absf(float(paused_before.get("local_time", 0.0)) - float(paused_after.get("local_time", 0.0))) < 0.000001,
+		"暂停 30 帧后 local_time 逐位不变")
+	_check(_pose_equal(paused_before.get("pose", {}), paused_after.get("pose", {})),
+		"暂停 30 帧后完整 pose 逐字段相等（clock / phase / 增益 / 四肢）")
+
+	# 单步：恰好固定量，且表现层同步。
+	var step_before: Dictionary = _stage.preview_snapshot()
+	preview.step_once()
+	var step_after: Dictionary = _stage.preview_snapshot()
+	var expected_step := MotionPreviewState.STEP_SECONDS * float(step_after.get("rate", 1.0))
+	_check(absf(float(step_after.get("local_time", 0.0)) - float(step_before.get("local_time", 0.0)) - expected_step) < 0.0001,
+		"单步恰好推进 STEP_SECONDS × 倍率（%.4f）" % expected_step)
+	_check(absf(float((step_after.get("pose", {}) as Dictionary).get("clock", 0.0))
+		- float((step_before.get("pose", {}) as Dictionary).get("clock", 0.0)) - expected_step) < 0.0001,
+		"单步时表现层 clock 同步推进同样一步")
+
+	# 预览不写真实 actor：整段时间内正式角色速度与意图为零。
+	var realtime: Dictionary = _stage.stage_state().get("realtime", {})
+	var realtime_velocity: Vector3 = realtime.get("velocity", Vector3.ZERO)
+	_check(realtime_velocity.length() < 0.05, "预览操作不驱动正式 actor（速度 %.4f）" % realtime_velocity.length())
+	_check((realtime.get("move_input", Vector2.ZERO) as Vector2).length() < 0.001, "预览模式下正式 actor 输入意图为零")
+	# 预览下按真实移动键也不得让 actor 位移。
+	var before_actor := _actor.global_position
+	_key(KEY_D, true)
+	await _frames(20)
+	_key(KEY_D, false)
+	await _frames(4)
+	_check(_actor.global_position.distance_to(before_actor) < POS_TOL,
+		"预览模式下真实按键不移动正式 actor（位移 %.4f m）" % _actor.global_position.distance_to(before_actor))
+
+	# --- 机位标签语义：正面 / 侧面 / 斜侧必须真的对应预览的朝向 ---
+	# 判据：机位偏移方向与预览正面（forward）的夹角。
+	# FRONT：相机在角色正前方（偏移方向 · forward > 0.9）
+	# SIDE：相机在角色侧面（|偏移 · forward| < 0.2）
+	# 预览与实时角色同向（两者都朝 SPAWN_AIM = +X），因此同一组标签对两种模式都成立。
+	var preview_forward: Vector3 = _stage.preview_snapshot().get("forward", Vector3.ZERO)
+	_check(preview_forward.length() > 0.9, "预览快照给出正面朝向单位向量（%s）" % str(preview_forward))
+	_check(absf(preview_forward.dot(Vector3.RIGHT)) > 0.9,
+		"预览初始朝向与角色 SPAWN_AIM(+X) 一致（forward=(%.2f, %.2f, %.2f)）" % [
+			preview_forward.x, preview_forward.y, preview_forward.z])
+	var actor_aim: Vector3 = _motion.aim_direction
+	_check(actor_aim.length() > 0.9 and preview_forward.dot(actor_aim) > 0.9,
+		"预览朝向与实时角色朝向一致（dot=%.3f，actor=(%.2f, %.2f)）" % [
+			preview_forward.dot(actor_aim), actor_aim.x, actor_aim.z])
+	# 逐个机位核对标签：读该机位的相机相对角色的偏移，与 forward / 侧向做点积。
+	var front_offset := Vector3(14.0, 4.6, 0.0)
+	var side_offset := Vector3(0.0, 4.6, -14.0)
+	var forward_flat := Vector3(preview_forward.x, 0.0, preview_forward.z).normalized()
+	var side_flat := Vector3(forward_flat.z, 0.0, -forward_flat.x)
+	_check(front_offset.normalized().dot(forward_flat) > 0.9,
+		"正面机位在预览正前方（dot=%.3f）" % front_offset.normalized().dot(forward_flat))
+	_check(absf(side_offset.normalized().dot(forward_flat)) < 0.2,
+		"侧面机位在预览侧面（|dot|=%.3f，不是正面/背面）" % absf(side_offset.normalized().dot(forward_flat)))
+	_check(absf(side_offset.normalized().dot(side_flat)) > 0.9,
+		"侧面机位与预览侧向轴一致（dot=%.3f）" % side_offset.normalized().dot(side_flat))
+	# 循环回卷 / reset 后朝向不得漂移（否则机位标签会随播放时长失效）。
+	var heading_before := float(_stage.preview_snapshot().get("heading", 0.0))
+	_stage.preview().call("reset_preview")
+	await _frames(2)
+	_check(absf(float(_stage.preview_snapshot().get("heading", 1.0)) - heading_before) < 0.0001,
+		"reset_preview 保持初始朝向不漂移（%.4f）" % float(_stage.preview_snapshot().get("heading", 0.0)))
+	_check(absf(float(_stage.preview_snapshot().get("initial_heading", 99.0)) - heading_before) < 0.0001,
+		"初始朝向记录正确（initial_heading=%.4f）" % float(_stage.preview_snapshot().get("initial_heading", 0.0)))
+
+	# 动作必须真的随相位变化（不是换名字的空壳）：采样各动作关键相位，比较可观察数据。
+	var probe := MotionPreviewDisplay.new()
+	probe.speed_reference = 4.0
+	root.add_child(probe)
+	probe.reset_preview()
+
+	# 采样参数：默认契约值。
+	var probe_params := MotionPreviewParams.new()
+
+	# 起步 / 停下：速度 0 → 巡航 → 0。
+	probe.select_action("start_stop")
+	var ss_zero: Dictionary = probe.state().current.sample(0.0, probe_params)
+	var ss_mid: Dictionary = probe.state().current.sample(0.5, probe_params)
+	var ss_end: Dictionary = probe.state().current.sample(1.0, probe_params)
+	_check(absf(float(ss_zero.get("speed_factor", 1.0))) < 0.001,
+		"起步动作在相位 0 速度为 0（%.3f）" % float(ss_zero.get("speed_factor", 0.0)))
+	_check(float(ss_mid.get("speed_factor", 0.0)) > 0.0,
+		"起步动作在中段有速度（%.3f）" % float(ss_mid.get("speed_factor", 0.0)))
+	_check(absf(float(ss_end.get("speed_factor", 1.0))) < 0.001,
+		"起步动作在相位 1 速度归 0（%.3f）" % float(ss_end.get("speed_factor", 0.0)))
+
+	# 跳跃：竖速正 → 0 → 负 → 着地；用真实播放采样而不是只读常量。
+	probe.select_action("jump")
+	probe.state().playing = false
+	probe.state().looping = false
+	var jump_vertical_first := 0.0
+	var jump_vertical_mid := 0.0
+	var jump_vertical_late := 0.0
+	var jump_grounded_late := false
+	# 直接按相位采样三次，确保读数来自同一套 provider；参数用注入对象，不引用任何写死的常量。
+	jump_vertical_first = float(probe.state().current.sample(0.0, probe_params).get("vertical", 0.0))
+	jump_vertical_mid = float(probe.state().current.sample(
+		probe_params.jump_speed / (probe_params.gravity * probe.state().current.duration), probe_params).get("vertical", 0.0))
+	# 下落采样点由物理常量推导（飞行时长 0.667 s / 动作时长 1.1 s），不能用固定 0.9：
+	# 固定 0.9 已经落在落地后的保持段，测出来必然是 0。
+	jump_vertical_late = float(probe.state().current.sample(
+		probe_params.jump_flight_seconds() * 0.9 / probe.state().current.duration, probe_params).get("vertical", 0.0))
+	jump_grounded_late = bool(probe.state().current.sample(1.0, probe_params).get("grounded", false))
+	_check(jump_vertical_first > 5.0, "跳跃起跳竖速为正（%.2f m/s）" % jump_vertical_first)
+	_check(absf(jump_vertical_mid) < 0.01, "跳跃顶点竖速为 0（%.3f m/s）" % jump_vertical_mid)
+	_check(jump_vertical_late < -1.0, "跳跃下落竖速为负（%.2f m/s）" % jump_vertical_late)
+	_check(jump_grounded_late, "跳跃末尾落地着地")
+
+	# 御剑：升 / 悬 / 降三态可采到，且全程剑可见。
+	probe.select_action("flight")
+	var flight_lift := float(probe.state().current.sample(0.1, probe_params).get("vertical", 0.0))
+	var flight_hover := float(probe.state().current.sample(0.35, probe_params).get("vertical", 0.0))
+	var flight_sink := float(probe.state().current.sample(0.6, probe_params).get("vertical", 0.0))
+	_check(flight_lift > 5.0, "御剑起升竖速为正（%.2f m/s）" % flight_lift)
+	_check(absf(flight_hover) < 0.001, "御剑悬停竖速为 0（%.3f m/s）" % flight_hover)
+	_check(flight_sink < -5.0, "御剑下降竖速为负（%.2f m/s）" % flight_sink)
+	probe.state().playing = true
+	var guard_flight := 0
+	while probe.state().is_transitioning() and guard_flight < 600:
+		probe.advance(1.0 / 60.0)
+		guard_flight += 1
+	_check(probe.preview_snapshot().get("sword_visible", false), "御剑剖面全程显示飞剑")
+	probe.state().playing = false
+
+	# 播放真实推进时，姿态随相位变化：两个不同时刻的 pose 必须不同。
+	probe.reset_preview()
+	probe.select_action("run")
+	probe.state().playing = true
+	for index in range(10):
+		probe.advance(1.0 / 60.0)
+	var pose_a: Dictionary = probe.preview_snapshot().get("pose", {})
+	for index in range(10):
+		probe.advance(1.0 / 60.0)
+	var pose_b: Dictionary = probe.preview_snapshot().get("pose", {})
+	_check(not _pose_equal(pose_a, pose_b),
+		"跑动预览在两个时刻的姿态不同（相位 %.3f → %.3f）" % [
+			float(pose_a.get("phase", 0.0)), float(pose_b.get("phase", 0.0))])
+	probe.state().playing = false
+
+	# 循环边界帧率一致性：30fps 与 60fps 走过同样墙钟时长，相位一致（余量推进，不断在帧边界）。
+	var probe30 := MotionPreviewDisplay.new()
+	probe30.speed_reference = 4.0
+	root.add_child(probe30)
+	probe30.reset_preview()
+	probe30.select_action("start_stop")
+	probe30.state().playing = true
+	var probe60 := MotionPreviewDisplay.new()
+	probe60.speed_reference = 4.0
+	root.add_child(probe60)
+	probe60.reset_preview()
+	probe60.select_action("start_stop")
+	probe60.state().playing = true
+	for index in range(90):
+		probe30.advance(1.0 / 30.0)
+	for index in range(180):
+		probe60.advance(1.0 / 60.0)
+	_check(absf(probe30.state().phase() - probe60.state().phase()) < 0.01,
+		"跨循环边界后 30fps 与 60fps 相位一致（%.4f vs %.4f）" % [
+			probe30.state().phase(), probe60.state().phase()])
+
+	probe.queue_free()
+	probe30.queue_free()
+	probe60.queue_free()
+	await _frames(2)
+
+	# 飞剑：预览御剑动作显示共享飞剑资源。
+	preview.select_action("flight")
+	state.playing = true
+	var guard := 0
+	while state.is_transitioning() and guard < 600:
+		await _frames(1)
+		guard += 1
+	_check(_stage.preview_snapshot().get("sword_visible", false), "预览御剑动作显示共享飞剑资源")
+	_check(preview.sword_visual() != null and preview.sword_visual().visible, "飞剑视觉节点真实可见（不是空壳）")
+	state.playing = false
+
+	# 回到实时模式：真实输入重新生效，预览时钟停止。
+	_press(KEY_M)
+	await _frames(6)
+	_check(_stage.mode() == 0, "M 键切回实时运动模式（实际 %d）" % _stage.mode())
+	var frozen: Dictionary = _stage.preview_snapshot()
+	await _frames(10)
+	_check(absf(float(frozen.get("local_time", 0.0)) - float(_stage.preview_snapshot().get("local_time", 0.0))) < 0.000001,
+		"回到实时模式后预览局部时钟停住")
+	_place(Vector3(-14.0, 0.05, 0.0))
+	await _frames(4)
+	var before_realtime := _actor.global_position
+	_key(KEY_D, true)
+	await _frames(14)
+	_key(KEY_D, false)
+	await _frames(8)
+	_check(_motion.actual_velocity.length() < 0.05, "松开按键后真实 actor 速度归零")
+	# 只断言「真的动了」：方向由当前机位的 camera basis 决定，不写死世界轴（同 surface 批次的教训）。
+	var moved_realtime := _actor.global_position.distance_to(before_realtime)
+	_check(moved_realtime > 0.3, "实时模式下真实按键重新驱动 actor（位移 %.2f m）" % moved_realtime)
+
+
+## GUI 获得键盘焦点时空格不得同时触发角色跳跃（S2 P0 输入裁决）。
+## 焦点必须在真正可见的控件上：预览面板只在预览模式可见，因此先切模式再取焦点。
+func _batch_focus() -> void:
+	_place(Vector3(-6.0, 0.05, 0.0))
+	await _frames(12)
+	_check(_motion.on_floor, "焦点检查前角色已稳定着地")
+	var play_button := _find_named(_stage, "PlayButton") as Button
+	_check(play_button != null, "预览面板提供播放按钮（用于焦点裁决）")
+	if play_button == null:
+		return
+	# 预览面板只在预览模式可见；隐藏的控件持有焦点不算「GUI 占用空格」。
+	_press(KEY_M)
+	await _frames(6)
+	_check(_stage.mode() == 1, "焦点检查切到预览模式（实际 %d）" % _stage.mode())
+	play_button.grab_focus()
+	await _frames(4)
+	var focus := root.gui_get_focus_owner()
+	_check(focus == play_button, "播放按钮已获得键盘焦点（实际 %s）" % str("" if focus == null else focus.name))
+	var playing_before := bool(_stage.preview_snapshot().get("playing", false))
+	var jump_before := int(_stage.stage_state().get("jump_edges", 0))
+	_press(KEY_SPACE)
+	await _frames(10)
+	var jump_after := int(_stage.stage_state().get("jump_edges", 0))
+	var playing_after := bool(_stage.preview_snapshot().get("playing", false))
+	_check(jump_after == jump_before, "控件持有焦点时按空格不触发角色跳跃（边沿 %d -> %d）" % [jump_before, jump_after])
+	_check(_actor.global_position.y < 0.3, "控件持有焦点时空格未把角色抬离地面（y=%.3f）" % _actor.global_position.y)
+	# 控件持有焦点时事件由 GUI 层持有：场景两条路径（跳跃 / 预览切换）都不应吃到它。
+	# 注意：合成 InputEvent 不保证触发 Button 的 ui_accept 激活，因此这里不断言「按钮被按下」，
+	# 只断言「场景没有越过 GUI 抢这个键」——这正是本批次要验证的输入裁决。
+	_check(playing_after == playing_before,
+		"控件持有焦点时空格未穿透到场景的预览切换（%s -> %s）" % [str(playing_before), str(playing_after)])
+	play_button.release_focus()
+	await _frames(4)
+	# 无控件焦点时，预览模式空格仍归预览（再来一次仍然翻转、仍不跳）。
+	var playing_before_second := bool(_stage.preview_snapshot().get("playing", false))
+	_press(KEY_SPACE)
+	await _frames(6)
+	_check(bool(_stage.preview_snapshot().get("playing", false)) != playing_before_second,
+		"无焦点时预览模式空格仍切换预览播放")
+	_check(int(_stage.stage_state().get("jump_edges", 0)) == jump_before, "预览模式下空格始终不产生跳跃边沿")
+	_press(KEY_M)
+	await _frames(6)
 
 
 # --- 批次：地面几何 / 材质与连续移动跟随 ------------------------------------
@@ -738,13 +1082,13 @@ func _batch_exit() -> void:
 	_check(not _motion.flight_active, "R 重置关闭御剑并清账")
 	_check(TagRegistry.is_blocked(_actor, &"sword_flight_block") == false, "R 重置后御剑阻塞已清账")
 
-	# 退出批次同样读回返回文案：按钮与底部提示都必须指向子实验目录，与实际目标一致。
-	var return_text := _control_text("Overlay/Interface/Margin/Layout/Header/Buttons/ReturnButton")
-	_check(return_text == "返回子实验目录",
-		"退出批次读回返回按钮文案（实际「%s」）" % return_text)
-	var controls_text := _control_text("Overlay/Interface/Margin/Layout/Footer/ControlsPanel/Controls")
-	_check(controls_text.contains("Esc 返回子实验目录"),
-		"退出批次读回底部提示含「Esc 返回子实验目录」（实际「%s」）" % controls_text)
+	# 退出批次同样读回返回文案：按钮与短提示都必须指向子实验目录，与实际目标一致。
+	var return_button_exit := _find_named(_stage, "ReturnButton") as Button
+	_check(return_button_exit != null and return_button_exit.text == "返回子实验目录",
+		"退出批次读回返回按钮文案（实际「%s」）" % ("" if return_button_exit == null else return_button_exit.text))
+	var exit_toggle := _find_named(_stage, "DetailsToggle") as Button
+	_check(exit_toggle != null and exit_toggle.tooltip_text.contains("Esc 返回子实验目录"),
+		"退出批次读回详情 tooltip 含「Esc 返回子实验目录」（实际「%s」）" % ("" if exit_toggle == null else exit_toggle.tooltip_text))
 	# 文案要与真实目标相符：场景里不得再有旧文案，返回常量必须指向子实验目录。
 	var stage_text := FileAccess.get_file_as_string(
 		"res://levels/experiments/character_movement/motion_stage.gd")
@@ -752,11 +1096,6 @@ func _batch_exit() -> void:
 		"场景源码不再残留旧按钮文案「返回实验目录」")
 	_check(stage_text.contains('change_scene_to_file(MOVEMENT_HUB_SCENE)'),
 		"返回常量与按钮文案指向同一目标（MOVEMENT_HUB_SCENE）")
-	var return_button := _stage.get_node_or_null(
-		"Overlay/Interface/Margin/Layout/Header/Buttons/ReturnButton") as Button
-	_check(return_button != null and not return_button.pressed.get_connections().is_empty(),
-		"返回按钮已接线到返回处理（点击不会静默失效）")
-
 	_key(KEY_ESCAPE, true)
 	await _frames(1)
 	_key(KEY_ESCAPE, false)
@@ -789,6 +1128,12 @@ func _run_capture() -> void:
 		_check(false, "无头渲染器无法截图，请用窗口模式运行截图")
 		_finish()
 		return
+	if _canvas != Vector2i.ZERO:
+		# 分辨率证据：改内容画布触发真实 Control 重排与视口重绘。
+		# 记录的是最终 PNG 的真实像素尺寸（见 _capture 的输出），不是"声称"的分辨率。
+		root.content_scale_size = _canvas
+		root.size = _canvas
+		await _frames(16)
 	await _wait_render_frames(48)
 	root.get_texture().get_image()
 	await _frames(4)
@@ -855,6 +1200,85 @@ func _run_capture() -> void:
 		await _capture("small")
 		root.content_scale_size = previous_canvas
 		await _frames(6)
+	if _shots.has("preview"):
+		# 程序动作预览证据（S2 P0）：真实进入预览模式，播放 walk / jump / flight，
+		# 并拍下暂停态（控件可见、读数可见）。全部经真实按键与面板 API，不是摆拍。
+		await _press(KEY_M)
+		_check(_stage.mode() == 1, "预览证据：M 键进入程序动作预览模式（实际 %d）" % _stage.mode())
+		# 走位到预览实例侧前方，保证模型在画面里足够大、面板不压人物。
+		await _switch_view(KEY_2, 1)
+		var preview_display: Node = _stage.preview()
+		_check(preview_display != null, "预览证据：展示实例存在")
+		# 收紧正交构图：截图要能分辨四肢摆动，远景构图下模型只有几十像素高。
+		# 走 CameraRig 公开 API（唯一写相机者），不直接写 Camera3D。
+		if _stage.rig() != null:
+			_stage.rig().set_zoom_size(5.0)
+		# 面板按钮文案可读（截图要能看出这是程序动作预览，而非骨骼 clip）。
+		var source_label := _find_named(_stage, "Source") as Label
+		_check(source_label != null and source_label.text.contains("程序动作预览"),
+			"预览证据：面板标注「程序动作预览」（实际「%s」）" % ("" if source_label == null else source_label.text))
+		preview_display.select_action("walk")
+		preview_display.state().playing = true
+		await _frames(30)
+		await _capture("preview-walk")
+		preview_display.select_action("jump")
+		preview_display.state().playing = true
+		# 跳到抛物线中段再拍，画面里应能看出收腿 / 腾空姿态。
+		var jump_guard := 0
+		while float(preview_display.preview_snapshot().get("progress", 1.0)) < 0.35 and jump_guard < 300:
+			await _frames(1)
+			jump_guard += 1
+		await _capture("preview-jump")
+		preview_display.select_action("flight")
+		preview_display.state().playing = true
+		var flight_guard := 0
+		while preview_display.state().is_transitioning() and flight_guard < 600:
+			await _frames(1)
+			flight_guard += 1
+		await _frames(30)
+		_check(bool(_stage.preview_snapshot().get("sword_visible", false)), "预览证据：御剑态飞剑视觉节点为可见")
+		# 剑身长轴沿角色局部 Z（Tip z=−1.0 → Pommel z=+0.645）：
+		# - 侧面机位（相机在 ±Z，VIEW_OFFSETS[1]）正对剑身端面，只看到几个像素 —— 旧 1280 截图
+		#   "脚下没有剑"就是这个原因，不是没绑定。
+		# - 斜侧机位（VIEW_OFFSETS[2] = (10.5, 5.6, −10.5)）与剑身成约 45°，剑身有投影长度，
+		#   同时保留机身姿态，是御剑证据的合适机位（父级指定用斜侧实拍）。
+		await _switch_view(KEY_3, 2)
+		# 视角切换会按该机位的配置重新播种缩放，因此收紧构图必须在切完机位之后再设置一次，
+		# 否则三种分辨率下模型大小不一致（1920 实测只有 ~160 px 高，剑只剩几个像素）。
+		if _stage.rig() != null:
+			_stage.rig().set_zoom_size(5.0)
+		await _frames(8)
+		# 真图证据：同一构图下对比"显示剑 / 隐藏剑"两张帧，差异必须落在剑所在区域。
+		# 只断言 visible=true 不算证据，必须证明剑真的被渲染出来。
+		var sword_visible_frame := await _grab_frame()
+		var sword: Node3D = preview_display.sword_visual()
+		sword.visible = false
+		await _frames(4)
+		var sword_hidden_frame := await _grab_frame()
+		sword.visible = true
+		await _frames(4)
+		var diff := _count_differing_pixels(sword_visible_frame, sword_hidden_frame)
+		_check(diff > 40,
+			"预览证据：御剑态剑真的被渲染出来（显示/隐藏两帧差异像素 %d）" % diff)
+		await _capture("preview-flight")
+		# 暂停态：控件显示「播放」、进度停住，读数仍在画面上。
+		preview_display.state().playing = false
+		await _frames(12)
+		var paused_before := float(_stage.preview_snapshot().get("local_time", 0.0))
+		await _frames(10)
+		_check(absf(paused_before - float(_stage.preview_snapshot().get("local_time", 0.0))) < 0.000001,
+			"预览证据：暂停后局部时钟停住（%.4f）" % paused_before)
+		await _capture("preview-paused")
+		# 实时模式对照截图：确认两种模式在画面上可区分。
+		await _press(KEY_M)
+		_check(_stage.mode() == 0, "预览证据：M 键回到实时运动模式（实际 %d）" % _stage.mode())
+		_place(Vector3(12.0, 0.05, 0.0))
+		await _frames(8)
+		_key(KEY_D, true)
+		await _frames(26)
+		await _capture("realtime-run")
+		_key(KEY_D, false)
+		await _frames(10)
 	if _shots.has("surface"):
 		# surface 只在本分支显式请求（--shot=surface）时运行：默认完整截图不再额外生成这 6 张。
 		# 斜侧视角移动留档：长跑道连续跟随 4 帧 + 急转盘硬反转 1 帧（真实按键驱动，非摆拍）。
@@ -986,9 +1410,40 @@ func _frames(count: int) -> void:
 	await process_frame
 
 
-func _hud_label(tag: String) -> Label:
-	var panel := _stage.get_node_or_null("Overlay/Interface/Margin/Layout/Header/ReadoutPanel/Readout/%s" % tag)
-	return panel as Label
+## 按节点名在场景子树内查找（共享 LabHud 内部结构由它自己维护，测试只按约定名读取）。
+func _find_named(root_node: Node, node_name: String) -> Node:
+	if root_node == null:
+		return null
+	var found := root_node.find_child(node_name, true, false)
+	return found
+
+
+## 共享 HUD 的短提示文本；不存在时返回空串，由断言判失败。
+func _hint_text() -> String:
+	var hint := _find_named(_stage, "Hint") as Label
+	return "" if hint == null else hint.text
+
+
+## 完整 pose 快照逐字段比较（只比较可观察数值，不镜像实现内部状态）。
+func _pose_equal(before: Variant, after: Variant) -> bool:
+	var left: Dictionary = before
+	var right: Dictionary = after
+	if left.size() != right.size():
+		return false
+	for key in left:
+		if not right.has(key):
+			return false
+		var a: Variant = left[key]
+		var b: Variant = right[key]
+		if a is float and b is float:
+			if not is_equal_approx(a, b):
+				return false
+		elif a is Vector3 and b is Vector3:
+			if not (a as Vector3).is_equal_approx(b):
+				return false
+		elif a != b:
+			return false
+	return true
 
 
 ## 读回任意 Button / Label 的文案；节点缺失或类型不符返回空串，由断言判失败。
@@ -1016,14 +1471,11 @@ func _rect_fits(control: Control) -> bool:
 
 
 ## 整块 HUD（读数面板 / 按钮列 / 底部说明）都必须落在画布内。
+## 共享 HUD 各子面板与预览面板都必须落在画布内（按约定节点名查找，不写死路径）。
 func _hud_fits_canvas() -> bool:
-	for path in [
-		"Overlay/Interface/Margin/Layout/Header/ReadoutPanel",
-		"Overlay/Interface/Margin/Layout/Header/Buttons",
-		"Overlay/Interface/Margin/Layout/Footer/ControlsPanel",
-		"Overlay/Interface/Margin/Layout/Footer",
-	]:
-		if not _rect_fits(_stage.get_node_or_null(path) as Control):
+	for node_name in ["TitlePanel", "Buttons", "Hint", "DetailsPanel", "PreviewPanel", "PreviewRow"]:
+		var control := _find_named(_stage, node_name) as Control
+		if control != null and control.visible and not _rect_fits(control):
 			return false
 	return true
 
@@ -1086,9 +1538,13 @@ func _capture(suffix: String) -> void:
 	if not await _await_draw():
 		_check(false, "等待渲染帧超时，未能截图：" + suffix)
 		return
+	var image := root.get_texture().get_image()
 	var path := "%s-%s.png" % [_prefix, suffix]
-	var error := root.get_texture().get_image().save_png(path)
+	var error := image.save_png(path)
 	_check(error == OK, "渲染截图保存：%s（错误 %d）" % [path, error])
+	# 如实记录真实像素尺寸：报告里不得把 960×640 的画布拉伸说成原生分辨率。
+	print("SHOT %s 实际像素 %dx%d（画布 %s）" % [
+		suffix, image.get_width(), image.get_height(), str(_canvas_size())])
 
 
 func _wait_render_frames(count: int) -> void:
@@ -1126,6 +1582,23 @@ func _await_draw() -> bool:
 	if not _frame_drawn and RenderingServer.frame_post_draw.is_connected(_on_frame_drawn):
 		RenderingServer.frame_post_draw.disconnect(_on_frame_drawn)
 	return _frame_drawn
+
+
+## 统计两张同尺寸图里差异明显的像素数（逐像素比较 RGB，任一分量差 > 24 记一次）。
+## 用于证明"某个网格真的被画出来了"，而不是只读一个 visible 布尔。
+func _count_differing_pixels(a: Image, b: Image) -> int:
+	if a == null or b == null:
+		return 0
+	if a.get_width() != b.get_width() or a.get_height() != b.get_height():
+		return 0
+	var count := 0
+	for y in range(a.get_height()):
+		for x in range(a.get_width()):
+			var ca := a.get_pixel(x, y)
+			var cb := b.get_pixel(x, y)
+			if absf(ca.r - cb.r) > 0.094 or absf(ca.g - cb.g) > 0.094 or absf(ca.b - cb.b) > 0.094:
+				count += 1
+	return count
 
 
 ## 地面区域（避开逐帧刷新的 HUD）连续两帧差异：静止组应为 0；

@@ -1,44 +1,39 @@
 extends Node3D
 
-## 镜头实验室（character_movement 子实验，见 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）。
+## 镜头实验室（character_movement 子实验）。
 ##
-## 唯一目标：在同一灰盒里比较跟随策略（固定偏移硬跟随 / 平滑跟随 / 死区 + 前视）
-## 与手动缩放、镜头旋转对屏幕相对移动的影响。不修改角色与三项 Capability。
+## 唯一目标：在同一灰盒里比较两个可操作镜头模式与 fixed_follow 的参数预设，
+## 并观察旋转 / 缩放 / 捕获对屏幕相对移动的影响。不修改角色与三项 Capability。
 ##
 ## 边界：
-## - 角色只经公开输入 API 驱动（set_move_input / set_camera_ground_basis /
-##   set_aim_direction / clear_input / reset_motion），本场景不写 velocity、意图字段
-##   或能力内部状态。
-## - 镜头策略只属于本实验：跟随逻辑在 CameraLabRig（同目录组合节点），不抽 core。
-## - 灰盒几何在 CameraLabGraybox（同目录），不做完整地图与美术资产。
-## - Esc 返回角色移动子实验目录 movement_lab_hub.tscn。
+## - 镜头行为归 res://game/systems/camera_rig/ 的 CameraRig（唯一 executor）与模式 Capability，
+##   本场景只做编排：装配 rig、HUD 与重置；地面基由 rig 桥接直接写给角色。
+## - 本场景不写 Camera3D 的姿态（只读 rig 快照），不引用任何模式 Capability 类名。
+## - 灰盒几何在 CameraLabGraybox（同目录）；Esc 返回角色移动子实验目录。
+## - 旧的 camera_lab_rig.gd 作为已验收探索资产保留，本场景不再运行引用它。
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-const RIG_SCRIPT: GDScript = preload("res://levels/experiments/character_movement/camera_lab_rig.gd")
+const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const GRAYBOX_SCRIPT: GDScript = preload("res://levels/experiments/character_movement/camera_lab_graybox.gd")
-const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
 
 const SPAWN_POSITION := Vector3(0.0, 0.1, -10.0)
 const SPAWN_AIM := Vector3.FORWARD
-const CAMERA_FAR := 220.0
 
-## Q / E 按住时的偏航角速度（度/秒）。
-const YAW_SPEED := 90.0
-
-## 本场景专有的"按住生效"键：Q / E 转镜头。
-## 本场景只跟踪移动键（WASD / 方向键）与这里的 YAW_KEYS，不消费空格 / Ctrl——
-## 镜头实验室没有跳跃与升降语义；升降键由需要它的场景自行声明 VERTICAL_KEYS。
-## 移动键映射、按住状态与失焦清账统一由 MovementLabInput 承担
-## （两个消费者验证后抽取；见同目录 movement_lab_input.gd）。
-const YAW_KEYS: Array[Key] = [KEY_Q, KEY_E]
-
-## 直接切换策略的数字键（1/2/3/4 依次对应 HARD / SMOOTH / DEADZONE / LOOKAHEAD），Tab 循环。
-const MODE_KEYS := {
-	KEY_1: 0,
-	KEY_2: 1,
-	KEY_3: 2,
-	KEY_4: 3,
+## 四个可操作模式（长期语义名；数字键 1..4 按此顺序，与 rig.mode_cycle 一致）。
+const MODE_ORDER: Array[String] = ["fixed_follow", "quarter_turn", "orbit", "overview"]
+const MODE_LABELS: Dictionary = {
+	"fixed_follow": "1 固定跟随",
+	"quarter_turn": "2 四向切换",
+	"orbit": "3 RMB 环绕",
+	"overview": "4 总览平移",
+}
+## 提示文案用的短名（按钮用长标签，短提示按模式顺序拼接，避免手写文案与模式列表漂移）。
+const MODE_SHORT: Dictionary = {
+	"fixed_follow": "固定跟随",
+	"quarter_turn": "四向",
+	"orbit": "RMB 环绕",
+	"overview": "总览",
 }
 
 var _camera: Camera3D
@@ -46,11 +41,11 @@ var _viewport: Viewport
 var _previous_msaa: Viewport.MSAA = Viewport.MSAA_DISABLED
 var _player: Swordsman
 var _motion: SwordsmanMotionComponent
-var _rig: CameraLabRig
+var _rig: CameraRig
 var _input := MovementLabInput.new()
-var _status: Label
-var _mode_label: Label
-var _occluded := false
+var _hud: LabHud
+var _mode_buttons: Dictionary = {}
+var _status_line := ""
 
 
 func _ready() -> void:
@@ -60,9 +55,6 @@ func _ready() -> void:
 	_viewport.msaa_3d = Viewport.MSAA_4X
 	_camera = %Camera3D as Camera3D
 	assert(_camera != null, "camera_lab: 场景必须提供 Camera3D")
-	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_camera.near = 0.1
-	_camera.far = CAMERA_FAR
 	_build_graybox()
 	_spawn_player()
 	_build_rig()
@@ -76,97 +68,53 @@ func _exit_tree() -> void:
 
 
 func _notification(what: int) -> void:
-	# 失焦只清输入；不改变镜头策略、不改变角色能力状态。
+	# 失焦只清输入与捕获；不改变镜头模式、不改变角色能力状态。
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		_input.clear()
 		if _player != null:
 			_player.clear_input()
+		if _rig != null:
+			_rig.release_capture()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 场景切换（Esc 返回目录）后仍可能有排队事件抵达已离树的节点：没有视口就不处理。
 	var viewport := get_viewport()
 	if viewport == null:
 		return
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		# 物理键码优先（不看键盘布局）；个别平台修饰键只填逻辑键码时回退。
-		var code := MovementLabInput.key_code(key_event)
-		# 移动键与 Q / E 都只是"按住状态"；语义（移动 vs 转镜头）留在本场景。
-		if _input.track_key(key_event, YAW_KEYS):
+		# 移动键只是"按住状态"；模式 / 缩放 / 偏航 / 捕获由 CameraRig 自己处理。
+		# 注意：子节点 CameraRig 的 _unhandled_input 先于本根脚本收到同一事件，
+		# 所以这里看到的事件都是 rig 未消费的。
+		if _input.track_key(key_event, []):
 			viewport.set_input_as_handled()
 			return
-		if key_event.pressed and not key_event.echo:
-			if MODE_KEYS.has(code):
-				_rig.set_mode(MODE_KEYS[code] as CameraLabRig.Mode)
-				viewport.set_input_as_handled()
-				return
-			match code:
-				KEY_TAB:
-					_rig.cycle_mode()
-				KEY_Z:
-					_rig.adjust_zoom(1.0)
-				KEY_X:
-					_rig.adjust_zoom(-1.0)
-				KEY_R:
-					_reset_experiment()
-				_:
-					if event.is_action_pressed("ui_cancel"):
-						# 先标记已处理再切场景：切完节点已离树，view 无法再访问。
-						viewport.set_input_as_handled()
-						_return_to_hub()
-						return
-					return
+		if key_event.pressed and not key_event.echo and MovementLabInput.key_code(key_event) == KEY_R:
 			viewport.set_input_as_handled()
-	elif event is InputEventMouseButton:
-		var button := event as InputEventMouseButton
-		if not button.pressed:
-			return
-		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_rig.adjust_zoom(1.0)
+			_reset_experiment()
+		elif event.is_action_pressed("ui_cancel"):
+			# Esc 到达这里说明 rig 未处于捕获态（捕获态由 rig 在 _input 先消费）。
 			viewport.set_input_as_handled()
-		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_rig.adjust_zoom(-1.0)
-			viewport.set_input_as_handled()
+			_return_to_hub()
 
 
 func _physics_process(delta: float) -> void:
 	if _player == null or _motion == null or _rig == null:
 		return
-	if _input.is_down(KEY_Q):
-		_rig.add_yaw_degrees(-YAW_SPEED * delta)
-	if _input.is_down(KEY_E):
-		_rig.add_yaw_degrees(YAW_SPEED * delta)
-	# 镜头旋转后，屏幕相对移动仍由相机地面基解释（与相机实际 basis 同源）。
-	_player.set_camera_ground_basis(_rig.right_axis(), _rig.forward_axis())
+	# 相机地面基由 CameraRig 在写相机后直接发布给角色（桥接层），本场景不重复转交。
+	# 次序由 process_physics_priority 保证：CameraRig(-10) 先写相机并发布地面基，
+	# 本节点(0) 取输入，角色(0, 子节点) 最后物理提交——三者同帧一致。
 	var move := _input.move_input()
 	_player.set_move_input(move)
-	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if move != Vector2.ZERO:
 		var direction := _rig.right_axis() * move.x - _rig.forward_axis() * move.y
 		direction.y = 0.0
 		if direction.length_squared() > 0.0001:
 			_player.set_aim_direction(direction.normalized())
-	_rig.update(delta)
 
 
 func _process(_delta: float) -> void:
-	_update_occlusion()
 	_update_status()
-
-
-## 相机 → 角色之间的遮挡读数：纯观察项，不改变镜头行为。
-func _update_occlusion() -> void:
-	_occluded = false
-	if _camera == null or _player == null:
-		return
-	var space := get_world_3d().direct_space_state
-	if space == null:
-		return
-	var query := PhysicsRayQueryParameters3D.create(_camera.global_position, _player.global_position + Vector3(0.0, 0.9, 0.0))
-	query.exclude = [_player.get_rid()]
-	var hit := space.intersect_ray(query)
-	_occluded = not hit.is_empty()
 
 
 func _reset_experiment() -> void:
@@ -174,7 +122,6 @@ func _reset_experiment() -> void:
 	_player.global_position = SPAWN_POSITION
 	_player.reset_motion()
 	_player.set_aim_direction(SPAWN_AIM)
-	_rig.yaw_degrees = -35.0
 	_rig.reset_state()
 
 
@@ -182,6 +129,8 @@ func _return_to_hub() -> void:
 	_input.clear()
 	if _player != null:
 		_player.clear_input()
+	if _rig != null:
+		_rig.release_capture()
 	var result := get_tree().change_scene_to_file(HUB_SCENE)
 	if result != OK:
 		push_error("camera_lab: 返回角色移动子实验目录失败，错误码 %d" % result)
@@ -207,169 +156,160 @@ func _spawn_player() -> void:
 
 
 func _build_rig() -> void:
-	var rig := Node3D.new()
+	var rig := RIG_SHEET.instantiate() as CameraRig
+	assert(rig != null, "camera_lab: camera_rig_sheet.tscn 根节点必须是 CameraRig")
 	rig.name = "CameraRig"
-	rig.set_script(RIG_SCRIPT)
 	add_child(rig)
-	_rig = rig as CameraLabRig
-	assert(_rig != null, "camera_lab: CameraLabRig 装配失败")
-	_rig.setup(_camera, _player)
+	_rig = rig
+	_rig.bind(_camera, _player, _lab_config())
+
+
+## 本实验的投影与参数配置：代码构造，避免为单一场景新增资源文件。
+func _lab_config() -> CameraRigConfig:
+	var config := CameraRigConfig.new()
+	config.start_mode = "fixed_follow"
+	config.follow_preset = "hard"
+	config.yaw_degrees = -35.0
+	config.pitch_degrees = 42.0
+	config.distance = 16.0
+	config.size = 22.0
+	config.size_min = 8.0
+	config.size_max = 44.0
+	config.near = 0.1
+	config.far = 220.0
+	# 只有本实验场景显式打开模式选择键与预设键；其它场景保持默认（不抢按键）。
+	config.mode_choices = PackedStringArray(MODE_ORDER)
+	config.enable_mode_selection_keys = true
+	config.enable_preset_key = true
+	config.enable_zoom_keys = true
+	config.turn_step_degrees = 90.0
+	return config
 
 
 # --- HUD ----------------------------------------------------------------
 
 
 func _build_hud() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "Overlay"
-	add_child(layer)
-
-	var interface := Control.new()
-	interface.name = "Interface"
-	interface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interface.theme = LAB_THEME
-	layer.add_child(interface)
-	interface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var margin := MarginContainer.new()
-	margin.name = "Margin"
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_left", 32)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_right", 32)
-	margin.add_theme_constant_override("margin_bottom", 20)
-	interface.add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var layout := VBoxContainer.new()
-	layout.name = "Layout"
-	layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(layout)
-
-	var header := HBoxContainer.new()
-	header.name = "Header"
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(header)
-
-	var panel := PanelContainer.new()
-	panel.name = "TitlesPanel"
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _make_text_backdrop())
-	header.add_child(panel)
-
-	var titles := VBoxContainer.new()
-	titles.name = "Titles"
-	titles.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(titles)
-
-	var kicker := Label.new()
-	kicker.name = "Kicker"
-	kicker.theme_type_variation = "AccentLabel"
-	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.text = "EXPERIMENT    /    CHARACTER MOVEMENT · CAMERA LAB"
-	titles.add_child(kicker)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 28)
-	title.text = "角色移动 · 镜头实验室"
-	titles.add_child(title)
-
-	# 当前模式单独一行、字号更大：切换策略时是唯一需要立刻读到的信息。
-	_mode_label = Label.new()
-	_mode_label.name = "ModeLabel"
-	_mode_label.add_theme_font_size_override("font_size", 18)
-	_mode_label.text = "跟随策略：—"
-	titles.add_child(_mode_label)
-
-	_status = Label.new()
-	_status.name = "Status"
-	_status.theme_type_variation = "MutedLabel"
-	_status.add_theme_font_size_override("font_size", 14)
-	titles.add_child(_status)
-
-	var return_button := Button.new()
-	return_button.name = "ReturnButton"
-	return_button.text = "返回子实验目录"
-	return_button.custom_minimum_size = Vector2(150, 44)
-	return_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	# 按钮不抢键盘焦点：移动键事件始终抵达场景的 _unhandled_input。
-	return_button.focus_mode = Control.FOCUS_NONE
-	return_button.pressed.connect(_return_to_hub)
-	header.add_child(return_button)
-
-	var spacer := Control.new()
-	spacer.name = "Space"
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(spacer)
-
-	var footer := HBoxContainer.new()
-	footer.name = "Footer"
-	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layout.add_child(footer)
-
-	var controls_panel := PanelContainer.new()
-	controls_panel.name = "ControlsPanel"
-	controls_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	controls_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	controls_panel.add_theme_stylebox_override("panel", _make_text_backdrop())
-	footer.add_child(controls_panel)
-
-	var controls := Label.new()
-	controls.name = "Controls"
-	controls.theme_type_variation = "MutedLabel"
-	controls.add_theme_font_size_override("font_size", 14)
-	controls.text = "WASD / 方向键 屏幕相对移动  ·  Q / E 转镜头  ·  Tab 或 1/2/3/4 切换跟随策略  ·  滚轮或 Z / X 缩放  ·  R 复位  ·  Esc 返回"
-	controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	controls_panel.add_child(controls)
-
+	_hud = LabHud.new()
+	add_child(_hud)
+	# 短 kicker + 按当前模式的一句话核心操作；完整按键表进详情 tooltip（H 展开）。
+	_hud.configure("镜头实验室", "角色移动 · 镜头实验室", _mode_hint())
+	_hud.set_controls("WASD 移动 · 1-%d 切换模式（%s）· Q/E %s · RMB（3）环绕 · MMB（4）平移 · Home（4）回中 · 滚轮 / Z / X 缩放 · Tab 切预设 · R 重置 · Esc 返回" % [
+		MODE_ORDER.size(), _mode_short_list(), "转向或连续环绕"
+	])
+	_hud.set_question("四个镜头模式与 fixed_follow 的四种预设，怎样影响构图、旋转换向与屏幕相对移动？")
+	_hud.return_pressed.connect(_return_to_hub)
+	_hud.set_return_text("返回子实验目录")
+	for mode in MODE_ORDER:
+		var button := Button.new()
+		button.name = "%sButton" % mode.to_pascal_case()
+		button.text = str(MODE_LABELS[mode])
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_NONE
+		button.pressed.connect(_on_mode_button.bind(mode))
+		_hud.add_button(button)
+		_mode_buttons[mode] = button
+	var preset_button := Button.new()
+	preset_button.name = "PresetButton"
+	preset_button.text = "预设"
+	preset_button.focus_mode = Control.FOCUS_NONE
+	preset_button.pressed.connect(_on_preset_button)
+	_hud.add_button(preset_button)
+	# overview 回中的可视入口（与 Home 键等价）。
+	var recenter_button := Button.new()
+	recenter_button.name = "RecenterButton"
+	recenter_button.text = "回中 (Home)"
+	recenter_button.focus_mode = Control.FOCUS_NONE
+	recenter_button.pressed.connect(_on_recenter_button)
+	_hud.add_button(recenter_button)
 	var reset_button := Button.new()
 	reset_button.name = "ResetButton"
 	reset_button.text = "重置"
-	reset_button.custom_minimum_size = Vector2(96, 44)
 	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset_experiment)
-	footer.add_child(reset_button)
+	_hud.add_button(reset_button)
 
 
-func _make_text_backdrop() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.980392, 0.972549, 0.949020, 0.86)
-	style.border_color = Color(0.839216, 0.850980, 0.796078, 0.9)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(10)
-	style.content_margin_left = 16.0
-	style.content_margin_right = 16.0
-	style.content_margin_top = 10.0
-	style.content_margin_bottom = 10.0
-	return style
+## 当前模式的一句话核心操作（其余按键在 set_controls 的详情提示里）。
+func _mode_hint() -> String:
+	match _rig.mode_id() if _rig != null else "fixed_follow":
+		"quarter_turn":
+			return "Q / E 每次转 90° · 1-4 换模式 · 滚轮缩放 · H 详情"
+		"orbit":
+			return "右键拖动环绕 · 滚轮缩放 · 1-4 换模式 · H 详情"
+		"overview":
+			return "中键拖动平移 · Home 回中 · 滚轮缩放 · H 详情"
+		_:
+			return "WASD 移动 · 1-4 换模式 · 滚轮缩放 · H 详情"
 
 
-## HUD 只读回读：模式、焦点与角色偏移、偏航、缩放与遮挡。不写任何角色状态。
+## 模式短名的拼接文本（与 MODE_ORDER 同源，增删模式时提示自动跟上）。
+func _mode_short_list() -> String:
+	var names := PackedStringArray()
+	for mode in MODE_ORDER:
+		names.append(str(MODE_SHORT.get(mode, mode)))
+	return " / ".join(names)
+
+
+func _on_mode_button(mode: String) -> void:
+	_rig.request_mode(mode)
+	_update_status()
+
+
+## overview 回中：请求交给 rig，由 overview 模式按时间常数收敛。
+func _on_recenter_button() -> void:
+	if _rig != null:
+		_rig.request_recenter()
+	_update_status()
+
+
+func _on_preset_button() -> void:
+	if _rig.mode_id() == "fixed_follow":
+		_rig.cycle_preset()
+	_update_status()
+
+
 func _update_status() -> void:
-	if _status == null or _mode_label == null or _rig == null or _player == null:
+	if _hud == null or _rig == null or _player == null:
 		return
 	var snapshot := _rig.snapshot()
 	var focus: Vector3 = snapshot["focus"]
-	var camera_focus: Vector3 = snapshot["camera_focus"]
 	var lookahead: Vector3 = snapshot["lookahead"]
-	# 两个偏移分开显示：焦点偏移 = 死区/缓动落后；相机偏移 = 含前视后相机实际瞄准点的落后。
 	var focus_offset := Vector2(focus.x - _player.global_position.x, focus.z - _player.global_position.z).length()
-	var camera_offset := Vector2(camera_focus.x - _player.global_position.x, camera_focus.z - _player.global_position.z).length()
-	_mode_label.text = "跟随策略：%s" % str(snapshot["mode_label"])
-	_status.text = "偏航 %d°  ·  缩放 %d/%d（size %.1f）  ·  焦点偏移 %.2f m  ·  相机偏移 %.2f m  ·  前视 %.2f m  ·  遮挡 %s" % [
+	var mode_name := str(MODE_SHORT.get(str(snapshot["mode"]), str(snapshot["mode"])))
+	# 常显只放模式中文名 + 比较所需核心数字（焦点偏移 / 前视 / 倍率），其余进详情。
+	_status_line = "%s%s · 偏航 %d° · 缩放 %.1f · 焦点偏移 %.2f m · 前视 %.2f m" % [
+		mode_name,
+		"（%s）" % str(snapshot["preset"]) if snapshot["mode"] == "fixed_follow" else "",
 		int(round(float(snapshot["yaw_degrees"]))),
-		int(snapshot["zoom_index"]), _rig.zoom_levels(), float(snapshot["zoom_size"]),
-		focus_offset, camera_offset, Vector2(lookahead.x, lookahead.z).length(),
-		"是" if _occluded else "否",
+		float(snapshot["zoom_size"]),
+		focus_offset,
+		Vector2(lookahead.x, lookahead.z).length(),
 	]
+	_hud.set_status(_status_line)
+	_hud.set_debug_lines(PackedStringArray([
+		"物理次序：CameraRig(-10) 先写相机 → 本节点(0) 取地面基 → 角色(0) 物理提交",
+		"相机位置 (%.2f, %.2f, %.2f)" % [
+			_camera.global_position.x, _camera.global_position.y, _camera.global_position.z],
+		"角色位置 (%.2f, %.2f, %.2f)" % [
+			_player.global_position.x, _player.global_position.y, _player.global_position.z],
+		"捕获 %s · 遮挡 %s · 平移 %.2f m" % [
+			"是" if bool(snapshot["capture_active"]) else "否",
+			"是" if bool(snapshot["occlusion"]) else "否",
+			Vector2((snapshot["pan_offset"] as Vector3).x, (snapshot["pan_offset"] as Vector3).z).length(),
+		],
+		"预设循环：hard / smooth / deadzone / lookahead（含前视）",
+	]))
+	# 提示随模式更新：常显文案只保留当前模式的核心操作。
+	_hud.configure("镜头实验室", "角色移动 · 镜头实验室", _mode_hint())
+	for mode in _mode_buttons:
+		(_mode_buttons[mode] as Button).button_pressed = str(snapshot["mode"]) == str(mode)
 
 
 # --- 只读访问（测试与外部观察用；不暴露写入口） --------------------------
 
 
-func rig() -> CameraLabRig:
+func rig() -> CameraRig:
 	return _rig
 
 
@@ -381,12 +321,14 @@ func camera() -> Camera3D:
 	return _camera
 
 
-## 相机 → 角色视线是否被灰盒几何挡住（只读观察项）。
+## 相机 → 角色视线是否被灰盒几何挡住（只读观察项，由 rig 写入）。
 func is_occluded() -> bool:
-	return _occluded
+	return _rig.is_occluded() if _rig != null else false
 
 
-## 只读：本场景的输入 helper 是否登记了该键（用于验证"不吞与本场景无关的键"）。
-## 不写任何状态，仅供验收脚本读回。
+## 只读：该键是否被本场景的任一输入消费者登记（移动 helper 或 rig 的按住跟踪）。
+## 用于验证"不吞与本场景无关的键"。
 func input_held(code: Key) -> bool:
-	return _input.is_down(code)
+	if _input.is_down(code):
+		return true
+	return _rig != null and _rig.is_key_held(code)

@@ -4,11 +4,11 @@ extends Control
 ##
 ## 职责边界：
 ## - 数据契约：res://data/content/character_movement_subexperiments.json 是子实验清单的真相源；
-##   本场景只读取、校验、生成入口与显示详情，不复制角色与能力逻辑，不建立通用菜单框架，
-##   也不改动 core/。数据读取与本目录的按钮生成都留在本脚本内。
-## - 未有可运行场景的条目 scene 为空、状态 planned：界面禁用启动并如实显示「尚未落地」，
-##   不为计划条目伪造路径或可运行入口。
-## - 返回：Esc 与「返回实验目录」按钮都回到顶层 lab_hub；未来子场景的返回路径由各子场景自理。
+##   本场景只读取、校验、生成入口与显示详情，不复制角色与能力逻辑，不建立通用菜单框架。
+## - 未有可运行场景的条目 scene 为空、状态 planned：点击只展开说明，不为计划条目伪造入口。
+## - 两级 2 击导航：可进入条目点击卡片直接进入子场景；详情默认折叠（说明按钮 / I 键 / Esc 先关）。
+## - 返回：Esc 与「返回实验目录」按钮都回到顶层 lab_hub。离开时记录选中项与滚动位置，
+##   回来时恢复；初始化阶段不写记忆，避免用初始 scroll=0 覆盖上次离开时保存的值。
 
 const PARENT_SCENE := "res://levels/lab_hub.tscn"
 const DATA_PATH := "res://data/content/character_movement_subexperiments.json"
@@ -26,18 +26,29 @@ const REQUIRED_IDS := [
 ]
 const Catalog := preload("res://game/systems/lab_catalog/lab_catalog.gd")
 
+## 跨场景记忆：仅在本次运行内有效。
+static var _remembered_id := ""
+static var _remembered_scroll := 0
+
 var _entries: Array = []
 var _buttons: Dictionary = {}
 var _selected: Dictionary = {}
 var _parent_scene := PARENT_SCENE
+## 本次进入时要从静态记忆恢复的滚动值。
+var _pending_scroll := 0
 
 @onready var _grid: GridContainer = %EntryGrid
-@onready var _launch: Button = %LaunchButton
+@onready var _details: PanelContainer = %Details
+@onready var _scroll: ScrollContainer = %EntryScroll
+@onready var _details_button: Button = %DetailsButton
 
 
 func _ready() -> void:
 	%BackButton.pressed.connect(_return_to_parent)
-	_launch.pressed.connect(_launch_selected)
+	_details_button.pressed.connect(_toggle_details)
+	_details.visible = false
+	_pending_scroll = _remembered_scroll
+	_restore_scroll.call_deferred()
 	var result := read()
 	_parent_scene = str(result["parent_scene"])
 	if not result["errors"].is_empty():
@@ -48,6 +59,7 @@ func _ready() -> void:
 		%DetailPath.text = "数据：" + DATA_PATH
 		%Count.text = "—"
 		%Caption.text = "清单存在错误"
+		_details.visible = true
 		return
 	_entries = result["subexperiments"]
 	var scene_count := 0
@@ -61,14 +73,29 @@ func _ready() -> void:
 		%DetailTitle.text = "尚无子实验"
 		%DetailQuestion.text = "子实验清单为空。"
 		return
-	# 键盘落点优先给第一个真正可进入的条目，计划条目仍可上下移动查看问题。
-	var focus_entry: Dictionary = _entries[0]
-	for entry in _entries:
-		if can_open(entry):
-			focus_entry = entry
-			break
-	select_entry(focus_entry["id"])
+	var focus_entry := _entry_by_id(_remembered_id)
+	if focus_entry.is_empty():
+		for entry in _entries:
+			if can_open(entry):
+				focus_entry = entry
+				break
+	if focus_entry.is_empty():
+		focus_entry = _entries[0]
+	select_entry(str(focus_entry["id"]))
 	(_buttons[focus_entry["id"]] as Button).grab_focus()
+
+
+## 卡片点击：可进入 → 直接进入子场景；planned → 只展开说明。
+func activate_entry(id: String) -> void:
+	var entry := _entry_by_id(id)
+	if entry.is_empty():
+		return
+	if can_open(entry):
+		_remember(str(entry["id"]))
+		_open_scene(str(entry["scene"]))
+	else:
+		select_entry(str(entry["id"]))
+		_details.visible = true
 
 
 ## 读取并校验子实验清单。返回 {subexperiments, parent_scene, errors}；errors 非空时不提供任何入口。
@@ -183,8 +210,10 @@ func select_entry(id: String) -> void:
 		%DetailPath.text = "入口：" + str(_selected["scene"])
 	else:
 		%DetailPath.text = "入口：尚未落地（scene 为空，状态 %s）" % status_label
-	_launch.disabled = not openable
-	_launch.text = "进入子实验" if openable else "场景尚未搭建"
+
+
+func _toggle_details() -> void:
+	_details.visible = not _details.visible
 
 
 func _add_entry(entry: Dictionary, index: int) -> void:
@@ -193,7 +222,9 @@ func _add_entry(entry: Dictionary, index: int) -> void:
 	button.custom_minimum_size = Vector2(0, 112)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.tooltip_text = entry["question"]
-	button.pressed.connect(select_entry.bind(entry["id"]))
+	# 键盘可达：焦点移动即更新详情；回车才是「进入 / 展开」动作。
+	button.focus_entered.connect(select_entry.bind(entry["id"]))
+	button.pressed.connect(activate_entry.bind(entry["id"]))
 	_grid.add_child(button)
 	_buttons[entry["id"]] = button
 	var margin := MarginContainer.new()
@@ -228,22 +259,72 @@ func _add_entry(entry: Dictionary, index: int) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Esc 返回顶层实验目录；焦点在按钮上时也不拦截（ui_cancel 无按钮消费者）。
-	if event.is_action_pressed("ui_cancel"):
+	if not (event is InputEventKey):
+		return
+	var key_event := event as InputEventKey
+	if not key_event.pressed or key_event.echo:
+		return
+	var code := key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
+	if code == KEY_I:
+		_toggle_details()
 		get_viewport().set_input_as_handled()
-		_open_scene(_parent_scene)
+	elif event.is_action_pressed("ui_cancel"):
+		# Esc 先关详情；详情已关时返回顶层实验目录（原行为不变）。
+		if _details.visible:
+			_details.visible = false
+			get_viewport().set_input_as_handled()
+		else:
+			_open_scene(_parent_scene)
 
 
 func _return_to_parent() -> void:
 	_open_scene(_parent_scene)
 
 
-func _launch_selected() -> void:
-	if can_open(_selected):
-		_open_scene(str(_selected["scene"]))
-
-
 func _open_scene(path: String) -> void:
+	# 离开目录前记录当前选中项与滚动位置：无论经卡片、Esc 还是返回按钮离开。
+	if not _selected.is_empty():
+		_remember(str(_selected["id"]))
+	# 先缓存 viewport：切换场景后本节点可能已离树，不能再访问 get_viewport()。
+	var viewport := get_viewport()
+	if viewport != null:
+		viewport.set_input_as_handled()
 	var result := get_tree().change_scene_to_file(path)
 	if result != OK:
-		%DetailQuestion.text = "无法打开场景（错误 %d）：%s" % [result, path]
+		_show_error("无法打开场景（错误 %d）：%s" % [result, path])
+
+
+## 失败必须让用户看见：展开详情面板并写入错误信息。
+func _show_error(message: String) -> void:
+	_details.visible = true
+	%DetailStatus.text = "打开失败"
+	%DetailTitle.text = "无法进入场景"
+	%DetailQuestion.text = message
+
+
+func _entry_by_id(id: String) -> Dictionary:
+	for entry in _entries:
+		if entry["id"] == id:
+			return entry
+	return {}
+
+
+func _remember(id: String) -> void:
+	_remembered_id = id
+	if _scroll != null:
+		_remembered_scroll = _scroll.scroll_vertical
+
+
+func _restore_scroll() -> void:
+	if _scroll == null:
+		return
+	_scroll.scroll_vertical = _pending_scroll
+
+
+## 测试用：只读暴露记忆值（生产代码不写测试专用 setter）。
+static func remembered_selection() -> String:
+	return _remembered_id
+
+
+static func remembered_scroll() -> int:
+	return _remembered_scroll

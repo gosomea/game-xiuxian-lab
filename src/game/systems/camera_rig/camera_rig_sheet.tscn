@@ -1,0 +1,30 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://game/systems/camera_rig/camera_rig.gd" id="1_rig"]
+[ext_resource type="Script" path="res://game/systems/camera_rig/camera_rig_component.gd" id="2_component"]
+[ext_resource type="Script" path="res://core/capability_manager.gd" id="3_manager"]
+[ext_resource type="Script" path="res://game/systems/camera_rig/fixed_follow.gd" id="4_fixed_follow"]
+[ext_resource type="Script" path="res://game/systems/camera_rig/quarter_turn.gd" id="5_quarter_turn"]
+[ext_resource type="Script" path="res://game/systems/camera_rig/orbit.gd" id="6_orbit"]
+[ext_resource type="Script" path="res://game/systems/camera_rig/overview.gd" id="7_overview"]
+
+[node name="CameraRig" type="Node3D"]
+script = ExtResource("1_rig")
+
+[node name="CameraRigComponent" type="Node" parent="."]
+script = ExtResource("2_component")
+
+[node name="CapabilityManager" type="Node" parent="."]
+script = ExtResource("3_manager")
+
+[node name="FixedFollow" type="Node" parent="CapabilityManager"]
+script = ExtResource("4_fixed_follow")
+
+[node name="QuarterTurn" type="Node" parent="CapabilityManager"]
+script = ExtResource("5_quarter_turn")
+
+[node name="Orbit" type="Node" parent="CapabilityManager"]
+script = ExtResource("6_orbit")
+
+[node name="Overview" type="Node" parent="CapabilityManager"]
+script = ExtResource("7_overview")

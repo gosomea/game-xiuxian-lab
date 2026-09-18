@@ -2,8 +2,13 @@
 
 Status: implemented
 
-> 决策批准：**2026-09-18 用户批准统一提案时一并采纳本契约**。Status 为 implemented 表示**决策已采纳**；
-> **S0–S3 运行时尚未交付**，本 note 规定实现时必须满足的约束，不代表任何功能已实现。
+> 决策批准：**2026-09-18 用户批准统一提案时一并采纳本契约**。Status 为 implemented 表示**决策已采纳**。
+>
+> **实现状态（2026-09-18 更新）**：本契约规定的适配器与镜头形状均已落地——`ActorAssembly` / `ActorAssemblyConfig` /
+> `FlightBundle`（`src/game/actors/swordsman/`、`src/game/abilities/sword_flight/`）与
+> `CameraRig` + `CameraRigComponent` + 四模式 Capability（`src/game/systems/camera_rig/`）。
+> 逐项验收与最新计数见 [可组合移动实验最终报告](../../../docs/playtest/2026-09-18-composable-movement-labs.md)。
+> **已完成**：七场统一迁移与全场回归均已实测通过（全场 `SCRIPT ERROR = 0`，主入口 921/0）。
 
 ## 问题
 
@@ -31,7 +36,9 @@ Status: implemented
 ### 2. CameraRig 唯一提交与输入顺序
 
 - **宿主形状**：`CameraRig`（Node3D）是独立宿主，直接子节点为 `CameraRigComponent`（唯一）与 `CapabilityManager`（唯一）；模式 Capability 为 manager 直系子。
-- **单一提交器**：四个模式 Capability 以长期语义命名——`fixed_follow` / `quarter_turn` / `orbit` / `overview`（本文档 A–D 仅作例图简称，**脚本不得用 A/B 阶段字母命名**）——只写 `CameraRigComponent` 的期望 pose/镜头数据；由**一个普通宿主提交器** `CameraExecutor`（普通节点，非 Capability）消费并唯一写 `Camera3D`。`near/far` 等全局参数由 executor 统一写，模式不得重复写。
+- **单一提交器**：四个模式 Capability 以长期语义命名——`fixed_follow` / `quarter_turn` / `orbit` / `overview`（本文档 A–D 仅作例图简称，**脚本不得用 A/B 阶段字母命名**）——只写 `CameraRigComponent` 的期望 pose/镜头数据；由**唯一提交器**消费并唯一写 `Camera3D`。`near/far` 等全局参数由提交器统一写，模式不得重复写。
+  **实现落地形状**：提交器即 `CameraRig` 根节点自身（普通 Node3D，`_physics_process` → `advance()` → 写相机），
+  **不是**名为 `CameraExecutor` 的独立子节点；「普通节点、非 Capability」这一约束由实现满足。
 - **互斥**：`mode_id` 保证模式互斥（同一时刻只有一个模式持有效）；**需要外部阻塞时才使用已登记 TagRegistry**；切换走 executor 的平滑混合，旧模式交接后不得再写。
 - **目标 snapshot 桥接**：CameraRig 对角色**只读目标 snapshot**（位置/速度/着地/飞行等已登记字段），经桥接层注入；Capability 之间不互引、不抓场景节点。
 - **同帧 control yaw**：连续旋转时，WASD 屏幕相对移动使用**同一帧一致的控制偏航地面基**：执行顺序固定为「输入采样 → 模式写期望 pose → executor 应用 → actor 物理使用本地面基」，避免一帧反馈滞后。
@@ -42,7 +49,7 @@ Status: implemented
 - 新增字段/tag（`mode_id`、投影、期望 pose、height/速度 modifier、preview 状态等）**先在 `src/data/vocabulary/` 登记**并重跑索引生成器；能力只读写 Component 共享数据与 TagRegistry。
 - **modifier 是数据配置**：高度/速度自适应等由 executor 读取叠加，**不是 Capability**，避免撞 4-cap 上限与调度开销。
 - **投影是 Resource 配置**：正交/有限透视及其 `size/fov/keep_aspect` 用 Resource 表达，不与跟随模式做组合爆炸。
-- **Capability 预算**：镜头包恰好 4 个模式 Capability（`fixed_follow` / `quarter_turn` / `orbit` / `overview`，简称 A–D）+ 1 个普通提交器；executor 与 modifier 不计入 Capability。超过 4 个模式时先拆包或改数据配置，不得靠豁免堆叠。
+- **Capability 预算**：镜头包恰好 4 个模式 Capability（`fixed_follow` / `quarter_turn` / `orbit` / `overview`，简称 A–D）+ 1 个普通提交器；executor 与 modifier 不计入 Capability（提交器由 `CameraRig` 根节点兼任，不额外增加节点或 Capability）。超过 4 个模式时先拆包或改数据配置，不得靠豁免堆叠。
 
 ### 4. 生命周期与四子集组合验收
 
@@ -61,6 +68,12 @@ Status: implemented
 ## 后果
 
 - **约束已生效**：S0–S3 的镜头与装配实现必须满足本契约；[统一决策](../gameplay/2026-09-18-character-movement-composable-labs.md) 的 S0/S1 验收按此检查。
-- **实现未开始**：`src/`、`design/`、`tools/` 与资产未因本 note 改动；尚无落地的适配器、CameraRig 或模式 Capability。
-- **待验证**：适配器幂等/回滚、同帧 control yaw 的实际帧序、单 executor 的写次数断言、组合装卸无残留，均需在 S0/S1 用运行验收证明。
+- **实现已落地**：`src/game/actors/swordsman/` 的 ActorAssembly / ActorAssemblyConfig、`src/game/abilities/sword_flight/` 的
+  FlightBundle、`src/game/systems/camera_rig/` 的 CameraRig + CameraRigComponent + 四模式 Capability 均已实现并进测试入口；
+  `core/` **未改动**（`SheetLoader.detach` 不调 `_on_deactivated` 的现状事实未变，本契约仍以「不依赖该路径」规避）。
+- **已由测试覆盖（运行证据）**：适配器幂等 / 回滚 / 四子集真实性 / owner-borrow 卸载边界由
+  `src/game/actors/swordsman/test_actor_assembly.gd`（142 项）与 `src/game/abilities/sword_flight/test_flight_bundle.gd`（83 项）覆盖；
+  单 executor 写次数、模式互斥与切换连续性由 `src/game/systems/camera_rig/test_camera_rig_executor.gd` 等 5 套（128 项）覆盖。
+  上述数字为主入口 `tests/test_runner.tscn` 实测；七场迁移后的全场回归亦已实测（见最终报告 §7）。
+  **仍有限定**：同帧 control yaw 的实机帧序未单独验证；连续环绕下的操作舒适度属人工试玩项。
 - **已知限制**：嵌套 Sheet 的宿主边界与 `detach` 不清 `_on_deactivated` 是现状事实；本契约以「不依赖该路径」规避，不修改 core。

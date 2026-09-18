@@ -14,6 +14,15 @@ extends Node3D
 ## - 方向反转来自实际速度方向与上一帧方向点积，不是按键边沿；
 ## - 御剑起降看 flight_active 与实际竖直速度，升降/悬停分别是升速、降速与近零。
 ##
+## 双驱动路径（动作工作台 P0，依据 composable-labs S2 动作工作台）：
+## - **actor 路径（默认）**：auto_read_actor=true，_process 用渲染帧 delta 调用 advance_state()。
+##   注意口径：_process 拿到的是 render / idle frame delta，**不是**物理帧时长，因此本条路径的
+##   推进量是表现时钟，不等于物理时钟；它读取的快照是物理真值（actual_velocity / on_floor /
+##   flight_active），但那些值来自物理 tick，两者不是同一个时间基准。
+## - **预览路径**：auto_read_actor=false，由 preview state provider 用显式状态调用
+##   advance_state(state, delta)，delta 来自局部预览时钟。两条路径共用同一 _apply_pose /
+##   _record_pose，不存在第二套姿态实现；预览不读也不写任何 Component、不动物理。
+##
 ## 已知边界：GLB 无骨骼，这是分件刚体摆动而非骨骼动画；脚掌无 IK 锁定，竖直起伏仅厘米级。
 ## 轴（导出实测）：Godot -Z 为正面、+Y 向上、足底 y=0；髋 y≈0.70、肩 y≈1.42、腰 y≈0.97。
 
@@ -45,6 +54,9 @@ extends Node3D
 ## 御剑升降时机身俯仰的附加角（弧度）。
 @export var flight_climb_pitch: float = 0.10
 @export var flight_dive_pitch: float = 0.12
+## 驱动来源：true = 每帧读宿主 actor 的物理结果（正式角色）；
+## false = 由外部 state provider 显式调用 advance_state()（动作预览展示实例）。
+@export var auto_read_actor: bool = true
 
 var _actor: Node3D
 var _body: Node3D
@@ -65,9 +77,16 @@ var _pose: Dictionary = {}
 
 
 func _ready() -> void:
-	_actor = get_node_or_null(actor_path)
-	assert(_actor != null, "CultivatorPresentation: actor_path 未指向角色根（%s）" % actor_path)
-	assert(_actor.has_method("motion"), "CultivatorPresentation: 角色根缺少 motion() 读取接口")
+	# 空 NodePath 表示「本实例没有宿主」：它只在 auto_read_actor=false 的预览展示实例上合法。
+	_actor = get_node_or_null(actor_path) if not actor_path.is_empty() else null
+	# actor 路径必须真的能读物理结果；预览宿主（auto_read_actor=false）允许没有 actor，
+	# 但它必须显式声明，不能靠「取不到就静默降级」。
+	if auto_read_actor:
+		assert(_actor != null, "CultivatorPresentation: actor_path 未指向角色根（%s）" % actor_path)
+		assert(_actor.has_method("motion"), "CultivatorPresentation: 角色根缺少 motion() 读取接口")
+	else:
+		assert(_actor == null or _actor.has_method("motion"),
+			"CultivatorPresentation: auto_read_actor=false 时 actor_path 必须为空或仍指向有 motion() 的根")
 	_body = get_parent() as Node3D
 	assert(_body != null, "CultivatorPresentation: 必须挂在角色模型节点下")
 	var model := _model_root()
@@ -86,16 +105,40 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _actor == null:
+	# 预览展示实例关掉自动读取：它必须只由显式 state provider 推进。
+	if not auto_read_actor:
 		return
+	advance_state(sample_state(), delta)
+
+
+## 只读采样：从宿主 actor 的 motion 组件取本帧物理真值。
+## 纯读，不写任何字段、不接触 Capability；这是 actor 路径与预览路径的唯一状态形状。
+func sample_state() -> Dictionary:
+	if _actor == null:
+		return {}
 	var motion: Object = _actor.call("motion")
 	if motion == null:
+		return {}
+	return {
+		"velocity": motion.get("actual_velocity") as Vector3,
+		"grounded": bool(motion.get("on_floor")),
+		"flying": bool(motion.get("flight_active")),
+		"aim": motion.get("aim_direction") as Vector3,
+	}
+
+
+## 共享推进：actor 路径与预览路径共用。state 形状见 sample_state()；
+## delta 由调用方给出（正式路径是 _process 的渲染帧 delta，预览路径是局部预览时钟的 tick 量）。
+## 本函数只写表现层自身增益与枢轴，不写任何 Component、不碰 Engine.time_scale。
+## 朝向（rotation.y）不在此处设置：yaw 归驱动方所有（actor 的 _face_aim() / provider 的 heading）。
+func advance_state(state: Dictionary, delta: float) -> void:
+	if state.is_empty():
 		return
-	var velocity: Vector3 = motion.get("actual_velocity")
+	var velocity: Vector3 = state.get("velocity", Vector3.ZERO)
+	var grounded: bool = state.get("grounded", true)
+	var flying: bool = state.get("flying", false)
 	var flat := Vector3(velocity.x, 0.0, velocity.z)
 	var speed := flat.length()
-	var grounded: bool = motion.get("on_floor")
-	var flying: bool = motion.get("flight_active")
 	_clock += delta
 	# 御剑 / 腾空增益：都是物理状态驱动，不依赖动画播放进度。
 	_flight = move_toward(_flight, 1.0 if flying else 0.0, delta * 4.0)
@@ -119,6 +162,28 @@ func _process(delta: float) -> void:
 		_phase = fmod(_phase + delta * TAU * speed / maxf(stride_meters, 0.01), TAU)
 	_apply_pose(velocity, speed)
 	_record_pose(velocity, speed, grounded, flying)
+
+
+## 清空全部姿态增益与相位并立即回到中性姿态。
+## 预览动作循环回到起点时必须调用：否则上一轮的 landing / airborne / turn 脉冲会跨循环累积，
+## 表现为「第二轮起点的姿态继承上一轮末尾」。actor 路径不在循环中使用。
+##
+## 刻意不碰 rotation.y：yaw 归驱动方所有。若预览 provider 用 rotation.y 表达 90°/180° 朝向，
+## 它必须在自己的循环/动作重置里把 heading 一起复位，否则会一轮轮累积成 90°/180°/270°…。
+## 本函数只负责姿态增益与相位，不替 provider 复位朝向。
+func reset_pose() -> void:
+	_phase = 0.0
+	_clock = 0.0
+	_gait = 0.0
+	_flight = 0.0
+	_airborne = 0.0
+	_landing = 0.0
+	_turn = 0.0
+	_last_direction = Vector3.ZERO
+	# 复位后视作已着地：随后第一帧若仍是着地状态，不得触发一次虚假落地脉冲。
+	_was_grounded = true
+	_apply_pose(Vector3.ZERO, 0.0)
+	_record_pose(Vector3.ZERO, 0.0, true, false)
 
 
 ## 姿态合成：步态摆动 + 腾空收腿 + 下落伸腿 + 落地屈膝 + 转向侧倾 + 御剑平衡。
@@ -158,11 +223,17 @@ func _apply_pose(velocity: Vector3, speed: float) -> void:
 
 
 ## 只读快照：工作台 HUD 与验收脚本据此读回姿态参数，不参与任何物理裁决。
+## clock 是表现层自己的推进量（actor 路径 = 渲染帧 delta 累计；预览路径 = 局部预览时钟累计），
+## 暂停预览时它必须原地不动，因此它由调用方给出的 delta 累加，而不是读全局时间。
 func _record_pose(velocity: Vector3, speed: float, grounded: bool, flying: bool) -> void:
 	var left_leg := _legs[0].rotation.x if _legs.size() >= 2 else 0.0
 	var right_leg := _legs[1].rotation.x if _legs.size() >= 2 else 0.0
 	var left_arm := _arms[0].rotation.x if _arms.size() >= 2 else 0.0
 	_pose = {
+		# 表现层自己的推进量（秒）：actor 路径 = 渲染帧 delta 累计；预览路径 = 局部预览时钟累计。
+		# 暂停预览时它不得前进，step 时按固定量前进——测试据此区分「真暂停」与「仍在跑」。
+		# 注意：它是表现时钟，不是物理时钟；两者只在稳态下近似同步。
+		"clock": _clock,
 		"gait": _gait,
 		"phase": _phase,
 		"flight": _flight,

@@ -5,8 +5,10 @@ extends Node3D
 ## 职责边界（依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）：
 ## - 只有三项既有 Capability；本场景不新增能力、不实现战斗、不实现通用状态机。
 ## - 场景只调用角色公开输入 API（set_move_input / set_vertical_input / press_jump /
-##   press_flight_toggle / clear_input / set_camera_ground_basis / set_aim_direction /
-##   reset_motion / bind_flight_visual）。绝不写 Component / Capability / velocity / TagRegistry。
+##   press_flight_toggle / clear_input / set_aim_direction / reset_motion）。
+##   绝不写 Component / Capability / velocity / TagRegistry。
+## - 相机走共享 CameraRig（唯一 executor）+ focus clamp；御剑视觉由 ActorAssembly/FlightBundle 统一装配，
+##   本场景不再手动绑剑。HUD 走共享 LabHud：核心账本指标常显，逐条账本与时间线保留原位。
 ## - 唯一 move_and_slide() 在 Swordsman 根节点；本场景不提交物理、不 tick 能力管理器。
 ## - 账本只记录本场景**实际观察到**的读数（组件公共字段只读 + TagRegistry.block_count 只读），
 ##   不把推测显示成事实；不向任何能力注入测试钩子。
@@ -15,8 +17,8 @@ extends Node3D
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
 const TRIAL_SCENE: PackedScene = preload("res://levels/experiments/character_movement/state_transition_lab.glb")
-const FLYING_SWORD_SCENE: PackedScene = preload("res://game/abilities/sword_flight/models/flying_sword.glb")
-const LAB_THEME: Theme = preload("res://ui/lab_theme.tres")
+const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
+const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const Ledger := preload("res://levels/experiments/character_movement/state_transition_lab_ledger.gd")
 const InputHelper := preload("res://levels/experiments/character_movement/movement_lab_input.gd")
 
@@ -59,7 +61,7 @@ var _viewport: Viewport
 var _previous_msaa: Viewport.MSAA = Viewport.MSAA_DISABLED
 var _input_helper: MovementLabInput
 var _ledger: StateTransitionLedger
-var _follow_target := Vector3.ZERO
+var _rig: CameraRig
 var _relative_frame := 0
 var _fall_out_count := 0
 var _reset_count := 0
@@ -69,9 +71,10 @@ var _pending_flight := false
 
 var _ledger_view: RichTextLabel
 var _timeline: Control
-var _hud_input: Label
-var _hud_state: Label
-var _hud_ledger: Label
+## 细节层面板（时间线 + 逐条账本）：可见性跟随 LabHud 详情开关。
+var _detail_panels: Array[Node] = []
+## 共享 HUD：标题 / 状态 / 短提示常显；账本摘要作为核心指标常显，逐条明细进折叠详情。
+var _hud: LabHud
 
 
 func _ready() -> void:
@@ -81,15 +84,13 @@ func _ready() -> void:
 	assert(ResourceLoader.exists(HUB_SCENE), "state_transition_lab: 缺少返回目录 %s" % HUB_SCENE)
 	_camera = %Camera3D as Camera3D
 	assert(_camera != null, "state_transition_lab: 场景必须提供 Camera3D")
-	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_camera.size = CAMERA_SIZE
-	_camera.near = 0.1
-	_camera.far = CAMERA_FAR
+	# projection / size / near / far 由 CameraRig 按 Config 独占写；本场景不写相机参数。
 	_input_helper = InputHelper.new()
 	_ledger = Ledger.new()
 	_build_trial_visual()
 	_build_collision()
 	_spawn_actor()
+	_build_rig()
 	_build_hud()
 	_reset_experiment("场景就绪")
 	_ledger.record(0, "prepare", "场景装配完成", _snapshot(), "三能力 + 唯一提交点")
@@ -140,16 +141,7 @@ func _unhandled_input(event: InputEvent) -> void:
 						viewport.set_input_as_handled()
 						_return_to_hub()
 		return
-	if event is InputEventMouseButton:
-		var button := event as InputEventMouseButton
-		if not button.pressed or _camera == null:
-			return
-		if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_camera.size = clampf(_camera.size - 2.0, 12.0, 60.0)
-			viewport.set_input_as_handled()
-		elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_camera.size = clampf(_camera.size + 2.0, 12.0, 60.0)
-			viewport.set_input_as_handled()
+	# 滚轮缩放由共享 CameraRig 消费（rig 是唯一写相机参数的地方）；本场景不再写 size。
 
 
 func _physics_process(delta: float) -> void:
@@ -159,9 +151,9 @@ func _physics_process(delta: float) -> void:
 	# 场景先写输入、actor 子节点随后 tick（父节点先于子节点）。
 	_actor.set_move_input(_input_helper.move_input())
 	_actor.set_vertical_input(_input_helper.vertical_input())
-	var right := _ground_vector(_camera.global_transform.basis.x, Vector3.RIGHT)
-	var forward := _ground_vector(-_camera.global_transform.basis.z, Vector3.FORWARD)
-	_actor.set_camera_ground_basis(right, forward)
+	# 相机地面基由 CameraRig 桥接写入角色；本场景只读它来定朝向。
+	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
+	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
 	var move := _input_helper.move_input()
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y
@@ -169,7 +161,6 @@ func _physics_process(delta: float) -> void:
 		if direction.length_squared() > 0.0001:
 			_actor.set_aim_direction(direction.normalized())
 	_check_fall_out()
-	_follow_camera(delta)
 	# 边沿事件延迟到本帧 actor tick 之后记录：那时读到的能力激活态与阻塞计数才是同帧事实。
 	if _pending_jump or _pending_flight:
 		call_deferred("_flush_observed_edges")
@@ -216,9 +207,8 @@ func _reset_experiment(reason: String) -> void:
 	_actor.reset_motion()
 	_actor.global_position = SPAWN
 	_actor.set_aim_direction(Vector3.FORWARD)
-	_follow_target = SPAWN
-	_camera.position = _follow_target + CAMERA_OFFSET
-	_camera.look_at(_follow_target, Vector3.UP)
+	if _rig != null:
+		_rig.reset_state()
 	_ledger.record(_relative_frame, "reset", "重置（%s）" % reason, _snapshot(),
 		"reset_motion() + 回起点")
 
@@ -332,18 +322,8 @@ func _spawn_actor() -> void:
 	actor.reset_motion()
 	actor.global_position = SPAWN
 	actor.set_aim_direction(Vector3.FORWARD)
-	_bind_flight_visual(actor)
-
-
-## 御剑视觉由场景绑定：作为角色 Visual 子节点，可见性由 actor 按 flight_active 同步。
-func _bind_flight_visual(actor: Swordsman) -> void:
-	var sword := FLYING_SWORD_SCENE.instantiate() as Node3D
-	assert(sword != null, "state_transition_lab: 御剑视觉根节点必须是 Node3D")
-	sword.name = "FlyingSword"
-	var visual := actor.get_node_or_null("Visual") as Node3D
-	assert(visual != null, "state_transition_lab: 角色缺少 Visual 节点")
-	visual.add_child(sword)
-	actor.bind_flight_visual(sword)
+	# 御剑视觉不再由场景手动绑定：ActorAssembly 的 FlightBundle 随飞行行为一起装 flying_sword.glb，
+	# 场景重复实例化会撞上「拒绝覆盖绑定」的装配契约。
 
 
 func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
@@ -353,22 +333,61 @@ func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
 	return flat.normalized()
 
 
-func _follow_camera(delta: float) -> void:
-	var target := _actor.global_position
-	target.x = clampf(target.x, -DISC_RADIUS + 3.0, DISC_RADIUS + 6.0)
-	target.z = clampf(target.z, -DISC_RADIUS + 3.0, DISC_RADIUS - 3.0)
-	target.y = clampf(target.y, 0.0, 12.0)
-	_follow_target = _follow_target.lerp(target, clampf(delta * CAMERA_FOLLOW_SPEED, 0.0, 1.0))
-	_camera.position = _follow_target + CAMERA_OFFSET
-	_camera.look_at(_follow_target, Vector3.UP)
+## 装配共享 CameraRig：阵盘范围转成 focus clamp，保留原构图与跟随速度。
+func _build_rig() -> void:
+	var rig := RIG_SHEET.instantiate() as CameraRig
+	assert(rig != null, "state_transition_lab: camera_rig_sheet.tscn 根节点必须是 CameraRig")
+	rig.name = "CameraRig"
+	add_child(rig)
+	_rig = rig
+	var config := CameraRigConfig.new()
+	var radius := CAMERA_OFFSET.length()
+	config.start_mode = "fixed_follow"
+	config.follow_preset = "smooth"
+	config.distance = radius
+	config.pitch_degrees = rad_to_deg(asin(CAMERA_OFFSET.y / maxf(radius, 0.001)))
+	config.yaw_degrees = rad_to_deg(atan2(CAMERA_OFFSET.x, CAMERA_OFFSET.z))
+	config.size = CAMERA_SIZE
+	config.size_min = 12.0
+	config.size_max = 60.0
+	config.smooth_time = 1.0 / maxf(CAMERA_FOLLOW_SPEED, 0.001)
+	config.focus_clamp_enabled = true
+	# 旧的 _follow_camera 对 y 夹在 [0, 12]（飞行/跳跃时跟随高度，不是压到地面）。
+	config.focus_clamp_min = Vector3(-DISC_RADIUS + 3.0, 0.0, -DISC_RADIUS + 3.0)
+	config.focus_clamp_max = Vector3(DISC_RADIUS + 6.0, 12.0, DISC_RADIUS - 3.0)
+	config.focus_clamp_y_enabled = true
+	config.near = 0.1
+	config.far = CAMERA_FAR
+	rig.bind(_camera, _actor, config)
+	# 压力场核心是清账与输入，不占 1-4 模式键。
+	rig.mode_cycle = PackedStringArray(["fixed_follow"])
+	rig.preset_cycle = PackedStringArray(["smooth"])
 
 
 # --- HUD：账本 + 时间线 + 状态读数 -------------------------------------------
 
 
-## HUD 用锚点定位的固定面板，而不是会互相拉伸的容器：
-## 场景中心留空（看得见阵盘与角色），账本固定在左下、时间线固定在右上。
+## HUD：共享 LabHud 承担标题 / 状态 / 短提示与按钮；
+## 账本「摘要指标」由 LabHud 常显；逐条事件账本与时间线是细节层，随 H 详情展开。
 func _build_hud() -> void:
+	_hud = HUD_SCRIPT.new()
+	add_child(_hud)
+	_hud.configure("STATE TRANSITION", "状态切换压力场", "WASD 移动 · Space 跳跃 · F 御剑 · R 重置 · Esc 返回 · H 详情")
+	_hud.set_controls("WASD / 方向键 移动 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
+	_hud.set_question("能力切换、失焦、重置、碰撞和边缘时机是否正确清账？")
+	_hud.set_return_text("返回子实验目录")
+	_hud.return_pressed.connect(_return_to_hub)
+	# 详情开关联动逐条账本与时间线：默认收起，不常显两套大板。
+	_hud.set_debug_lines(PackedStringArray(["压力场明细：展开后显示逐条事件账本与时间线。"]))
+	_hud.details_ui_changed.connect(_apply_details_visibility)
+	var reset_button := Button.new()
+	reset_button.name = "ResetButton"
+	reset_button.text = "重置"
+	reset_button.pressed.connect(_on_reset_pressed)
+	_hud.add_button(reset_button)
+
+	# 顶部核心指标（LabHud 账本摘要）常显；右上时间线作为实时观测面也常显（浅底深字）。
+	# 只有左下「逐条事件账本」属明细层：默认隐藏，跟随 LabHud.details_visible() 展开。
 	var layer := CanvasLayer.new()
 	layer.name = "Overlay"
 	add_child(layer)
@@ -376,73 +395,9 @@ func _build_hud() -> void:
 	var interface := Control.new()
 	interface.name = "Interface"
 	interface.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interface.theme = LAB_THEME
 	layer.add_child(interface)
 	interface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	# 左上：标题与三能力状态、输入读数、账本摘要、按键提示。
-	var header_panel := PanelContainer.new()
-	header_panel.name = "HeaderPanel"
-	header_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	header_panel.anchor_left = 0.0
-	header_panel.anchor_top = 0.0
-	header_panel.anchor_right = 0.0
-	header_panel.anchor_bottom = 0.0
-	header_panel.offset_left = 18.0
-	header_panel.offset_top = 16.0
-	header_panel.offset_right = 470.0
-	header_panel.offset_bottom = 16.0
-	header_panel.grow_vertical = Control.GROW_DIRECTION_END
-	interface.add_child(header_panel)
-
-	var titles := VBoxContainer.new()
-	titles.name = "Titles"
-	titles.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	titles.add_theme_constant_override("separation", 5)
-	header_panel.add_child(titles)
-
-	var kicker := Label.new()
-	kicker.name = "Kicker"
-	kicker.theme_type_variation = "AccentLabel"
-	kicker.add_theme_font_size_override("font_size", 12)
-	kicker.text = "EXPERIMENT    /    CHARACTER MOVEMENT · STATE TRANSITION"
-	kicker.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	titles.add_child(kicker)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.add_theme_font_size_override("font_size", 24)
-	title.text = "状态切换压力场"
-	titles.add_child(title)
-
-	_hud_state = Label.new()
-	_hud_state.name = "StateReadout"
-	_hud_state.add_theme_font_size_override("font_size", 14)
-	_hud_state.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	titles.add_child(_hud_state)
-
-	_hud_input = Label.new()
-	_hud_input.name = "InputReadout"
-	_hud_input.theme_type_variation = "MutedLabel"
-	_hud_input.add_theme_font_size_override("font_size", 13)
-	_hud_input.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	titles.add_child(_hud_input)
-
-	_hud_ledger = Label.new()
-	_hud_ledger.name = "LedgerSummary"
-	_hud_ledger.add_theme_font_size_override("font_size", 13)
-	_hud_ledger.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	titles.add_child(_hud_ledger)
-
-	var hint := Label.new()
-	hint.name = "Controls"
-	hint.theme_type_variation = "MutedLabel"
-	hint.add_theme_font_size_override("font_size", 12)
-	hint.text = "WASD / 方向键 移动  ·  Space 跳跃 / 上升  ·  Ctrl 下降  ·  F 御剑  ·  滚轮缩放  ·  R 重置  ·  Esc 返回子实验目录"
-	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	titles.add_child(hint)
-
-	# 右上：返回按钮与时间线。
 	var right := VBoxContainer.new()
 	right.name = "Right"
 	right.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -460,35 +415,24 @@ func _build_hud() -> void:
 	right.add_theme_constant_override("separation", 8)
 	interface.add_child(right)
 
-	var buttons := HBoxContainer.new()
-	buttons.name = "Buttons"
-	buttons.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	buttons.alignment = BoxContainer.ALIGNMENT_END
-	buttons.add_theme_constant_override("separation", 8)
-	right.add_child(buttons)
-
-	var reset_button := Button.new()
-	reset_button.name = "ResetButton"
-	reset_button.text = "重置"
-	reset_button.custom_minimum_size = Vector2(88, 40)
-	reset_button.focus_mode = Control.FOCUS_NONE
-	reset_button.pressed.connect(_on_reset_pressed)
-	buttons.add_child(reset_button)
-
-	var return_button := Button.new()
-	return_button.name = "ReturnButton"
-	return_button.text = "返回子实验目录"
-	return_button.custom_minimum_size = Vector2(150, 40)
-	return_button.focus_mode = Control.FOCUS_NONE
-	return_button.pressed.connect(_return_to_hub)
-	buttons.add_child(return_button)
-
 	var timeline_panel := PanelContainer.new()
 	timeline_panel.name = "TimelinePanel"
 	timeline_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	timeline_panel.custom_minimum_size = Vector2(0, 150)
+	# 浅底（纸白）承托时间线；时间线自绘文字用深色，不再落在默认深灰底上。
+	var timeline_style := StyleBoxFlat.new()
+	timeline_style.bg_color = Color(0.980392, 0.972549, 0.949020, 0.92)
+	timeline_style.border_color = Color(0.505882, 0.611765, 0.533333, 0.45)
+	timeline_style.set_border_width_all(1)
+	timeline_style.set_corner_radius_all(8)
+	timeline_style.content_margin_left = 8.0
+	timeline_style.content_margin_right = 8.0
+	timeline_style.content_margin_top = 6.0
+	timeline_style.content_margin_bottom = 6.0
+	timeline_panel.add_theme_stylebox_override("panel", timeline_style)
 	right.add_child(timeline_panel)
 
+	# 时间线是「必要」的实时观测面：保持常显（浅底深字），不进折叠层。
 	_timeline = LedgerTimeline.new()
 	_timeline.name = "Timeline"
 	_timeline.ledger = _ledger
@@ -509,6 +453,13 @@ func _build_hud() -> void:
 	ledger_panel.offset_bottom = -16.0
 	ledger_panel.grow_horizontal = Control.GROW_DIRECTION_END
 	ledger_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	# 浅底深字：与共享 theme 的深绿文字形成高对比，避免深灰底上看不清。
+	var ledger_style := StyleBoxFlat.new()
+	ledger_style.bg_color = Color(0.980392, 0.972549, 0.949020, 0.92)
+	ledger_style.border_color = Color(0.505882, 0.611765, 0.533333, 0.45)
+	ledger_style.set_border_width_all(1)
+	ledger_style.set_corner_radius_all(8)
+	ledger_panel.add_theme_stylebox_override("panel", ledger_style)
 	interface.add_child(ledger_panel)
 
 	var ledger_margin := MarginContainer.new()
@@ -532,6 +483,22 @@ func _build_hud() -> void:
 	_ledger_view.add_theme_font_size_override("normal_font_size", 12)
 	_ledger_view.add_theme_font_size_override("bold_font_size", 12)
 	ledger_margin.add_child(_ledger_view)
+	_detail_panels.append(ledger_panel)
+	_apply_details_visibility()
+
+
+## 逐条账本明细跟随 LabHud 详情状态：默认收起，H / F1 展开。
+## 顶部核心指标（LabHud 账本摘要）与右上时间线始终常显；数据不清空，只切换可见性。
+func _apply_details_visibility(_visible_now: bool = false) -> void:
+	var visible_now := _hud != null and _hud.details_visible()
+	for panel in _detail_panels:
+		if panel is CanvasItem:
+			(panel as CanvasItem).visible = visible_now
+
+
+## 公开只读访问器：验收脚本经此读 CameraRig，而不是绕过它写 Camera3D。
+func rig() -> CameraRig:
+	return _rig
 
 
 ## 公开只读访问器：验收脚本经此读取账本与输入状态，不再触碰私有字段。
@@ -559,27 +526,31 @@ func _on_reset_pressed() -> void:
 
 
 ## HUD 每秒重算一次读数；账本只在内容变化时重建文本（脏标记，不逐帧格式化）。
+## 核心指标常显（状态一行 + 账本摘要一行），输入与边沿明细进折叠详情。
 func _update_hud() -> void:
-	if _hud_state == null or _motion == null:
+	if _hud == null or _motion == null:
 		return
 	var snapshot := _snapshot()
 	if snapshot.is_empty():
 		return
-	_hud_state.text = "状态  着地=%s  御剑=%s  高度=%.2f m  block=%d  相对帧=%d" % [
+	_hud.set_status("着地=%s  御剑=%s  高度=%.2f m  block=%d  相对帧=%d" % [
 		"是" if snapshot["on_floor"] else "否",
 		"是" if snapshot["flight"] else "否",
 		(_actor.global_position.y),
 		snapshot["block"],
 		_relative_frame,
-	]
-	_hud_input.text = "输入  move=(%+.2f, %+.2f)  升降=%+.0f  起跳边沿=%d  御剑边沿=%d  按住键数=%d" % [
-		_motion.move_input.x, _motion.move_input.y, _motion.vertical_input,
-		1 if _motion.jump_pressed else 0, 1 if _motion.flight_toggle_pressed else 0,
-		_input_helper.held_count(),
-	]
-	_hud_ledger.text = "账本  事件 %d 条  ·  %s  ·  重置 %d 次  ·  回收 %d 次" % [
+	])
+	# 压力场核心账本指标常显：事件数 / 摘要 / 重置 / 回收（观测对象不进折叠层）。
+	_hud.set_core_summary("账本 事件 %d 条  ·  %s  ·  重置 %d 次  ·  回收 %d 次" % [
 		_ledger.event_count(), _ledger.summary_text(), _reset_count, _fall_out_count,
-	]
+	])
+	_hud.set_debug_lines(PackedStringArray([
+		"输入  move=(%+.2f, %+.2f)  升降=%+.0f  起跳边沿=%d  御剑边沿=%d  按住键数=%d" % [
+			_motion.move_input.x, _motion.move_input.y, _motion.vertical_input,
+			1 if _motion.jump_pressed else 0, 1 if _motion.flight_toggle_pressed else 0,
+			_input_helper.held_count(),
+		],
+	]))
 	_ledger_view.text = _ledger.ledger_text()
 
 
@@ -597,8 +568,9 @@ class LedgerTimeline extends Control:
 		var width := size.x - pad * 2.0
 		var events: Array = ledger.events()
 		if events.is_empty():
+			# 浅纸白底上的深墨字（共享 theme 的文字色也是深绿，保持同族对比）。
 			draw_string(ThemeDB.fallback_font, Vector2(pad, pad + 12.0), "时间线：等待事件",
-				HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.35, 0.40, 0.36))
+				HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.145098, 0.239216, 0.211765))
 			return
 		var last_frame := maxi(1, int(ledger.last_frame()))
 		var first_frame := int((events[0] as Dictionary).get("frame", 0))
