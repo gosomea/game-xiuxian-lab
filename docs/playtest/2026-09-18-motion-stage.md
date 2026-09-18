@@ -1,7 +1,7 @@
 # 人物动作工作台验收（2026-09-18）
 
 场景：`res://levels/experiments/character_movement/motion_stage.tscn`（本子实验入口，返回目标固定为同目录 `movement_lab_hub.tscn`）。
-决策依据：[character-movement-subexperiments](../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「人物动作工作台」）。
+决策依据：[character-movement-subexperiments](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（子实验「人物动作工作台」）。
 契约：[traversal-contract](../../docs/experiments/traversal-contract.md)。门禁档：**CLI 档**（`godot --headless` + 窗口模式截图；编辑器桥未用于本轮，不构成依赖）。
 
 本文件只保留结论与判定证据；原始运行日志不入仓，存 `~/.cache/game-xiuxian-lab/motion-stage/`（可再生产物，按验收记录规则留在仓外）。
@@ -102,3 +102,4 @@
 - 未改动 `experiments.json`、子实验清单、`movement_lab_hub.*`、`camera_lab*`、Capability / Component 字段与现有庭院 / 群山场景。
 - `cultivator_presentation.gd` 为既有文件的扩展：保留全部原有导出参数与枢轴断言，新增腾空 / 落地 / 转身 / 御剑俯仰增益与只读 `pose_state()`；`swordsman.tscn` 未改动。
 - `Esc` 返回目标优先移动子实验目录，未落地时回退顶层 `lab_hub.tscn`（不硬依赖并行文件）。
+  集成收口后子实验目录已落地，实际返回路径为移动子实验目录；本报告其余实测数字保持为当时快照。

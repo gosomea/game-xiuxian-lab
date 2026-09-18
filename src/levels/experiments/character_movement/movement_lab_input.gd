@@ -5,7 +5,7 @@ extends RefCounted
 ##
 ## 存在理由：camera_lab 与 motion_stage 已成为两个真实消费者，重复维护同一套
 ## WASD / 方向键映射、按住状态、二维单位输入、升降输入与失焦清理。
-## 依据 [character-movement-subexperiments](../../../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)
+## 依据 [character-movement-subexperiments](../../../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)
 ## 「重复且语义稳定的实验 UI 或输入编排才抽成移动实验专属组合节点」——两个场景验证后再抽取。
 ##
 ## 边界（不得越界）：

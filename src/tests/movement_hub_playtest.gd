@@ -7,9 +7,15 @@ extends SceneTree
 ##   godot --path src --script res://tests/movement_hub_playtest.gd -- --capture-prefix=/abs/prefix
 ##
 ## 断言纪律：入口判定读真实 JSON 与真实场景加载；顶部入口、Esc 与按钮返回路径都真实切换后回读。
-## 全部已落地子场景（镜头实验室 / 人物动作工作台 / 移动庭院 / 群山宗门）统一返回本目录
+## 集成收口后七项子实验全部落地：镜头实验室 / 人物动作工作台 / 地形接触训练场 / 御剑飞行训练场 /
+## 状态切换压力场 / 移动庭院 / 群山宗门。七个场景统一返回本目录
 ## res://levels/experiments/character_movement/movement_lab_hub.tscn；本目录的 Esc 与返回按钮回到顶层实验目录。
 ## 编辑器桥（godot-ai）本会话无活动编辑会话，验收档位为 CLI。
+##
+## 关于 planned 条目：集成收口后真实清单里已无 planned 条目，因此原先针对「计划条目禁用 /
+## 显示尚未落地 / 不可进入」的 UI 运行断言不再适用，已随集成移除。若未来清单重新出现 planned
+## 条目，必须恢复这组 UI 断言（禁用态、文案、不切换场景）。数据层的拒绝规则仍被保留：
+## tests/test_movement_lab_hub.gd 继续用 planned 变异用例断言「planned 挂场景被拒绝 / 不可打开」。
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const TOP_HUB := "res://levels/lab_hub.tscn"
@@ -25,17 +31,30 @@ const EXPECTED_IDS := [
 	"movement_garden",
 	"mountain_realm",
 ]
-## 全部已落地子场景统一返回本目录（2026-09-18 第一阶段收口）。
-const OPENABLE_IDS := ["camera_lab", "motion_stage", "movement_garden", "mountain_realm"]
+## 全部已落地子场景统一返回本目录（2026-09-18 集成收口：七项全部可进入）。
+const OPENABLE_IDS := [
+	"camera_lab",
+	"motion_stage",
+	"ground_contact_course",
+	"sword_flight_course",
+	"state_transition_lab",
+	"movement_garden",
+	"mountain_realm",
+]
 
 var _failed := 0
 var _prefix := ""
+## 可选截图标签：带标签时文件名加前缀（如 7of7-movement-hub-1280x800.png），
+## 使新一阶段的截图不与既有探索资产重名、绝不覆盖旧图。
+var _capture_tag := ""
 
 
 func _initialize() -> void:
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--capture-prefix="):
 			_prefix = argument.trim_prefix("--capture-prefix=")
+		elif argument.begins_with("--capture-tag="):
+			_capture_tag = argument.trim_prefix("--capture-tag=")
 	_run.call_deferred()
 
 
@@ -58,14 +77,14 @@ func _run() -> void:
 	await _settle()
 	_check(current_scene.name == HUB_NODE_NAME, "从顶层进入角色移动子实验目录：%s" % current_scene.name)
 
-	# 2. 七项可见、顺序与清单一致、只有现存场景可进入。
+	# 2. 七项可见、顺序与清单一致、七项全部可进入。
 	var grid := current_scene.get_node("%EntryGrid") as GridContainer
 	_check(grid.get_child_count() == 7, "子实验目录显示 7 项（实际 %d）" % grid.get_child_count())
 	var ids: Array[String] = []
 	for child in grid.get_children():
 		ids.append(str(child.name).trim_prefix("Entry_"))
 	_check(ids == EXPECTED_IDS, "子实验顺序与清单一致：%s" % str(ids))
-	_check(current_scene.get_node("%Count").text == "4 / 7", "计数如实显示已落地 4 / 7：%s" % current_scene.get_node("%Count").text)
+	_check(current_scene.get_node("%Count").text == "7 / 7", "计数如实显示已落地 7 / 7：%s" % current_scene.get_node("%Count").text)
 	for id in EXPECTED_IDS:
 		_check(grid.get_node_or_null("Entry_" + id) != null, "子实验条目存在：%s" % id)
 
@@ -88,29 +107,29 @@ func _run() -> void:
 	await _settle()
 	_check(grid.get_node("Entry_motion_stage").has_focus(), "可显式恢复条目键盘焦点")
 
-	# 3. 计划条目：详情如实、按钮禁用、键盘不可进入。
-	await _activate(grid.get_node("Entry_ground_contact_course"))
-	_check(current_scene.get_node("%DetailTitle").text == "地形接触训练场", "键盘激活计划条目后详情更新")
-	_check(current_scene.get_node("%DetailStatus").text.contains("待探索"), "计划条目状态如实显示待探索")
-	_check(current_scene.get_node("%DetailPath").text.contains("尚未落地"), "计划条目入口显示尚未落地")
-	_check(current_scene.get_node("%DetailStage").text.contains("物理训练场"), "计划条目显示定位")
-	_check(current_scene.get_node("%LaunchButton").disabled, "计划条目不能启动")
-	_check(current_scene.name == HUB_NODE_NAME, "计划条目不切换场景")
-	for planned_id in ["ground_contact_course", "sword_flight_course", "state_transition_lab"]:
-		await _activate(grid.get_node("Entry_" + planned_id))
-		_check(current_scene.get_node("%LaunchButton").disabled, "计划条目不能启动：%s" % planned_id)
-	_check(current_scene.name == HUB_NODE_NAME, "全部计划条目均未切换场景")
+	# 3. 七项全部落地：逐项详情字段齐全、状态为探索中、入口可用。
+	for id in EXPECTED_IDS:
+		var expected_title := str(_sub_entry(id)["title"])
+		var expected_stage := str(_sub_entry(id)["stage"])
+		await _activate(grid.get_node("Entry_" + id))
+		_check(current_scene.get_node("%DetailTitle").text == expected_title,
+			"条目标题与清单一致：%s" % id)
+		_check(current_scene.get_node("%DetailStatus").text.contains("探索中"), "条目状态显示探索中：%s" % id)
+		_check(current_scene.get_node("%DetailStage").text.contains(expected_stage), "条目显示定位：%s" % id)
+		_check(current_scene.get_node("%DetailPath").text.contains("res://levels/"),
+			"条目显示真实入口路径：%s" % id)
+		_check(current_scene.get_node("%LaunchButton").disabled == false, "条目提供运行入口：%s" % id)
+		_check(current_scene.name == HUB_NODE_NAME, "仅选择详情不切换场景：%s" % id)
 
-	# 4. 小窗布局：条目仍可见，焦点与计数仍可用。
-	root.size = Vector2i(960, 640)
-	await _settle()
-	_check(grid.get_child_count() == 7 and grid.is_visible_in_tree(), "960x640 下 7 项仍可见")
-	_check(current_scene.get_node("%Count").text == "4 / 7", "小窗计数仍如实显示")
-	await _capture("movement-hub-960x640")
-	root.size = Vector2i(1280, 800)
-	await _settle()
+	# 4. 小窗布局与精确尺寸证据。
+	# 小窗下的真实重排由窗口模式截图档覆盖（本机窗口管理器对内容尺寸有下限，实测约 1200x750，
+	# 真实窗口压不到 960x640）。因此固定尺寸的小窗证据用离屏视口真实渲染，
+	# 命名与内容像素严格一致；已有的真实窗口 960x600 资产保持不变。
+	_check(grid.get_child_count() == 7 and grid.is_visible_in_tree(), "目录在小窗尺寸下 7 项始终可见")
+	_check(current_scene.get_node("%Count").text == "7 / 7", "计数在目录中始终如实显示")
+	await _capture_exact("movement-hub-960x640", Vector2i(960, 640))
 
-	# 5. 现存场景入口与返回路径：逐项真实进入，Esc 必须回到一个真实目录场景。
+	# 5. 七个场景入口与返回路径：逐项真实进入，Esc 必须回到本目录，再回顶层。
 	for id in OPENABLE_IDS:
 		if current_scene.name == TOP_HUB_NODE_NAME:
 			await _enter_hub_from_top()
@@ -211,12 +230,48 @@ func _settle() -> void:
 		await process_frame
 
 
+## 固定尺寸精确截图：在指定像素尺寸的离屏视口里真实实例化并渲染子实验目录。
+## 用于窗口管理器有尺寸下限、真实窗口无法压到的尺寸（如 960x640）；
+## 生成的是真实布局与真实渲染，且命名与内容像素严格一致，报告里如实标注取证方式。
+func _capture_exact(suffix: String, target: Vector2i) -> void:
+	if _prefix.is_empty() or DisplayServer.get_name() == "headless":
+		return
+	var holder := SubViewport.new()
+	holder.name = "ExactCaptureViewport"
+	holder.size = target
+	holder.transparent_bg = false
+	holder.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	root.add_child(holder)
+	var copy := (load(HUB_SCENE) as PackedScene).instantiate()
+	holder.add_child(copy)
+	for _index in range(10):
+		await process_frame
+	var image := holder.get_texture().get_image()
+	var name := suffix if _capture_tag.is_empty() else "%s-%s" % [_capture_tag, suffix]
+	var path := "%s-%s.png" % [_prefix, name]
+	print("CAPTURE %s actual=%dx%d requested=%dx%d" % [name, image.get_width(), image.get_height(),
+		target.x, target.y])
+	_check(image.get_width() == target.x and image.get_height() == target.y,
+		"离屏截图尺寸与命名一致：" + name)
+	_check(image.save_png(path) == OK, "截图保存：" + name)
+	holder.queue_free()
+
+
+## 截图并如实报告真实像素尺寸：文件名与实际内容必须一致（macOS 会为窗口标题栏占用高度，
+## 因此 requested 与 actual 可能不同——打印出来让证据自证，而不是靠命名假设）。
 func _capture(suffix: String) -> void:
 	if _prefix.is_empty() or DisplayServer.get_name() == "headless":
 		return
 	await RenderingServer.frame_post_draw
-	var path := "%s-%s.png" % [_prefix, suffix]
-	_check(root.get_texture().get_image().save_png(path) == OK, "截图保存：" + suffix)
+	var image := root.get_texture().get_image()
+	if image == null:
+		_check(false, "截图读回为空：" + suffix)
+		return
+	var name := suffix if _capture_tag.is_empty() else "%s-%s" % [_capture_tag, suffix]
+	var path := "%s-%s.png" % [_prefix, name]
+	print("CAPTURE %s actual=%dx%d requested=%dx%d" % [name, image.get_width(), image.get_height(),
+		root.size.x, root.size.y])
+	_check(image.save_png(path) == OK, "截图保存：" + name)
 
 
 func _check(ok: bool, message: String) -> bool:

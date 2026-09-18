@@ -1,6 +1,6 @@
 extends SceneTree
 
-## 镜头实验室的无头 / 窗口验收（依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md）。
+## 镜头实验室的无头 / 窗口验收（依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）。
 ##
 ## 覆盖：
 ## - 场景装配与灰盒齐备、默认策略、角色三能力原样；

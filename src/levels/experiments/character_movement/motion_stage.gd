@@ -2,7 +2,7 @@ extends Node3D
 
 ## 人物动作工作台（motion_stage）：用真实 Swordsman 与公开输入 API 观察动作表现。
 ##
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md（子实验「人物动作工作台」）。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md（子实验「人物动作工作台」）。
 ##
 ## 职责边界：
 ## - 角色、三能力与运动数据归 res://game/actors/swordsman/ 与 res://game/abilities/；

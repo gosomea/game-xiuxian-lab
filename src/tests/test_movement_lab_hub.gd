@@ -15,7 +15,16 @@ const EXPECTED_IDS := [
 	"movement_garden",
 	"mountain_realm",
 ]
-const EXPECTED_OPENABLE := ["camera_lab", "motion_stage", "movement_garden", "mountain_realm"]
+## 集成收口后七项全部落地：清单里不再有 planned 条目。
+const EXPECTED_OPENABLE := [
+	"camera_lab",
+	"motion_stage",
+	"ground_contact_course",
+	"sword_flight_course",
+	"state_transition_lab",
+	"movement_garden",
+	"mountain_realm",
+]
 const GARDEN_SCENE := "res://levels/experiments/character_movement/movement_garden.tscn"
 const REALM_SCENE := "res://levels/experiments/character_movement/mountain_realm.tscn"
 
@@ -121,7 +130,8 @@ static func run(t) -> void:
 	}).is_empty(), "空子实验清单被拒绝（缺少全部必需条目）")
 
 
-## 与真实清单同构的七项基线（两份已落地场景 + 五项待探索），供变异用例使用。
+## 变异用例基线：形状与真实清单同构（七项、字段齐全），但刻意保留三条 planned 条目，
+## 以便继续覆盖「planned 不得挂场景 / 不得进入」这类规则——真实清单此时已全部落地。
 static func _base_entries() -> Array:
 	return [
 		_entry("camera_lab", "exploring", "res://levels/experiments/character_movement/camera_lab.tscn"),

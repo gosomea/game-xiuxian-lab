@@ -1,7 +1,7 @@
 # 状态切换压力场验收（2026-09-18）
 
 场景：`res://levels/experiments/character_movement/state_transition_lab.tscn`（心境 / 身法试炼阵）。
-决策依据：[character-movement-subexperiments](../../notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md)。
+决策依据：[character-movement-subexperiments](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)。
 只读设计：本轮实现即上一轮只读方案的收敛版（少量可重复序列，不建通用状态机）。
 验收档位：**CLI 档**（headless 真实输入 + 窗口模式截图）。godot-ai 编辑器桥在本会话始终无活动会话。
 
@@ -80,11 +80,12 @@
 | `-ledger-timeline.png` | 账本与时间线近观（多类事件） |
 | `-small.png` | 960×600 最小窗口 |
 
-## 与 hub 集成的边界（本轮未做，等统一集成任务）
+## hub 集成状态（2026-09-18 集成收口后）
 
-本场景未登记进 `character_movement_subexperiments.json`（该文件不在本轮所有权内），
-hub 目前仍显示该条目为 `planned` / 「尚未落地」。登记为 `exploring` + 填 scene 属下一轮统一集成。
-场景已满足 hub 契约：`HUB_SCENE` 指向 `movement_lab_hub.tscn`、Esc 返回、按钮文案「返回子实验目录」。
+本轮落地时该条目尚未登记；集成阶段已把它改为 `exploring` 并填入本场景路径，hub 现显示为可进入。
+集成前的独立运行证据（上表计数与读数）保持为当时的实测快照，未改动。
+集成验证与最终计数见 [集成权威报告](2026-09-18-character-movement-subexperiments.md)。
+场景满足 hub 契约：`HUB_SCENE` 指向 `movement_lab_hub.tscn`、Esc 返回、按钮文案「返回子实验目录」。
 
 ## 事实 vs 待人工评价
 

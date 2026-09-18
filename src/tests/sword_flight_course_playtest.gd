@@ -2,7 +2,7 @@ extends SceneTree
 
 ## 御剑飞行训练场的无头 / 窗口验收。
 ##
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md
 ## 「御剑飞行训练场」与验收契约：起飞、升降、悬停、穿越、转向、落点选择。
 ##
 ## 全部飞行由真实键盘事件驱动（Input.parse_input_event），不使用传送伪造通关：
@@ -23,7 +23,6 @@ const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub
 const HUB_ROOT := "MovementLabHub"
 const ROUTE_PATH := "res://levels/experiments/character_movement/sword_flight_course_collision.json"
 const SCENE_SCRIPT := "res://levels/experiments/character_movement/sword_flight_course.gd"
-const HELPER_PATH := "res://levels/experiments/character_movement/movement_lab_input.gd"
 
 const EXPECTED_CAPABILITIES := ["Jump", "SwordFlight", "SwordsmanMovement"]
 const FLIGHT_TAG := &"sword_flight_block"
@@ -924,4 +923,3 @@ func _finish() -> void:
 	_release_all_keys()
 	print("SWORD_FLIGHT_COURSE_PLAYTEST 完成：失败 %d" % _failed)
 	quit(1 if _failed > 0 else 0)
-

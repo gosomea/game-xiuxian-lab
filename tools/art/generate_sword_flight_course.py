@@ -9,7 +9,7 @@
   ... -- preview            （只渲染预览，不导出 GLB）
   ... -- all                （导出 + 预览）
 
-职责边界（依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md）：
+职责边界（依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md）：
   - 只服务御剑飞行训练场：浮空玉环门、云阶、落剑台、悬浮石、远山剪影、指示光柱。
   - 不呈现角色、不做完整地图、不做群山审美重建；远山只作剪影背景。
   - 碰撞/trigger 由 Godot 场景精确装配；本文件导出可碰撞实体的 center/size 到
@@ -554,4 +554,3 @@ if __name__ == "__main__":
     code = main(args)
     if code:
         sys.exit(code)
-

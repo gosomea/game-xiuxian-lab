@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## 人物动作工作台验收：真实场景 + 真实 Swordsman + 真实输入事件 + 表现层读回。
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
 ##
 ## 用法（分批，单进程 <45s）：
 ##   Godot --headless --path src --script res://tests/motion_stage_playtest.gd -- --batch=assembly,idle,run,turn,jump,flight,landing,removal,hud,exit

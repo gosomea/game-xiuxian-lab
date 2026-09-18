@@ -2,7 +2,7 @@ extends SceneTree
 
 ## 地形接触训练场验收：真实场景 + 真实角色 + 真实键盘事件 + 真实碰撞。
 ##
-## 依据 notes/proposed/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
+## 依据 notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md 的验收标准。
 ##
 ## 用法（分批，单进程 <45s）：
 ##   Godot --headless --path src --script res://tests/ground_contact_course_playtest.gd -- --batch=assembly,flat,ramp,step,corner,narrow,edge,recovery,hud,exit
