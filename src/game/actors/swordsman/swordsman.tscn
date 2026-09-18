@@ -1,0 +1,43 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://game/actors/swordsman/swordsman.gd" id="1_root"]
+[ext_resource type="Script" path="res://game/actors/swordsman/swordsman_motion_component.gd" id="2_motion"]
+[ext_resource type="Script" path="res://core/capability_manager.gd" id="3_manager"]
+[ext_resource type="Script" path="res://game/actors/swordsman/swordsman_movement.gd" id="4_movement"]
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator.glb" id="5_model"]
+[ext_resource type="Script" path="res://game/abilities/sword_flight/sword_flight.gd" id="6_flight"]
+[ext_resource type="Script" path="res://game/abilities/jump/jump.gd" id="7_jump"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_presentation.gd" id="8_presentation"]
+
+[sub_resource type="CapsuleShape3D" id="Shape"]
+radius = 0.35
+height = 1.6
+
+[node name="Swordsman" type="CharacterBody3D"]
+script = ExtResource("1_root")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("Shape")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Cultivator" parent="Visual" instance=ExtResource("5_model")]
+
+[node name="CultivatorPresentation" type="Node3D" parent="Visual"]
+script = ExtResource("8_presentation")
+
+[node name="SwordsmanMotionComponent" type="Node" parent="."]
+script = ExtResource("2_motion")
+
+[node name="CapabilityManager" type="Node" parent="."]
+script = ExtResource("3_manager")
+
+[node name="SwordFlight" type="Node" parent="CapabilityManager"]
+script = ExtResource("6_flight")
+
+[node name="Jump" type="Node" parent="CapabilityManager"]
+script = ExtResource("7_jump")
+
+[node name="SwordsmanMovement" type="Node" parent="CapabilityManager"]
+script = ExtResource("4_movement")

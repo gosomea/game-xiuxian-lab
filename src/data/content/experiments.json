@@ -2,60 +2,130 @@
   "schema_version": 1,
   "modules": [
     {
-      "id": "world_map", "title": "地图探索", "category": "空间",
+      "id": "world_map",
+      "title": "地图探索",
+      "category": "空间",
       "summary": "地形、道路与建筑，组成一片可以探索的空间。",
       "question": "俯视镜头下，怎样的空间尺度、路线和遮挡看起来舒服？",
-      "scope": ["地形、道路与建筑布局", "镜头、遮挡与空间尺度", "区域边界与地点入口"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "scope": [
+        "地形、道路与建筑布局",
+        "镜头、遮挡与空间尺度",
+        "区域边界与地点入口"
+      ],
+      "depends_on": [],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "character_movement", "title": "角色移动", "category": "角色",
-      "summary": "让角色走起来，观察移动、转向与动画的感觉。",
-      "question": "角色在 2.5D 空间里，怎样移动和转向才符合预期？",
-      "scope": ["移动方式与速度", "转向、动画与碰撞", "镜头跟随与角色呈现"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "id": "character_movement",
+      "title": "角色移动",
+      "category": "角色",
+      "summary": "在群山宗门场景中观察修士的平面移动、独立跳跃与御剑飞行，以及碰撞、高低差与跟随镜头；本场景不承担剑法与战斗设计。",
+      "question": "角色在 2.5D 空间的平面移动、跳跃与御剑飞行，怎样操作和落地才符合预期？",
+      "scope": [
+        "平面移动、跳跃与御剑飞行的操作与速度",
+        "转向、碰撞、台阶与降落平台",
+        "群山高低差、边界约束与跟随镜头",
+        "步行 / 空中 / 御剑状态呈现"
+      ],
+      "depends_on": [],
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
     },
     {
-      "id": "sword_combat", "title": "剑法战斗", "category": "战斗",
-      "summary": "角色使用剑法，对木桩或简单敌人反复试招。",
+      "id": "sword_combat",
+      "title": "剑法战斗",
+      "category": "战斗",
+      "summary": "剑法表现与战斗组织方式待单独设计，暂不预设近身范围攻击或其他战斗机制。",
       "question": "挥剑、剑气或御剑，哪些表现值得继续探索？",
-      "scope": ["出招、方向与作用距离", "命中、受击与视觉反馈", "角色和剑法的组合操作"],
-      "depends_on": ["character_movement"], "status": "planned", "scene": ""
+      "scope": [
+        "出招、方向与作用距离",
+        "命中、受击与视觉反馈",
+        "角色和剑法的组合操作"
+      ],
+      "depends_on": [
+        "character_movement"
+      ],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "town_dialogue", "title": "小镇交流", "category": "组合",
+      "id": "town_dialogue",
+      "title": "小镇交流",
+      "category": "组合",
       "summary": "从地图走进小镇，接近人物并开始交流。",
       "question": "进入地点、接近 NPC 和发起对话，怎样衔接才自然？",
-      "scope": ["小镇入口与场景切换", "人物接近与交互提示", "对话开启、展示与退出"],
-      "depends_on": ["world_map", "character_movement"], "status": "planned", "scene": ""
+      "scope": [
+        "小镇入口与场景切换",
+        "人物接近与交互提示",
+        "对话开启、展示与退出"
+      ],
+      "depends_on": [
+        "world_map",
+        "character_movement"
+      ],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "character_growth", "title": "人物成长", "category": "成长",
+      "id": "character_growth",
+      "title": "人物成长",
+      "category": "成长",
       "summary": "调节属性、境界与功法，直接观察成长带来的变化。",
       "question": "怎样清楚地看到和理解一个修士的成长？",
-      "scope": ["属性与境界的数据表达", "功法熟练度与突破实验", "变化展示与调试入口"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "scope": [
+        "属性与境界的数据表达",
+        "功法熟练度与突破实验",
+        "变化展示与调试入口"
+      ],
+      "depends_on": [],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "character_interaction", "title": "人物交互", "category": "关系",
+      "id": "character_interaction",
+      "title": "人物交互",
+      "category": "关系",
       "summary": "尝试赠送、交易或切磋，观察行为如何改变关系。",
       "question": "人物之间的行动，怎样产生可观察的回应与关系变化？",
-      "scope": ["交互行为与条件", "交谈、赠送、交易等候选方式", "关系变化与行为结果"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "scope": [
+        "交互行为与条件",
+        "交谈、赠送、交易等候选方式",
+        "关系变化与行为结果"
+      ],
+      "depends_on": [],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "npc_life", "title": "NPC 生活", "category": "世界",
+      "id": "npc_life",
+      "title": "NPC 生活",
+      "category": "世界",
       "summary": "观察人物的作息、目标和行动，也可以快进时间。",
       "question": "一个人物怎样表现出自己的生活与追求？",
-      "scope": ["作息、目标与活动", "世界时间和状态变化", "附近行动与离场状态的衔接"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "scope": [
+        "作息、目标与活动",
+        "世界时间和状态变化",
+        "附近行动与离场状态的衔接"
+      ],
+      "depends_on": [],
+      "status": "planned",
+      "scene": ""
     },
     {
-      "id": "inventory", "title": "背包物品", "category": "物品",
+      "id": "inventory",
+      "title": "背包物品",
+      "category": "物品",
       "summary": "独立体验拾取、使用、装备和整理物品。",
       "question": "物品如何流转，操作与状态变化是否容易理解？",
-      "scope": ["拾取、堆叠与整理", "使用、装备与效果", "物品状态与界面操作"],
-      "depends_on": [], "status": "planned", "scene": ""
+      "scope": [
+        "拾取、堆叠与整理",
+        "使用、装备与效果",
+        "物品状态与界面操作"
+      ],
+      "depends_on": [],
+      "status": "planned",
+      "scene": ""
     }
   ]
 }

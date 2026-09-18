@@ -9,6 +9,9 @@ const TestContext := preload("res://tests/test_context.gd")
 
 const SUITES := [
 	"res://tests/test_core.gd",
+	"res://game/actors/swordsman/test_swordsman_movement.gd",
+	"res://game/abilities/jump/test_jump.gd",
+	"res://game/abilities/sword_flight/test_sword_flight.gd",
 	"res://tests/test_vocabulary.gd",
 	"res://tests/fixtures/template_vitals/test_vitals_regeneration.gd",
 	"res://tests/fixtures/template_vitals/test_vitals_guard.gd",

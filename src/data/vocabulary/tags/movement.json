@@ -1,0 +1,10 @@
+{
+  "domain": "movement",
+  "description": "移动域：平面移动、跳跃与御剑飞行之间的互斥词汇。",
+  "tags": {
+    "sword_flight_block": {
+      "description": "御剑封锁：御剑期间禁止普通水平移动与跳跃（TagRegistry 阻塞，instigator 为 SwordFlight 能力自身）",
+      "added": "2026-09-18"
+    }
+  }
+}

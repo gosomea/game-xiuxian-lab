@@ -29,6 +29,7 @@ func _run() -> void:
 	await _activate(current_scene.get_node("%ModuleGrid/Module_sword_combat"))
 	_check(current_scene.get_node("%DetailTitle").text == "剑法战斗", "键盘激活模块后详情更新")
 	_check("角色移动" in current_scene.get_node("%DetailDependencies").text, "组合依赖展示真实模块名")
+	_check(current_scene.get_node("%LaunchButton").disabled, "剑法待设计，不提供运行入口")
 	root.size = Vector2i(960, 640)
 	await _settle()
 	await _capture("hub-960x640")

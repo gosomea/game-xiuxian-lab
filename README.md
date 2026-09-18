@@ -2,7 +2,7 @@
 
 独立的 **2.5D 模块实验项目**，基于 game-template 0.4.0 / Godot 4.6。
 
-当前目标是把地图、角色、剑法、小镇交流、成长与人物交互等模块逐个做出来，在独立场景中运行、调整和比较。模块就绪后再考虑完整游戏的玩法组织。当前处于空工程初始化：**0 个玩法模块已建，8 个待探索。**
+当前先探索角色移动与呈现：**1 个移动模块探索中，剑法及其余 6 个模块待探索。** 移动场景现以群山宗门为入口，观察平面移动、独立跳跃与御剑飞行在高低差和空中场景中的表现。剑法表现与战斗组织另行设计，不从移动场景推导战斗规则。
 
 ## 启动
 
@@ -19,13 +19,13 @@ python3 tools/verify/run_all.py --with-tests
 
 ## 目前可以看到什么
 
-- **实验目录**：八个模块的目标、范围与依赖；条目均显示「待探索」，无虚假的可运行入口。
-- **空白 3D 工作台**：一个参考地面网格、正交俯视相机、环境与灯光，确认工程的 3D 基础可运行。滚轮缩放、R 重置视角、Esc 返回目录。
-- **工程基础**：模板核心设施、词汇与能力目录生成器、分包规范、检查工具及回归测试。
+- **实验目录**：八个模块的目标、范围与依赖；只有角色移动提供探索场景入口，剑法保持待设计。
+- **群山宗门**：180×160 m、五峰三落脚点的 Blender 程序建模场景。WASD / 方向键移动，Space 跳跃 / 上升，Ctrl 下降，F 开关御剑，滚轮缩放，R 复位（含关闭飞行），Esc 返回；HUD 只显示步行 / 空中 / 御剑与高度。没有攻击、命中或战斗 UI。
+- **移动庭院（小场景回归）**：修士与风格化庭院的纯水平移动基线，可直接单独运行；控制只有 WASD 移动、滚轮缩放、R 重置、Esc 返回。
+- **空白 3D 工作台**：保留网格、正交相机与缩放，供其他模块独立起步。
+- **工程基础**：模板核心、词汇与能力目录生成器、分包规范、门禁和回归测试。
 
-工作台不计为地图 Demo；没有角色、战斗或 NPC。相机与界面只是实验基础，不代表最终美术方向。
-
-当前实验室使用「纸白 · 青绿」配色：浅纸色背景、深墨色文字、青绿交互色与少量暖金提示。菜单与工作台统一，文字和控件样式集中于 `src/ui/lab_theme.tres`。实际截图与验证结果见 [配色验收记录](docs/playtest/2026-09-17-paper-jade.md)。
+目前群山、宗门与御剑是程序建模的美术探索；移动手感与视觉评价待使用者试玩。实验室界面沿用「纸白 · 青绿」配色。
 
 ## 模块清单
 
@@ -34,8 +34,8 @@ python3 tools/verify/run_all.py --with-tests
 | 模块 | 独立实验目标 |
 |---|---|
 | 地图探索 | 地形、道路、建筑、遮挡、镜头与区域边界 |
-| 角色移动 | 移动、转向、动画、碰撞与跟随 |
-| 剑法战斗 | 角色施法、剑气、命中与受击反馈 |
+| 角色移动 | 平面移动、跳跃、御剑飞行、碰撞与跟随镜头 |
+| 剑法战斗 | 剑法表现与战斗组织方式，待单独设计 |
 | 小镇交流 | 地图进入小镇、接近 NPC、发起对话 |
 | 人物成长 | 属性、境界、功法熟练度与变化展示 |
 | 人物交互 | 交谈、赠送、交易、切磋及关系变化 |
@@ -49,7 +49,7 @@ python3 tools/verify/run_all.py --with-tests
 ```text
 src/levels/lab_hub.tscn        实验目录
 src/levels/empty_stage.tscn     空白 3D 工作台
-src/levels/experiments/        后续独立与组合实验场景
+src/levels/experiments/        独立与组合实验场景（character_movement：mountain_realm + movement_garden）
 src/game/                     供场景复用的模块实现
 src/core/                     从模板继承的核心设施
 src/data/content/experiments.json  模块清单
@@ -59,4 +59,20 @@ docs/experiments/              实验结论与记录模板
 docs/playtest/                 运行验收证据
 ```
 
-新增模块和场景的方法见 [上手说明](docs/onboarding.md)。项目约定见 [AGENTS.md](AGENTS.md)，探索目标见 [design/pillars.md](design/pillars.md)。本工程独立于既有修仙项目，仅以 game-template 为实现基线；当前源码归 forever-skills 大仓管理。
+新增模块和场景的方法见 [上手说明](docs/onboarding.md)。项目约定见 [AGENTS.md](AGENTS.md)，探索目标见 [design/pillars.md](design/pillars.md)。本工程独立于既有修仙项目，仅以 game-template 为实现基线，并使用本目录下的独立 Git 仓库管理。每轮有文件变更的开发结束前完成适用检查并创建本地 commit，代码、场景、Blender 源文件及导出资产一起保存；具体规则见 [开发 Git 保存](notes/implemented/process/2026-09-18-development-git-checkpoints.md)。
+
+## 角色移动实验
+
+从目录选择「角色移动」进入群山宗门，或直接启动：
+
+```sh
+./run.command res://levels/experiments/character_movement/mountain_realm.tscn
+```
+
+小场景回归（纯水平移动的旧庭院）：
+
+```sh
+./run.command res://levels/experiments/character_movement/movement_garden.tscn
+```
+
+本轮边界与试玩反馈见 [实验记录](docs/experiments/character-movement.md)；接口与装配记录见 [群山场景方案](docs/experiments/mountain-scene-plan.md)。群山与御剑源文件、复现方式与资产台账在 `docs/art/mountain_realm/`，修士角色与庭院资产在 `docs/art/movement_garden/`。

@@ -1,0 +1,1382 @@
+{
+  "schema": "mountain_realm_layout/1",
+  "generated_by": "tools/art/generate_mountain_realm.py layout",
+  "units": "meters",
+  "up_axis": "Y",
+  "blender_to_godot": "godot = (bx, bz, -by)",
+  "bounds": {
+    "min": [
+      -90.0,
+      -6.0,
+      -80.0
+    ],
+    "max": [
+      90.0,
+      60.0,
+      80.0
+    ],
+    "fall_out_y": -6.0,
+    "limit_mode": "scene_collision_walls_and_ceiling"
+  },
+  "spawn": {
+    "position": [
+      -30.0,
+      12.02,
+      34.0
+    ],
+    "yaw_deg": 0.0,
+    "landing_point": "spawn_courtyard"
+  },
+  "landing_points": [
+    {
+      "name": "spawn_courtyard",
+      "top_y": 12.0,
+      "center": [
+        -30.0,
+        34.0
+      ],
+      "size": [
+        20.0,
+        16.0
+      ],
+      "peak": "front_mesa"
+    },
+    {
+      "name": "summit_sect",
+      "top_y": 36.0,
+      "center": [
+        4.0,
+        -41.0
+      ],
+      "size": [
+        22.0,
+        9.0
+      ],
+      "peak": "main_peak"
+    },
+    {
+      "name": "north_pavilion",
+      "top_y": 28.0,
+      "center": [
+        -46.0,
+        -52.0
+      ],
+      "size": [
+        14.0,
+        12.0
+      ],
+      "peak": "north_peak"
+    }
+  ],
+  "collision": {
+    "mode": "visual_glb + separate_trimesh_shell",
+    "shell_glb": "res://levels/experiments/character_movement/mountain_realm_collision.glb",
+    "ring_segments": 20,
+    "top_surface_rule": "box.top_y 同时是视觉顶面与站立面高度；boxes 每项都是实体，场景不得按标记挖空",
+    "mountains": [
+      {
+        "name": "main_peak",
+        "node": "MainPeakCol",
+        "top_y": 36.0,
+        "drive_boxes": [
+          "summit_terrace",
+          "main_plateau_30",
+          "shanmen_terrace"
+        ],
+        "landing_point": "summit_sect"
+      },
+      {
+        "name": "north_peak",
+        "node": "NorthPeakCol",
+        "top_y": 28.0,
+        "drive_boxes": [
+          "north_peak_top"
+        ],
+        "landing_point": "north_pavilion"
+      },
+      {
+        "name": "west_peak",
+        "node": "WestPeakCol",
+        "top_y": 20.0,
+        "drive_boxes": [
+          "west_peak_top"
+        ],
+        "landing_point": null
+      },
+      {
+        "name": "east_ridge",
+        "node": "EastRidgeCol",
+        "top_y": 16.0,
+        "drive_boxes": [
+          "east_ridge_top"
+        ],
+        "landing_point": null
+      },
+      {
+        "name": "front_mesa",
+        "node": "FrontMesaCol",
+        "top_y": 12.0,
+        "drive_boxes": [
+          "front_mesa_top"
+        ],
+        "landing_point": "spawn_courtyard"
+      }
+    ],
+    "wall_coverage": "高度场按最近峰分面，五节点合起来覆盖整片可走谷地与山面"
+  },
+  "boxes": [
+    {
+      "name": "ground_valley",
+      "role": "ground",
+      "center": [
+        0,
+        -0.5,
+        0
+      ],
+      "size": [
+        180,
+        1,
+        160
+      ],
+      "top_y": 0.0,
+      "solid": true
+    },
+    {
+      "name": "front_mesa_top",
+      "role": "ground",
+      "center": [
+        -30,
+        11.0,
+        34
+      ],
+      "size": [
+        42,
+        2,
+        34
+      ],
+      "top_y": 12.0,
+      "solid": true
+    },
+    {
+      "name": "main_plateau_30",
+      "role": "ground",
+      "center": [
+        4,
+        29.0,
+        -35
+      ],
+      "size": [
+        32,
+        2,
+        42
+      ],
+      "top_y": 30.0,
+      "solid": true
+    },
+    {
+      "name": "shanmen_terrace",
+      "role": "ground",
+      "center": [
+        4,
+        29.02,
+        -20
+      ],
+      "size": [
+        24,
+        2,
+        12
+      ],
+      "top_y": 30.02,
+      "solid": true
+    },
+    {
+      "name": "summit_terrace",
+      "role": "ground",
+      "center": [
+        4,
+        35.0,
+        -46
+      ],
+      "size": [
+        30,
+        2,
+        20
+      ],
+      "top_y": 36.0,
+      "solid": true
+    },
+    {
+      "name": "north_peak_top",
+      "role": "ground",
+      "center": [
+        -46,
+        27.0,
+        -52
+      ],
+      "size": [
+        26,
+        2,
+        22
+      ],
+      "top_y": 28.0,
+      "solid": true
+    },
+    {
+      "name": "west_peak_top",
+      "role": "ground",
+      "center": [
+        -70,
+        19.0,
+        -6
+      ],
+      "size": [
+        16,
+        2,
+        16
+      ],
+      "top_y": 20.0,
+      "solid": true
+    },
+    {
+      "name": "east_ridge_top",
+      "role": "ground",
+      "center": [
+        56,
+        15.0,
+        20
+      ],
+      "size": [
+        30,
+        2,
+        18
+      ],
+      "top_y": 16.0,
+      "solid": true
+    },
+    {
+      "name": "jump_step",
+      "role": "ground",
+      "center": [
+        -35.5,
+        12.275,
+        30.0
+      ],
+      "size": [
+        2.2,
+        0.55,
+        2.2
+      ],
+      "top_y": 12.55,
+      "solid": true,
+      "note": "练跳石台：顶面 12.55，抬升 0.55；跳速 6 / 重力 18 顶点 1.0"
+    },
+    {
+      "name": "stair_step_1",
+      "role": "stairs",
+      "center": [
+        4.0,
+        29.75,
+        -26.625
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 30.75,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_2",
+      "role": "stairs",
+      "center": [
+        4.0,
+        30.5,
+        -27.875
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 31.5,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_3",
+      "role": "stairs",
+      "center": [
+        4.0,
+        31.25,
+        -29.125
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 32.25,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_4",
+      "role": "stairs",
+      "center": [
+        4.0,
+        32.0,
+        -30.375
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 33.0,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_5",
+      "role": "stairs",
+      "center": [
+        4.0,
+        32.75,
+        -31.625
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 33.75,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_6",
+      "role": "stairs",
+      "center": [
+        4.0,
+        33.5,
+        -32.875
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 34.5,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_7",
+      "role": "stairs",
+      "center": [
+        4.0,
+        34.25,
+        -34.125
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 35.25,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "stair_step_8",
+      "role": "stairs",
+      "center": [
+        4.0,
+        35.0,
+        -35.375
+      ],
+      "size": [
+        8.0,
+        2.0,
+        1.25
+      ],
+      "top_y": 36.0,
+      "solid": true,
+      "note": "单级抬升 0.75，需起跳（顶点 1.0）"
+    },
+    {
+      "name": "main_hall_wall_north",
+      "role": "building",
+      "center": [
+        4.0,
+        38.5,
+        -55.5
+      ],
+      "size": [
+        16.0,
+        5.0,
+        1.0
+      ],
+      "top_y": 41.0,
+      "solid": true
+    },
+    {
+      "name": "main_hall_wall_west",
+      "role": "building",
+      "center": [
+        -3.5,
+        38.5,
+        -51.0
+      ],
+      "size": [
+        1.0,
+        5.0,
+        9.0
+      ],
+      "top_y": 41.0,
+      "solid": true
+    },
+    {
+      "name": "main_hall_wall_east",
+      "role": "building",
+      "center": [
+        11.5,
+        38.5,
+        -51.0
+      ],
+      "size": [
+        1.0,
+        5.0,
+        9.0
+      ],
+      "top_y": 41.0,
+      "solid": true
+    },
+    {
+      "name": "main_hall_wall_south_a",
+      "role": "building",
+      "center": [
+        -1.0,
+        38.5,
+        -46.5
+      ],
+      "size": [
+        6.0,
+        5.0,
+        1.0
+      ],
+      "top_y": 41.0,
+      "solid": true
+    },
+    {
+      "name": "main_hall_wall_south_b",
+      "role": "building",
+      "center": [
+        9.0,
+        38.5,
+        -46.5
+      ],
+      "size": [
+        6.0,
+        5.0,
+        1.0
+      ],
+      "top_y": 41.0,
+      "solid": true
+    },
+    {
+      "name": "main_hall_lintel",
+      "role": "building",
+      "center": [
+        4.0,
+        40.5,
+        -46.5
+      ],
+      "size": [
+        4.0,
+        1.0,
+        1.0
+      ],
+      "top_y": 41.0,
+      "solid": true,
+      "note": "门洞上方：洞高 36->40，宽 4（x 2..6）"
+    },
+    {
+      "name": "main_hall_roof_eaves",
+      "role": "roof",
+      "center": [
+        4.0,
+        41.6,
+        -51.0
+      ],
+      "size": [
+        20.0,
+        1.2,
+        11.0
+      ],
+      "top_y": 42.2,
+      "solid": true
+    },
+    {
+      "name": "main_hall_roof_upper",
+      "role": "roof",
+      "center": [
+        4.0,
+        43.6,
+        -51.0
+      ],
+      "size": [
+        14.0,
+        2.8,
+        8.0
+      ],
+      "top_y": 45.0,
+      "solid": true
+    },
+    {
+      "name": "shanmen_pillar_west",
+      "role": "building",
+      "center": [
+        0.5,
+        33.0,
+        -15.0
+      ],
+      "size": [
+        1.2,
+        6.0,
+        1.2
+      ],
+      "top_y": 36.0,
+      "solid": true
+    },
+    {
+      "name": "shanmen_pillar_east",
+      "role": "building",
+      "center": [
+        7.5,
+        33.0,
+        -15.0
+      ],
+      "size": [
+        1.2,
+        6.0,
+        1.2
+      ],
+      "top_y": 36.0,
+      "solid": true
+    },
+    {
+      "name": "shanmen_lintel",
+      "role": "building",
+      "center": [
+        4.0,
+        35.0,
+        -15.0
+      ],
+      "size": [
+        6.4,
+        2.0,
+        1.0
+      ],
+      "top_y": 36.0,
+      "solid": true
+    },
+    {
+      "name": "shanmen_roof",
+      "role": "roof",
+      "center": [
+        4.0,
+        36.75,
+        -15.0
+      ],
+      "size": [
+        10.0,
+        1.5,
+        4.0
+      ],
+      "top_y": 37.5,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_roof_eaves",
+      "role": "roof",
+      "center": [
+        -9.5,
+        40.4,
+        -46.0
+      ],
+      "size": [
+        3.6,
+        0.8,
+        20.0
+      ],
+      "top_y": 40.8,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_roof_upper",
+      "role": "roof",
+      "center": [
+        -9.5,
+        41.9,
+        -46.0
+      ],
+      "size": [
+        2.4,
+        2.2,
+        20.0
+      ],
+      "top_y": 43.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_column_38",
+      "role": "building",
+      "center": [
+        -9.5,
+        38.0,
+        -38.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_column_42",
+      "role": "building",
+      "center": [
+        -9.5,
+        38.0,
+        -42.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_column_46",
+      "role": "building",
+      "center": [
+        -9.5,
+        38.0,
+        -46.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_column_50",
+      "role": "building",
+      "center": [
+        -9.5,
+        38.0,
+        -50.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_west_column_54",
+      "role": "building",
+      "center": [
+        -9.5,
+        38.0,
+        -54.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_roof_eaves",
+      "role": "roof",
+      "center": [
+        17.5,
+        40.4,
+        -46.0
+      ],
+      "size": [
+        3.6,
+        0.8,
+        20.0
+      ],
+      "top_y": 40.8,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_roof_upper",
+      "role": "roof",
+      "center": [
+        17.5,
+        41.9,
+        -46.0
+      ],
+      "size": [
+        2.4,
+        2.2,
+        20.0
+      ],
+      "top_y": 43.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_column_38",
+      "role": "building",
+      "center": [
+        17.5,
+        38.0,
+        -38.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_column_42",
+      "role": "building",
+      "center": [
+        17.5,
+        38.0,
+        -42.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_column_46",
+      "role": "building",
+      "center": [
+        17.5,
+        38.0,
+        -46.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_column_50",
+      "role": "building",
+      "center": [
+        17.5,
+        38.0,
+        -50.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "corridor_east_column_54",
+      "role": "building",
+      "center": [
+        17.5,
+        38.0,
+        -54.0
+      ],
+      "size": [
+        0.6,
+        4.0,
+        0.6
+      ],
+      "top_y": 40.0,
+      "solid": true
+    },
+    {
+      "name": "rail_summit_south_west",
+      "role": "building",
+      "center": [
+        -5.5,
+        36.7,
+        -36.0
+      ],
+      "size": [
+        11.0,
+        1.4,
+        0.4
+      ],
+      "top_y": 37.4,
+      "solid": true
+    },
+    {
+      "name": "rail_summit_south_east",
+      "role": "building",
+      "center": [
+        13.5,
+        36.7,
+        -36.0
+      ],
+      "size": [
+        11.0,
+        1.4,
+        0.4
+      ],
+      "top_y": 37.4,
+      "solid": true
+    },
+    {
+      "name": "rail_summit_north",
+      "role": "building",
+      "center": [
+        4.0,
+        36.7,
+        -56.0
+      ],
+      "size": [
+        30.0,
+        1.4,
+        0.4
+      ],
+      "top_y": 37.4,
+      "solid": true
+    },
+    {
+      "name": "rail_summit_west",
+      "role": "building",
+      "center": [
+        -11.0,
+        36.7,
+        -46.0
+      ],
+      "size": [
+        0.4,
+        1.4,
+        20.0
+      ],
+      "top_y": 37.4,
+      "solid": true
+    },
+    {
+      "name": "rail_summit_east",
+      "role": "building",
+      "center": [
+        19.0,
+        36.7,
+        -46.0
+      ],
+      "size": [
+        0.4,
+        1.4,
+        20.0
+      ],
+      "top_y": 37.4,
+      "solid": true
+    },
+    {
+      "name": "north_plinth",
+      "role": "ground",
+      "center": [
+        -46.0,
+        28.2,
+        -56.0
+      ],
+      "size": [
+        7.0,
+        0.4,
+        7.0
+      ],
+      "top_y": 28.4,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_column_wn",
+      "role": "building",
+      "center": [
+        -48.6,
+        30.0,
+        -58.6
+      ],
+      "size": [
+        0.4,
+        3.2,
+        0.4
+      ],
+      "top_y": 31.6,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_column_ws",
+      "role": "building",
+      "center": [
+        -48.6,
+        30.0,
+        -53.4
+      ],
+      "size": [
+        0.4,
+        3.2,
+        0.4
+      ],
+      "top_y": 31.6,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_column_en",
+      "role": "building",
+      "center": [
+        -43.4,
+        30.0,
+        -58.6
+      ],
+      "size": [
+        0.4,
+        3.2,
+        0.4
+      ],
+      "top_y": 31.6,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_column_es",
+      "role": "building",
+      "center": [
+        -43.4,
+        30.0,
+        -53.4
+      ],
+      "size": [
+        0.4,
+        3.2,
+        0.4
+      ],
+      "top_y": 31.6,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_roof_eaves",
+      "role": "roof",
+      "center": [
+        -46.0,
+        31.9,
+        -56.0
+      ],
+      "size": [
+        8.0,
+        0.6,
+        8.0
+      ],
+      "top_y": 32.2,
+      "solid": true
+    },
+    {
+      "name": "north_pavilion_roof_upper",
+      "role": "roof",
+      "center": [
+        -46.0,
+        32.8,
+        -56.0
+      ],
+      "size": [
+        5.6,
+        1.2,
+        5.6
+      ],
+      "top_y": 33.4,
+      "solid": true
+    },
+    {
+      "name": "stone_lantern_1",
+      "role": "prop",
+      "center": [
+        -8.5,
+        37.1,
+        -42.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 38.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "stone_lantern_2",
+      "role": "prop",
+      "center": [
+        16.5,
+        37.1,
+        -42.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 38.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "stone_lantern_3",
+      "role": "prop",
+      "center": [
+        -8.5,
+        37.1,
+        -48.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 38.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "stone_lantern_4",
+      "role": "prop",
+      "center": [
+        16.5,
+        37.1,
+        -48.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 38.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "stone_lantern_5",
+      "role": "prop",
+      "center": [
+        0.0,
+        31.1,
+        -16.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 32.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "stone_lantern_6",
+      "role": "prop",
+      "center": [
+        8.0,
+        31.1,
+        -16.0
+      ],
+      "size": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "top_y": 32.2,
+      "solid": true,
+      "note": "仅灯柱实心，灯罩不碰撞"
+    },
+    {
+      "name": "pine_trunk_1",
+      "role": "prop",
+      "center": [
+        -41.0,
+        13.8,
+        30.0
+      ],
+      "size": [
+        0.5,
+        3.6,
+        0.5
+      ],
+      "top_y": 15.6,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_2",
+      "role": "prop",
+      "center": [
+        -19.0,
+        14.0,
+        30.0
+      ],
+      "size": [
+        0.5,
+        4.0,
+        0.5
+      ],
+      "top_y": 16.0,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_3",
+      "role": "prop",
+      "center": [
+        -41.0,
+        13.6,
+        40.0
+      ],
+      "size": [
+        0.5,
+        3.2,
+        0.5
+      ],
+      "top_y": 15.2,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_4",
+      "role": "prop",
+      "center": [
+        -19.0,
+        13.9,
+        40.0
+      ],
+      "size": [
+        0.5,
+        3.8,
+        0.5
+      ],
+      "top_y": 15.8,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_5",
+      "role": "prop",
+      "center": [
+        -5.0,
+        38.1,
+        -53.0
+      ],
+      "size": [
+        0.5,
+        4.2,
+        0.5
+      ],
+      "top_y": 40.2,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_6",
+      "role": "prop",
+      "center": [
+        13.0,
+        37.9,
+        -53.0
+      ],
+      "size": [
+        0.5,
+        3.8,
+        0.5
+      ],
+      "top_y": 39.8,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_7",
+      "role": "prop",
+      "center": [
+        -52.0,
+        29.8,
+        -46.0
+      ],
+      "size": [
+        0.5,
+        3.6,
+        0.5
+      ],
+      "top_y": 31.6,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_8",
+      "role": "prop",
+      "center": [
+        -40.0,
+        29.6,
+        -46.0
+      ],
+      "size": [
+        0.5,
+        3.2,
+        0.5
+      ],
+      "top_y": 31.2,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "pine_trunk_9",
+      "role": "prop",
+      "center": [
+        -52.0,
+        29.95,
+        -58.0
+      ],
+      "size": [
+        0.5,
+        3.9,
+        0.5
+      ],
+      "top_y": 31.9,
+      "solid": true,
+      "note": "仅树干实心，树冠不碰撞"
+    },
+    {
+      "name": "bamboo_clump_1",
+      "role": "prop",
+      "center": [
+        -74.0,
+        21.6,
+        -2.0
+      ],
+      "size": [
+        0.7,
+        3.2,
+        0.7
+      ],
+      "top_y": 23.2,
+      "solid": true,
+      "note": "仅丛芯实心，竹叶不碰撞"
+    },
+    {
+      "name": "bamboo_clump_2",
+      "role": "prop",
+      "center": [
+        -66.0,
+        21.6,
+        -10.0
+      ],
+      "size": [
+        0.7,
+        3.2,
+        0.7
+      ],
+      "top_y": 23.2,
+      "solid": true,
+      "note": "仅丛芯实心，竹叶不碰撞"
+    },
+    {
+      "name": "bamboo_clump_3",
+      "role": "prop",
+      "center": [
+        -34.0,
+        13.6,
+        42.0
+      ],
+      "size": [
+        0.7,
+        3.2,
+        0.7
+      ],
+      "top_y": 15.2,
+      "solid": true,
+      "note": "仅丛芯实心，竹叶不碰撞"
+    },
+    {
+      "name": "bamboo_clump_4",
+      "role": "prop",
+      "center": [
+        -25.0,
+        13.6,
+        25.0
+      ],
+      "size": [
+        0.7,
+        3.2,
+        0.7
+      ],
+      "top_y": 15.2,
+      "solid": true,
+      "note": "仅丛芯实心，竹叶不碰撞"
+    },
+    {
+      "name": "bamboo_clump_5",
+      "role": "prop",
+      "center": [
+        -46.0,
+        29.6,
+        -62.0
+      ],
+      "size": [
+        0.7,
+        3.2,
+        0.7
+      ],
+      "top_y": 31.2,
+      "solid": true,
+      "note": "仅丛芯实心，竹叶不碰撞"
+    }
+  ],
+  "decor": [],
+  "checks": {
+    "box_count": 75,
+    "solid_count": 75,
+    "role_histogram": {
+      "ground": 10,
+      "stairs": 8,
+      "building": 28,
+      "roof": 9,
+      "prop": 20
+    },
+    "landing_point_count": 3,
+    "jump_apex_m": 1.0,
+    "jump_speed_mps": 6.0,
+    "gravity_mps2": 18.0,
+    "max_stair_rise_m": 0.75,
+    "corridor_clearance_m": 4.0,
+    "player_capsule": {
+      "radius": 0.35,
+      "height": 1.6
+    },
+    "problems": []
+  }
+}

@@ -74,6 +74,10 @@ game-xiuxian-lab/
 4. **非琐碎变更同 PR 带 notes。** 改变行为/架构/契约/工具链的决策必须在同一变更中新增或更新至少一篇 note；更新已持有该决策的 note 即满足，禁止重复建 note。
 5. **Agent 无关检验。** 任何环节若只有某个特定 Agent 能完成，即为设计漏洞，必须打回重做。dsh-godot-ai 是可选增强，不是依赖。
 
+**每轮开发必须 Git 保存。** 本项目保持为独立 Git 仓库；每轮有文件变更的开发结束前，完成适用检查并创建本地 commit，长任务在可独立解释的阶段提交，不能仅暂存。开始前检查已有改动，提交前审查文件清单与差异，保留改动归属，排除凭据、缓存和临时日志；相关代码、场景、源资产、导出资产、notes 与必要验收证据一起保存。未完成或检查失败的保存必须标记 WIP 并记录问题；提交受阻须报告，不能声称已保存。交付报告提交号与剩余改动；无变更不创建空提交。本地提交已获长期授权，push、强推及改写历史不在此授权内。依据：[开发 Git 保存](notes/implemented/process/2026-09-18-development-git-checkpoints.md)。
+
+**探索资产不得删除。** Lab 探索中产出的模型、材质、贴图、动画、场景及其源文件和导出资产，即使版本废弃、被替换、优化或不再引用，也必须保留；可连同依赖归档并维护引用、登记替代关系。只有在原模型上继续修改时，才允许更新该模型及对应导出文件，并在台账注明；重新建模或新方案必须另存文件名或版本目录，禁止覆盖旧资产。Git 历史、截图、生成脚本或仅存源文件不能替代旧源文件与导出资产的保留；清理缓存不得连带删除探索资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
+
 ### 约定（工程层）
 
 6. **门禁负向控制**：每条门禁落地时必须在 `tools/verify/negative_control.py` 增加一个「故意非法案例被真实拒绝」的用例，否则该门禁视为不存在。
@@ -90,6 +94,6 @@ game-xiuxian-lab/
 - 本文件超过 150 行时：relocating（下沉子树文件）→ condense → 显式 raise，按此顺序。
 - 不用比喻，不写无法机械或人工核验的句子。
 
-## 当前状态（2026-09-17）
+## 当前状态（2026-09-18）
 
-初始化：实验目录 + 空白 3D 工作台；八个模块均为待探索。依据：[module-lab-bootstrap](notes/implemented/process/2026-09-17-module-lab-bootstrap.md)。启动入口 `src/levels/lab_hub.tscn`，基础工作台 `src/levels/empty_stage.tscn`。先读 README 获取运行方式。
+角色移动模块为 exploring，入口 `src/levels/experiments/character_movement/mountain_realm.tscn`：群山宗门 180×160 m、五峰三落脚点，屏幕相对移动 + 独立跳跃 + 御剑飞行三能力，固定俯视跟随相机与状态 HUD；`movement_garden.tscn` 保留作小场景回归。剑法和其余六个模块为 planned；首场景不定义战斗规则。依据：[character-movement-garden](notes/implemented/gameplay/2026-09-18-character-movement-garden.md)。启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。先读 README 获取运行方式。
