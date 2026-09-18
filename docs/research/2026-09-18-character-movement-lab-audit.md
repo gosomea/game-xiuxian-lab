@@ -25,13 +25,13 @@
 - `[事实]` `cultivator.glb` = 23 网格 / 4952 三角形 / 8 材质 / **0 skin / 0 animation**；`cultivator_presentation.gd:78-121` 程序枢轴 + 物理状态驱动。
 - `[事实]` 文档过期：`movement_garden/README.md:13`、`asset_ledger.md:11` 仍写 `generate_movement_assets.py`，实际为 `tools/art/generate_cultivator_refined.py`；23/4952/8 与旧读数不符。
 - `[事实]` catalog 漏记：`sword_flight.gd:12/42` 用常量传 `&"sword_flight_block"`，生成器正则只认字面量 → `SwordFlight.uses_tags=[]`。**本轮只记录**：后续先改生成器常量标签提取（或显式声明契约），配负向控制与回归，再重跑生成 catalog。
-- `[事实]` Sheet 边界：`sorted_capabilities()` 只看直系子；`game_object()` 要求父是 manager；`component()` 只扫宿主直系；`SheetLoader.attach` 仅 `add_child(host)`，`detach` 不调 `_on_deactivated`。→ 嵌套 Sheet 不能共享 actor 组件；**适配器方案 `[推断·待验证]`**。
+- `[事实]` Sheet 边界：`sorted_capabilities()` 只看直系子；`game_object()` 要求父是 manager；`component()` 只扫宿主直系；`SheetLoader.attach` 仅 `host.add_child(sheet)`，`detach` 不调 `_on_deactivated`。→ 嵌套 Sheet 不能共享 actor 组件；**适配器方案 `[推断·待验证]`**。
 - `[事实]` 隐藏复制：输入映射两份、相机跟随六份；`camera_lab_rig` 仅 1 消费者。
 
 ## 3. 镜头审计
 
 - `[事实]` 现状：正交 `projection`（camera_lab.gd:63-65），无 RMB 拖拽/平移；遮挡只射线观测不改镜头（`:159-169`；`docs/playtest/2026-09-18-camera-lab.md:121-126` 自述为已知限制）。
-- `[事实]` Godot 4.6：正交 `size` 是宽/高的直径、由 `keep_aspect` 决定（本机 `4.6.stable.official.89cea1439`；源码 `camera_3d.cpp @4.6-stable`）；捕获模式 `screen_velocity=0`，用 `screen_relative`/`get_mouse_position()`，UI 命中用 `get_hovered_control()`。
+- `[事实]` Godot 4.6：正交 `size` 是宽/高的直径、由 `keep_aspect` 决定（本机 `4.6.stable.official.89cea1439`；源码 `camera_3d.cpp @4.6-stable`）；捕获旋转用不受内容缩放影响的 `screen_relative`，非捕获平移可读 viewport 鼠标位置，UI 命中用 `get_hovered_control()`。
 - `[参考实现]` Cinemachine 3.1.7：Orbital Follow（Range/Wrap/Recentering）、Position Composer（**Dead Zone / Hard Limits / 阻尼 / 前视**）、Brain（优先级选 live camera + blend）、Input Axis Controller（Cancel Delta Time / Suppress Input While Blending）；Phantom Camera v0.11.0.3 的 host 独占写入。
 - **来源纠正**：Phantom 源码 commit `3e32997` 中 `FollowMode.THIRD_PERSON` 注释为 `ShapeCast3D`，不写作 SpringArm3D；Godot 引用固定 `/en/4.6/`；Cinemachine 只借思想、不接 Unity 包。
 - `[推断·待验证]` 模式 Capability 挂 CameraRig manager 直系；单 executor 独占写；`mode_id`+Tag 互斥；modifier 有确定顺序与退出清残量；投影是 Resource。
