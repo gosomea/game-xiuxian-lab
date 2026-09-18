@@ -9,6 +9,8 @@ Status: implemented
 > `CameraRig` + `CameraRigComponent` + 四模式 Capability（`src/game/systems/camera_rig/`）。
 > 逐项验收与最新计数见 [可组合移动实验最终报告](../../../docs/playtest/2026-09-18-composable-movement-labs.md)。
 > **已完成**：七场统一迁移与全场回归均已实测通过（全场 `SCRIPT ERROR = 0`，主入口 921/0）。
+>
+> **补充决策（2026-09-18 第二轮，先决策后实现）**：本文件新增/修订的「组合环绕模式」「未归属 RMB 消费策略」「镜头输入组合测试契约」与「双形态验收」为**本轮已采纳决策**；`src/` 实现与运行证据**尚未落地**。实现必须在同一变更中覆盖 §4 的测试契约与「独立窗口 + 编辑器嵌入 Game 视图」两形态验收，再回来更新本实现状态。先决策后实现（根 `AGENTS.md` 铁律 3）。
 
 ## 问题
 
@@ -43,19 +45,29 @@ Status: implemented
 - **目标 snapshot 桥接**：CameraRig 对角色**只读目标 snapshot**（位置/速度/着地/飞行等已登记字段），经桥接层注入；Capability 之间不互引、不抓场景节点。
 - **同帧 control yaw**：连续旋转时，WASD 屏幕相对移动使用**同一帧一致的控制偏航地面基**：执行顺序固定为「输入采样 → 模式写期望 pose → executor 应用 → actor 物理使用本地面基」，避免一帧反馈滞后。
 - **输入顺序**：RMB down 仅在 viewport 未被 UI 消费时捕获；up / 失焦 / 退场必须释放并清累积 delta；**Esc 先退捕获/面板、后返回**；GUI 上滚轮只滚 GUI；键鼠可映射；**鼠标像素位移 `screen_relative` 不再乘 dt，键盘角速度 / 连续平移速度仍乘帧时长**。混合期间 delta 丢弃或显式接管，禁止累积后突然应用。
+- **组合环绕模式（`orbit` 的正式定义，2026-09-18 补充）**：不新增第 5 个镜头 Capability。`orbit` 长期语义名不变，正式定义为「组合环绕 / 自由跟随」：同一模式内组合 **WASD 屏幕相对移动**（仍归 actor / 场景输入，地面基由提交器发布）、**Q/E 连续偏航**、**滚轮 / Z / X 缩放**、**RMB 拖动 yaw + pitch（受限俯角）**。其余三模式保持各自单一交互（`quarter_turn` 离散步进、`overview` 平移回中、`fixed_follow` 软区跟随），互不吞并；4 模式 Capability 预算不变。默认入 orbit 与 HUD 广告四组输入属场景编排，见统一决策 note §2。
+- **未归属 RMB 消费策略（提交器数据开关，2026-09-18 补充）**：`CameraRigConfig` 新增可配置开关（默认关闭 = 现行行为，镜头包不抢场景按键）：实验场景显式启用后，**非 `orbit` 模式**在 **UI 未占用**的世界区域消费 RMB press / release，但**不进入捕获、不写 `Input.set_mouse_mode`、不写 `look_delta`**——避免未消费的右键事件泄漏给 Godot 编辑器嵌入的 Game 视图。`orbit` 的 RMB press 在 UI 未占用时**必须在同一输入事件内尽早进入捕获**（不得延迟到下一物理帧）；release / Esc / 失焦 / 离树 / 切模式必须释放捕获并恢复进入前的 `mouse_mode`。**UI 上方的右键由 GUI 优先，镜头包不得劫持**；捕获归属仍只属于设过捕获的那个 rig。该策略是 Resource 数据，不是 Capability。
 
 ### 3. 数据、词汇与资源边界
 
 - 新增字段/tag（`mode_id`、投影、期望 pose、height/速度 modifier、preview 状态等）**先在 `src/data/vocabulary/` 登记**并重跑索引生成器；能力只读写 Component 共享数据与 TagRegistry。
 - **modifier 是数据配置**：高度/速度自适应等由 executor 读取叠加，**不是 Capability**，避免撞 4-cap 上限与调度开销。
 - **投影是 Resource 配置**：正交/有限透视及其 `size/fov/keep_aspect` 用 Resource 表达，不与跟随模式做组合爆炸。
-- **Capability 预算**：镜头包恰好 4 个模式 Capability（`fixed_follow` / `quarter_turn` / `orbit` / `overview`，简称 A–D）+ 1 个普通提交器；executor 与 modifier 不计入 Capability（提交器由 `CameraRig` 根节点兼任，不额外增加节点或 Capability）。超过 4 个模式时先拆包或改数据配置，不得靠豁免堆叠。
+- **RMB 归属策略是 Resource 配置**：未归属 RMB 开关与 `enable_*` 输入开关同层（默认关闭），组件不新增字段、不新增 Tag，本补充不触发词汇登记；若实现选择把策略写进 `CameraRigComponent`，必须先登记词汇再改代码。
+- **Capability 预算**：镜头包恰好 4 个模式 Capability（`fixed_follow` / `quarter_turn` / `orbit` / `overview`，简称 A–D）+ 1 个普通提交器；executor 与 modifier 不计入 Capability（提交器由 `CameraRig` 根节点兼任，不额外增加节点或 Capability）。超过 4 个模式时先拆包或改数据配置，不得靠豁免堆叠。**组合环绕（`orbit`）不改变该预算**：把 WASD / Q/E / 滚轮 / RMB 组合进 `orbit` 是模式内行为组合，不是第 5 个能力；禁止为输入组合新增 Capability。
 
 ### 4. 生命周期与四子集组合验收
 
 - **S3 必须真实实例化四个子集**：`Move` / `Move+Jump` / `Move+Flight` / `all`（Move+Jump+Flight）。每个子集是**真实启动的装配**（ActorAssembly 的显式配置），不是对全装配的检查，也不是 helper 旁路。
 - 每次装卸后要求：被启用能力行为正确、未启用能力静默不触发、`flight_active` 等状态一致、`TagRegistry` 无残留阻塞、物理仍一次提交、无脚本错误。
 - 卸载顺序：先停本包输入/捕获 → 解绑本包表现 → 移除本包能力并清本包 tag → 释放本包资源；**不得调用 `reset_motion()` 或等价清空动作作为卸载手段**（会清掉无关能力的速度/输入）。`_exit_tree` 兜底不得依赖 `SheetLoader.detach` 调用 `_on_deactivated`（现不调用，`src/core/sheet_loader.gd:29-36`）。
+- **镜头输入组合与 RMB 归属测试契约（2026-09-18 补充，实现时必须覆盖）**：
+  1. **早期捕获**：`orbit` 下 UI 未占用的 RMB press 在同一输入事件内进入捕获（事件被消费且 `is_captured()` 为真，不依赖下一物理帧）。
+  2. **非 orbit fallback**：启用开关的场景在非 `orbit` 模式消费世界区域 RMB press / release，但 `is_captured()` 为假、`Input.get_mouse_mode()` 不变、`look_delta` 不累积。
+  3. **不改变 mouse mode**：fallback 路径与 UI 上右键路径都不得调用 `Input.set_mouse_mode`；只有 `orbit` 捕获路径可写，且必须恢复进入前的值。
+  4. **组合输入集成**：同一 `orbit` 帧序列内 WASD 位移沿发布后的相机地面基、Q/E 改偏航、滚轮改 size / distance、RMB 拖动同时改 yaw / pitch，四者互不覆盖、无跨帧积压。
+  5. **退出恢复**：release / Esc / 失焦 / 离树 / 切换模式五条路径都释放捕获、恢复 `mouse_mode`、清 `look_delta` 与 `drag_active`。
+- **双形态验收（2026-09-18 补充）**：以上行为必须在**独立窗口**与**Godot 编辑器嵌入 Game 视图**两种宿主下各验一次；嵌入视图额外确认「UI 上方右键不被镜头包劫持」「世界区域右键不泄漏为编辑器 / Game 视图的上下文操作」。仅无头单测不算完成。
 
 ## 备选方案
 
@@ -64,6 +76,10 @@ Status: implemented
 - **每个模式各自写 Camera3D**：否决。写入者不唯一会每帧竞争，且无法保证同帧 control yaw 一致。
 - **直接改 `core/` 放宽 SheetLoader/Manager 语义**：本轮否决。除非实现暴露无法回避的阻塞，否则不改；届时另开 owning tech note。
 - **用全局时钟驱动预览**：否决。预览时钟必须局部，不写 `Engine.time_scale`（唯一写入者 `src/core/time_keeper.gd:6-7`）。
+- **为输入组合新增第 5 个镜头 Capability（如 `orbit_turn`）**：否决。撞叶子包 4 Capability 上限；输入组合是模式内行为组合，不是新能力。
+- **纯数据 preset 表达组合（`follow_preset` / `enable_*` / `mode_choices`）**：否决。`follow_preset` 只被 `fixed_follow` 解释且只影响焦点策略，`enable_*` 只能整体开关，`mode_choices` 只能选整模式。
+- **非 `orbit` 模式默认全局吞掉 RMB**：否决。违反「镜头包默认不抢场景按键」；改为默认关闭 + 实验场景显式启用。
+- **fallback 路径也进入捕获或直接改 `mouse_mode`**：否决。非 orbit 无拖动需求，捕获会锁光标并泄漏全局状态。
 
 ## 后果
 
@@ -77,3 +93,4 @@ Status: implemented
   上述数字为主入口 `tests/test_runner.tscn` 实测；七场迁移后的全场回归亦已实测（见最终报告 §7）。
   **仍有限定**：同帧 control yaw 的实机帧序未单独验证；连续环绕下的操作舒适度属人工试玩项。
 - **已知限制**：嵌套 Sheet 的宿主边界与 `detach` 不清 `_on_deactivated` 是现状事实；本契约以「不依赖该路径」规避，不修改 core。
+- **补充决策已记录、实现未落地（2026-09-18 第二轮）**：§2 / §3 / §4 的补充内容为已采纳决策；`src/game/systems/camera_rig/` 尚未实现，`docs/playtest/` 尚未出证据。实现变更必须在同一变更中覆盖 §4 的测试契约与「独立窗口 + 编辑器嵌入 Game 视图」双形态验收，并更新上文实现状态；不得只改代码、也不得只改文档。
