@@ -128,6 +128,20 @@ def cbox(name, center, size, material, bevel=0.04, rotation_z=0.0):
     return finish(obj, name, material, bevel)
 
 
+# 共面修复约定（依据 notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md 的 A/B 两类）：
+# - A 类水平装饰面：抬升 SURFACE_CLEARANCE（2 cm，沿用 mountain_realm / peak_courtyards 的既有约定），
+#   使装饰层底面高于承托面，不再同深度竞争。
+# - B 类竖直件端盖：把盒体向下多埋 SURFACE_CLEARANCE，**顶面保持不动**，
+#   因此不会出现可见台阶；底面离开承托面并被地面以 2 cm 深度优势覆盖。
+SURFACE_CLEARANCE = 0.02
+
+
+def buried(center, size, depth=SURFACE_CLEARANCE):
+    """保持顶面不动、把盒体向下多埋 depth 米：消除 B 类「端盖正好落在地面上」的共面。"""
+    return ((center[0], center[1] - depth * 0.5, center[2]),
+            (size[0], size[1] + depth, size[2]))
+
+
 def ccyl(name, center, radius, depth, material, verts=12, rotation=None):
     import bpy
     bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=radius, depth=depth,
@@ -193,7 +207,9 @@ def gable_roof(name, center_x, center_z, half_x, half_z, eave_y, ridge_y, materi
 def stone_lantern(name, x, z, base_y, pal, scale=1.0):
     """石灯：基座 + 柱 + 火袋 + 檐 + 宝珠。"""
     s = scale
-    cbox(name + "_base", (x, base_y + 0.12 * s, z), (0.62 * s, 0.24 * s, 0.62 * s), pal["stone"], 0.03)
+    # 灯座下沉 2 cm 埋入地面（顶面不动），底端离开地面。
+    cbox(name + "_base", *buried((x, base_y + 0.12 * s, z), (0.62 * s, 0.24 * s, 0.62 * s)),
+         pal["stone"], 0.03)
     ccyl(name + "_shaft", (x, base_y + 0.62 * s, z), 0.11 * s, 0.78 * s, pal["stone"], verts=8)
     cbox(name + "_box", (x, base_y + 1.12 * s, z), (0.42 * s, 0.36 * s, 0.42 * s), pal["lantern"], 0.02)
     ccyl(name + "_cap", (x, base_y + 1.36 * s, z), 0.34 * s, 0.14 * s, pal["granite"], verts=6)
@@ -208,7 +224,8 @@ def bamboo_clump(name, x, z, base_y, pal, count=5):
         dz = rng.uniform(-0.5, 0.5)
         h = rng.uniform(2.2, 3.6)
         lean = rng.uniform(-0.05, 0.05)
-        ccyl("%s_stem_%d" % (name, i), (x + dx, base_y + h * 0.5, z + dz),
+        # 竹干下沉 2 cm 埋入地面：底端离开地面，顶端高度基本不变（B 类正常接触）。
+        ccyl("%s_stem_%d" % (name, i), (x + dx, base_y + h * 0.5 - 0.02, z + dz),
              0.055, h, pal["bamboo"], verts=6, rotation=(lean, 0.0, lean))
         cblob("%s_leaf_%d" % (name, i), (x + dx * 1.1, base_y + h * 0.92, z + dz * 1.1),
               (1.3, 1.8, 1.3), pal["leaf"], 1)
@@ -227,18 +244,24 @@ def paver_border(name, center, size, top_y, pal, inset=0.35, band=0.18):
     for tag, (dx, dz, w, d) in {
         "n": (0.0, -hz, hx * 2.0, band),
         "s": (0.0, hz, hx * 2.0, band),
-        "w": (-hx, 0.0, band, hz * 2.0),
-        "e": (hx, 0.0, band, hz * 2.0),
+        # w/e 带缩短一个带宽：四条边框在角部对接而不是互相叠压（叠压会让两条顶面/底面共面）。
+        "w": (-hx, 0.0, band, hz * 2.0 - band),
+        "e": (hx, 0.0, band, hz * 2.0 - band),
     }.items():
         cbox("%s_band_%s" % (name, tag), (cx + dx, top_y + 0.012, cz + dz), (w, 0.03, d), pal["jade"], 0.01)
 
 
-def wall_with_cap(name, center, size, pal):
-    """院墙：墙身 + 玉色压顶（压顶略外挑，读起来像宗门矮墙）。"""
-    cbox(name, center, size, pal["stone"], 0.03)
+def wall_with_cap(name, center, size, pal, cap_lift=SURFACE_CLEARANCE):
+    """院墙：墙身 + 玉色压顶（压顶略外挑，读起来像宗门矮墙）。
+
+    两处共面修复：墙身向下多埋 SURFACE_CLEARANCE（底面离开地面，顶面不动，B 类）；
+    压顶底面抬到墙顶上方 cap_lift（A 类，默认 2 cm）。相邻墙压顶在四角会互相重叠，
+    同高度重叠就是顶/底面共面，故调用方按装置序号再错开 4 mm。
+    """
+    cbox(name, *buried(center, size), pal["stone"], 0.03)
     top = center[1] + size[1] * 0.5
     over = (size[0] + 0.16, 0.12, size[2] + 0.16)
-    cbox(name + "_cap", (center[0], top + 0.06, center[2]), over, pal["jade"], 0.03)
+    cbox(name + "_cap", (center[0], top + cap_lift + 0.06, center[2]), over, pal["jade"], 0.03)
 
 
 # ---------------------------------------------------------------- 尺寸推导（与 Godot 同式）
@@ -297,8 +320,8 @@ def build_ground(layout, pal):
     # 场内苔石与竹丛点缀：让石面不是一块空板，但仍不挡测量视线。
     for i, (mx, mz, size) in enumerate(((-14.0, 11.5, 1.7), (5.0, 12.6, 1.4), (14.6, -12.6, 1.6),
                                         (-3.0, -13.4, 1.5), (20.0, 12.0, 1.3))):
-        cblob("ground_moss_%d" % i, (mx, 0.24, mz), (size, 0.48, size * 0.85), pal["moss"], 2)
-        cbox("ground_moss_base_%d" % i, (mx, 0.07, mz), (size * 1.3, 0.14, size * 1.1),
+        cblob("ground_moss_%d" % i, (mx, 0.238, mz), (size, 0.48, size * 0.85), pal["moss"], 2)
+        cbox("ground_moss_base_%d" % i, *buried((mx, 0.07, mz), (size * 1.3, 0.14, size * 1.1)),
              pal["granite"], 0.04)
 
 
@@ -312,7 +335,8 @@ def build_flats(layout, pal):
         # 「看得见的装置」与「走得上去的装置」能在运行时按同一路径对上。
         paver_border(dev["id"], (cx, cz), (sx, sz), 0.03, pal, inset=0.5, band=0.22)
         for i in range(4):
-            cbox("flat_tick_%d" % i, (cx - 3.0 + i * 2.0, 0.045, cz + 3.4),
+            # A 类：装饰刻度底面高于铺装顶面 2 cm，不与 flat_pad 顶面共面。
+            cbox("flat_tick_%d" % i, (cx - 3.0 + i * 2.0, 0.065, cz + 3.4),
                  (0.09, 0.03, 0.9), pal["cut"], 0.01)
 
 
@@ -338,22 +362,27 @@ def build_ramps(layout, pal):
         depth = dev.get("landing_depth", 0.0)
         if depth > 0.0:
             top_y = shape["top_y"]
-            cbox(name + "_landing", (shape["top_x"] + depth * 0.5, top_y * 0.5, dev["base"][2]),
-                 (depth, max(top_y, 0.12), dev["width"]), pal["stone"], 0.04)
-            cbox(name + "_landing_cap", (shape["top_x"] + depth * 0.5, top_y + 0.02, dev["base"][2]),
+            # 平台主体下沉 2 cm（顶面不动）；压面底面抬到平台顶面上方 2 cm。
+            cbox(name + "_landing",
+                 *buried((shape["top_x"] + depth * 0.5, top_y * 0.5, dev["base"][2]),
+                         (depth, max(top_y, 0.12), dev["width"])), pal["stone"], 0.04)
+            cbox(name + "_landing_cap", (shape["top_x"] + depth * 0.5, top_y + 0.04, dev["base"][2]),
                  (depth - 0.1, 0.04, dev["width"] - 0.1), pal["ivory"], 0.02)
             if dev.get("rail"):
                 for side in (-1.0, 1.0):
                     z = dev["base"][2] + side * (dev["width"] * 0.5 - 0.07)
                     for post in range(3):
                         px = shape["top_x"] + 0.14 + post * (depth - 0.28) * 0.5
+                        # 木栏立柱下沉 2 cm，底端离开平台顶面（顶端高度不变）。
                         cbox("%s_rail_post_%d_%d" % (name, int(side), post),
-                             (px, top_y + 0.45, z), (0.09, 0.9, 0.09), pal["timber"], 0.02)
+                             *buried((px, top_y + 0.45, z), (0.09, 0.9, 0.09)),
+                             pal["timber"], 0.02)
                     cbox("%s_rail_bar_%d" % (name, int(side)),
                          (shape["top_x"] + depth * 0.5, top_y + 0.84, z),
                          (depth - 0.16, 0.09, 0.09), pal["timber"], 0.02)
         if dev.get("top_y") is not None and depth <= 0.0:
-            cbox(name + "_nose", (shape["top_x"] + 0.08, shape["top_y"] - 0.05, dev["base"][2]),
+            # 坡顶玉色鼻：顶面压到台面下方 2 cm，避免与台面共面。
+            cbox(name + "_nose", (shape["top_x"] + 0.08, shape["top_y"] - 0.07, dev["base"][2]),
                  (0.16, 0.1, dev["width"]), pal["jade"], 0.02)
 
 
@@ -363,23 +392,32 @@ def build_steps(layout, pal):
             continue
         cx, cy, cz = dev["center"]
         sx, sy, sz = dev["size"]
-        cbox(dev["id"], (cx, cy, cz), (sx, sy, sz), pal["stepstone"], 0.04)
-        cbox(dev["id"] + "_top", (cx, cy + sy * 0.5 + 0.015, cz), (sx - 0.12, 0.03, sz - 0.12),
+        # 台阶主体下沉 2 cm 埋入地面，可走顶面保持 JSON 声明高度不变。
+        cbox(dev["id"], *buried((cx, cy, cz), (sx, sy, sz)), pal["stepstone"], 0.04)
+        # A 类：踏步压面底面高于台阶顶面 2 cm；玉色边条整层埋入压面只露顶面，
+        # 两者不能同高（同高即压面顶面 = 边条顶面共面）。
+        cbox(dev["id"] + "_top", (cx, cy + sy * 0.5 + 0.035, cz), (sx - 0.12, 0.03, sz - 0.12),
              pal["ivory"], 0.02)
-        # 玉色踏步边：正对来向的一条窄带，标出抬升高度所在。
-        cbox(dev["id"] + "_band", (cx - sx * 0.5 + 0.09, cy + sy * 0.5 + 0.03, cz),
+        cbox(dev["id"] + "_band", (cx - sx * 0.5 + 0.09, cy + sy * 0.5 + 0.055, cz),
              (0.16, 0.04, sz - 0.12), pal["jade"], 0.01)
-        cbox(dev["id"] + "_plinth", (cx, 0.05, cz), (sx + 0.5, 0.1, sz + 0.5), pal["cut"], 0.03)
+        # 底座同埋 2 cm 并收窄 0.2 m：相邻台阶底座原本会互相叠压（叠压 = 底面共面）。
+        cbox(dev["id"] + "_plinth", *buried((cx, 0.05, cz), (sx + 0.3, 0.1, sz + 0.3)),
+             pal["cut"], 0.03)
 
 
 def build_walls(layout, pal):
-    for dev in layout["devices"]:
+    for index, dev in enumerate(layout["devices"]):
         if dev["kind"] != "wall":
             continue
-        wall_with_cap(dev["id"], dev["center"], dev["size"], pal)
+        # 压顶错开 0/4/8/12 mm 四档：墙角处两片压顶必然重叠，同高度重叠即共面。
+        wall_with_cap(dev["id"], dev["center"], dev["size"], pal,
+                      cap_lift=SURFACE_CLEARANCE + 0.004 * (index % 4))
         if dev.get("corner") == "inner":
-            cbox(dev["id"] + "_foot", (dev["center"][0], 0.07, dev["center"][2]),
-                 (dev["size"][0] + 0.34, 0.14, dev["size"][2] + 0.34), pal["granite"], 0.03)
+            # 墙脚比墙身再多埋 1 cm：两者底面若同深度也会彼此共面。
+            cbox(dev["id"] + "_foot",
+                 *buried((dev["center"][0], 0.07, dev["center"][2]),
+                         (dev["size"][0] + 0.34, 0.14, dev["size"][2] + 0.34),
+                         SURFACE_CLEARANCE + 0.01), pal["granite"], 0.03)
 
 
 def build_narrow_lanes(layout, pal):
@@ -398,8 +436,10 @@ def build_narrow_lanes(layout, pal):
             cbox("lane_%s_rail_%s" % (str(gap).replace(".", ""), side),
                  (10.5, 0.05, z), (5.0, 0.04, 0.1), pal["jade"], 0.01)
         for end, ex in (("w", 8.0), ("e", 13.0)):
+            # 门柱比院墙多埋 1 cm：避免柱/柱、柱/墙底面同深度而互相共面。
             cbox("lane_%s_post_%s" % (str(gap).replace(".", ""), end),
-                 (ex, 1.05, lane_z), (0.3, 2.1, gap + 0.5), pal["cut"], 0.04)
+                 *buried((ex, 1.05, lane_z), (0.3, 2.1, gap + 0.5),
+                         SURFACE_CLEARANCE + 0.01), pal["cut"], 0.04)
 
 
 def build_terrace(layout, pal):
@@ -408,10 +448,11 @@ def build_terrace(layout, pal):
             continue
         cx, cy, cz = dev["center"]
         sx, sy, sz = dev["size"]
-        cbox(dev["id"], (cx, cy, cz), (sx, sy, sz), pal["stone"], 0.05)
-        cbox(dev["id"] + "_deck", (cx, cy + sy * 0.5 + 0.02, cz), (sx - 0.24, 0.04, sz - 0.24),
+        # 台体下沉 2 cm（顶面 0.90 m 不动）；台面压面底面高于台顶 2 cm。
+        cbox(dev["id"], *buried((cx, cy, cz), (sx, sy, sz)), pal["stone"], 0.05)
+        cbox(dev["id"] + "_deck", (cx, cy + sy * 0.5 + 0.04, cz), (sx - 0.24, 0.04, sz - 0.24),
              pal["ivory"], 0.02)
-        # 无栏侧（+X）画一道临边警示带：看得见的边界，但没有任何碰撞。
+        # 无栏侧（+X）画一道临边警示带：整层埋进压面、只露顶面，不与压面顶面同高。
         cbox(dev["id"] + "_warning", (cx + sx * 0.5 - 0.3, cy + sy * 0.5 + 0.055, cz),
              (0.34, 0.03, sz - 0.2), pal["jade"], 0.01)
 
@@ -556,6 +597,8 @@ def stage_course():
           % (OUT_GLB, len(meshes), tris_before,
              [round(v, 2) for v in lo_before], [round(v, 2) for v in hi_before]))
     ART_DIR.mkdir(parents=True, exist_ok=True)
+    # save_version=0：覆盖保存时不轮转 .blend1，防止未来重跑静默覆盖历史探索资产备份。
+    bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(ART_DIR / "ground_contact_course.blend"))
     print("BLEND %s" % (ART_DIR / "ground_contact_course.blend"))
 
@@ -623,6 +666,7 @@ def main(argv):
             add_preview_rig()
             stage_preview()
             import bpy
+            bpy.context.preferences.filepaths.save_version = 0
             bpy.ops.wm.save_as_mainfile(filepath=str(ART_DIR / "ground_contact_course.blend"))
             print("BLEND(with preview rig) %s" % (ART_DIR / "ground_contact_course.blend"))
         return 0

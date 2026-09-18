@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import math
 import random
+import struct
 import sys
 from pathlib import Path
 
@@ -36,6 +37,47 @@ ART_DIR = ROOT / "docs" / "art" / "sword_flight_course"
 COLLISION_SCHEMA = "sword_flight_course_collision/1"
 
 SEED = 20260918
+
+# --------------------------------------------- 装饰层净空（共面闪烁修复，2026-09-18）
+# 根因：平台主体与 rim / lip / mark 零间隙共面（装饰层中心 = 承托面顶 + 自身半高，
+# 使底面严格等于承托面顶面），双面材质 + 正交相机移动时同深度面竞争导致闪烁。
+# 依据 notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md 与 mountain_realm 台账
+# 「装饰面高出承载面 2 cm」的既有约定。
+## A 类（水平装饰层）底面高于承托面的设计间隙。
+CLEARANCE = 0.02
+## 竖直构件（B 类，旗杆）底面埋入承托面的深度；沿用地形接触训练场的 5 mm 埋入量。
+BURY_DEPTH = 0.005
+## 装饰件厚度：建几何与自检共用同一常量，禁止两处各写一份。
+MARK_THICKNESS = 0.06
+LIP_HEIGHT = 0.12
+RIM_HEIGHT = 0.16
+
+## 净空契约：style -> (最小间隙, 最大间隙)，单位米。与生成时的取值分开声明——
+## 自检用契约判定，而不是重算一遍生成时的加法（否则断言只是同义反复）。
+STYLE_CONTRACT = {
+    "accent_on_structure": (CLEARANCE, 0.12),
+    "buried_member": (-0.02, -0.002),
+}
+
+## 已登记净空对：Blender 自检与导出后 GLB 复核共用同一张表（纯数据，不依赖 bpy）。
+## 承托面高度一律取承托件的实际水平面最高值，不在表里再写一遍数值。
+CLEARANCE_PAIRS = [
+    ("takeoff_mark", "takeoff_pad", "accent_on_structure"),
+    ("takeoff_mark_cross", "takeoff_pad", "accent_on_structure"),
+    ("step_low_lip", "step_low", "accent_on_structure"),
+    ("step_mid_lip", "step_mid", "accent_on_structure"),
+    ("step_high_lip", "step_high", "accent_on_structure"),
+    ("landing_near_rim", "landing_near", "accent_on_structure"),
+    ("landing_near_mark", "landing_near_rim", "accent_on_structure"),
+    ("landing_near_pole", "landing_near", "buried_member"),
+    ("landing_far_rim", "landing_far", "accent_on_structure"),
+    ("landing_far_mark", "landing_far_rim", "accent_on_structure"),
+    ("landing_far_pole", "landing_far", "buried_member"),
+]
+
+## 共面扫描阈值（与 note 口径一致）：垂直重合 ≤1.5 mm 且水平重叠 ≥0.05 m² 判为冲突。
+COPLANAR_GAP = 0.0015
+COPLANAR_AREA = 0.05
 
 # 本文件登记的全部可碰撞实体（Godot 坐标 center/size），供 Godot 侧装配。
 COLLIDERS: list[dict] = []
@@ -213,26 +255,37 @@ def ring_gate(name, center, radius, yaw_degrees, pal, tube=0.17, spokes=4):
 
 
 def cloud_step(name, center, size, pal, tilt_degrees=0.0):
-    """云阶：一块可站立的浮空石板（有碰撞），边缘略厚。"""
+    """云阶：一块可站立的浮空石板（有碰撞），边缘略厚。
+
+    压顶（lip）底面 = 台面顶 + CLEARANCE：修复前底面严格等于台面顶面（共面闪烁）。
+    """
     cbox(name, center, size, pal["stone"], 0.06, collision=True, kind="step")
-    lip = (center[0], center[1] + size[1] * 0.5 + 0.06, center[2])
-    cbox(f"{name}_lip", lip, (size[0] * 0.94, 0.12, size[2] * 0.94), pal["ivory"], 0.03)
+    top = center[1] + size[1] * 0.5
+    cbox(f"{name}_lip", (center[0], top + CLEARANCE + LIP_HEIGHT * 0.5, center[2]),
+         (size[0] * 0.94, LIP_HEIGHT, size[2] * 0.94), pal["ivory"], 0.03)
     VISUAL_ONLY.append(f"{name}_lip")
 
 
 def landing_platform(name, center, size, pal, height_marker=0.0, banner=True):
-    """落剑台：八边台面 + 青铜围边 + 中央标记；可直接落站。"""
+    """落剑台：八边台面 + 青铜围边 + 中央标记；可直接落站。
+
+    净空（修复前围边底面、标记底面、旗杆底面全部与承托面零间隙共面）：
+      - 围边（rim）底面 = 台面顶 + CLEARANCE；
+      - 标记（mark）底面 = 围边顶 + CLEARANCE（修复前 mark 底面与 rim 顶面共面）；
+      - 旗杆（pole）底面埋入台面 BURY_DEPTH，属 B 类竖向构件，不抬升。
+    """
     radius = min(size[0], size[2]) * 0.5
     ccyl(name, center, radius, size[1], pal["stone"], verts=8, collision=True, kind="landing")
     top_y = center[1] + size[1] * 0.5
-    ccyl(f"{name}_rim", (center[0], top_y + 0.08, center[2]), radius * 0.94, 0.16,
-         pal["bronze"], verts=8, bevel=0.03)
+    ccyl(f"{name}_rim", (center[0], top_y + CLEARANCE + RIM_HEIGHT * 0.5, center[2]),
+         radius * 0.94, RIM_HEIGHT, pal["bronze"], verts=8, bevel=0.03)
     VISUAL_ONLY.append(f"{name}_rim")
-    ccyl(f"{name}_mark", (center[0], top_y + 0.16, center[2]), radius * 0.3, 0.06,
+    ccyl(f"{name}_mark", (center[0], top_y + CLEARANCE + RIM_HEIGHT + CLEARANCE
+                          + MARK_THICKNESS * 0.5, center[2]), radius * 0.3, MARK_THICKNESS,
          pal["glow_warm"] if height_marker else pal["glow"], verts=12, bevel=0.0)
     VISUAL_ONLY.append(f"{name}_mark")
     if banner:
-        pole = (center[0] + radius * 0.72, top_y + 1.1, center[2] + radius * 0.72)
+        pole = (center[0] + radius * 0.72, top_y - BURY_DEPTH + 1.1, center[2] + radius * 0.72)
         cbox(f"{name}_pole", pole, (0.12, 2.2, 0.12), pal["bronze"], 0.02)
         cbox(f"{name}_flag", (pole[0], pole[1] + 0.55, pole[2] + 0.36), (0.05, 0.9, 0.72),
              pal["banner"], 0.01)
@@ -344,10 +397,12 @@ def build_course(pal):
     cbox("takeoff_pad", TAKEOFF_CENTER, TAKEOFF_SIZE, pal["stone"], 0.08,
          collision=True, kind="takeoff")
     top = TAKEOFF_CENTER[1] + TAKEOFF_SIZE[1] * 0.5
-    cbox("takeoff_mark", (TAKEOFF_CENTER[0], top + 0.03, TAKEOFF_CENTER[2]),
-         (5.2, 0.06, 1.0), pal["glow"], 0.0)
-    cbox("takeoff_mark_cross", (TAKEOFF_CENTER[0], top + 0.03, TAKEOFF_CENTER[2]),
-         (1.0, 0.06, 5.2), pal["glow"], 0.0)
+    cbox("takeoff_mark", (TAKEOFF_CENTER[0], top + CLEARANCE + MARK_THICKNESS * 0.5,
+                          TAKEOFF_CENTER[2]),
+         (5.2, MARK_THICKNESS, 1.0), pal["glow"], 0.0)
+    cbox("takeoff_mark_cross", (TAKEOFF_CENTER[0], top + CLEARANCE + MARK_THICKNESS * 0.5,
+                                TAKEOFF_CENTER[2]),
+         (1.0, MARK_THICKNESS, 5.2), pal["glow"], 0.0)
     VISUAL_ONLY.extend(["takeoff_mark", "takeoff_mark_cross"])
 
     # 玉环门：视觉环 + 环体碰撞。
@@ -405,6 +460,179 @@ def build_route_payload():
 
 
 
+# ------------------------------------------------- 净空自检与 GLB 静态复核
+# 不依赖引擎：Blender 内用对象包围盒自检，导出后用 GLB 顶点 min/max 复核。
+# 判定使用 STYLE_CONTRACT 声明的契约区间，不复算生成时的加法（避免同义反复）。
+
+
+def object_span(obj):
+    """Blender 对象世界包围盒 -> ((xmin,ymin,zmin),(xmax,ymax,zmax))，Blender Z 为高度。"""
+    from mathutils import Vector
+    corners = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
+    lo = (min(c.x for c in corners), min(c.y for c in corners), min(c.z for c in corners))
+    hi = (max(c.x for c in corners), max(c.y for c in corners), max(c.z for c in corners))
+    return lo, hi
+
+
+def clearance_rows(span_lookup, height_axis=2):
+    """按 CLEARANCE_PAIRS 计算每对高度间隙（axis=2: Blender Z；axis=1: GLB/Godot Y）。"""
+    rows = []
+    for child, host, style in CLEARANCE_PAIRS:
+        if child not in span_lookup:
+            raise RuntimeError(f"净空自检：缺少装饰件对象 {child!r}")
+        if host not in span_lookup:
+            raise RuntimeError(f"净空自检：缺少承托件对象 {host!r}")
+        child_lo, child_hi = span_lookup[child]
+        host_lo, host_hi = span_lookup[host]
+        # 契约按 0.1 mm 精度判定：世界坐标浮点末位不参与比较（0.019999999999999574 即 0.02 m）。
+        gap = round(child_lo[height_axis] - host_hi[height_axis], 4)
+        low, high = STYLE_CONTRACT[style]
+        rows.append({"child": child, "host": host, "style": style,
+                     "gap_m": gap, "min_m": low, "max_m": high,
+                     "ok": low <= gap <= high})
+    return rows
+
+
+def assert_clearance(rows):
+    bad = [r for r in rows if not r["ok"]]
+    for row in rows:
+        print(f"COURSE clearance {row['child']} -> {row['host']} "
+              f"gap={row['gap_m']:+.4f}m [{row['min_m']:+.3f},{row['max_m']:+.3f}] "
+              f"{'OK' if row['ok'] else 'FAIL'}")
+    if bad:
+        names = ", ".join(f"{r['child']}->{r['host']} gap={r['gap_m']:+.4f}"
+                          for r in bad)
+        raise SystemExit(f"净空自检失败：{len(bad)} 对不满足契约（{names}）；"
+                         f"fix=tools/art/generate_sword_flight_course.py 的 CLEARANCE 常量与构件中心")
+
+
+def glb_json(path):
+    """读取 GLB 的 JSON chunk（标准库，不依赖引擎与第三方库）。"""
+    data = path.read_bytes()
+    _, _, length = struct.unpack_from("<III", data, 0)
+    offset = 12
+    while offset < length:
+        chunk_len, chunk_type = struct.unpack_from("<II", data, offset)
+        if chunk_type == 0x4E4F534A:
+            return json.loads(data[offset + 8:offset + 8 + chunk_len].decode("utf-8"))
+        offset += 8 + chunk_len
+    raise RuntimeError("GLB 缺少 JSON chunk")
+
+
+def glb_node_spans(path):
+    """GLB 每个网格节点的世界包围盒。
+
+    GLB 为 Y-up（export_yup）：高度轴是 Y（与 Godot 一致），不是 Blender 的 Z。
+    节点变换按 glTF TRS 或 matrix 处理：把局部包围盒 8 角点变换到世界再取 min/max。
+    """
+    doc = glb_json(path)
+    spans = {}
+    for node in doc.get("nodes", []):
+        if "mesh" not in node:
+            continue
+        matrix = glb_node_matrix(node)
+        lo = [float("inf")] * 3
+        hi = [float("-inf")] * 3
+        for prim in doc["meshes"][node["mesh"]]["primitives"]:
+            acc = doc["accessors"][prim["attributes"]["POSITION"]]
+            amin = [float(v) for v in acc["min"]]
+            amax = [float(v) for v in acc["max"]]
+            for corner in range(8):
+                local = [amin[axis] if not (corner >> axis) & 1 else amax[axis]
+                         for axis in range(3)]
+                world = [sum(matrix[row * 4 + col] * local[col] for col in range(3))
+                         + matrix[row * 4 + 3] for row in range(3)]
+                for axis in range(3):
+                    lo[axis] = min(lo[axis], world[axis])
+                    hi[axis] = max(hi[axis], world[axis])
+        spans[node.get("name", f"node_{node['mesh']}")] = (tuple(lo), tuple(hi))
+    return spans
+
+
+def glb_node_matrix(node):
+    """节点局部->世界矩阵（列主序 4x4）：优先 matrix，否则合成 T * R * S。"""
+    if "matrix" in node:
+        return [float(v) for v in node["matrix"]]
+    tx, ty, tz = (float(v) for v in (node.get("translation") or [0.0, 0.0, 0.0]))
+    qx, qy, qz, qw = (float(v) for v in (node.get("rotation") or [0.0, 0.0, 0.0, 1.0]))
+    sx, sy, sz = (float(v) for v in (node.get("scale") or [1.0, 1.0, 1.0]))
+    rot = [
+        1 - 2 * (qy * qy + qz * qz), 2 * (qx * qy - qz * qw), 2 * (qx * qz + qy * qw),
+        2 * (qx * qy + qz * qw), 1 - 2 * (qx * qx + qz * qz), 2 * (qy * qz - qx * qw),
+        2 * (qx * qz - qy * qw), 2 * (qy * qz + qx * qw), 1 - 2 * (qx * qx + qy * qy),
+    ]
+    scale = (sx, sy, sz)
+    matrix = [0.0] * 16
+    for row in range(3):
+        for col in range(3):
+            matrix[row * 4 + col] = rot[row * 3 + col] * scale[col]
+    matrix[3], matrix[7], matrix[11] = tx, ty, tz
+    matrix[12], matrix[13], matrix[14], matrix[15] = 0.0, 0.0, 0.0, 1.0
+    return matrix
+
+
+def glb_coplanar_hits(spans):
+    """全 GLB 共面扫描（受限口径）：只检 support 的 top 与 child 的 bottom 之间的
+    轴向面间隙 ≤1.5 mm 且水平重叠 ≥0.05 m²。
+
+    不检 top/top 与 bottom/bottom 共面，因此 `unregistered=0` 只代表本口径无命中，
+    不得扩写为「所有方向的共面均为 0」。同材质十字标记（takeoff_mark ×
+    takeoff_mark_cross）的 top/top 交叠属允许项，见 CLEARANCE_PAIRS 注释与台账。
+    """
+    hits = []
+    names = sorted(spans)
+    for index, a in enumerate(names):
+        a_lo, a_hi = spans[a]
+        for b in names[index + 1:]:
+            b_lo, b_hi = spans[b]
+            gap = min(abs(a_lo[1] - b_hi[1]), abs(b_lo[1] - a_hi[1]))
+            if gap > COPLANAR_GAP:
+                continue
+            overlap_x = min(a_hi[0], b_hi[0]) - max(a_lo[0], b_lo[0])
+            overlap_z = min(a_hi[2], b_hi[2]) - max(a_lo[2], b_lo[2])
+            area = max(0.0, overlap_x) * max(0.0, overlap_z)
+            if area >= COPLANAR_AREA:
+                hits.append((a, b, round(gap, 5), round(area, 4)))
+    return hits
+
+
+def audit_glb(path):
+    """导出后复核：登记对净空 + 全 GLB 未登记共面命中数（期望 0）；任一不满足即失败。"""
+    spans = glb_node_spans(path)
+    # GLB 为 Y-up：高度轴是 Y（与 Blender 的 Z 不同，用错轴会得到无意义的负间隙）。
+    rows = clearance_rows(spans, height_axis=1)
+    rows_path = ART_DIR / "surface_clearance_report.json"
+    hits = glb_coplanar_hits(spans)
+    bad_rows = [r for r in rows if not r["ok"]]
+    report = {
+        "asset": "sword_flight_course",
+        "generated": "2026-09-18",
+        "clearance_m": CLEARANCE,
+        "bury_depth_m": BURY_DEPTH,
+        "style_contract": {k: list(v) for k, v in STYLE_CONTRACT.items()},
+        "coplanar_threshold": {"gap_m": COPLANAR_GAP, "area_m2": COPLANAR_AREA},
+        "pairs": rows,
+        "unregistered_coplanar_hits": [
+            {"a": a, "b": b, "gap_m": gap, "overlap_m2": area} for a, b, gap, area in hits
+        ],
+        "result": "ok" if not bad_rows and not hits else "fail",
+    }
+    rows_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+                         encoding="utf-8")
+    print(f"COURSE clearance_report={rows_path}")
+    print(f"COURSE glb_coplanar_unregistered={len(hits)}")
+    if bad_rows:
+        names = ", ".join(f"{r['child']}->{r['host']} gap={r['gap_m']:+.4f}"
+                          for r in bad_rows)
+        raise SystemExit(f"GLB 净空复核失败：{len(bad_rows)} 对不满足契约（{names}）；"
+                         f"fix=tools/art/generate_sword_flight_course.py 的 CLEARANCE 常量与构件中心")
+    if hits:
+        detail = ", ".join(f"{a}<->{b} gap={gap} area={area}" for a, b, gap, area in hits[:8])
+        raise SystemExit(f"GLB 共面复核失败：{len(hits)} 对未登记共面（{detail}）；"
+                         f"fix=tools/art/generate_sword_flight_course.py 的 CLEARANCE_PAIRS / CLEARANCE")
+    return rows
+
+
 # ---------------------------------------------------------------- 导出与预览
 
 
@@ -435,6 +663,10 @@ def stage_course():
     OUT_COLLISION.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
                              encoding="utf-8")
 
+    # 导出前自检：登记对的装饰层/承托面净空必须落在声明契约内。
+    span_lookup = {obj.name: object_span(obj) for obj in objects}
+    assert_clearance(clearance_rows(span_lookup))
+
     for obj in bpy.context.selected_objects:
         obj.select_set(False)
     for obj in objects:
@@ -442,6 +674,10 @@ def stage_course():
     bpy.ops.export_scene.gltf(filepath=str(OUT_GLB), export_format="GLB",
                               use_selection=True, export_apply=True, export_yup=True)
 
+    audit_glb(OUT_GLB)
+
+    # save_version=0：覆盖保存时不轮转 .blend1，防止未来重跑静默覆盖历史探索资产备份。
+    bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(ART_DIR / "sword_flight_course.blend"))
     print(f"COURSE ok objects={len(objects)} tris={tris} "
           f"colliders={len(payload['colliders'])} visual_only={len(payload['visual_only'])}")
@@ -528,6 +764,7 @@ def stage_preview():
     ]
     for tag, location, target, lens in views:
         render_preview(tag, location, target, lens)
+    bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(ART_DIR / "sword_flight_course.blend"))
     print(f"COURSE blend={ART_DIR / 'sword_flight_course.blend'}")
 

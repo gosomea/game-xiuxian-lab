@@ -48,8 +48,9 @@
 > 与本节一致——`*.blend1` 保存覆盖前那一刻的可编辑源状态，属于探索资产，必须保留并纳入 Git、
 > 不得当作缓存删除或用忽略规则排除。两份台账对 `.blend1` 的处置口径现已统一，无分歧。
 >
-> 唯一差别只在**事实**而非规则：那边当前尚未产生 `.blend1`（首次以 `save_as_mainfile` 写出，
-> 未发生覆盖保存），本资产已产生一份，故在本节逐项登记。
+> 该「尚未产生 `.blend1`」的说法已过期（2026-09-18 surface clearance 修复后）：
+> sword 目录现存在 `sword_flight_course.blend1`（154219 字节 / `b8075afb…`），按同一规则保留、入库、
+> 登记；本资产同样已产生 `.blend1`。两份台账口径一致，均按探索资产保留。
 
 ## 与物理的对应关系（本资产的核心契约）
 
@@ -108,3 +109,98 @@
 说明：本资产**不做材质合并**（与庭院不同）。训练场需要「装置名 = 网格名」这一命名契约
 来支撑可视/碰撞逐项对齐断言，按材质合并会把节点名压成 `<材质名>` 而丢掉这层语义。
 代价是 drawcall 偏高，但本场景是实验场不是量产关卡，命名可验证性优先。
+
+## 共面修复（surface clearance，2026-09-18）
+
+依据 [装饰面共面导致的跨场景地面闪烁](../../../notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md)
+的 A/B 分类，本轮在**原模型上继续修改**：只改可见几何的高度关系，**碰撞 JSON 数值一字未动**
+（`ground_contact_course_layout.json` 哈希仍为 `2031097455bfecf43bece8ec8f819818739470fabe5442bd81e7a19d3fc5ae7d`，
+0.25/0.5/0.75 m 台阶、28/42/52° 斜坡、0.6 m 窄路与全部碰撞盒均不变）。
+
+### 修法（`tools/art/generate_ground_contact_course.py`）
+
+新增 `SURFACE_CLEARANCE = 0.02` 与 `buried()` 两个约定件，沿用 mountain_realm / peak_courtyards 已验证的 2 cm 量级：
+
+- **A 类（水平装饰面）**：抬到承托面上方 ≥2 cm。涉及 `step_*_top`（本次的核心漏改点）、
+  `step_*_band`、`step_*_plinth`、`*_cap`（墙 / 窄路 / 坡顶平台 / 台地压顶）、`ramp_*_nose`、`terrace_deck`、
+  `terrace_warning`、`flat_tick_*`、`ground_moss_*`。台阶压面原本只埋 1.5 cm 仍与台面共面，现改为底面高出台面 2 cm；
+  玉色边条整层埋进压面、只露顶面，避免「压面顶面 = 边条顶面」。
+- **B 类（竖直件端盖落地）**：`buried()` 保持**顶面不动**、向下多埋 2 cm。
+  涉及 `bamboo_*_stem_*`、`lantern_*_base`、`step_*` 主体与底座、`ramp_*_landing`、
+  `ramp_*_rail_post_*`、墙身与墙脚（墙脚多埋 1 cm）、`lane_*_post_*`（多埋 1 cm）、`terrace` 主体。
+  **不存在粗暴抬高**：可走面高度全部保持。
+- **同高度重叠件**：墙角压顶按装置序号错开 0/4/8/12 mm，台阶底座收窄 0.2 m，
+  窄路门柱与墙脚下沉量比墙身多 1 cm——这些重叠原本是「顶面 = 压面顶面」或「底面同深度」。
+
+`ground_contact_course.blend1` 是本次 Blender 保存时轮转出的新备份，**已用归档副本还原为原始字节**，
+因此下表 `.blend1` 哈希与修复前一致，历史源状态未丢失。
+
+### 修复前归档（`pre_surface_clearance_*`，必须保留）
+
+覆盖旧预览与旧源之前先复制归档；`pre_surface_clearance_ground_contact_course.blend` 即修复前的
+`ground_contact_course.blend`。
+
+| 归档文件 | 字节 | sha256 |
+|---|---|---|
+| `pre_surface_clearance_ground_contact_course.blend` | 210123 | `f2e226f4b720566c9dcd519ac0c4187c37628e4350e29ad94c3c3809786a98d7` |
+| `pre_surface_clearance_ground_contact_course.blend1` | 209915 | `6c33087982126dfda61b2e77a1ee398392d74aa350cb324548dff7b23e10c32a` |
+| `pre_surface_clearance_ground_contact_course.glb`（修复前导出，逐字节 = `0d1dc64` 旧 GLB） | 1254736 | `b823b141e04f0739f840d774e24d1cb0bf14e3c88376d621b245b4a46bb003a4` |
+| `pre_surface_clearance_overview.png` | 701413 | `dc6f5b8d7180b26351afc68a9c59895a9d6961fdba09745a02353306f9db2d2e` |
+| `pre_surface_clearance_ramps.png` | 390807 | `5a5b324be8f6cd3b25b38dad84824edb7675bbba336547f38ad64d8d9f46aa1d` |
+| `pre_surface_clearance_steps.png` | 525250 | `2443347a2801775079d9231be985b3e08bc98befd247e7fac2b16ad9e20b7fff` |
+| `pre_surface_clearance_corner_narrow.png` | 674535 | `af37767ebef5f829396cd6589af4c974c9b972c12918a842cd08960e992f86b6` |
+| `pre_surface_clearance_edge_void.png` | 736667 | `5c35f45f14f26356c2a49287e019266e656a0b883283870d1b222d02a7f80e4a` |
+
+### 修复后数值（2026-09-18 重导）
+
+| 产物 | 字节 | sha256 |
+|---|---|---|
+| `ground_contact_course.glb` | 1264820 | `e5e1bdaa0b3f60570d4a82a79e5d50f4fbc853a3e6f34194f509292b7ce6fcfd` |
+| `ground_contact_course.blend` | 212361 | `4f7aa603df82ba41b9e5adcc620cd7463cd453059fbd6ab8a9f78f120415df27` |
+| `ground_contact_course.blend1`（原始字节，未轮转） | 209915 | `6c33087982126dfda61b2e77a1ee398392d74aa350cb324548dff7b23e10c32a` |
+| `ground_contact_course.glb.import` | 1106 | `1b32e069c385485caaa3f535a3aab4867dff3491b6773c29983fb96db260f846` |
+| `tools/art/generate_ground_contact_course.py`（修复后，含最终集成轮对本 note 路径引用的更新） | 31473 | `37f29ae98d2a0b6f06b873a23c32e6c69c18453ed5c265a553eeddc62d2cd1d4` |
+| `preview_overview.png` | 697054 | `c4eb3b08659762acecf85bdd3ec2aa3d05a2edb79146a299f4307d48841dece0` |
+| `preview_ramps.png` | 383742 | `9eda9d6548a9bf7481701586c345ecd3e9a620d6df0ccd82caec2b79a07faa87` |
+| `preview_steps.png` | 528433 | `1961f87a4439371a7da1c9eda20c6bcb5d9d1a62f131d440a48b18367c3891a1` |
+| `preview_corner_narrow.png` | 671463 | `32b506102a85f2e70855e1b7e3f281c7af47034fdda6ae70936ade3e91f92ff3` |
+| `preview_edge_void.png` | 735676 | `d66eda2dcc2c59bd84bd23e48da5d2513f7ebeba41e13960085d425a69d6bc7e` |
+
+几何不变量：源零件 218、导出网格 218、三角形 22992、坐标范围 x −23.48…33.85 / y −3.45…5.46 / z −22.5…22.5
+均与修复前一致（仅底面按 2 cm 下沉，包围盒下沿不变）。
+
+### 共面命中对照（阈值口径必须逐条对照，不可混称）
+
+三个数字来自**三套不同阈值**，不能互相替代或混称为同一口径：
+
+| 数字 | 扫描器/阈值口径 | 含义 |
+|---|---|---|
+| **121** | footprint **> 0.01 m²**、垂直重合 ≤1.5 mm、水平三角面片真实相交面积 | 本节修复前主口径命中组数（修复后 8） |
+| **174** | 同一份修复前数据、footprint 阈值放宽到 **≥0.001 m²** | 修复前命中组数（阈值更松所以更多），不是另一轮修复的读数 |
+| **128** | note 的独立扫描：水平重叠 **≥0.05 m²** 且垂直重合 ≤1.5 mm | `notes/implemented/art/2026-09-18-coplanar-surface-shimmer.md` 记录的独立复现值，与 121 不是同一阈值 |
+
+| | 修复前 | 修复后 |
+|---|---|---|
+| 命中组数（121 口径） | 121（≥0.001 m² 时 174） | **8，全部为 B 类已批准埋入端盖** |
+| 未允许 A 类 | — | **0** |
+| 128（note 口径） | 128 组独立扫描命中，属同一缺陷族的独立复现 | 未按该口径重扫；本表修复后数字来自 121 口径 |
+
+修复后仅存的 8 组均为「两个已下沉端盖底面同深度」：3 组 `step_*_plinth ↔ step_*`、2 组墙角墙脚互对、
+2 组台地栏杆墙脚互对、1 组院墙互对。都埋在实体内部、不产生可见面竞争，按 B 类「列出有理由允许」保留。
+
+**B 类允许项（不可见重合约定的统一口径）**：本资产与 `state_transition_lab` 的**埋入底面同高**
+一律归为**不可见 B 类允许项**——端盖/底面被实体包住，不参与可见面竞争，只在扫描里作为
+bottom/bottom 重合出现；它们既不是 A 类缺陷，也不代表顶面已无共面。判据是「是否可见竞争」，
+不是「是否出现在扫描命中里」。
+
+### 验证状态
+
+- `godot --headless --path src --script res://tests/ground_contact_course_playtest.gd -- --batch=assembly,flat,ramp,step,corner,narrow,edge,recovery,hud,exit`：
+  **失败 0，退出码 0**（178 项断言，含逐装置可视-碰撞对齐、台阶 0.25/0.5/0.75、斜坡 28/42/52°、窄路 0.6 m、边缘台与落下回收）。
+- `godot --headless --path src --import`：退出码 0。
+- 移动/冻结像素对照：`src/tests/ground_contact_course_surface_clearance_capture.gd`（experimental、非门禁）。
+  **脚本运行成功，但控制无效**：冻结组残余帧间差异 **3.687%–9.762%**（`post_report.txt`，
+  `~/.cache/game-xiuxian-lab/surface-clearance/ground-contact/post/`），说明相机链/渲染未真正冻结，
+  移动组读数不可归因。该项**未验证、非门禁，不可证明修复**；**不声称验收通过**。
+  脚本保留待下轮修严（含 `.gd.uid`，随 Git 入库），不删除。
+  本轮修复依据只是静态共面扫描（121 → 8，未允许 A 类 = 0），不是像素读数。
