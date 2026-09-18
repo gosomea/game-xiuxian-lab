@@ -1,6 +1,5 @@
 # Godot
 .godot/
-*.translation
 .import/
 
 # 系统
