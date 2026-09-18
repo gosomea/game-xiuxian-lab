@@ -1,0 +1,66 @@
+# Note: 可组合实验室的装配与镜头契约
+
+Status: implemented
+
+> 决策批准：**2026-09-18 用户批准统一提案时一并采纳本契约**。Status 为 implemented 表示**决策已采纳**；
+> **S0–S3 运行时尚未交付**，本 note 规定实现时必须满足的约束，不代表任何功能已实现。
+
+## 问题
+
+统一决策 [character-movement-composable-labs](../gameplay/2026-09-18-character-movement-composable-labs.md) 要求七场可组合装配与四模式镜头。现状有三个硬约束：
+
+1. **嵌套 Sheet 不能直接复用父 actor 宿主组件**：`CapabilityManager.sorted_capabilities()` 只轮询直接子节点（`src/core/capability_manager.gd:30-36`）；`Capability.game_object()` 要求父节点是 `CapabilityManager` 且宿主是 `manager.get_parent()`（`src/core/capability.gd:19-23`）；`component()` 只扫宿主直系子（`:35-44`）。嵌套 Sheet 会让能力的 `game_object()` 落在 sheet 根上，阻塞与组件读写都打不到 actor。
+2. **写入者不唯一**：镜头跟随逻辑在六场各写一份；若每个模式 Capability 各自写 `Camera3D`，同一帧会产生竞争与顺序不确定。
+3. **包规模上限**：叶子包最多 4 个 Capability（`src/game/AGENTS.md` 两级包纪律、`design/package_policy.json`）。四模式 + executor + modifier 若都做成 Capability 会越限。
+
+## 决策
+
+### 1. 局部装配适配器（不新增 core）
+
+- **挂载形状**：可安装包的能力**注册为既有宿主 `CapabilityManager` 的直系子节点**，复用宿主**唯一** Component；不新建 manager、不复制 Component。
+- **装配 root**：`src/game/actors/swordsman/` 的 **ActorAssembly** 是装配 root，持有 movement / jump / flight 的依赖与**显式配置**（哪些 cap 启用、装哪些表现）；宿主仍是唯一 actor，基础 host 有**唯一 Component 与唯一 CapabilityManager**。不新建「什么都能塞」的 `game/shared/` 包。
+- **可选 / 可组合（不是 helper）**：FlightBundle 是**独立的可选装配包**，自带其 visual 资源与姿态 provider；不得被降级为「检查既有三能力 + 挂一把剑」的 helper。装配单位是「可独立安装/卸载的包」，不是对既有装配的旁路检查。
+- **owner / borrow 生命周期**：
+  - **owner 原则**：installer **只卸载自身拥有的资源**（按 owner 登记的节点、视觉、材质、信号、输入），不扫描同名节点就认领，不卸载/不停用**借用的 caps**（借用的能力由另行显式声明后才可停用）。
+  - **borrow 原则**：包可以借用宿主已有的 Component 与 manager，只读写自己登记的字段；退出时只清自己的字段与 tag，不碰其他能力的意图/速度/输入。
+  - **失败 / 卸载**：**不得用 `reset_motion()` 来实现单包卸载**——那会清空无关能力的速度与输入。卸载失败按已登记步骤逆序回滚，宿主回到挂载前状态；`TagRegistry` 清理由能力自身 `_exit_tree` 兜底。
+- **原子回滚**：挂载任一子步骤失败（资源加载、节点注册、视觉装配）时，按已登记步骤逆序回滚，宿主保持挂载前状态。
+- **调度唯一**：所有能力由宿主唯一 manager tick；物理提交仍只有 actor 根一次 `move_and_slide()`。
+- **接口与形状**：适配器是 `actors/swordsman` 内的 ActorAssembly 或所属叶子包内的**普通节点/静态设施**，用公开方法在既有 manager 下增删能力；**不修改 `core/`**。若实现暴露必须改 core 的情况，先另开 owning tech note 评审，不得顺手改。
+
+### 2. CameraRig 唯一提交与输入顺序
+
+- **宿主形状**：`CameraRig`（Node3D）是独立宿主，直接子节点为 `CameraRigComponent`（唯一）与 `CapabilityManager`（唯一）；模式 Capability 为 manager 直系子。
+- **单一提交器**：四个模式 Capability 以长期语义命名——`fixed_follow` / `quarter_turn` / `orbit` / `overview`（本文档 A–D 仅作例图简称，**脚本不得用 A/B 阶段字母命名**）——只写 `CameraRigComponent` 的期望 pose/镜头数据；由**一个普通宿主提交器** `CameraExecutor`（普通节点，非 Capability）消费并唯一写 `Camera3D`。`near/far` 等全局参数由 executor 统一写，模式不得重复写。
+- **互斥**：`mode_id` 保证模式互斥（同一时刻只有一个模式持有效）；**需要外部阻塞时才使用已登记 TagRegistry**；切换走 executor 的平滑混合，旧模式交接后不得再写。
+- **目标 snapshot 桥接**：CameraRig 对角色**只读目标 snapshot**（位置/速度/着地/飞行等已登记字段），经桥接层注入；Capability 之间不互引、不抓场景节点。
+- **同帧 control yaw**：连续旋转时，WASD 屏幕相对移动使用**同一帧一致的控制偏航地面基**：执行顺序固定为「输入采样 → 模式写期望 pose → executor 应用 → actor 物理使用本地面基」，避免一帧反馈滞后。
+- **输入顺序**：RMB down 仅在 viewport 未被 UI 消费时捕获；up / 失焦 / 退场必须释放并清累积 delta；**Esc 先退捕获/面板、后返回**；GUI 上滚轮只滚 GUI；键鼠可映射；**鼠标像素位移 `screen_relative` 不再乘 dt，键盘角速度 / 连续平移速度仍乘帧时长**。混合期间 delta 丢弃或显式接管，禁止累积后突然应用。
+
+### 3. 数据、词汇与资源边界
+
+- 新增字段/tag（`mode_id`、投影、期望 pose、height/速度 modifier、preview 状态等）**先在 `src/data/vocabulary/` 登记**并重跑索引生成器；能力只读写 Component 共享数据与 TagRegistry。
+- **modifier 是数据配置**：高度/速度自适应等由 executor 读取叠加，**不是 Capability**，避免撞 4-cap 上限与调度开销。
+- **投影是 Resource 配置**：正交/有限透视及其 `size/fov/keep_aspect` 用 Resource 表达，不与跟随模式做组合爆炸。
+- **Capability 预算**：镜头包恰好 4 个模式 Capability（`fixed_follow` / `quarter_turn` / `orbit` / `overview`，简称 A–D）+ 1 个普通提交器；executor 与 modifier 不计入 Capability。超过 4 个模式时先拆包或改数据配置，不得靠豁免堆叠。
+
+### 4. 生命周期与四子集组合验收
+
+- **S3 必须真实实例化四个子集**：`Move` / `Move+Jump` / `Move+Flight` / `all`（Move+Jump+Flight）。每个子集是**真实启动的装配**（ActorAssembly 的显式配置），不是对全装配的检查，也不是 helper 旁路。
+- 每次装卸后要求：被启用能力行为正确、未启用能力静默不触发、`flight_active` 等状态一致、`TagRegistry` 无残留阻塞、物理仍一次提交、无脚本错误。
+- 卸载顺序：先停本包输入/捕获 → 解绑本包表现 → 移除本包能力并清本包 tag → 释放本包资源；**不得调用 `reset_motion()` 或等价清空动作作为卸载手段**（会清掉无关能力的速度/输入）。`_exit_tree` 兜底不得依赖 `SheetLoader.detach` 调用 `_on_deactivated`（现不调用，`src/core/sheet_loader.gd:29-36`）。
+
+## 备选方案
+
+- **每包自带 CapabilityManager 的嵌套 Sheet**：否决。能力宿主会变成 sheet 根，阻塞与组件读写打不到 actor，见 [sheet-format](2026-08-28-sheet-format.md)。
+- **为镜头新增第五个 modifier Capability，或把四模式人为拆成多包**：否决。Capability 可跨包注册到同一 manager；当前四模式同生命周期且未超 4-cap 阈值，无需为 modifier 配置人为拆包。
+- **每个模式各自写 Camera3D**：否决。写入者不唯一会每帧竞争，且无法保证同帧 control yaw 一致。
+- **直接改 `core/` 放宽 SheetLoader/Manager 语义**：本轮否决。除非实现暴露无法回避的阻塞，否则不改；届时另开 owning tech note。
+- **用全局时钟驱动预览**：否决。预览时钟必须局部，不写 `Engine.time_scale`（唯一写入者 `src/core/time_keeper.gd:6-7`）。
+
+## 后果
+
+- **约束已生效**：S0–S3 的镜头与装配实现必须满足本契约；[统一决策](../gameplay/2026-09-18-character-movement-composable-labs.md) 的 S0/S1 验收按此检查。
+- **实现未开始**：`src/`、`design/`、`tools/` 与资产未因本 note 改动；尚无落地的适配器、CameraRig 或模式 Capability。
+- **待验证**：适配器幂等/回滚、同帧 control yaw 的实际帧序、单 executor 的写次数断言、组合装卸无残留，均需在 S0/S1 用运行验收证明。
+- **已知限制**：嵌套 Sheet 的宿主边界与 `detach` 不清 `_on_deactivated` 是现状事实；本契约以「不依赖该路径」规避，不修改 core。
