@@ -63,18 +63,6 @@ const FLIGHT_PAD_RADIUS := 3.2
 const FLIGHT_RING_HEIGHTS: Array[float] = [2.0, 4.0, 6.0, 8.0]
 const FLIGHT_RING_RADIUS := 3.2
 
-## 物理键 → 屏幕输入（x = 右，y = 下）；WASD 与方向键等价。
-const MOVE_KEYS := {
-	KEY_W: Vector2(0.0, -1.0),
-	KEY_UP: Vector2(0.0, -1.0),
-	KEY_S: Vector2(0.0, 1.0),
-	KEY_DOWN: Vector2(0.0, 1.0),
-	KEY_A: Vector2(-1.0, 0.0),
-	KEY_LEFT: Vector2(-1.0, 0.0),
-	KEY_D: Vector2(1.0, 0.0),
-	KEY_RIGHT: Vector2(1.0, 0.0),
-}
-
 ## 固定观察视角：只切换机位偏移，不改变角色或能力；跟随只做位移，不旋转。
 ## 角色沿 +X 跑道跑动且初始朝 +X，因此：
 ## - 正面 = 相机在 +X，看到角色正脸与跑道尽头；
@@ -119,7 +107,7 @@ var _previous_msaa: Viewport.MSAA = Viewport.MSAA_DISABLED
 var _player: Swordsman
 var _motion: SwordsmanMotionComponent
 var _presentation: Node3D
-var _pressed: Dictionary = {}
+var _input := MovementLabInput.new()
 var _view: int = StageView.THREE_QUARTER
 var _follow_target := Vector3.ZERO
 var _jump_edges := 0
@@ -173,15 +161,12 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		var code := key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
-		if MOVE_KEYS.has(code):
-			_pressed[code] = key_event.pressed
-			get_viewport().set_input_as_handled()
-			return
-		if code == KEY_SPACE or code == KEY_CTRL:
-			_pressed[code] = key_event.pressed
-			# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
-			if key_event.pressed and not key_event.echo and code == KEY_SPACE and _player != null:
+		var code := MovementLabInput.key_code(key_event)
+		# 移动键与升降键的按住状态交给 helper（升降键由本场景显式声明）；
+		# 跳跃语义仍是本场景决定并调用角色 API。
+		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
+			if code == MovementLabInput.KEY_VERTICAL_UP and MovementLabInput.is_key_down_edge(key_event) and _player != null:
+				# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
 				_player.press_jump()
 				_jump_edges += 1
 			get_viewport().set_input_as_handled()
@@ -232,9 +217,9 @@ func _physics_process(delta: float) -> void:
 	var right := _ground_vector(_camera.global_transform.basis.x, Vector3.RIGHT)
 	var forward := _ground_vector(-_camera.global_transform.basis.z, Vector3.FORWARD)
 	_player.set_camera_ground_basis(right, forward)
-	var move := _read_move_input()
+	var move := _input.move_input()
 	_player.set_move_input(move)
-	_player.set_vertical_input(_read_vertical_input())
+	_player.set_vertical_input(_input.vertical_input())
 	# 角色朝运动方向；停下时保留最后一次朝向，因此不停地在原地打转。
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y
@@ -246,23 +231,6 @@ func _physics_process(delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	_update_hud()
-
-
-func _read_move_input() -> Vector2:
-	var input_vector := Vector2.ZERO
-	for code in MOVE_KEYS:
-		if _pressed.get(code, false):
-			input_vector += MOVE_KEYS[code] as Vector2
-	return input_vector.limit_length(1.0)
-
-
-func _read_vertical_input() -> float:
-	var value := 0.0
-	if _pressed.get(KEY_SPACE, false):
-		value += 1.0
-	if _pressed.get(KEY_CTRL, false):
-		value -= 1.0
-	return clampf(value, -1.0, 1.0)
 
 
 func _ground_vector(value: Vector3, fallback: Vector3) -> Vector3:
@@ -481,7 +449,7 @@ func flight_visual() -> Node3D:
 
 
 func _clear_pressed() -> void:
-	_pressed.clear()
+	_input.clear()
 	if _player != null:
 		# 只清输入：已开启的御剑保留悬停，不自动关飞。
 		_player.clear_input()
