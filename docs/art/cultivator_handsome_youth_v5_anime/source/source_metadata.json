@@ -1,0 +1,24 @@
+{
+  "title": "Generic Anime Male",
+  "author": "jonshipman",
+  "sketchfab_uid": "f119e8cddf8c4bca9666a885975f9245",
+  "asset_page": "https://sketchfab.com/3d-models/generic-anime-male-f119e8cddf8c4bca9666a885975f9245",
+  "author_page": "https://sketchfab.com/jonshipman",
+  "license": "CC-BY-4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "download_source": "Google Drive link supplied directly in the author's Sketchfab asset-page description",
+  "download_date": "2026-09-19",
+  "original_filename": "generic_anime_male.blend",
+  "vendored_filename": "generic_anime_male_original.blend",
+  "sha256": "a58cb67a0451b9198692e75385259dd8c72c914ea4c49e44e205ce34d986cc2a",
+  "byte_size": 12141904,
+  "sketchfab_v3_api_verified": {
+    "license": "CC-BY-4.0",
+    "isDownloadable": true,
+    "triangles": 15020,
+    "vertices": 7811,
+    "materials": 4,
+    "textures": 4,
+    "description": "Base anime male with Mixamo bones"
+  }
+}

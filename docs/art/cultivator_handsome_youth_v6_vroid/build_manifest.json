@@ -1,0 +1,303 @@
+{
+  "route": "cultivator_handsome_youth_v6_vroid",
+  "iteration": "iteration_02",
+  "source": {
+    "title": "HairSample_Male",
+    "author": "VRoid Project",
+    "license": "CC0",
+    "download_date": "2026-09-19",
+    "source_page": "https://opengameart.org/content/vroid-studio-cc0-models",
+    "zip_sha256": "ba87440272b157a443dbe2cddb375eb175bce3586a45a84779bb018a5e730129",
+    "vrm_sha256": "4af2194f90ba846f3b13c00b50b14262419062d2171d17de922bcce2f89979c7",
+    "vrm_version": "0.x",
+    "embedded_animations": 0
+  },
+  "source_preservation": {
+    "mature_body_face_hair_topology_preserved_except_declared_hood_islands": true,
+    "original_armature_bones_preserved": 91,
+    "original_hair_joint_bones_preserved": 16,
+    "removed_auxiliary_icosphere": true,
+    "removed_hood_drawstring_components": [
+      {
+        "vertices": 29,
+        "hood_weight": 0,
+        "string_weight": 24.000000029802322,
+        "bounds": {
+          "min": [
+            -0.054009754210710526,
+            0.0822024866938591,
+            1.1912097930908203
+          ],
+          "max": [
+            -0.0321660116314888,
+            0.1464844048023224,
+            1.442928433418274
+          ]
+        }
+      },
+      {
+        "vertices": 29,
+        "hood_weight": 0,
+        "string_weight": 24.000000044703484,
+        "bounds": {
+          "min": [
+            0.03318370133638382,
+            0.0822024792432785,
+            1.1912091970443726
+          ],
+          "max": [
+            0.05502737686038017,
+            0.1464843600988388,
+            1.442928433418274
+          ]
+        }
+      },
+      {
+        "vertices": 251,
+        "hood_weight": 53.25327865034342,
+        "string_weight": 0,
+        "bounds": {
+          "min": [
+            -0.13881425559520721,
+            -0.1520305871963501,
+            1.377611517906189
+          ],
+          "max": [
+            0.13983187079429626,
+            0.08391792327165604,
+            1.5794172286987305
+          ]
+        }
+      }
+    ],
+    "existing_hoodie_torso_vertices_tailored": 703,
+    "existing_shoe_vertices_sole_softened_topology_and_weights_preserved": 536
+  },
+  "orientation": {
+    "blender_source_front": "+Y (verified by eyes, nose, hoodie front and toes)",
+    "mixamo_fbx_front": "not applicable; no Mixamo upload or FBX in this route",
+    "godot_glb_front": "-Z via Blender glTF Y-up coordinate conversion"
+  },
+  "armature": {
+    "name": "Armature",
+    "bone_count_total": 93,
+    "original_bone_count": 91,
+    "added_hair_bones": [
+      "V6_HairTail_01",
+      "V6_HairTail_02"
+    ],
+    "humanoid_core_present": true,
+    "rest_pose_preserved": true
+  },
+  "weights": {
+    "mesh_audit": [
+      {
+        "name": "Body",
+        "vertices": 7529,
+        "polygons": 11970,
+        "vertex_groups": 91,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "Face",
+        "vertices": 2056,
+        "polygons": 3168,
+        "vertex_groups": 91,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "Hair001",
+        "vertices": 7775,
+        "polygons": 9196,
+        "vertex_groups": 91,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 back-left curved short skirt",
+        "vertices": 45,
+        "polygons": 32,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 back-right curved short skirt",
+        "vertices": 45,
+        "polygons": 32,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 curved half-up shoulder-blade ponytail",
+        "vertices": 1250,
+        "polygons": 1200,
+        "vertex_groups": 3,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 embedded jade waist clasp",
+        "vertices": 354,
+        "polygons": 384,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 fitted deep-indigo layered waist sash",
+        "vertices": 96,
+        "polygons": 48,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 front-left curved short skirt",
+        "vertices": 45,
+        "polygons": 32,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 front-right curved short skirt",
+        "vertices": 45,
+        "polygons": 32,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 half-up gathered hair root",
+        "vertices": 354,
+        "polygons": 384,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 left deep-indigo soft gaiter",
+        "vertices": 140,
+        "polygons": 112,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 left narrow blue sleeve cuff",
+        "vertices": 48,
+        "polygons": 24,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 left shoulder-to-waist curved outer layer",
+        "vertices": 55,
+        "polygons": 40,
+        "vertex_groups": 4,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 left under-lapel moon-white inset",
+        "vertices": 10,
+        "polygons": 4,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 left under-lapel outer collar",
+        "vertices": 10,
+        "polygons": 4,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 right deep-indigo soft gaiter",
+        "vertices": 140,
+        "polygons": 112,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 right narrow blue sleeve cuff",
+        "vertices": 48,
+        "polygons": 24,
+        "vertex_groups": 2,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 right over-lapel moon-white inset",
+        "vertices": 12,
+        "polygons": 5,
+        "vertex_groups": 3,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 right over-lapel outer collar",
+        "vertices": 12,
+        "polygons": 5,
+        "vertex_groups": 3,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "name": "V6 right shoulder-to-waist curved outer layer",
+        "vertices": 55,
+        "polygons": 40,
+        "vertex_groups": 4,
+        "vertices_below_weight_0_999": 0
+      }
+    ],
+    "objects_with_incomplete_weights": []
+  },
+  "evidence": {
+    "t_pose_color_and_grey_four_views": true,
+    "static_idle_pose_rendered": true,
+    "only_added_clothing_grey_rendered": true,
+    "size18_and_size6_rendered": true,
+    "real_animation_tested": false,
+    "mixamo_uploaded": false,
+    "visual_review_status": "iteration 01 69/100 FAIL; iteration 02 visual regression FAIL; route stopped",
+    "technical_pass_is_not_visual_pass": true
+  },
+  "glb": {
+    "nodes": 115,
+    "meshes": 21,
+    "skins": 1,
+    "materials": 16,
+    "animations": 0
+  },
+  "file_sha256": {
+    "asset_ledger.md": "5bc4e1d6cad3c8ef268ae86b4d7619fd82c2ef40034876845a0481465c8481d1",
+    "cultivator_handsome_youth_v6_vroid.blend": "71c5ab70fa1637b701da0d3073745099f19dfd80aa322b99ecfc1707112758ce",
+    "cultivator_handsome_youth_v6_vroid.blend1": "0874dcffdeca2ae60ae37ab52b39841de99e8f2fd3906415ec786c7e307a0ce8",
+    "cultivator_handsome_youth_v6_vroid_2p5d_size18.png": "5d051d7655a3da884bd47805fa801c912b5fe39c6fe7845cc601a24dd10108d0",
+    "cultivator_handsome_youth_v6_vroid_2p5d_size6.png": "f41caae9e57e5324c201e1861b03be22ce65e1d5064235437b03d0351ecdaa43",
+    "cultivator_handsome_youth_v6_vroid_back.png": "2cc63a303df4bbebed3f6f5aab5754203848408c9d0f9bd0e62c00c5e9b81f47",
+    "cultivator_handsome_youth_v6_vroid_front.png": "0dac4e202ab09f008d048f727d3399f4100aced8f224ecdf7e017fbabdb98b34",
+    "cultivator_handsome_youth_v6_vroid_grey_back.png": "cb2402d3f6307c711aa60415c0582aaa8c840d5e32f8116e116557ae9e348441",
+    "cultivator_handsome_youth_v6_vroid_grey_front.png": "1ea57db8fb5624b8201a687b11da1532b59be7daadd117af68b36090c8139be4",
+    "cultivator_handsome_youth_v6_vroid_grey_side.png": "ff3c6e9227c01f2d352d98483fd12de6c68a6fc47c08601aacc9ece69bcfb96c",
+    "cultivator_handsome_youth_v6_vroid_grey_three_quarter.png": "082fd27337f875e53cd789ea0fa57f95d96b0ec02b8fe2f9b7c7ef734a88ff1a",
+    "cultivator_handsome_youth_v6_vroid_idle_back.png": "32390ff572e8c95dbce8feb9d2066fe07477fd7647bb6109adf40228f2f607a0",
+    "cultivator_handsome_youth_v6_vroid_idle_front.png": "9c20b96f71ee823c4f2bbd79aa4785f3f65355095e881f5b289846462d8d357a",
+    "cultivator_handsome_youth_v6_vroid_idle_three_quarter.png": "a8713bdd19e8bdc9c69aeaaef3eefc8a45d80d0151c0f3515a57c13e1980e0bd",
+    "cultivator_handsome_youth_v6_vroid_only_added_clothing_grey.png": "89c87f41e3646cd56d8de8f10c2a968d7a804e996da90ea23e5ef65a6f26d645",
+    "cultivator_handsome_youth_v6_vroid_rigged.glb": "55040850dc8b79d4d97bc825978e79e6d478b8f54f03eac912405656c6a75a6a",
+    "cultivator_handsome_youth_v6_vroid_side.png": "2998bb64c83c2e64140b9ef38179bcce388ea782596d5c86763ba188eb6ee787",
+    "cultivator_handsome_youth_v6_vroid_three_quarter.png": "1332915c518583d93c29a944322a273339ca825938340d3aefd75fca433f1270",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend": "571a6c3328aa028bcb48b33b75d715e7ee3aa9293800ce8a34d731f3d9925c54",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend1": "441cdfe5c853ce50c78eded192775aeb37471565596b9c4d5678189507116c50",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_back.png": "2080506bc5e47d762465a123e03bf4862ed0e590e1752087efd0833a1da49287",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_front.png": "1be8660b0d8db05eef9cda5a52b0aa00e985a2c3b14995b9e5caa980ead79f50",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_grey_back.png": "f10b2b19f668d63b89163fb88b0c8870f969849842fd6f485fb74aca7943360b",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_grey_front.png": "abdae1b6a7c057e124967a421f6cfa4186162da9c8cad5a7e772b918d96bded4",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_grey_side.png": "fa1855fa30f0be424fd33508722db3a01329d88cbb768329a32423b36e2f6e2f",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_grey_three_quarter.png": "03c3cfd76bb3fe5c3525e87cd7578e16e161ee63f27204e38fd40ef596b5025d",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_side.png": "06c4c8416ebf15fd1c482de6c0dab9015e585fe5a42ef84eae3c325c5a26d389",
+    "iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01_three_quarter.png": "b32b724b68a1bc3427324ac2da04ad765607afdfdc72ebc28eed51fd9166e193",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02.blend": "15c7cfb2d32c84e444f3809be50a2f0ec4b6e8cd1fca869a8d7fd516698f67cd",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_back.png": "b5e08023bc6466732a6825be82cc1198a3b6f4cab88aaece336187adbb2b6a8b",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_front.png": "4c79646c9cb4fa5183999819a60b5befd04eb853dd799580167af5020e6dbd2b",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_grey_back.png": "93db179577ac6827e19ff1dd1ca91b7c5c475defd4bea79e41950c3071d8771b",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_grey_front.png": "0e841c5ed642614a888b8939e97dc66364d1d2f03fde3a3253cc2885adbf6b24",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_grey_side.png": "6802b90fb600f0a2e3a3c828ad9ef0b7311208128f538e2cf191fd4b8f57cc17",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_grey_three_quarter.png": "c84d106cb2d82fd91ca67c9d4639650ecec8c017de9c091f248127c9f14250fd",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_side.png": "de7aec77c5369556753567b43e2a98cc2f4a54b9b9bb0b904dcd8e25abf4d0f1",
+    "iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02_three_quarter.png": "b582307413d2b3e44f1fe8971b2bed187a371b2bbed600e0df62b97836ae9b23",
+    "source/HairSample_Male_original.vrm": "4af2194f90ba846f3b13c00b50b14262419062d2171d17de922bcce2f89979c7",
+    "source/SOURCE.md": "9989946ecd3ddc7b084318d417fdf986441f49d59e9b1e99c75afd89384c28bb",
+    "source/hairsample_male_original.zip": "ba87440272b157a443dbe2cddb375eb175bce3586a45a84779bb018a5e730129"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "generator": "tools/art/generate_cultivator_shortcoat_v2.py",
+  "blender": "5.2.1 LTS",
+  "original_geometry": true,
+  "third_party_assets": false,
+  "source_objects": 43,
+  "triangles": 11828,
+  "body_height_to_cranium_m": 1.6864,
+  "total_height_with_bun_m": 1.7283,
+  "head_height_m": 0.2509,
+  "head_units": 6.722,
+  "arm_span_m": 1.6713,
+  "depth_m": 0.3559,
+  "soles_at_zero": true,
+  "authored_front_axis_blender": "-Y",
+  "fbx_axis_forward": "-Z",
+  "fbx_axis_up": "Y",
+  "static_t_pose": true,
+  "rigged": false,
+  "animations": 0,
+  "outputs": {
+    "cultivator_shortcoat_v2.blend": {
+      "bytes": 243097,
+      "sha256": "3b37a0ec2cedba804a4a7572b8ea26d42af9462104f2b7503ae06ebce3cad642"
+    },
+    "cultivator_shortcoat_v2.glb": {
+      "bytes": 231368,
+      "sha256": "3aa471267dfa92c87d9f7cc46e2e06695bc2ca6fa8da8d53cd383ef5b1108515"
+    },
+    "cultivator_shortcoat_v2_mixamo_tpose.fbx": {
+      "bytes": 271260,
+      "sha256": "ea6f0ab3b181f73deb6c4bcc2273f5262552801386c26ae492e2f6d1f8d3742a"
+    }
+  },
+  "previews": {
+    "cultivator_shortcoat_v2_front.png": {
+      "bytes": 1380575,
+      "sha256": "84cb79700440dca1e9bea2d81d0ca9cc9111dd72584ede39f81a44182ccb1429"
+    },
+    "cultivator_shortcoat_v2_three_quarter.png": {
+      "bytes": 1391513,
+      "sha256": "2f1f5802138f6433cbd3a5ac267e56f1b10ba5491e37aee7f5eb9376ba3de35f"
+    },
+    "cultivator_shortcoat_v2_side.png": {
+      "bytes": 1356724,
+      "sha256": "628d7c96345571d5f39b4ae7906f27a9f7ce20deadf5711e433a752c5e9c9c2c"
+    },
+    "cultivator_shortcoat_v2_back.png": {
+      "bytes": 1365987,
+      "sha256": "e2000a92facb4b254f659c73cb4d53a9687958c27c5bd1850f35193858845798"
+    },
+    "cultivator_shortcoat_v2_FRONT_axis_proof.png": {
+      "bytes": 1390935,
+      "sha256": "b4520b4f6f64ab7a7362014d488a23676f2779c1813c8218a065ba1236b5265f"
+    },
+    "cultivator_shortcoat_v2_2p5d_size18.png": {
+      "bytes": 907532,
+      "sha256": "8e9f251f7cd72ea518b764b432a73516d19cb6cf3a0371ab4d00ea78595678db"
+    },
+    "cultivator_shortcoat_v2_2p5d_size6.png": {
+      "bytes": 914352,
+      "sha256": "512d8ac627cc06b0abc9a8d0e24410574781561c6fd4d571b284de351d9f5836"
+    },
+    "cultivator_shortcoat_v2_grey_front.png": {
+      "bytes": 1372117,
+      "sha256": "a7410dae76a0cf054042250a4b5e52302ef7ca97c1451b4783a90cfbd3455a48"
+    },
+    "cultivator_shortcoat_v2_grey_three_quarter.png": {
+      "bytes": 1383922,
+      "sha256": "a1f67d17bc502f33e6cb3c5f82695cdcc6c3cab9a73d75c06b27f277ebe8fe1c"
+    },
+    "cultivator_shortcoat_v2_grey_side.png": {
+      "bytes": 1348232,
+      "sha256": "2359190e9c59cf50a4a3f808a7a8dd92a9abbf6c2018d2503b30d8871da67f3d"
+    },
+    "cultivator_shortcoat_v2_grey_back.png": {
+      "bytes": 1353290,
+      "sha256": "4d5ab68422a9cab15b46b977a300cad593d3f7fd5ae33f599fb0bab7b8995e5f"
+    }
+  },
+  "fbx_reimport_audit": {
+    "fbx_reimport_meshes": 1,
+    "fbx_reimport_armatures": 0,
+    "vertices": 6024,
+    "polygons": 8796,
+    "materials": 17,
+    "actions": 0,
+    "matrix_identity": true,
+    "semantic_centers_blender_m": {
+      "nose_front_marker": [
+        -0.0,
+        -0.0974,
+        1.54916
+      ],
+      "eye_front_marker": [
+        -0.0,
+        -0.098,
+        1.56096
+      ],
+      "toe_front_marker": [
+        0.0,
+        -0.1465,
+        0.04746
+      ],
+      "heel_marker": [
+        0.0,
+        -0.034476,
+        0.057798
+      ],
+      "torso_center": [
+        0.0,
+        0.008334,
+        1.173793
+      ],
+      "head_center": [
+        0.0,
+        0.002887,
+        1.548456
+      ],
+      "bun_back_marker": [
+        0.0,
+        0.043,
+        1.69296
+      ]
+    },
+    "front_axis_assertion": "PASS: nose/eyes are in front of head, toes in front of heels, bun behind head; authored front is Blender -Y",
+    "mixamo_reasoning": "v1 was authored/exported facing +Y and Mixamo showed its back; v2 uses the opposite semantic facing (-Y)",
+    "upload_front_check": {
+      "file": "cultivator_shortcoat_v2_upload_front_check.png",
+      "bytes": 1381199,
+      "sha256": "4105304f39508f0b377154e9cea94835764a2f67f0f5ecfc34cd6e0791856387",
+      "source": "clean FBX re-import"
+    }
+  }
+}
