@@ -51,13 +51,21 @@
       "status": "exploring",
       "scene": "res://levels/experiments/character_movement/movement_garden.tscn"
     },
-    {
-      "id": "mountain_realm",
-      "title": "群山宗门",
-      "stage": "已有综合场景",
-      "question": "三项移动能力在完整空间与美术中的组合体验是否成立？",
-      "status": "exploring",
-      "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
-    }
+        {
+            "id": "mountain_realm",
+            "title": "群山宗门",
+            "stage": "已有综合场景",
+            "question": "三项移动能力在完整空间与美术中的组合体验是否成立？",
+            "status": "exploring",
+            "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
+        },
+        {
+            "id": "jade_paper_sample",
+            "title": "青玉纸白样板",
+            "stage": "美术方向样板",
+            "question": "青玉瓦 / 暖木 / 靛青角色 / 水墨远景的组合在实机中的观感与可读性是否成立？",
+            "status": "exploring",
+            "scene": "res://levels/experiments/character_movement/jade_paper_sample.tscn"
+        }
   ]
 }

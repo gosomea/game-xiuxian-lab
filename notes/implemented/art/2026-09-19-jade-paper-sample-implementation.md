@@ -1,0 +1,88 @@
+# Note: 青玉纸白样板落地：混元生成资产 + 样板场景（第一轮实施）
+
+Status: implemented
+
+实施授权：使用者于 2026-09-19 明确指示按 [青玉纸白方向 note](2026-09-19-jade-paper-art-direction.md) 优化项目视觉/美术/人物/场景，并授权"必要时用混元直接生成 3D，再在 Blender 里编辑"。本 note 记录第一轮（样板范围）的实施决策与实施记录；方向 note 保持 proposed，其批量推广与总验收仍开放。
+
+## 问题
+
+方向 note 已给出完整规格但没有可运行的实物：五张概念图不可运行，八个场景的环境参数各写一套，"青玉纸白"是否真的在 Godot 实机中成立（配色 / 剪影 / 雾 / 轮廓）没有任何证据。方向 note §6 的第一步是小型样板，本 note 决策样板的资产来源、制作管线与场景装配。
+
+## 决策
+
+### 1. 范围：只做样板，不批量推广
+
+按方向 note §6 顺序：本轮交付小型样板场景 `jade_paper_sample.tscn`（亭 / 台阶 / 松 / 岩 / 人物 / 飞剑 / 远景一屏可比较）。五峰与既有场景不在本轮改动。
+
+### 2. 人物与飞剑：零改动（已合规）
+
+逐条核对现役资产与方向 note §2/§3：
+
+| 项 | 方向要求 | 实测（GLB 读数） | 结论 |
+|---|---|---|---|
+| 人物比例 | 6.5–7 头身 | 1.70 m ≈ 6.8 头身 | 达标 |
+| 人物衣 | 交领/腰封/袍摆三线 | `Robe_Collar` / `Robe_Sash` / `Robe_Skirt` 独立分件 | 达标 |
+| 人物头 | 发髻成立 | `Hair_Bun` + 开口发帽 `Hair_Cap` | 达标 |
+| 人物色 | 靛青主色 + 月白内衬 + 淡金腰封 | `Robe_Indigo`(0.086,0.146,0.246) / `Inner_Ivory`(0.76,0.73,0.66) / `Sash_Wood_Gold`(0.43,0.31,0.13) | 达标 |
+| 飞剑 | 剑体可辨 | `Blade steel` / `Hilt wrap`(暖棕) / `Aged bronze`(古铜) | 达标 |
+
+人物分件名（`Leg_L` 等）是 `cultivator_presentation.gd` 的硬契约，混元整体生成的人物网格会破坏分件刚体动画，禁止替换人物模型。本轮人物与飞剑不改。
+
+### 3. 环境资产：混元生成 + Blender 归一
+
+无分件契约的静态环境物（亭/松/岩）用混元 3D 生成（腾讯云 hy-3d 文生 3D），再在 Blender 内编辑：
+
+- 来源声明：混元生成几何 + 烘焙贴图；Blender 内仅做缩放/朝向归一、减面与材质调色；不做人工雕刻。逐资产 job_id 登记于台账。
+- 归一：Y-up、底面 z=0、xy 居中、等比缩放到目标高度（松 6.0 m / 岩 2.2 m / 亭 4.6 m，按人参照 1.70 m）。
+- 材质调色：按烘焙贴图色相给面分段（松=冠/干，亭=瓦/木/石），调色系数（色卡/段均色，逐通道截断）直接烘进 1024 贴图副本。必须烘进像素——glTF 导出器不导出 MixRGB 乘法节点（`baseColorFactor` 会丢，本轮实测踩坑）。
+- 另存：新文件名 `jade_pavilion.glb` / `jade_pine.glb` / `jade_rock.glb` / `jade_sample_terrain.glb`（台基+台阶+铺装+收边，程序建模）；旧资产零删除零覆盖。
+- 复现脚本：`tools/art/build_jade_sample_terrain.py`（地形）与 `tools/art/process_jade_hunyuan.py`（混元后处理，含色卡）。
+
+### 4. 样板场景
+
+`src/levels/experiments/character_movement/jade_paper_sample.tscn` + `.gd`：
+
+- 复用 `Swordsman`（三能力不变）、共享 `CameraRig`（fixed_follow + 滚轮缩放）、`LabHud`、共享 `MovementLabInput`。
+- 场景内置 `WorldEnvironment`：低饱和青蓝天穹、高度雾（`fog_height=8`、`fog_height_density=0.02`）压远景对比；暖金斜光 + 阴影。
+- 碰撞为场景内显式盒（样板规模不引入布局 JSON 机制）：地面/台基/台阶/树干/岩石/边界；装饰面契约由地形 GLB 自带（压顶高出主体 0.02、踏面条高出踏步 0.02、砖面高出地面 0.02）。
+- 注册进 `character_movement_subexperiments.json`（id `jade_paper_sample`，exploring）与 `movement_lab_hub.gd` REQUIRED_IDS。
+
+## 备选方案
+
+- 混元整体替换人物：不采用。分件名是表现层硬契约，替换会静默瘫痪步态/御剑姿态动画（方向 note §4 表现层边界同样禁止）。
+- 保留混元烘焙贴图原色：不采用。生成色与色卡漂移（岩石实测偏冰蓝），样板的价值就在于验证统一色卡。
+- 材质调色走 shader 乘法节点：不采用。glTF 导出器丢节点（本轮实测），调色必须烘进像素。
+- 亭/松/岩全程序建模复刻现有管线：不采用。使用者明确授权混元生成；生成件与程序件的质感差异正是样板要比较的对象。
+- 直接改 mountain_realm 五峰落地新方向：不采用。违反方向 note §6（先样板验证、后批量推广）。
+
+## 后果
+
+- `tools/verify/run_all.py --with-tests` 全绿（当前 959 项），负向控制 27/27；子实验清单基线从七项扩为八项并同步测试。
+- 样板场景在真实 Godot（gl_compatibility，Movie Maker 截帧）可启动、可渲染，首帧证据入 `docs/playtest/2026-09-19-jade-paper-sample-first-run.md`。
+- 新 GLB 读数（网格/三角形/材质/贴图/字节/sha256）与混元 job_id、来源声明登记于 `docs/art/jade_paper_sample/asset_ledger.md`；`hunyuan_raw/` 保留原始产物与预览图。
+- 旧资产零删除零覆盖：`cultivator.glb` / `flying_sword.glb` / `mountain_realm*.glb` sha256 不变，新资产全部另存新文件名。
+- 审美结论归使用者：使用者视觉确认前，样板状态保持 exploring，不宣称方向通过；交互手感与多机位动作视频（方向 note 验收 §2）留待实机试玩轮。
+
+
+## 实施记录（2026-09-19）
+
+已落地：
+
+- 资产：`jade_pavilion.glb`（79,999 tris）/ `jade_pine.glb`（39,994）/ `jade_rock.glb`（30,000）/ `jade_sample_terrain.glb`（696），混元 job_id 与 sha256 见 [资产台账](../../../docs/art/jade_paper_sample/asset_ledger.md)；原始产物归档于同目录 `hunyuan_raw/`。
+- 场景：`jade_paper_sample.tscn/.gd`（注册进清单与 hub，入口第 8 项）。
+- 验证：`tools/verify/run_all.py --with-tests` 全绿（959 通过）；实机首帧证据 [playtest 记录](../../../docs/playtest/2026-09-19-jade-paper-sample-first-run.md)。
+- 实机修复四项（远景盘顶面遮地、baseColorFactor 导入转换洗白、铺装蝴蝶结面、高度雾参数），机制层结论已回写台账「关键约束」。
+- 测试基线随清单从七项扩为八项（`test_movement_lab_hub.gd` / `movement_hub_playtest.gd`）。
+
+未做（留给后续轮次）：
+
+- 交互手感与多机位动作视频（方向 note 验收 §2）。
+- 批量推广到五峰与既有场景（方向 note §6 第 7 步，须样板过使用者视觉验收后）。
+
+## 风险
+
+- 混元产物面数与拓扑不可控：本轮以 Decimate 预算兜底（松 40k / 岩 30k / 亭 80k），超预算对象放行前必须先减面。
+- 混元件的平滑高模质感与程序件的硬朗低模质感存在断层，样板阶段刻意并置供使用者比较；若判为不可接受，混元件需退回 Geometry 白模 + 手动块面化。
+- 色相分段按贴图颜色投票，阴影区可能被误分类（松冠暗部曾落入木段）；当前阈值 (sat>=0.08, hue 0.20–0.60) 下一轮若出现脏色，先调阈值再考虑手工修分。
+- 亭的朝向（PAVILION_YAW_DEG）以实机截图核对，错误会表现为亭背对出生点。
+

@@ -1,1 +1,10 @@
 /src/levels/experiments/character_movement/mountain_realm_courtyards.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/pavilion_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/pine_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/rock_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_pavilion.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_pine.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_pine.blend1 filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_rock.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_rock.blend1 filter=lfs diff=lfs merge=lfs -text
+/src/levels/experiments/character_movement/jade_pavilion.glb filter=lfs diff=lfs merge=lfs -text

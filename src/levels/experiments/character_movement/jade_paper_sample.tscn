@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://levels/experiments/character_movement/jade_paper_sample.gd" id="1_root"]
+
+; 青玉纸白环境：低饱和青蓝天穹 + 高度雾压远景对比（方向 note §3）。
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.380392, 0.560784, 0.760784, 1)
+sky_horizon_color = Color(0.85098, 0.886275, 0.905882, 1)
+sky_curve = 0.15
+sky_energy_multiplier = 0.55
+ground_bottom_color = Color(0.68, 0.72, 0.72, 1)
+ground_horizon_color = Color(0.85098, 0.886275, 0.905882, 1)
+ground_curve = 0.08
+sun_angle_max = 30.0
+sun_curve = 0.15
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+process_mode = 2
+radiance_size = 3
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.733333, 0.792157, 0.776471, 1)
+ambient_light_energy = 0.18
+tonemap_mode = 2
+tonemap_exposure = 0.72
+tonemap_white = 1.0
+fog_enabled = true
+fog_light_color = Color(0.835294, 0.878431, 0.909804, 1)
+fog_light_energy = 1.0
+fog_density = 0.0035
+fog_aerial_perspective = 0.3
+fog_sky_affect = 0.3
+fog_height = 20.0
+fog_height_density = 0.004
+
+[node name="JadePaperSample" type="Node3D"]
+script = ExtResource("1_root")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -38, 0)
+light_color = Color(1, 0.952941, 0.866667, 1)
+light_energy = 0.95
+light_angular_distance = 0.5
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+shadow_bias = 0.06
+shadow_normal_bias = 2.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+position = Vector3(22, 26, 23)
+projection = 1
+current = true
+size = 18.0
+near = 0.1
+far = 700.0
