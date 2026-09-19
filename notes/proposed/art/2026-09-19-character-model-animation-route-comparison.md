@@ -143,6 +143,8 @@ Status: proposed
 
 **阶段 2 检查点（2026-09-19）**：路线 B 已完成人工 marker 前准备。固定上游 GLB 被转换为 1 mesh / 0 armature / 0 action 的 3,921-tris 真 T-pose FBX/OBJ；5 件武器移除，84-tris 披风原件保存在 Blender 源工程中，待绑骨后映射到 Mixamo 等效胸骨。产物、二次导入断言、逐文件哈希与人工 marker 风险见[资产台账 §8](../../../docs/art/kaykit_route_ab/asset_ledger.md)和 [`route_b/README.md`](../../../docs/art/kaykit_route_ab/route_b/README.md)。**尚未上传 Mixamo、尚未拖 marker、尚未下载动作，路线 B 不能称为完成。**
 
+同日路线 A 已完成独立 Godot 代表链：固定 GLB 逐字节复制入运行目录，原生 41 骨 / 76 clips 直接使用；5 件武器运行时隐藏、披风保留；四个持续状态 clip 显式改为线性循环，并用“推进超过两个周期仍播放且位置回绕”防止同步状态断言掩盖动画定格。专项测试 98/0、全套运行测试 1,079/0。独立演示台已可启动，但 Godot AI 无可用编辑器会话且 headless 无可靠渲染帧，**视觉、脚滑与审美仍未验收**。证据见[资产台账 §9](../../../docs/art/kaykit_route_ab/asset_ledger.md)与[路线 A playtest](../../../docs/playtest/2026-09-19-kaykit-route-a.md)。
+
 阶段 1 与阶段 2 之间不得跳步，也不得用"看起来能跑"代替选角门槛。
 
 ### 8. 证据分级（事实 / 推断 / 未核验）
