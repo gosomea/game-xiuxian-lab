@@ -1,0 +1,286 @@
+{
+  "source": {
+    "upstream": "Quaternius Modular Character Outfits - Fantasy / Male Peasant on Regular Male / CC0",
+    "mirror": "https://github.com/agentkaerf/FreeModels",
+    "mirror_commit": "db3df04d1e4714298a09510b26fb6de6645138a2",
+    "mirror_path": "Modular Character Outfits - Fantasy[Standard]/Exports/glTF (Godot-Unreal)/Outfits/Male_Peasant.gltf",
+    "download_date": "2026-09-19",
+    "source_sha256": "8f5a6cf6c1cf96e0a0f8e1a861b4245d42b7f88d44e5076da3d48f3fc52f4e76"
+  },
+  "orientation": {
+    "blender_character_front": "-Y",
+    "godot_glb_character_front": "-Z",
+    "proof": "Quaternius source faces Blender -Y; GLB export adds a 180-degree GodotFrontAdapter root"
+  },
+  "armature": {
+    "name": "Armature",
+    "bone_count": 65,
+    "bone_names": [
+      "root",
+      "pelvis",
+      "spine_01",
+      "spine_02",
+      "spine_03",
+      "neck_01",
+      "Head",
+      "clavicle_l",
+      "upperarm_l",
+      "lowerarm_l",
+      "hand_l",
+      "index_01_l",
+      "index_02_l",
+      "index_03_l",
+      "index_04_leaf_l",
+      "middle_01_l",
+      "middle_02_l",
+      "middle_03_l",
+      "middle_04_leaf_l",
+      "pinky_01_l",
+      "pinky_02_l",
+      "pinky_03_l",
+      "pinky_04_leaf_l",
+      "ring_01_l",
+      "ring_02_l",
+      "ring_03_l",
+      "ring_04_leaf_l",
+      "thumb_01_l",
+      "thumb_02_l",
+      "thumb_03_l",
+      "thumb_04_leaf_l",
+      "clavicle_r",
+      "upperarm_r",
+      "lowerarm_r",
+      "hand_r",
+      "index_01_r",
+      "index_02_r",
+      "index_03_r",
+      "index_04_leaf_r",
+      "middle_01_r",
+      "middle_02_r",
+      "middle_03_r",
+      "middle_04_leaf_r",
+      "pinky_01_r",
+      "pinky_02_r",
+      "pinky_03_r",
+      "pinky_04_leaf_r",
+      "ring_01_r",
+      "ring_02_r",
+      "ring_03_r",
+      "ring_04_leaf_r",
+      "thumb_01_r",
+      "thumb_02_r",
+      "thumb_03_r",
+      "thumb_04_leaf_r",
+      "thigh_l",
+      "calf_l",
+      "foot_l",
+      "ball_l",
+      "ball_leaf_l",
+      "thigh_r",
+      "calf_r",
+      "foot_r",
+      "ball_r",
+      "ball_leaf_r"
+    ],
+    "required_lr_pairs": {
+      "upperarm_l|upperarm_r": true,
+      "lowerarm_l|lowerarm_r": true,
+      "hand_l|hand_r": true,
+      "thigh_l|thigh_r": true,
+      "calf_l|calf_r": true,
+      "foot_l|foot_r": true
+    },
+    "rest_pose_preserved": true
+  },
+  "weights": {
+    "mesh_audit": [
+      {
+        "object": "Bound topknot root",
+        "vertices": 686,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Eyebrows",
+        "vertices": 646,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Eyes",
+        "vertices": 556,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Left swept temple lock",
+        "vertices": 56,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Male_Peasant_Arms",
+        "vertices": 3315,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Male_Peasant_Body",
+        "vertices": 3006,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Male_Peasant_Feet",
+        "vertices": 1878,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Male_Peasant_Legs",
+        "vertices": 656,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Moon-white left over-collar",
+        "vertices": 8,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Moon-white right under-collar",
+        "vertices": 8,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Quaternius continuous young head and neck",
+        "vertices": 1745,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Restrained golden hair pin",
+        "vertices": 266,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Right swept temple lock",
+        "vertices": 56,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Sculpted fitted hair cap",
+        "vertices": 292,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Smooth back hairline",
+        "vertices": 4,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Vertical cultivator hair bun",
+        "vertices": 686,
+        "vertices_below_weight_0_999": 0
+      },
+      {
+        "object": "Warm-gold topknot tie",
+        "vertices": 56,
+        "vertices_below_weight_0_999": 0
+      }
+    ],
+    "objects_with_incomplete_weights": []
+  },
+  "geometry": {
+    "mesh_count": 17,
+    "triangle_count_render_evaluated": 27056,
+    "bounds_m": {
+      "minimum": [
+        -0.899414598941803,
+        -0.1675412505865097,
+        -0.003967586904764175
+      ],
+      "maximum": [
+        0.8994146585464478,
+        0.18447723984718323,
+        1.9159996509552002
+      ],
+      "height": 1.9199672378599644
+    }
+  },
+  "art_review": {
+    "status": "awaiting independent static review",
+    "minimum_required_score": 80,
+    "technical_pass_is_not_visual_pass": true
+  },
+  "file_sha256": {
+    "asset_ledger.md": "3ba1bbe7c630ad96d3296f8c2647ba4c8511ba36d524a1c5d5eacea0a5d946b6",
+    "build_manifest.json": "73830acc04d386c15b9f07343d20a9cc985ef70d5ca937c1c6a7c7eb549daa9b",
+    "cultivator_shortcoat_v3_quaternius.blend": "d0e9745c3a52d96027293533fd6fac3aadd2fd60b18e50d5d356d97600d55f8e",
+    "cultivator_shortcoat_v3_quaternius.blend1": "d2798bdf1c36a448f03d009b8e2b8a6deb65e65a960c5115e6eae6c13bd2d004",
+    "cultivator_shortcoat_v3_quaternius_2p5d_size18.png": "40ddc26acc7ada3c6f4f2206b8814c0a7e937b053a9fe66ae2779b51b99ac93a",
+    "cultivator_shortcoat_v3_quaternius_2p5d_size6.png": "6f509ccb11db2b790d7fcec5e4d30e2a1d7760e1b4ebfb51a53121806b2ad8cc",
+    "cultivator_shortcoat_v3_quaternius_back.png": "e2493c72031154e379d22f15a67079337f80daf1cdbc5e685c606634eaa43c70",
+    "cultivator_shortcoat_v3_quaternius_front.png": "46157031cffd53196cda4a36c42699a178ab5c96f5d148dc3417608cafc9d0f5",
+    "cultivator_shortcoat_v3_quaternius_grey_back.png": "6fce8e7b82c24c7149a63e50205c0bfa90429748d8485d376e8930e111b10e66",
+    "cultivator_shortcoat_v3_quaternius_grey_front.png": "6715b0faa2ba385e9f4d766bfd3605834ca1a84d40f8cbfe6ac4abc428d6860a",
+    "cultivator_shortcoat_v3_quaternius_grey_side.png": "fffe725981f456619e4c4efb802b195f4dbb2f0da618c9049dd4f0f16ac1502e",
+    "cultivator_shortcoat_v3_quaternius_grey_three_quarter.png": "316d92258e862eb5d2c33dabbee3ab2a30a7f8d193e8358915335f0d31ff4df2",
+    "cultivator_shortcoat_v3_quaternius_pose_stress.png": "ea7b44a0ba8cac52b8a65acac445345298944230cd007dc628e154239c9a1ffe",
+    "cultivator_shortcoat_v3_quaternius_pose_stress_grey.png": "5f7c8a5a76da6a63aeb833a41da0663ec304f8fdeb6cb6b43a14140704164271",
+    "cultivator_shortcoat_v3_quaternius_rigged.glb": "4a0f583f94c2c3cd84cb3300ea379e8766abe75868ea151596125a3c2687e564",
+    "cultivator_shortcoat_v3_quaternius_side.png": "d7038e5c2cf779a42d9f0fabd443cd3405a5dbde86794ce3bdd7fd40b8c60773",
+    "cultivator_shortcoat_v3_quaternius_three_quarter.png": "e7299f630d9dd3c29ec16ee55b46c35b16df6f182d2ad12171c98d7eb3c8c61e",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01.blend": "cfb5c7f9bf689ab5c5cca826eef752d3c0532856a87fd60b511cf07a96625c09",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01.blend1": "94e1a65160fc613ceebc8faacad5c7c5722bbad6be861f9aef118157289c01b7",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_back.png": "121a5acce3667c2a0783b205d8d9817838d9d39ed18b67981da40b616424b33a",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_front.png": "3163bcdc97d5998575dc39a2e287c7f821f2a731d00aae7fb6121c5feb82669a",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_grey_back.png": "5ce81a5cea75937888f01725a03016f1644a351770e818bfa0542bbaac3fd5b7",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_grey_front.png": "278101822bde00b8f09ba61d24165556b733eb7bca014c1c3103a5ae84a25327",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_grey_side.png": "4712cca00c088ae931c1a43cc5a9af28da53aa63c7d2fd5f1298cbc331edc0eb",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_grey_three_quarter.png": "c59ceec4ea8d4f559f8efe269b7bd80ca17991a47dbff5ddddce5ad2376c4b20",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_side.png": "0b09b8b12c615388c1ae6ce3919cce70c0703b80cb7582fc66633475391c0dda",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_01_three_quarter.png": "f23eec2f752536384b59bd1e2e302c510f80f9c42a7f53822609ed5bc38c7115",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02.blend": "847d929f35b36f114519336cbd136832a1cccffe5929403db317fe5d4f40913f",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02.blend1": "22e0f19ccd0100aa493b38e583d37a825e9e6dfa3b21bb68e58502f40a390035",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_back.png": "70b7ff7308bb259206212feba69105aec97c5208881f29e7be45f2a96a23d31a",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_front.png": "d650604e958cc912cfb830cf4d7e661b30930d437c5cf926ed124f23dfc57027",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_grey_back.png": "2b405932f843cffe5fa453c9e0dec4583a2f081dcd0cab938f1a6003860875e8",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_grey_front.png": "adf93bf0f758fca870c4f6a150afc2760305775c877a1865d4ea5865752e9969",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_grey_side.png": "11e34468833548fd144e07e98a91132f507ba9eb827d014fc9c20bade17a38c9",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_grey_three_quarter.png": "7041bf428d60d68303b05efc9412e46461070b13090ea91e2f629c1bf849b93e",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_side.png": "79f56a0389b4dcb04066720907a9619336a93e8f89c804e769175c75ada548a7",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_02_three_quarter.png": "2638814bd8ce8fda75ecf4d632fe87b1c4a982bf27bf57706322a098928dd2a1",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend": "2783216463b328d85eb5723bbd106c904d83edbe02a8a9106d759e94dc981abc",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend1": "7a66e1f3a2722471b729993cbd32d11af2505cc689111d1221efa09ef368e781",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_back.png": "da508e7e669f13cf53127dd7ef314a2ee058199ddf7fe28553d3a51d429e8a49",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_front.png": "6c892b5505f4adbe5ddd968c4a739f28a2341190f64765ea66dde2e1c8fc4b40",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_grey_back.png": "6177ada499eaa4c27536b01fe5a4096d063b1a5b1b65217b28b0c0955cebc5da",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_grey_front.png": "c3dbc9150aab00826b98e702735bdf70129df02889861f747835f5766d73c689",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_grey_side.png": "b6d1279df1c4b26684e588da522df7dd441159464801a949a318421ba18d6f8e",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_grey_three_quarter.png": "8abec12ba835c8ba0cca7784895cbaa5fe98b66d0d0f6c70883116b3c852c4c5",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_side.png": "11a637c7ced262855ef62e1ab2a868e48236a9b71b2ffa526da2be915ad74996",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_04_three_quarter.png": "223e9fe0e750467daa9f48b361c4798f664805e8dacadbdcb710956e34bd874b",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend": "49170aabb2dbfee5c7940cd234fc76438829ec91fdd7b1785edf55340172a0c4",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend1": "75a749036ac16d337cd459718344c53aa1269bc85df1749d0fbfb64ef64bc0a5",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_back.png": "1406ace6906d32a1c6ec891a6c650ed729974009994b06ee205ef6b96891fea8",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_front.png": "7a2e2173a0504902fd688af358ae71036f423100bda371ce52897ddb3b40250a",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_grey_back.png": "4ce95eaa5e3348d1597c3fa1d18d5ca1c4df9e595b060f1ba485bdf5608ed7f9",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_grey_front.png": "67b93f5deacda33165944637ac2e653241518b275a979714a5178f812c1e623a",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_grey_side.png": "bf3e9a872a15d9f011dd448dec0f690a845108e63fa10741661de63ec8066a49",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_grey_three_quarter.png": "fa28f3390ff49ef5345a0c45eed3e75328769bc6f3e62a6d7d052c1dfc297332",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_side.png": "52ceb57ee184a99105591709afea7bf3c460255f0f4b728f83a5b822ff0883de",
+    "iterations/cultivator_shortcoat_v3_quaternius_iteration_05_three_quarter.png": "e885064205538ce81835d308f4815d89a5117107eaa0b9977155bce2c41b3880",
+    "iterations/iteration_03/README.md": "cff5e8900050ce1e2417df83ce792d5034bd77db86176e2ec5147a138fcf5b3d",
+    "iterations/iteration_03/back.png": "bdc4e10af51e977b044382f6ceef56c2b22486ac15257aa1b5c5a975a8603bee",
+    "iterations/iteration_03/cultivator_shortcoat_v3_quaternius_iteration_03.blend": "6e2b9408308fb336f2bd6dd2fcc806b3fc8c61cdc8c0c6e955bf737ecaedaca8",
+    "iterations/iteration_03/front.png": "54036e04186d5707eff0fe9e5759a6bd958bc5483aa80f1a655ce7dde9da5e92",
+    "iterations/iteration_03/grey_front.png": "be60e19f3fc17541ea919a598c16aa3c41e1b988a0d9b2a16dcce42301b8395c",
+    "iterations/iteration_03/grey_three_quarter.png": "9dcd15f8fbf3f306d2bf1a7c7a05a683090f54cbf74627cdd2b3827dcf0e461b",
+    "iterations/iteration_03/side.png": "bcf0e88b7c4b90922c927a47c08dc07470bc104e3c888c950fccb5ce57021f89",
+    "iterations/iteration_03/three_quarter.png": "cca30e9b2e71b938dc162d05e097b0f226e845a84095e141429714d376411d16",
+    "source/MIRROR-ASSETS.md": "841ad7d42b7a8fc7b21265e6a221367e67a03f7963a87a7a201b0fae5c7ca20b",
+    "source/Male_Peasant.bin": "e46bde795f7b69b351d322d7a5628e07131cfb48ed0afe366293f1b3f530433c",
+    "source/QUATERNIUS-LICENSE.txt": "0f4beaf0fe360a7732e58bbe3dbf60a2422367fbea60cb9ea4add968f383268e",
+    "source/QUATERNIUS-OUTFITS-LICENSE.txt": "2202cc2f608c4210790b112e5f121bc2e7f8dced7b5b1c7f4be6203461bdebbb",
+    "source/T_Peasant_BaseColor.png": "a43635628d95571cd62fd4db0cc3a6ea32778b2bc02f242dda224c89d07f1ade",
+    "source/T_Peasant_Normal.png": "7598fa7b63e46fd4dac29708bf5a81e05eb9a67280f7b13c61e28a9110eeb679",
+    "source/T_Peasant_ORM.png": "e1932f5f91104afca89c501416a5fec09069b8552734237fc09045fabc4ca9b4",
+    "source/T_Regular_Male_Dark_BaseColor.png": "b4dcc0f4139aab548d7c070c4655bd2080ef16caeaaabee6c4aeb693c524e802",
+    "source/T_Regular_Male_Normal.png": "10cd71e2453e577fdd43e912b6016a99baf64964f0593e524bdd304855e15e2a",
+    "source/T_Regular_Male_Roughness.png": "086c2eb25bddfdb77d8e639ccbffb8df723ef4a1910d8e1b217e852f8668bfe5",
+    "source/quaternius_male_peasant.gltf": "8f5a6cf6c1cf96e0a0f8e1a861b4245d42b7f88d44e5076da3d48f3fc52f4e76",
+    "source/quaternius_superhero_male_source.glb": "d6f3b64cab629f6ddca9ba063811aeffd3663a8a4e49ade47cd9505dc2bbd70f"
+  }
+}
