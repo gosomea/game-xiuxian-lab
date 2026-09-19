@@ -9,6 +9,7 @@ MCP 服务器提供**工具**（Agent 能做什么）；`skills/` 提供**使用
 | 目录 | 上游 | 版本 | 许可 | 配套 skill |
 |---|---|---|---|---|
 | `blender-mcp/` | [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp) | 1.8.7（vendored） | MIT | `skills/mcp-blender/` |
+| `mixamo/` | 本仓自研（fork 自使用者 projects/mixamo-mcp 原型） | 2026-09-19 | MIT | `skills/mcp-mixamo/` |
 
 未 vendored 但推荐的可选 MCP：
 

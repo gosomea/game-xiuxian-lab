@@ -136,6 +136,16 @@ Status: implemented
 - **接入未做（下一轮）**：`cultivator_visual_rigged.tscn` + 骨骼驱动表现层
   （drop-in 替换 CultivatorPresentation，同节点名 + 同 API）+ motion 预览测试适配。
 
+
+### mixamo MCP 与 skill 收编进本仓（同日）
+
+- 使用者指示收编：`mcp/mixamo/`（自研 Playwright 自动化 + 8 工具 + 驱动脚本 phase1/2/3 +
+  LICENSE/README/.gitignore；browser_profile/downloads/.venv 为运行态，gitignore 不入库）
+  + `skills/mcp-mixamo/SKILL.md`（纪律：人工标记前置、驱动入口、踩坑清单、验证方式）。
+- `verify_mcp.py` INTEGRATIONS 注册 mixamo（8 工具），mcp/README.md 清单更新；
+  全局 `~/.workbuddy/mcp.json` 的 mixamo 条目改指本仓路径。
+- 原 `projects/mixamo-mcp/` 保留为原型备份，不再维护。
+
 ## 风险
 
 - 混元产物面数与拓扑不可控：本轮以 Decimate 预算兜底（松 40k / 岩 30k / 亭 80k），超预算对象放行前必须先减面。
