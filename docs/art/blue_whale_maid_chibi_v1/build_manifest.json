@@ -1,0 +1,199 @@
+{
+ "build": {
+  "blend_sha256": "d7fdb709a7e07a2a73340a41708ddda20df9402a324efc5dcf38723754bd0b00",
+  "blender_version": "5.2.1 LTS",
+  "checks": {
+   "bbox_max": [
+    0.3784,
+    0.63984,
+    1.06462
+   ],
+   "bbox_min": [
+    -0.3784,
+    -0.37456,
+    0.002
+   ],
+   "feet_on_ground": true,
+   "head_ratio": 3.005,
+   "height_m": 1.0626,
+   "material_count": 21,
+   "non_finite_total": 0,
+   "non_manifold_total": 753,
+   "object_count": 6,
+   "triangles_in_range_20k_80k": true,
+   "triangles_total": 30335,
+   "zero_area_total": 8
+  },
+  "export": {
+   "fbx": "docs/art/blue_whale_maid_chibi_v1/exports/blue_whale_maid_chibi_v1_unrigged.fbx",
+   "fbx_note": "unrigged：静态无骨骼、无动画、无约束",
+   "fbx_sha256": "f2560ed8530172c59ca361e96334812ade1bb04517e07f304a03abfbb5afa59b",
+   "glb": "docs/art/blue_whale_maid_chibi_v1/exports/blue_whale_maid_chibi_v1.glb",
+   "glb_sha256": "9c60182810878c6ae32888d41a41ebba15524b849bc888b7ea50ab13292146b8"
+  },
+  "framing_check": {
+   "game_scale_128": {
+    "bottom": 0.0625,
+    "height": 128,
+    "left": 0.1858,
+    "right": 0.0619,
+    "top": 0.0938,
+    "width": 113
+   },
+   "game_scale_256": {
+    "bottom": 0.0625,
+    "height": 256,
+    "left": 0.1858,
+    "right": 0.0664,
+    "top": 0.0938,
+    "width": 226
+   }
+  },
+  "glb_audit": {
+   "animations": 0,
+   "attributes": [
+    "NORMAL",
+    "POSITION"
+   ],
+   "bounds_max": [
+    0.3784,
+    1.06462,
+    0.37456
+   ],
+   "bounds_min": [
+    -0.3784,
+    0.002,
+    -0.63984
+   ],
+   "bytes": 765004,
+   "cameras": 0,
+   "images": 0,
+   "material_count": 21,
+   "materials": [
+    "BW_Skin",
+    "BW_WhiteSoft",
+    "BW_White",
+    "BW_WhaleBlue",
+    "BW_Navy",
+    "BW_IrisLight",
+    "BW_NavyDeep",
+    "BW_Gold",
+    "BW_Pink",
+    "BW_Shoe",
+    "BW_HairDeep",
+    "BW_HairMid",
+    "BW_HairTip",
+    "BW_EyeWhite",
+    "BW_IrisDeep",
+    "BW_IrisMid",
+    "BW_EyeLine",
+    "BW_Blush",
+    "BW_Mouth",
+    "BW_TailDeep",
+    "BW_TailTip"
+   ],
+   "meshes": 6,
+   "nodes": 6,
+   "sha256": "9c60182810878c6ae32888d41a41ebba15524b849bc888b7ea50ab13292146b8",
+   "skins": 0,
+   "triangles": 30335
+  },
+  "iteration": "refined_01",
+  "meshes": [
+   {
+    "materials": 1,
+    "name": "BW_Body",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 714,
+    "triangles": 1584,
+    "vertices": 810,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 9,
+    "name": "BW_Head",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 648,
+    "polygons": 2076,
+    "triangles": 3528,
+    "vertices": 2120,
+    "zero_area_faces": 4
+   },
+   {
+    "materials": 3,
+    "name": "BW_Hair",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 3388,
+    "triangles": 7216,
+    "vertices": 3660,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 8,
+    "name": "BW_Dress",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 105,
+    "polygons": 6164,
+    "triangles": 12371,
+    "vertices": 6311,
+    "zero_area_faces": 4
+   },
+   {
+    "materials": 3,
+    "name": "BW_Tail",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 1442,
+    "triangles": 2932,
+    "vertices": 1484,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 5,
+    "name": "BW_Feet",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 1336,
+    "triangles": 2704,
+    "vertices": 1372,
+    "zero_area_faces": 0
+   }
+  ],
+  "orientation": {
+   "axis_helper": "FRONT_+Z 由粗杆+圆锥箭头+文字组成，Blender 中指向 -Y（导出后 +Z），不导出",
+   "blender_front": "-Y",
+   "export_yup": true,
+   "gltf_front_after_export": "+Z"
+  },
+  "pose": {
+   "arm_abduction_deg": 52.0,
+   "note": "双臂外展 52°，不贴身；腋下/胯下/膝部留净空以便后续绑骨",
+   "type": "light A pose"
+  },
+  "reference": {
+   "note": "使用者提供的三视图设定图；外部版权与商用授权状态未知，仅作建模依据，本资产不就该图主张原创设定或可商用。",
+   "path": "docs/art/blue_whale_maid_chibi_v1/reference/source_character_sheet.png",
+   "sha256": "75f7007cf6d75937981cba15c7dd81ab5fd8e2704f3e913b97be7208aabc49e6"
+  },
+  "renders": [
+   "front",
+   "side",
+   "back",
+   "three_quarter_front",
+   "three_quarter_back",
+   "head_closeup",
+   "hair_back_closeup",
+   "apron_skirt_closeup",
+   "tail_side_closeup",
+   "hands_feet_closeup",
+   "orthographic_turnaround",
+   "gray_front",
+   "gray_side",
+   "axis_proof",
+   "game_scale_128",
+   "game_scale_256"
+  ]
+ }
+}
