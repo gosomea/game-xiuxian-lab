@@ -50,6 +50,15 @@ static func _test_install_pairs_behavior_and_visual(t) -> void:
 	var sword := bundle.installed_visual()
 	t.assert_true(sword != null and sword.name == "FlyingSword", "创建 FlyingSword 视觉")
 	t.assert_eq(sword.get_parent(), actor.get_node("Visual"), "视觉挂在宿主 Visual 下")
+	t.assert_true(absf(absf(sword.rotation.y) - PI) < 0.0001,
+		"飞剑适配根局部 yaw 补偿 180°（实际 %.4f）" % sword.rotation.y)
+	var sword_model := sword.get_node_or_null("FlyingSwordModel") as Node3D
+	t.assert_true(sword_model != null,
+		"飞剑适配根实例化原 GLB 模型")
+	if sword_model != null:
+		var tip_direction := (sword.transform.basis * sword_model.transform.basis * Vector3.FORWARD).normalized()
+		t.assert_true(tip_direction.dot(Vector3.BACK) > 0.999,
+			"原 GLB 的局部 -Z 剑尖经适配后朝人物局部 +Z（实际 %s）" % tip_direction)
 	t.assert_false(sword.visible, "初始隐藏（跟随 flight_active）")
 	t.assert_eq(actor.flight_visual_node(), sword, "宿主已绑定该视觉")
 	# 经真实 actor 帧开飞：tick → 合成 → 提交 → 帧末清边沿 → 表现同步，一次走完。

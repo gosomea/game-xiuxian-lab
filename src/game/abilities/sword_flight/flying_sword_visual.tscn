@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+; 飞剑视觉轴适配：人物 Visual 以局部 +Z 为正面，原飞剑剑首与该约定相反。
+; 根节点局部 yaw 补偿 180°，正式 FlightBundle 与动作预览必须共同实例化本场景。
+; 原 flying_sword.glb 保留不覆盖。
+
+[ext_resource type="PackedScene" path="res://game/abilities/sword_flight/models/flying_sword.glb" id="1_model"]
+
+[node name="FlyingSwordVisual" type="Node3D"]
+rotation = Vector3(0, 3.14159265, 0)
+
+[node name="FlyingSwordModel" parent="." instance=ExtResource("1_model")]

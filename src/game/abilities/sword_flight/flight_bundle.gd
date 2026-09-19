@@ -1,7 +1,7 @@
 class_name FlightBundle
 extends RefCounted
 
-## 御剑飞行装配包（S0）：行为（SwordFlight）+ 视觉（flying_sword.glb）作为一个包同时安装/卸载。
+## 御剑飞行装配包（S0）：行为（SwordFlight）+ 飞剑轴适配视觉作为一个包同时安装/卸载。
 ##
 ## 依据 notes/implemented/tech/2026-09-18-composable-lab-assembly-contract.md：
 ## - 能力注册为宿主 CapabilityManager 的直系子，复用宿主唯一 SwordsmanMotionComponent；
@@ -14,8 +14,10 @@ extends RefCounted
 ## - tag 与 flight_active 由 SwordFlight 自身 _exit_tree 兜底清账
 ##   （src/core/sheet_loader.gd:29-36 不调用 _on_deactivated，故不能依赖 detach）。
 
-## 御剑视觉资产：装配包自带 visual，与服务同包。
-const FLYING_SWORD_SCENE: PackedScene = preload("res://game/abilities/sword_flight/models/flying_sword.glb")
+## 御剑视觉资产：装配包自带 visual，与服务同包。适配场景统一补偿原 GLB 的反向剑首，
+## 正式角色与动作预览必须共同读取它，不能各自再写旋转。
+const FLYING_SWORD_SCENE: PackedScene = preload(
+	"res://game/abilities/sword_flight/flying_sword_visual.tscn")
 ## 宿主 Visual 下的剑节点名（既有场景/测试读取的公开契约）。
 const VISUAL_NAME := "FlyingSword"
 ## 御剑能力节点名（与能力类名一致；管理器按直系子轮询）。
@@ -59,11 +61,11 @@ static func preflight(host: Swordsman, with_visual: bool) -> String:
 	if host.flight_visual_node() != null:
 		return "FlightBundle.preflight: 宿主已绑定其它御剑视觉，拒绝覆盖绑定"
 	if FLYING_SWORD_SCENE == null:
-		return "FlightBundle.preflight: flying_sword.glb 资源不可加载"
+		return "FlightBundle.preflight: flying_sword_visual.tscn 资源不可加载"
 	return ""
 
 
-## 安装御剑行为（with_visual 时连同 flying_sword.glb 视觉）。返回错误信息，"" 表示成功。
+## 安装御剑行为（with_visual 时连同飞剑轴适配视觉）。返回错误信息，"" 表示成功。
 func install(host: Swordsman, with_visual: bool) -> String:
 	if _installed:
 		# 宿主身份必须一致：同一实例不能改挂到另一个 host（先 uninstall 再装）。
@@ -88,7 +90,7 @@ func install(host: Swordsman, with_visual: bool) -> String:
 		var instance := FLYING_SWORD_SCENE.instantiate()
 		if not (instance is Node3D):
 			uninstall()
-			return "FlightBundle.install: flying_sword.glb 根节点不是 Node3D"
+			return "FlightBundle.install: flying_sword_visual.tscn 根节点不是 Node3D"
 		var sword := instance as Node3D
 		sword.name = VISUAL_NAME
 		visual_root.add_child(sword)

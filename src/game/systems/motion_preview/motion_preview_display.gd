@@ -12,7 +12,7 @@ extends Node3D
 ##   没有第二个 move_and_slide()。删除本节点后正式角色行为与物理完全不变。
 ## - 模型与表现系统与正式角色同源：CULTIVATOR_VISUAL（同一 GLB + 同一 cultivator_presentation.gd），
 ##   不存在第二套姿态实现，也不新建/覆盖任何模型资产。
-## - 飞剑读取共享御剑表现资源（sword_flight 包内的 flying_sword.glb），显隐由预览状态决定，
+## - 飞剑读取共享御剑轴适配场景（内部保留原 flying_sword.glb），显隐由预览状态决定，
 ##   不冒充真实 SwordFlight 能力，也不消费任何组件。
 ##
 ## 时间契约（与 MotionPreviewState 对齐，测试直接断言）：
@@ -26,8 +26,9 @@ extends Node3D
 ## - rotation.y（朝向）归本节点所有；回卷与 reset 时一并归零，因此转身类动作不会跨循环累积。
 
 const CULTIVATOR_VISUAL: PackedScene = preload("res://game/actors/swordsman/cultivator_visual.tscn")
-## 共享御剑表现资源：与 sword_flight 能力包使用的是同一个 GLB，不复制、不覆盖。
-const FLYING_SWORD_SCENE: PackedScene = preload("res://game/abilities/sword_flight/models/flying_sword.glb")
+## 共享御剑表现资源：与 sword_flight 能力包使用同一个轴适配场景，不复制、不另写旋转。
+const FLYING_SWORD_SCENE: PackedScene = preload(
+	"res://game/abilities/sword_flight/flying_sword_visual.tscn")
 
 ## 动作速度的参考值（米/秒）：由工作台从 SwordsmanMotionComponent.move_speed 注入，
 ## 使「行走 = 0.5 倍、跑动 = 1.0 倍」与正式角色的真实速度同尺度。
@@ -84,7 +85,7 @@ func _ready() -> void:
 ## 飞剑：读取共享御剑表现资源并挂到 Visual 下，显隐由预览状态同步。
 func _bind_sword() -> void:
 	var instance := FLYING_SWORD_SCENE.instantiate()
-	assert(instance is Node3D, "MotionPreviewDisplay: flying_sword.glb 根必须是 Node3D")
+	assert(instance is Node3D, "MotionPreviewDisplay: flying_sword_visual.tscn 根必须是 Node3D")
 	var sword := instance as Node3D
 	sword.name = "PreviewSword"
 	_visual.add_child(sword)
