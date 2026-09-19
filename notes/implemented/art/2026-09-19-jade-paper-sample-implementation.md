@@ -133,6 +133,11 @@ Status: implemented
 - 产物：`src/game/actors/swordsman/models/cultivator_rigged.glb`
   （Skeleton3D + AnimationPlayer，clips=[idle,jump,run,walk]，walk 实播验证通过）；
   源 `docs/art/cultivator_jade/cultivator_rigged.blend`；上传源 FBX/OBJ 同目录留存。
+- 第四轮实机复核发现第三轮 `phase3` 的左右判定与 Mixamo 坐标相反：Mixamo 的 Left 骨链位于
+  `+X`，旧脚本却把 `X<0` 岛归为 left，导致左右肢体交叉绑定；同时精确匹配 `Hand` 会剔除
+  `HandThumb/Index/Middle/Ring/Pinky` 子链，使手部空权重点回填上臂。修正决定是以骨架静止姿态
+  验证左右符号（`+X=Left`、`-X=Right`），袖/手保留同侧 Shoulder→Arm→ForeArm→Hand 全子链，
+  腿保留同侧腿链；重新生成 `.blend/.glb` 后以左右骨权重质心和四动作实播为验收证据。
 - **接入未做（下一轮）**：`cultivator_visual_rigged.tscn` + 骨骼驱动表现层
   （drop-in 替换 CultivatorPresentation，同节点名 + 同 API）+ motion 预览测试适配。
 
@@ -168,4 +173,3 @@ Status: implemented
 - 混元件的平滑高模质感与程序件的硬朗低模质感存在断层，样板阶段刻意并置供使用者比较；若判为不可接受，混元件需退回 Geometry 白模 + 手动块面化。
 - 色相分段按贴图颜色投票，阴影区可能被误分类（松冠暗部曾落入木段）；当前阈值 (sat>=0.08, hue 0.20–0.60) 下一轮若出现脏色，先调阈值再考虑手工修分。
 - 亭的朝向（PAVILION_YAW_DEG）以实机截图核对，错误会表现为亭背对出生点。
-
