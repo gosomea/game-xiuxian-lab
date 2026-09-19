@@ -1,0 +1,155 @@
+{
+ "export": {
+  "actions": 0,
+  "armatures": 0,
+  "axis_helper_present": true,
+  "blender_version": "5.2.1 LTS",
+  "bounds_max": [
+   0.3784,
+   0.63984,
+   1.06462
+  ],
+  "bounds_min": [
+   -0.3784,
+   -0.37456,
+   0.002
+  ],
+  "cameras_in_file": 0,
+  "constraints": 0,
+  "fbx_ok": true,
+  "glb_audit": {
+   "animations": 0,
+   "attributes": [
+    "NORMAL",
+    "POSITION"
+   ],
+   "bounds_max": [
+    0.3784,
+    1.06462,
+    0.37456
+   ],
+   "bounds_min": [
+    -0.3784,
+    0.002,
+    -0.63984
+   ],
+   "bytes": 765004,
+   "cameras": 0,
+   "images": 0,
+   "material_count": 21,
+   "materials": [
+    "BW_Skin",
+    "BW_WhiteSoft",
+    "BW_White",
+    "BW_WhaleBlue",
+    "BW_Navy",
+    "BW_IrisLight",
+    "BW_NavyDeep",
+    "BW_Gold",
+    "BW_Pink",
+    "BW_Shoe",
+    "BW_HairDeep",
+    "BW_HairMid",
+    "BW_HairTip",
+    "BW_EyeWhite",
+    "BW_IrisDeep",
+    "BW_IrisMid",
+    "BW_EyeLine",
+    "BW_Blush",
+    "BW_Mouth",
+    "BW_TailDeep",
+    "BW_TailTip"
+   ],
+   "meshes": 6,
+   "nodes": 6,
+   "sha256": "9c60182810878c6ae32888d41a41ebba15524b849bc888b7ea50ab13292146b8",
+   "skins": 0,
+   "triangles": 30335
+  },
+  "height_m": 1.0626,
+  "lights_in_file": 0,
+  "objects": [
+   {
+    "materials": [
+     "BW_Skin"
+    ],
+    "name": "BW_Body",
+    "vertices": 810
+   },
+   {
+    "materials": [
+     "BW_WhiteSoft",
+     "BW_White",
+     "BW_WhaleBlue",
+     "BW_Navy",
+     "BW_IrisLight",
+     "BW_NavyDeep",
+     "BW_Gold",
+     "BW_Pink"
+    ],
+    "name": "BW_Dress",
+    "vertices": 6311
+   },
+   {
+    "materials": [
+     "BW_White",
+     "BW_WhiteSoft",
+     "BW_Shoe",
+     "BW_NavyDeep",
+     "BW_Gold"
+    ],
+    "name": "BW_Feet",
+    "vertices": 1372
+   },
+   {
+    "materials": [
+     "BW_HairDeep",
+     "BW_HairMid",
+     "BW_HairTip"
+    ],
+    "name": "BW_Hair",
+    "vertices": 3660
+   },
+   {
+    "materials": [
+     "BW_Skin",
+     "BW_EyeWhite",
+     "BW_IrisDeep",
+     "BW_IrisMid",
+     "BW_IrisLight",
+     "BW_EyeLine",
+     "BW_HairDeep",
+     "BW_Blush",
+     "BW_Mouth"
+    ],
+    "name": "BW_Head",
+    "vertices": 2120
+   },
+   {
+    "materials": [
+     "BW_TailDeep",
+     "BW_TailTip",
+     "BW_IrisLight"
+    ],
+    "name": "BW_Tail",
+    "vertices": 1484
+   },
+   {
+    "materials": [
+     "BW_AxisHelper"
+    ],
+    "name": "FRONT_+Z",
+    "vertices": 711
+   }
+  ],
+  "reopened_blend": "docs/art/blue_whale_maid_chibi_v1/source/blue_whale_maid_chibi_v1.blend",
+  "totals": {
+   "non_finite": 0,
+   "non_manifold": 753,
+   "polygons": 15120,
+   "triangles": 30335,
+   "vertices": 15757,
+   "zero_area": 8
+  }
+ }
+}

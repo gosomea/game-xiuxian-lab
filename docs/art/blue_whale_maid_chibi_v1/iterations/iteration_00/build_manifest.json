@@ -1,0 +1,194 @@
+{
+ "build": {
+  "blend_sha256": "990f62839cceb20ca910e7cba160fcab1ab9af275f3b2aaff01cd74c89815021",
+  "blender_version": "5.2.1 LTS",
+  "checks": {
+   "bbox_max": [
+    0.39684,
+    0.478,
+    1.09003
+   ],
+   "bbox_min": [
+    -0.39684,
+    -0.37456,
+    0.002
+   ],
+   "feet_on_ground": true,
+   "head_ratio": 3.065,
+   "height_m": 1.088,
+   "material_count": 21,
+   "non_finite_total": 0,
+   "non_manifold_total": 808,
+   "object_count": 6,
+   "triangles_in_range_20k_80k": true,
+   "triangles_total": 29084,
+   "zero_area_total": 8
+  },
+  "export": {
+   "fbx": "docs/art/blue_whale_maid_chibi_v1/exports/blue_whale_maid_chibi_v1_unrigged.fbx",
+   "fbx_note": "unrigged：静态无骨骼、无动画、无约束",
+   "fbx_sha256": "00f6a47a0ae721367f84ab525ba6091fb45e2a372937a4adaa6b0f3b366a4965",
+   "glb": "docs/art/blue_whale_maid_chibi_v1/exports/blue_whale_maid_chibi_v1.glb",
+   "glb_sha256": "5150417c85202cba4f262fe2eb91d4fa053cdf2c74d5b846dbcbd2dd9ef0c9dd"
+  },
+  "framing_check": {
+   "game_scale_128": {
+    "bottom": 0.0781,
+    "height": 128,
+    "left": 0.3077,
+    "right": 0.094,
+    "top": 0.1172,
+    "width": 117
+   },
+   "game_scale_256": {
+    "bottom": 0.0781,
+    "height": 256,
+    "left": 0.309,
+    "right": 0.0944,
+    "top": 0.1172,
+    "width": 233
+   }
+  },
+  "glb_audit": {
+   "animations": 0,
+   "attributes": [
+    "NORMAL",
+    "POSITION"
+   ],
+   "bounds_max": [
+    0.39684,
+    1.09003,
+    0.37456
+   ],
+   "bounds_min": [
+    -0.39684,
+    0.002,
+    -0.478
+   ],
+   "bytes": 743032,
+   "cameras": 0,
+   "images": 0,
+   "material_count": 21,
+   "materials": [
+    "BW_Skin",
+    "BW_White",
+    "BW_WhiteSoft",
+    "BW_WhaleBlue",
+    "BW_Navy",
+    "BW_NavyDeep",
+    "BW_Gold",
+    "BW_Pink",
+    "BW_Shoe",
+    "BW_HairDeep",
+    "BW_HairMid",
+    "BW_HairTip",
+    "BW_EyeWhite",
+    "BW_IrisDeep",
+    "BW_IrisMid",
+    "BW_IrisLight",
+    "BW_EyeLine",
+    "BW_Blush",
+    "BW_Mouth",
+    "BW_TailDeep",
+    "BW_TailTip"
+   ],
+   "meshes": 6,
+   "nodes": 6,
+   "sha256": "5150417c85202cba4f262fe2eb91d4fa053cdf2c74d5b846dbcbd2dd9ef0c9dd",
+   "skins": 0,
+   "triangles": 29084
+  },
+  "iteration": "refined_01",
+  "meshes": [
+   {
+    "materials": 1,
+    "name": "BW_Body",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 714,
+    "triangles": 1584,
+    "vertices": 810,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 9,
+    "name": "BW_Head",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 714,
+    "polygons": 2208,
+    "triangles": 3726,
+    "vertices": 2252,
+    "zero_area_faces": 4
+   },
+   {
+    "materials": 3,
+    "name": "BW_Hair",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 2426,
+    "triangles": 5036,
+    "vertices": 2552,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 7,
+    "name": "BW_Dress",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 94,
+    "polygons": 7130,
+    "triangles": 14382,
+    "vertices": 7299,
+    "zero_area_faces": 4
+   },
+   {
+    "materials": 3,
+    "name": "BW_Tail",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 746,
+    "triangles": 1652,
+    "vertices": 850,
+    "zero_area_faces": 0
+   },
+   {
+    "materials": 5,
+    "name": "BW_Feet",
+    "non_finite_verts": 0,
+    "non_manifold_edges": 0,
+    "polygons": 1336,
+    "triangles": 2704,
+    "vertices": 1372,
+    "zero_area_faces": 0
+   }
+  ],
+  "orientation": {
+   "axis_helper": "FRONT_+Z 由粗杆+圆锥箭头+文字组成，Blender 中指向 -Y（导出后 +Z），不导出",
+   "blender_front": "-Y",
+   "export_yup": true,
+   "gltf_front_after_export": "+Z"
+  },
+  "reference": {
+   "note": "使用者提供的三视图设定图；外部版权与商用授权状态未知，仅作建模依据，本资产不就该图主张原创设定或可商用。",
+   "path": "docs/art/blue_whale_maid_chibi_v1/reference/source_character_sheet.png",
+   "sha256": "75f7007cf6d75937981cba15c7dd81ab5fd8e2704f3e913b97be7208aabc49e6"
+  },
+  "renders": [
+   "front",
+   "side",
+   "back",
+   "three_quarter_front",
+   "three_quarter_back",
+   "head_closeup",
+   "hair_back_closeup",
+   "apron_skirt_closeup",
+   "tail_side_closeup",
+   "hands_feet_closeup",
+   "orthographic_turnaround",
+   "gray_front",
+   "gray_side",
+   "axis_proof",
+   "game_scale_128",
+   "game_scale_256"
+  ]
+ }
+}
