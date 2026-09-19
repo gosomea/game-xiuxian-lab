@@ -24,7 +24,7 @@ extends Node3D
 ##   _record_pose，不存在第二套姿态实现；预览不读也不写任何 Component、不动物理。
 ##
 ## 已知边界：GLB 无骨骼，这是分件刚体摆动而非骨骼动画；脚掌无 IK 锁定，竖直起伏仅厘米级。
-## 轴（导出实测）：Godot -Z 为正面、+Y 向上、足底 y=0；髋 y≈0.70、肩 y≈1.42、腰 y≈0.97。
+## 轴（实机朝向校正）：Godot +Z 为视觉正面、+Y 向上、足底 y=0；髋 y≈0.70、肩 y≈1.42、腰 y≈0.97。
 
 ## 角色根（Swordsman）；Presentation 挂在 Visual 下，默认向上两层。
 @export var actor_path: NodePath = ^"../.."

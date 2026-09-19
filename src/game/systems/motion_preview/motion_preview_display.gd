@@ -36,7 +36,7 @@ const FLYING_SWORD_SCENE: PackedScene = preload("res://game/abilities/sword_flig
 ## 展示实例的初始世界朝向（水平向量）。由调用场景注入，**本包不硬编码任何场景方向**：
 ## 动作工作台注入角色的 SPAWN_AIM，使「预览的正面」与「实时角色的正面」指向同一方向，
 ## 于是 FRONT / SIDE / 三机位标签对两种模式都成立（否则预览朝 −Z、角色朝 +X，标签会颠倒）。
-## 默认 Vector3.FORWARD(−Z) = 零朝向，独立单测与无宿主用法保持原有语义。
+## 默认 Vector3.FORWARD(−Z) 会得到 PI yaw，使模型局部 +Z 正面转向世界 −Z。
 @export var initial_aim: Vector3 = Vector3.FORWARD
 
 var _visual: Node3D
@@ -45,8 +45,8 @@ var _sword: Node3D
 var _state := MotionPreviewState.new()
 ## 起始站位高度：局部竖直位移以此为基准（reset 时回到它）。
 var _base_y := 0.0
-## 预览实例的朝向（弧度），含义与角色一致（模型局部 −Z 为正面）。
-## 初值由 initial_aim 推导；回卷 / reset 复位到该初值（不是固定 0，否则会转回 −Z）。
+## 预览实例的朝向（弧度），含义与角色一致（模型局部 +Z 为正面）。
+## 初值由 initial_aim 推导；回卷 / reset 复位到该初值。
 var _heading := 0.0
 ## 初始朝向（弧度）：由 initial_aim 推导，reset 与循环回卷都回到它。
 var _initial_heading := 0.0
@@ -71,7 +71,7 @@ func _ready() -> void:
 	add_child(visual)
 	_visual = visual
 	_presentation = presentation
-	# 初始朝向来自注入的 aim：与 actor 的 _face_aim() 同一约定（局部 −Z 为正面）。
+	# 初始朝向来自注入的 aim：与 actor 的 _face_aim() 同一约定（局部 +Z 为正面）。
 	_initial_heading = heading_for_aim(initial_aim)
 	_heading = _initial_heading
 	_base_y = position.y
@@ -92,13 +92,9 @@ func _bind_sword() -> void:
 	_sword = sword
 
 
-## aim（世界水平方向）→ 节点 rotation.y：与 actor 的 _face_aim() 同一公式（局部 −Z 为正面）。
+## aim（世界水平方向）→ 节点 rotation.y：与 actor 的 _face_aim() 同一公式（局部 +Z 为正面）。
 static func heading_for_aim(aim: Vector3) -> float:
-	var flat := Vector3(aim.x, 0.0, aim.z)
-	if flat.length_squared() <= 0.000001:
-		return 0.0
-	flat = flat.normalized()
-	return atan2(-flat.x, -flat.z)
+	return Swordsman.visual_yaw_for_aim(aim)
 
 
 # --- 预览状态 API（供工作台与测试读取/驱动） --------------------------------
@@ -183,7 +179,7 @@ func preview_snapshot() -> Dictionary:
 		"heading": _heading,
 		"initial_heading": _initial_heading,
 		# 预览正面朝向（世界水平单位向量）：测试据此断言机位标签真的对应。
-		"forward": Vector3(-sin(_heading), 0.0, -cos(_heading)),
+		"forward": Vector3(sin(_heading), 0.0, cos(_heading)),
 		"offset_y": _offset_y,
 		"pose": pose,
 		"clock": pose.get("clock", 0.0),
@@ -236,7 +232,7 @@ func _apply(delta: float = 0.0) -> void:
 	var speed := _state.speed_at(effective, speed_reference)
 	var vertical: float = effective.get("vertical", 0.0)
 	# 预览实例原地播放：速度方向按本地 heading 给出，因此步态相位由真实"速度大小"驱动。
-	var forward := Vector3(-sin(_heading), 0.0, -cos(_heading))
+	var forward := Vector3(sin(_heading), 0.0, cos(_heading))
 	var velocity := forward * speed
 	velocity.y = vertical
 	var blend := {

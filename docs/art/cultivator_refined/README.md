@@ -40,8 +40,9 @@
 
 Blender Z-up；部件朝 Blender **-Y** 建模。导出前 `normalize_orientation()` 会把全部网格
 **先等比缩放、再绕 Z 轴旋转 180°**，使正面转到 Blender **+Y**；随后 `export_yup=True` 按
-`(bx, by, bz) -> (bx, bz, -by)` 映射，因此导出正面为 Godot **-Z**，与
-`Swordsman._face_aim()` 的「模型局部 -Z 为正面」一致。
+`(bx, by, bz) -> (bx, bz, -by)` 映射，因此写入 GLB 的正面顶点落在 **-Z**。这个原始
+GLB 坐标符号不能直接当成 Godot 导入节点的运行时视觉正面；实机移动已证实导入后应按局部
+`+Z` 解释，现由 `Swordsman.visual_yaw_for_aim()` 统一换算。
 
 **180° 旋转不可省略**：上一版本文档只写了 +Y→-Z，漏掉该旋转，脚本重写时相应丢失了旋转，
 导致脸朝 Godot +Z（实测 `Face_Eyes` z-center 为 **+0.0887**）。现已修复，并由

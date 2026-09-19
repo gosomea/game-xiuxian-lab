@@ -117,7 +117,8 @@ Godot --path src --script res://tests/motion_stage_playtest.gd -- \
 修法（最小且不扩大 scope）：预览展示实例新增可注入的 `initial_aim`，工作台在 `add_child` 之前
 注入角色的 `SPAWN_AIM`；共享预览包**不硬编码任何场景方向**（默认仍是 `Vector3.FORWARD`，
 独立单测语义不变）。`heading_for_aim()` 与 actor 的 `_face_aim()` 用同一条公式
-（模型局部 −Z 为正面），`reset_preview()` 与循环回卷都回到该初始朝向而不是固定 0。
+（模型局部 `+Z` 为正面；2026-09-19 经全部移动场景实机反馈校正），`reset_preview()` 与
+循环回卷都回到该初始朝向而不是固定 0。
 
 机械判据（`--batch=preview` 内断言，可复算）：
 

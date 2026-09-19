@@ -257,7 +257,7 @@ func _read_layout() -> void:
 	var spawn: Dictionary = _layout["spawn"]
 	_spawn_position = _vector3(spawn["position"])
 	var yaw := deg_to_rad(float(spawn.get("yaw_deg", 0.0)))
-	# 与世界朝向一致：Visual 局部 -Z 为正面，rotation.y = atan2(-aim.x, -aim.z)。
+	# 布局 yaw 只生成世界 aim；Visual 局部 +Z 正面的换算由 Swordsman 统一处理。
 	_spawn_aim = Vector3(-sin(yaw), 0.0, -cos(yaw))
 
 
