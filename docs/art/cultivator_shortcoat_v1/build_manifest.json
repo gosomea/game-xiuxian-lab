@@ -1,0 +1,43 @@
+{
+  "generator": "tools/art/generate_cultivator_shortcoat_v1.py",
+  "blender": "5.2.1 LTS",
+  "objects": 26,
+  "triangles": 4204,
+  "body_height_m": 1.7,
+  "total_height_m": 1.767,
+  "head_units": 6.563,
+  "arm_span_m": 1.5249,
+  "depth_m": 0.2792,
+  "soles_at_zero": true,
+  "static_t_pose": true,
+  "rigged": false,
+  "animations": 0,
+  "outputs": {
+    "cultivator_shortcoat_v1.glb": {
+      "bytes": 101284,
+      "sha256": "fe7e5070befc2783a5bc7404c081a9bb33870f7e5a6c1d12d42cbb3c2ee71130"
+    },
+    "cultivator_shortcoat_v1_mixamo_tpose.fbx": {
+      "bytes": 102716,
+      "sha256": "f4c75081b4c9a61d1aa70014e04006d52983d14fff0cb6a6cb13a5ebeafc292d"
+    },
+    "cultivator_shortcoat_v1.blend": {
+      "bytes": 144078,
+      "sha256": "6bc11ab5dc939031318a14a50a60ece625c5e9253b95ab6eed4083a583566202"
+    }
+  },
+  "previews": {
+    "cultivator_shortcoat_v1_front.png": {
+      "bytes": 631611,
+      "sha256": "d30a4ad6aa712c3e557e97d31b02edfee352dd11405f21820fdcc02015ecc776"
+    },
+    "cultivator_shortcoat_v1_three_quarter.png": {
+      "bytes": 625008,
+      "sha256": "d93eec1041e65237f8e9b55d7b86ee25cceac95d8def2c50f2de501d9ad4a8e3"
+    },
+    "cultivator_shortcoat_v1_back.png": {
+      "bytes": 629796,
+      "sha256": "e0237607fb3fa899c84555695a3cee4eac626d7a474edece3279eab56865d24d"
+    }
+  }
+}
