@@ -62,3 +62,40 @@
 - 审美结论归使用者：样板状态 exploring，使用者视觉确认前不宣称方向通过。
 - 亭的生成件为六角攒尖（非四角），方向 note 未限定角数，样板阶段接受。
 - 人物与飞剑本轮零改动（核对已合规），实机观感随样板一并交使用者确认。
+
+## 第二轮条目（2026-09-19 上午）
+
+| 字段 | 值 |
+|---|---|
+| 新增资产 | `jade_mountain`（远山）/ `jade_gate`（山门牌坊）/ `jade_lantern`（石灯笼）/ `jade_bamboo`（竹丛）/ `jade_grass`（草簇，程序）/ `cultivator_jade`（人物 v2） |
+| 混元 job_id | 远山 `1492711808166518784` · 山门 `1492711810679128064` · 灯笼 `1492713095788756992` · 竹丛 `1492713098065993728` · 人物 `1492713977825722368` |
+| 源文件 | 本目录 `jade_{mountain,gate,lantern,bamboo}.blend`、`jade_grass.blend`；`docs/art/cultivator_jade/cultivator_jade.blend` |
+| 运行输出 | `src/levels/experiments/character_movement/jade_{mountain,gate,lantern,bamboo,grass}.glb`；`src/game/actors/swordsman/models/cultivator_jade.glb`（+同名贴图 PNG 为 Godot 抽取的运行时依赖，必须入 Git） |
+| 处理脚本 | `tools/art/build_jade_grass.py`（草）；`tools/art/process_cultivator_jade.py`（人物切割） |
+
+## 第二轮数值（GLB JSON 直读）
+
+| 产物 | 网格 | 三角形 | 材质 | 贴图 | 字节 | sha256 |
+|---|---|---|---|---|---|---|
+| `jade_mountain.glb` | 1 | 50,000 | 1 | 1 | 2,434,780 | `41fd33de964c8915d4cc5841edfefc2724164dbabeeb380386593d8ed3195545` |
+| `jade_gate.glb` | 1 | 80,000 | 1 | 1 | 3,785,864 | `8c5216c28442c3537ecd2e17e4d8b6ef4f17a38f269c98bc0856fb720af53104` |
+| `jade_lantern.glb` | 1 | 29,999 | 1 | 1 | 1,871,424 | `ae7eed049238b14a783fb1394cb9b3a2c287c4ea438a358c2597af86397e7b2b` |
+| `jade_bamboo.glb` | 1 | 40,000 | 1 | 1 | 2,324,516 | `4b3fa63998c2ea6657498541b931cb8a803c0af45b47554c65d1eda9b1e99758` |
+| `jade_grass.glb` | 1 | 54 | 1 | 0 | 4,008 | `4948913ff941bd4f9399dbbff7db12150f9bf4d22ffd95bb254cc384efbdc962` |
+| `cultivator_jade.glb` | 16 | 34,013（Decimate 0.45 后） | 3 | 1 | ~8 MB | `045403040cde7afbe75cf1fe8f65e30f017e50c491ebf0a751545e72fa1e6b2c` |
+
+人物 v2 分件：`Leg_L/R` + `Foot_L/R`、`Arm_Sleeve_L/R` + `Cuff_L/R` + `Hand_L/R`、
+`Robe_Skirt/HemBand/Panel`（13 摆动件契约）+ `Robe_Upper`（躯干+头静件）+ `Shoulder_Cap_L/R`（遮肩缝）。
+头/发/脸并入 Robe_Upper（同静件，避免颈缝）。高 1.75 m（7 头身）。旧 `cultivator.glb` sha256 不变。
+
+## 第二轮踩坑补充
+
+- **正交视野边界**：pitch -38.7° 正交下 35 m 外一切被雾吞没（fog 0.0035@100 m≈30%，
+  与天空同调即隐形）；近距高墙（45 m 混元远山）会占满整帧。远山甜点 = 台基正后方
+  25–45 m、6–10 m 矮山包（多轮标定，摆位常量含注释）。
+- **混元人物切割**（`process_cultivator_jade.py`）：bisect 前必须 `select_all`（op 只作用于
+  选中顶点）、切后 `separate(LOOSE)`（bisect 不分离）、只切包围盒跨越切面的碎片
+  （否则碎片 2^N 爆炸）；join 按去偶基名分组（Blender 重名自动 .001 后缀）；
+  踝切线必须低于靴筒顶（0.06H 切不开 → Foot 缺失 → 表现层断言失败）。
+- 遮缝策略实测有效：腰缝靠贴图自带腰带（静侧）覆盖、肩缝靠扁肩垫覆盖、髋缝藏裙内；
+  无需额外腰封环（烘焙腰带已跨缝，加环反而突兀）。
