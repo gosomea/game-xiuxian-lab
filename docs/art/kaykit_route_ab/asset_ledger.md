@@ -119,7 +119,7 @@
 | 防御/位移 | `Block` / `Blocking` / `Block_Attack` / `Block_Hit`；`Dodge_Forward/Backward/Left/Right` |
 | 基准 | `T-Pose` |
 
-对照既有运行契约 `clips=[idle, walk, run, jump]`（[cultivator_skeleton_presentation.gd](../../../src/game/actors/swordsman/cultivator_skeleton_presentation.gd)）：名为 `Idle` 的 clip 存在；**Route A 需要一个"名字映射"到 `idle/walk/run/jump`，并需在四类里各选一条**（`Walking_A/B/C`、`Running_A/B`、`Jump_*` 共 5 条候选）。这属于阶段 2 的接线决策，本阶段不做。
+对照既有运行契约 `clips=[idle, walk, run, jump]`（[cultivator_skeleton_presentation.gd](../../../src/game/actors/swordsman/cultivator_skeleton_presentation.gd)），路线 A 已在阶段 2 选择 `Unarmed_Idle / Walking_A / Running_A / Jump_Idle` 并完成 Godot 映射；详见 §9。
 
 ## 4. 许可证
 
@@ -167,7 +167,7 @@
 ## 7. 阶段状态
 
 - **阶段 1（本台账覆盖）**：上游最小集入库 + 只读核验 + 预览 → **已完成**。
-- **阶段 2（进行中）**：路线 B 的 Mixamo 人工 marker 前准备已完成（见 §8）；路线 A 的运行资产/表现层、路线 B 的上传绑骨、A/B 对照场景及实机观感验收仍未完成。
+- **阶段 2（进行中）**：路线 A 的独立运行资产/表现层已完成（见 §9）；路线 B 的 Mixamo 人工 marker 前准备已完成（见 §8）。路线 B 的上传绑骨、双路线同机位对照场景及实机观感验收仍未完成。
 - proposed note 的 Status 保持 **proposed**：准备资产就位不等于双路线运行时与人工验收已落地。
 
 ## 8. 路线 B：Mixamo 人工 marker 前准备（2026-09-19）
@@ -189,3 +189,19 @@
 人工 marker 为硬门：下巴、双腕、胯部、双踝必须由使用者在 Mixamo 页面拖放；胯部因衣摆遮挡是唯一高风险点，应从侧/后方确认双腿真实间隙。详见 `route_b/README.md`。
 
 本阶段新增文件均为新路径；上游 GLB、既有中性预览与 `cultivator*` 基线资产均未覆盖或删除。Blender 的 FBX、`.blend` 与 PNG 写出会携带会话级元数据，因此跨会话 sha256 不作为稳定生成契约；**本轮提交中每个派生物的精确哈希以 `route_b/prepare_manifest.json` 为准**。
+
+## 9. 路线 A：原生骨架与动作的 Godot 代表链（2026-09-19）
+
+路线 A 将固定上游 GLB **逐字节复制**为运行资产，不经 Blender、Mixamo 或动作重定向；Godot 实测导入 41 骨、76 clips、12 mesh、1 材质。5 件展示武器仅在运行时隐藏，84-tris 披风保留可见。
+
+| 文件 / 项 | 结果 |
+|---|---|
+| 运行 GLB | `src/game/actors/swordsman/models/kaykit_rogue_hooded_route_a.glb`；3,597,652 bytes；sha256 `93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545`，与上游逐字一致 |
+| Godot 提取贴图 | `kaykit_rogue_hooded_route_a_rogue_texture.png`；16,670 bytes；sha256 `a4032e877c3b91939f5cdbb630349c1998fdbc3211bbd587c111125500fe4cc5` |
+| 可复用视觉 | `src/game/actors/swordsman/kaykit_route_a/kaykit_route_a_visual.tscn` |
+| 独立演示台 | `src/game/actors/swordsman/kaykit_route_a/kaykit_route_a_stage.tscn`；1/2/3/4/5 切 idle/walk/run/air/flight |
+| 动作映射 | `Unarmed_Idle` / `Walking_A` / `Running_A` / `Jump_Idle`；持续状态全部显式设为 `Animation.LOOP_LINEAR` |
+| 受控参数 | 速度阈值 0.3/5.5；步幅 1.6/3.2；blend 0.15；flight 0.6 倍速 + `deg_to_rad(21)` 前倾 |
+| 自动证据 | 专项 98/0；全套运行测试 1,079/0；walk 推进超过两个周期仍播放且位置回绕 |
+
+完整运行与未验证边界见[路线 A playtest 记录](../../playtest/2026-09-19-kaykit-route-a.md)。Godot AI 本轮没有可用编辑器会话，headless 也无法得到可靠渲染帧，因此自动证据只确认结构、状态映射、循环与可启动；脚滑、披风观感、轮廓、材质和御剑姿态仍须人工实机判断。

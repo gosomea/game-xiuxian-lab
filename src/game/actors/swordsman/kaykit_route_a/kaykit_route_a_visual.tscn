@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3]
+
+; 路线 A 骨骼动画角色视觉：直接实例化 KayKit Rogue_Hooded 原生 GLB（41 骨 / 76 clips），
+; 不经重定向、不重命名 clip。与 cultivator_visual_rigged.tscn（路线 C / Mixamo）同位互换：
+; 根下 = 模型实例 + KaykitRouteAPresentation；不含碰撞/组件/装配。
+;
+; 上游 GLB 自带 5 件展示用武器挂件，由表现层在 _ready 隐藏；披风 Rogue_Cape 保留可见，
+; 作为路线 B 袍片对照的锚点。
+;
+; auto_read_actor 默认 false：本场景是独立可复用视觉，可单独实例化并由外部
+; set_motion_state() / advance_state() 驱动。挂到正式 Swordsman 下时，接入方
+; 把该属性置 true，表现层即每帧读宿主 motion()（与 CultivatorSkeletonPresentation 同形）。
+; 依据 notes/proposed/art/2026-09-19-character-model-animation-route-comparison.md 阶段 2。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/kaykit_rogue_hooded_route_a.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/kaykit_route_a/kaykit_route_a_presentation.gd" id="2_presentation"]
+
+[node name="KaykitRouteAVisual" type="Node3D"]
+
+[node name="KaykitRogueHooded" parent="." instance=ExtResource("1_model")]
+
+[node name="KaykitRouteAPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")
+auto_read_actor = false
