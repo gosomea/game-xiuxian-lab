@@ -141,6 +141,8 @@ Status: proposed
 2. 路线 B：到达 Mixamo marker 步**停住等人工**；完成后走与 A 相同的接线与验收；
 3. 两路线接**同一个独立对照场景**，不覆写 `jade_paper_sample` 的现有引用；现有七项子实验与测试基线不得回归。
 
+**阶段 2 检查点（2026-09-19）**：路线 B 已完成人工 marker 前准备。固定上游 GLB 被转换为 1 mesh / 0 armature / 0 action 的 3,921-tris 真 T-pose FBX/OBJ；5 件武器移除，84-tris 披风原件保存在 Blender 源工程中，待绑骨后映射到 Mixamo 等效胸骨。产物、二次导入断言、逐文件哈希与人工 marker 风险见[资产台账 §8](../../../docs/art/kaykit_route_ab/asset_ledger.md)和 [`route_b/README.md`](../../../docs/art/kaykit_route_ab/route_b/README.md)。**尚未上传 Mixamo、尚未拖 marker、尚未下载动作，路线 B 不能称为完成。**
+
 阶段 1 与阶段 2 之间不得跳步，也不得用"看起来能跑"代替选角门槛。
 
 ### 8. 证据分级（事实 / 推断 / 未核验）

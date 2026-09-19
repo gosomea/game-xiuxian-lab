@@ -1,9 +1,9 @@
 # 资产台账 · kaykit_route_ab
 
-一句话：**路线 A/B 的共同上游源**——KayKit Adventurers 免费仓库固定 commit 里的 `Rogue_Hooded` 单角色，原样入库、不改一个字节；另附一张本仓生成的**中性静止预览图**（便于选角辨识，**非 T-pose 验收证据**）。
+一句话：**路线 A/B 的共同上游源与派生物台账**——KayKit Adventurers 免费仓库固定 commit 里的 `Rogue_Hooded` 单角色原样入库；路线 B 另保存人工 marker 前的静态单网格 T-pose、Blender 源工程与真 T-pose 预览。
 
 依据：[KayKit 同模型双路线 A/B note](../../../notes/proposed/art/2026-09-19-character-model-animation-route-comparison.md)。
-本目录**只放上游源件与证据**；运行资产与接线不在阶段 1 范围内（`src/` 零改动）。
+上游源件只增不改；派生物按路线分目录保存。运行资产与 Godot 接线仍放在 `src/`，不与本目录混放。
 
 ## 1. 来源与获取
 
@@ -167,5 +167,25 @@
 ## 7. 阶段状态
 
 - **阶段 1（本台账覆盖）**：上游最小集入库 + 只读核验 + 预览 → **已完成**。
-- **阶段 2（未做）**：`src/` 运行资产、表现层接线、A/B 对照场景、脚滑/穿插/轮廓/材质与面数、draw call 验收 → **未开始**；`src/` 本阶段零改动。
-- proposed note 的 Status 保持 **proposed**：上游已就位不等于运行时已落地。
+- **阶段 2（进行中）**：路线 B 的 Mixamo 人工 marker 前准备已完成（见 §8）；路线 A 的运行资产/表现层、路线 B 的上传绑骨、A/B 对照场景及实机观感验收仍未完成。
+- proposed note 的 Status 保持 **proposed**：准备资产就位不等于双路线运行时与人工验收已落地。
+
+## 8. 路线 B：Mixamo 人工 marker 前准备（2026-09-19）
+
+路线 B 使用与 A 完全相同的 `Rogue_Hooded.glb`，先在 Blender 中清除 76 个 action/NLA、原骨架、武器与权重，再把 6 个人体分件合并为静态单网格真 T-pose。该阶段**停在 Mixamo 上传/人工 marker 之前**，没有启动浏览器、上传角色或下载动作。
+
+| 项 | 结果 |
+|---|---|
+| 脚本 | `mcp/mixamo/kaykit_route_b_prepare.py` |
+| 输出目录 | `route_b/`；完整逐文件 bytes/sha256 见 `route_b/prepare_manifest.json` |
+| 上传首选 | `route_b/rogue_hooded_static.fbx`，1 mesh / 0 armature / 0 action，3,196 verts / 3,921 tris |
+| 上传备选 | `route_b/rogue_hooded_static.obj` + `.mtl` + 1024² PNG |
+| 源工程 | `route_b/rogue_hooded_route_b_source.blend` |
+| 姿势与尺度 | `upperarm.l` 距水平 0.000°；高 2.2513 m；足底 z≈0；面向 −Y |
+| 二次导入 | FBX 与 OBJ 均复核为 1 mesh / 0 armature / 0 action、3,921 tris、1 UV、1 material |
+| 披风 | 不进入自动绑骨网格；84 tris 原件保存在 `.blend` 的 `cape_preserved/Rogue_Cape_PRESERVED`，解除父子关系前后世界包围盒最大漂移 0.0 m；绑骨后人工映射并刚性挂到 Mixamo 等效胸骨 |
+| 武器 | 5 件、合计 2,030 tris，从上传网格移除；上游 GLB 原件未改 |
+
+人工 marker 为硬门：下巴、双腕、胯部、双踝必须由使用者在 Mixamo 页面拖放；胯部因衣摆遮挡是唯一高风险点，应从侧/后方确认双腿真实间隙。详见 `route_b/README.md`。
+
+本阶段新增文件均为新路径；上游 GLB、既有中性预览与 `cultivator*` 基线资产均未覆盖或删除。Blender 的 FBX、`.blend` 与 PNG 写出会携带会话级元数据，因此跨会话 sha256 不作为稳定生成契约；**本轮提交中每个派生物的精确哈希以 `route_b/prepare_manifest.json` 为准**。
