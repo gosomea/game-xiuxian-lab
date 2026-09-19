@@ -10,6 +10,7 @@ const SPEED := 4.0
 
 
 static func run(t) -> void:
+	_test_visual_front_follows_aim(t)
 	_test_idle_stays_inactive(t)
 	_test_input_maps_to_camera_axes(t)
 	_test_diagonal_not_faster(t)
@@ -17,6 +18,18 @@ static func run(t) -> void:
 	_test_deactivation_leaves_host_velocity_alone(t)
 	_test_blocked_while_sword_flight(t)
 	_test_missing_component_is_inert(t)
+
+
+static func _test_visual_front_follows_aim(t) -> void:
+	t.begin_case()
+	for aim in [Vector3.FORWARD, Vector3.BACK, Vector3.LEFT, Vector3.RIGHT]:
+		var yaw := Swordsman.visual_yaw_for_aim(aim)
+		# 现役模型局部 +Z 是正面；把该轴按共享 yaw 旋转后必须与 aim 同向。
+		var visual_front := Basis(Vector3.UP, yaw) * Vector3.BACK
+		t.assert_true(visual_front.dot(aim) > 0.999,
+			"视觉局部 +Z 正面跟随 aim=%s（front=%s yaw=%.4f）" % [aim, visual_front, yaw])
+	t.assert_true(is_zero_approx(Swordsman.visual_yaw_for_aim(Vector3.ZERO)),
+		"零 aim 回退为 0，不产生 NaN")
 
 
 static func _build(t) -> Dictionary:

@@ -148,6 +148,16 @@ func capability_manager() -> CapabilityManager:
 	return _manager
 
 
+## 世界水平朝向 → 角色视觉 yaw。现役角色资产统一以局部 +Z 为正面；
+## 因此旋转后的 local +Z 必须与 aim 同向，而不是旧约定的 local -Z。
+static func visual_yaw_for_aim(direction: Vector3) -> float:
+	var flat := Vector3(direction.x, 0.0, direction.z)
+	if flat.length_squared() <= 0.000001:
+		return 0.0
+	flat = flat.normalized()
+	return atan2(flat.x, flat.z)
+
+
 ## 意图字段归零；tick 前与帧末各调用一次。
 static func clear_intents(motion: SwordsmanMotionComponent) -> void:
 	motion.desired_horizontal = Vector3.ZERO
@@ -160,5 +170,5 @@ func _face_aim() -> void:
 	var aim := _motion.aim_direction
 	if aim.length_squared() <= 0.000001:
 		return
-	# 模型局部 -Z 为正面：rotation.y = atan2(-x, -z) 使正面指向 aim。
-	_visual.rotation.y = atan2(-aim.x, -aim.z)
+	# 模型局部 +Z 为正面：统一由共享换算保证正面与 aim / 实际行进方向同向。
+	_visual.rotation.y = visual_yaw_for_aim(aim)

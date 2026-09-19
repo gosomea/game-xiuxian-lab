@@ -102,9 +102,10 @@ Pavilion column base 底面钉到 `PAVING_BOTTOM−0.02`）后，本表已更新
 Blender 为 Z-up，glTF 导出 `export_yup=True`，因此 **Blender +Y → glTF/Godot −Z**。
 
 角色部件朝 Blender −Y 建模。**当前 refined 脚本**由 `normalize_orientation()` **先等比缩放、再绕 Z 转 180°**，
-再经 `export_yup=True` 的 `(bx,by,bz) → (bx,bz,−by)` 映射，导出正面为 Godot **−Z**；该契约由
+再经 `export_yup=True` 的 `(bx,by,bz) → (bx,bz,−by)` 映射，写入 GLB 的正面顶点落在 **−Z**；该数据由
 `assert_axis_contract()` 在写出的 GLB 上直接断言（实测 `nose_z=-0.1111`、`eye_z=-0.0887`、
-`toe_z=-0.1470`），与 `Swordsman._face_aim()` 的「模型局部 −Z 为正面」一致。
+`toe_z=-0.1470`）。原始 GLB 坐标符号曾被误读成 Godot 运行时正面轴；实机移动已证实
+导入后应按局部 `+Z` 解释，现由 `Swordsman.visual_yaw_for_aim()` 统一换算。
 **旧版脚本**用 `orient_parts()` 完成同样的缩放 + 180° 旋转（旧文读数：交领 glTF z ∈ [−0.198, 0.007]、
 鞋尖 z=−0.130），其注释写的「−Y == Godot −Z」漏掉该旋转，是错误描述；几何本身正确。
 轴向细节见 [cultivator_refined README](../cultivator_refined/README.md)。

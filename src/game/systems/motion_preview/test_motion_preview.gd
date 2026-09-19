@@ -323,18 +323,20 @@ static func _assert_jump_default_unchanged(t) -> void:
 
 
 ## 共享预览包不得硬编码场景方向：初始朝向必须来自注入的 aim，
-## 且与 actor 的 _face_aim() 同一约定（模型局部 −Z 为正面）。
+## 且与 actor 的 _face_aim() 同一约定（模型局部 +Z 为正面）。
 static func _assert_initial_aim(t) -> void:
-	# 默认：aim = −Z → heading 0（独立单测 / 无宿主用法保持原语义）。
-	t.assert_true(absf(MotionPreviewDisplay.heading_for_aim(Vector3.FORWARD)) < 0.0001,
-		"aim=−Z 时 heading=0（默认语义不变）")
+	# 默认：aim = −Z → heading PI，使模型局部 +Z 正面转向世界 −Z。
+	var heading_forward := MotionPreviewDisplay.heading_for_aim(Vector3.FORWARD)
+	var forward_from_yaw := Vector3(sin(heading_forward), 0.0, cos(heading_forward))
+	t.assert_true(forward_from_yaw.dot(Vector3.FORWARD) > 0.999,
+		"aim=−Z 时局部 +Z 正面转向世界 −Z（heading=%.4f）" % heading_forward)
 	# +X（动作工作台的 SPAWN_AIM）：模型正面转向 +X。
 	var heading_x := MotionPreviewDisplay.heading_for_aim(Vector3.RIGHT)
-	var forward_x := Vector3(-sin(heading_x), 0.0, -cos(heading_x))
+	var forward_x := Vector3(sin(heading_x), 0.0, cos(heading_x))
 	t.assert_true(forward_x.dot(Vector3.RIGHT) > 0.9,
 		"aim=+X 时预览正面指向 +X（forward=(%.2f, %.2f, %.2f)）" % [forward_x.x, forward_x.y, forward_x.z])
 	# 与 actor 公式一致：同一 aim 必须给出同一个 rotation.y。
-	t.assert_true(is_equal_approx(heading_x, atan2(-Vector3.RIGHT.x, -Vector3.RIGHT.z)),
+	t.assert_true(is_equal_approx(heading_x, Swordsman.visual_yaw_for_aim(Vector3.RIGHT)),
 		"heading 公式与 actor._face_aim() 一致（%.4f）" % heading_x)
 	# 退化输入不产生 NaN。
 	t.assert_true(absf(MotionPreviewDisplay.heading_for_aim(Vector3.ZERO)) < 0.0001, "零向量 aim 回退为 0")

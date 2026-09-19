@@ -71,8 +71,9 @@
 1. **实机试玩验收（使用者本人，审美结论唯一来源）**：
    `./run.command` → 角色移动 → 第 8 项「青玉纸白样板」。
    核对：走/跑/跳动作是否配合（滑步？）、跳跃节奏、御剑姿态、朝向是否正确。
-   v7 模型导出用 `export_yup=True`（Blender -Y 正面 → Godot +Z 正面），已按此验证；
-   若仍背对镜头，再考虑旋转视觉场景里的模型实例。
+   v7 模型导出用 `export_yup=True`（Blender -Y 正面 → Godot +Z 正面）。2026-09-19
+   已修正共享 `Swordsman` 与动作预览的旧 `-Z` 假设，现统一按局部 `+Z` 正面换算；
+   不要再在本场景或模型实例额外补 180°，否则会重新反向。
 2. **速度同步校准**：`cultivator_skeleton_presentation.gd` 的 `walk_stride_meters=1.6` /
    `run_stride_meters=3.2` 是 Mixamo 近似值——实机看滑步就调这两个数（步频跟不上调小，漂移调大）。
 3. **跳跃手感**：当前 airborne 播 `jump` 单次并保持末帧，落地切 walk/idle——若体验差，
