@@ -592,6 +592,22 @@ static func _assert_display_pose(t) -> void:
 	t.track(display)
 	# 不 await：本套件必须同步跑完，否则 runner 会在协程挂起期间 cleanup 并释放已登记的节点。
 	display.reset_preview()
+	var preview_sword := display.sword_visual()
+	t.assert_true(preview_sword != null, "动作预览实例化共享飞剑视觉适配根")
+	if preview_sword != null:
+		t.assert_true(absf(absf(preview_sword.rotation.y) - PI) < 0.0001,
+			"动作预览飞剑适配根局部 yaw 补偿 180°（实际 %.4f）" % preview_sword.rotation.y)
+		var preview_sword_model := preview_sword.get_node_or_null("FlyingSwordModel") as Node3D
+		t.assert_true(preview_sword_model != null,
+			"动作预览飞剑适配根实例化原 GLB 模型")
+		if preview_sword_model != null:
+			var preview_tip_direction := (
+				preview_sword.transform.basis
+				* preview_sword_model.transform.basis
+				* Vector3.FORWARD
+			).normalized()
+			t.assert_true(preview_tip_direction.dot(Vector3.BACK) > 0.999,
+				"动作预览中的局部 -Z 剑尖经适配后朝人物局部 +Z（实际 %s）" % preview_tip_direction)
 	display.select_action("walk")
 	display.state().playing = true
 
