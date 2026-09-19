@@ -27,6 +27,7 @@ const EXPECTED_IDS := [
 	"state_transition_lab",
 	"movement_garden",
 	"mountain_realm",
+	"jade_paper_sample",
 ]
 
 var _failed := 0
@@ -63,14 +64,14 @@ func _run() -> void:
 	await _settle()
 	_check(current_scene.name == HUB_NODE_NAME, "点击模块卡一次直达子实验目录：%s" % current_scene.name)
 
-	# 2. 七项可见、顺序与清单一致、详情默认折叠、焦点落在条目卡。
+	# 2. 八项可见、顺序与清单一致、详情默认折叠、焦点落在条目卡。
 	var grid := current_scene.get_node("%EntryGrid") as GridContainer
-	_check(grid.get_child_count() == 7, "子实验目录显示 7 项（实际 %d）" % grid.get_child_count())
+	_check(grid.get_child_count() == 8, "子实验目录显示 8 项（实际 %d）" % grid.get_child_count())
 	var ids: Array[String] = []
 	for child in grid.get_children():
 		ids.append(str(child.name).trim_prefix("Entry_"))
 	_check(ids == EXPECTED_IDS, "子实验顺序与清单一致：%s" % str(ids))
-	_check(current_scene.get_node("%Count").text == "7 / 7", "计数如实显示已落地 7 / 7：%s" % current_scene.get_node("%Count").text)
+	_check(current_scene.get_node("%Count").text == "8 / 8", "计数如实显示已落地 8 / 8：%s" % current_scene.get_node("%Count").text)
 	for id in EXPECTED_IDS:
 		_check(grid.get_node_or_null("Entry_" + id) != null, "子实验条目存在：%s" % id)
 	_check(not (current_scene.get_node("%Details") as Control).visible, "子目录详情默认折叠")
@@ -97,7 +98,7 @@ func _run() -> void:
 	_check(current_scene.get_node("%Count").text == "7 / 7", "计数在目录中始终如实显示")
 	await _capture_exact("movement-hub-960x640", Vector2i(960, 640))
 
-	# 6. 七项入口与返回路径：逐项一次点击真实进入，Esc 回到本目录。
+	# 6. 八项入口与返回路径：逐项一次点击真实进入，Esc 回到本目录。
 	for id in EXPECTED_IDS:
 		if current_scene.name == TOP_HUB_NODE_NAME:
 			await _enter_hub_from_top()

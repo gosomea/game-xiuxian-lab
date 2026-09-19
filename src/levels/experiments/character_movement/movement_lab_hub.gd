@@ -14,7 +14,7 @@ const PARENT_SCENE := "res://levels/lab_hub.tscn"
 const DATA_PATH := "res://data/content/character_movement_subexperiments.json"
 const SCHEMA_VERSION := 1
 const MODULE_ID := "character_movement"
-## 清单契约：条目集合与顺序由 note 决定（镜头 → 动作 → 地形 → 御剑 → 压力场 → 庭院 → 群山）。
+## 清单契约：条目集合与顺序由 note 决定（镜头 → 动作 → 地形 → 御剑 → 压力场 → 庭院 → 群山 → 美术样板）。
 const REQUIRED_IDS := [
 	"camera_lab",
 	"motion_stage",
@@ -23,6 +23,7 @@ const REQUIRED_IDS := [
 	"state_transition_lab",
 	"movement_garden",
 	"mountain_realm",
+	"jade_paper_sample",
 ]
 const Catalog := preload("res://game/systems/lab_catalog/lab_catalog.gd")
 

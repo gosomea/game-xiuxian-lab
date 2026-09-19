@@ -14,8 +14,9 @@ const EXPECTED_IDS := [
 	"state_transition_lab",
 	"movement_garden",
 	"mountain_realm",
+	"jade_paper_sample",
 ]
-## 集成收口后七项全部落地：清单里不再有 planned 条目。
+## 集成收口后七项全部落地、样板轮新增美术样板：清单里没有 planned 条目。
 const EXPECTED_OPENABLE := [
 	"camera_lab",
 	"motion_stage",
@@ -24,9 +25,11 @@ const EXPECTED_OPENABLE := [
 	"state_transition_lab",
 	"movement_garden",
 	"mountain_realm",
+	"jade_paper_sample",
 ]
 const GARDEN_SCENE := "res://levels/experiments/character_movement/movement_garden.tscn"
 const REALM_SCENE := "res://levels/experiments/character_movement/mountain_realm.tscn"
+const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
 
 
 static func run(t) -> void:
@@ -130,7 +133,7 @@ static func run(t) -> void:
 	}).is_empty(), "空子实验清单被拒绝（缺少全部必需条目）")
 
 
-## 变异用例基线：形状与真实清单同构（七项、字段齐全），但刻意保留三条 planned 条目，
+## 变异用例基线：形状与真实清单同构（八项、字段齐全），但刻意保留三条 planned 条目，
 ## 以便继续覆盖「planned 不得挂场景 / 不得进入」这类规则——真实清单此时已全部落地。
 static func _base_entries() -> Array:
 	return [
@@ -141,6 +144,7 @@ static func _base_entries() -> Array:
 		_entry("state_transition_lab", "planned", ""),
 		_entry("movement_garden", "exploring", GARDEN_SCENE),
 		_entry("mountain_realm", "exploring", REALM_SCENE),
+		_entry("jade_paper_sample", "exploring", SAMPLE_SCENE),
 	]
 
 
