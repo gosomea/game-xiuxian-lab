@@ -1,14 +1,19 @@
 extends Node3D
 
-## 青玉纸白样板场景（美术方向第一轮实施，依据 notes/proposed/art/ 下方向 note 与实施 note）。
+## 青玉纸白样板场景（美术方向实施，第二轮：补山水草竹与建筑群，替换人物）。
 ##
 ## 职责边界：
-## - 只装配视觉与碰撞：地形 GLB（台基/台阶/铺装/收边）+ 混元生成资产（亭/松/岩）+ 共享角色。
+## - 只装配视觉与碰撞：地形 GLB（台基/台阶/铺装/收边）+ 混元生成资产（亭/松/岩/远山/山门/
+##   石灯笼/竹丛）+ 程序草簇 + Godot 侧水面/石桥 + 共享角色。
 ## - 三能力归角色根与 res://game/abilities/ 叶子包；本场景只做输入编排、相机与 HUD。
-## - 碰撞盒在本脚本内显式声明（样板规模不需要布局 JSON 机制）；装饰面契约由地形 GLB 自带
+## - 碰撞盒在本脚本内显式声明（样板规模不需要布局 JSON 机制）；地形装饰面契约由 GLB 自带
 ##   （压顶高出主体 0.02、踏面条高出踏步 0.02、砖面高出地面 0.02）。
 ## - 相机走共享 CameraRig（fixed_follow + 滚轮缩放）；HUD 走共享 LabHud；
 ##   输入按住状态复用实验组共享 MovementLabInput。
+##
+## 布局（俯视，+Z 朝出生点）：
+##   中央台基+亭；南为出生点；北 14 m 山门；台阶两侧石灯笼；
+##   东侧水塘（半径 4.2 m）+ 三板石桥；西侧竹丛成组；远山环带 60–140 m 靠雾成剪影。
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
@@ -20,14 +25,18 @@ const TERRAIN_SCENE: PackedScene = preload("res://levels/experiments/character_m
 const PAVILION_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_pavilion.glb")
 const PINE_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_pine.glb")
 const ROCK_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_rock.glb")
+const MOUNTAIN_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_mountain.glb")
+const GATE_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_gate.glb")
+const LANTERN_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_lantern.glb")
+const BAMBOO_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_bamboo.glb")
+const GRASS_SCENE: PackedScene = preload("res://levels/experiments/character_movement/jade_grass.glb")
 
 ## 世界碰撞统一层：与实验组其它场景同层。
 const COLLISION_LAYER := 1
 
-## 场地：铺装区 16×16 m，出界回收。
+## 场地：铺装区 16×16 m，边界 20 m（容纳水塘与山门），出界回收。
 const PLAZA_HALF := 8.0
-const BOUND := 16.0
-## 地面暗底（砖缝露出的底色，albedo 线性语义；比铺装砖明显深一档，砖缝才读得出）。
+const BOUND := 20.0
 ## 地面暗底（砖缝露出的底色，albedo 线性语义；比铺装砖明显深一档，砖缝才读得出）。
 const GROUND_COLOR := Color(0.10, 0.09, 0.075, 1.0)
 ## 远景地平：只做背景，不建碰撞、不投影。圆柱中心 y=-0.71 → 顶面 -0.21，
@@ -35,12 +44,18 @@ const GROUND_COLOR := Color(0.10, 0.09, 0.075, 1.0)
 const FLOOR_RADIUS := 300.0
 const FLOOR_COLOR := Color(0.52, 0.56, 0.52, 1.0)
 
+## 水塘：东侧；水面低饱和青蓝；基座暗环 + 石岸岩 + 不可见护环（不可趟水）。
+const POND_CENTER := Vector3(11.5, 0.0, 2.5)
+const POND_RADIUS := 4.2
+const WATER_COLOR := Color(0.16, 0.28, 0.34, 1.0)
+const BASIN_COLOR := Color(0.055, 0.075, 0.085, 1.0)
+
 ## 相机：默认近景看清角色与脚边，滚轮缩放到一屏比较样板全景。
 const CAMERA_OFFSET := Vector3(13.0, 15.0, 13.5)
 const CAMERA_SIZE := 18.0
 const CAMERA_SIZE_MIN := 6.0
-const CAMERA_SIZE_MAX := 60.0
-const CAMERA_FAR := 700.0
+const CAMERA_SIZE_MAX := 90.0
+const CAMERA_FAR := 900.0
 
 ## 布景（Pine 6 m / Rock 2.2 m 已在资产内归一；scale 只做构图变体）。
 const PAVILION_YAW_DEG := 180.0
@@ -50,8 +65,56 @@ const PINES := [
 	{"pos": Vector3(-9.5, 0.0, 4.0), "yaw": 250.0, "scale": 0.75},
 ]
 const ROCKS := [
-	{"pos": Vector3(7.6, 0.0, -2.6), "yaw": 30.0, "scale": 1.0},
 	{"pos": Vector3(-8.2, 0.0, -10.5), "yaw": 190.0, "scale": 0.7},
+]
+const POND_ROCKS := [
+	{"pos": Vector3(9.6, 0.0, 6.6), "yaw": 15.0, "scale": 0.45},
+	{"pos": Vector3(13.4, 0.0, 7.0), "yaw": 75.0, "scale": 0.4},
+	{"pos": Vector3(16.0, 0.0, 3.4), "yaw": 130.0, "scale": 0.5},
+	{"pos": Vector3(15.2, 0.0, -1.4), "yaw": 200.0, "scale": 0.42},
+	{"pos": Vector3(11.0, 0.0, -2.4), "yaw": 260.0, "scale": 0.36},
+	{"pos": Vector3(7.2, 0.0, -0.6), "yaw": 310.0, "scale": 0.4},
+]
+const LANTERNS := [
+	{"pos": Vector3(-4.2, 0.0, 5.4), "yaw": 8.0},
+	{"pos": Vector3(4.2, 0.0, 5.4), "yaw": -8.0},
+]
+const BAMBOOS := [
+	{"pos": Vector3(-11.8, 0.0, -4.2), "yaw": 0.0, "scale": 1.0},
+	{"pos": Vector3(-9.9, 0.0, -7.6), "yaw": 70.0, "scale": 1.15},
+	{"pos": Vector3(-13.4, 0.0, -0.6), "yaw": 150.0, "scale": 0.85},
+	{"pos": Vector3(-14.2, 0.0, 8.8), "yaw": 210.0, "scale": 0.95},
+]
+## 远山环带：只做剪影层次，全部处于雾距（60 m 外）。
+## 远山：北侧背景带 25–45 m 矮山包（正交视野 35 m 外被雾吞没、近距高墙会填满整帧；
+## 甜点 = 台基正后方 6–10 m 山包剪影，成水墨中景层次，实测多轮标定）。
+const MOUNTAINS := [
+	{"pos": Vector3(-15.0, 0.0, -26.0), "yaw": 15.0, "scale": 0.26},
+	{"pos": Vector3(1.0, 0.0, -30.0), "yaw": 0.0, "scale": 0.32},
+	{"pos": Vector3(16.0, 0.0, -25.0), "yaw": -30.0, "scale": 0.28},
+	{"pos": Vector3(-30.0, 0.0, -20.0), "yaw": 80.0, "scale": 0.22},
+	{"pos": Vector3(29.0, 0.0, -18.0), "yaw": -70.0, "scale": 0.24},
+]
+## 草簇：成组聚散（方向 note §2 植被条），贴水岸、台基角、铺装边缘。
+const GRASS_TUFTS := [
+	{"pos": Vector3(8.6, 0.02, 7.4), "yaw": 10.0, "scale": 1.2},
+	{"pos": Vector3(9.4, 0.02, 4.9), "yaw": 80.0, "scale": 0.9},
+	{"pos": Vector3(14.8, 0.02, 5.8), "yaw": 150.0, "scale": 1.1},
+	{"pos": Vector3(15.6, 0.02, -0.2), "yaw": 210.0, "scale": 0.85},
+	{"pos": Vector3(6.9, 0.02, -3.4), "yaw": 300.0, "scale": 1.0},
+	{"pos": Vector3(-7.6, 0.02, 7.8), "yaw": 40.0, "scale": 1.3},
+	{"pos": Vector3(-6.8, 0.02, -8.4), "yaw": 120.0, "scale": 0.95},
+	{"pos": Vector3(7.4, 0.02, -8.2), "yaw": 250.0, "scale": 1.15},
+	{"pos": Vector3(-2.9, 0.02, 10.6), "yaw": 0.0, "scale": 0.8},
+	{"pos": Vector3(3.1, 0.02, 10.2), "yaw": 190.0, "scale": 1.05},
+	{"pos": Vector3(11.2, 0.02, 10.4), "yaw": 60.0, "scale": 0.9},
+	{"pos": Vector3(-12.6, 0.02, 2.8), "yaw": 280.0, "scale": 1.1},
+]
+## 石桥：三板跨水塘（Godot 侧几何 + 碰撞；略拱）。
+const BRIDGE_SLABS := [
+	{"pos": Vector3(8.6, 0.22, 2.5), "size": Vector3(3.0, 0.16, 1.7)},
+	{"pos": Vector3(11.5, 0.34, 2.5), "size": Vector3(3.2, 0.16, 1.7)},
+	{"pos": Vector3(14.4, 0.22, 2.5), "size": Vector3(3.0, 0.16, 1.7)},
 ]
 
 var _camera: Camera3D
@@ -73,6 +136,7 @@ func _ready() -> void:
 	_camera = %Camera3D as Camera3D
 	assert(_camera != null, "jade_paper_sample: 场景必须提供 Camera3D")
 	_build_ground()
+	_build_water_and_bridge()
 	_build_world_visual()
 	_build_collision()
 	_build_boundaries()
@@ -231,11 +295,67 @@ func _build_ground() -> void:
 	distant.mesh = disc
 	distant.material_override = far_material
 	distant.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# 圆柱中心 y=-0.71 → 顶面 -0.21，必须低于地面 0 与铺装 0.02（实测踩坑）。
 	distant.position = Vector3(0.0, -0.71, 0.0)
 	_world().add_child(distant)
 
 
-## 美术 GLB：地形（台基/台阶/铺装/收边）+ 亭 + 松 + 岩。
+## 水塘：暗色基座环 + 水面 + 三板石桥。水面不投影（避免大面积阴影 acne），不建碰撞由护环负责。
+func _build_water_and_bridge() -> void:
+	var root := Node3D.new()
+	root.name = "Pond"
+	_world().add_child(root)
+
+	var basin := CylinderMesh.new()
+	basin.top_radius = POND_RADIUS + 0.4
+	basin.bottom_radius = POND_RADIUS + 0.4
+	basin.height = 0.02
+	basin.radial_segments = 48
+	var basin_material := StandardMaterial3D.new()
+	basin_material.albedo_color = BASIN_COLOR
+	basin_material.roughness = 1.0
+	var basin_node := MeshInstance3D.new()
+	basin_node.name = "Basin"
+	basin_node.mesh = basin
+	basin_node.material_override = basin_material
+	basin_node.position = POND_CENTER + Vector3(0.0, 0.012, 0.0)
+	basin_node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(basin_node)
+
+	var water := CylinderMesh.new()
+	water.top_radius = POND_RADIUS
+	water.bottom_radius = POND_RADIUS
+	water.height = 0.02
+	water.radial_segments = 48
+	var water_material := StandardMaterial3D.new()
+	water_material.albedo_color = WATER_COLOR
+	water_material.roughness = 0.18
+	water_material.metallic = 0.2
+	var water_node := MeshInstance3D.new()
+	water_node.name = "Water"
+	water_node.mesh = water
+	water_node.material_override = water_material
+	water_node.position = POND_CENTER + Vector3(0.0, 0.045, 0.0)
+	water_node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(water_node)
+
+	# 石桥：略拱三板，材质复用地形石色（Godot 侧 albedo 与 GLB 显示口径一致）。
+	var slab_material := StandardMaterial3D.new()
+	slab_material.albedo_color = Color(0.212, 0.177, 0.119, 1.0)
+	slab_material.roughness = 0.9
+	for i in range(BRIDGE_SLABS.size()):
+		var spec: Dictionary = BRIDGE_SLABS[i]
+		var box := BoxMesh.new()
+		box.size = spec["size"]
+		var slab := MeshInstance3D.new()
+		slab.name = "BridgeSlab%d" % (i + 1)
+		slab.mesh = box
+		slab.material_override = slab_material
+		slab.position = spec["pos"]
+		root.add_child(slab)
+
+
+## 美术 GLB：地形 + 亭 + 松 + 岩 + 山门 + 灯笼 + 竹 + 草 + 远山 + 水岸岩。
 func _build_world_visual() -> void:
 	var terrain := TERRAIN_SCENE.instantiate() as Node3D
 	terrain.name = "JadeTerrain"
@@ -265,6 +385,55 @@ func _build_world_visual() -> void:
 		rock.scale = Vector3.ONE * float(spec["scale"])
 		_world().add_child(rock)
 
+	for i in range(POND_ROCKS.size()):
+		var spec: Dictionary = POND_ROCKS[i]
+		var rock := ROCK_SCENE.instantiate() as Node3D
+		rock.name = "PondRock%d" % (i + 1)
+		rock.position = spec["pos"]
+		rock.rotation_degrees = Vector3(0, spec["yaw"], 0)
+		rock.scale = Vector3.ONE * float(spec["scale"])
+		_world().add_child(rock)
+
+	for i in range(LANTERNS.size()):
+		var spec: Dictionary = LANTERNS[i]
+		var lantern := LANTERN_SCENE.instantiate() as Node3D
+		lantern.name = "JadeLantern%d" % (i + 1)
+		lantern.position = spec["pos"]
+		lantern.rotation_degrees = Vector3(0, spec["yaw"], 0)
+		_world().add_child(lantern)
+
+	var gate := GATE_SCENE.instantiate() as Node3D
+	gate.name = "JadeGate"
+	gate.position = Vector3(0, 0, -14)
+	_world().add_child(gate)
+
+	for i in range(BAMBOOS.size()):
+		var spec: Dictionary = BAMBOOS[i]
+		var bamboo := BAMBOO_SCENE.instantiate() as Node3D
+		bamboo.name = "JadeBamboo%d" % (i + 1)
+		bamboo.position = spec["pos"]
+		bamboo.rotation_degrees = Vector3(0, spec["yaw"], 0)
+		bamboo.scale = Vector3.ONE * float(spec["scale"])
+		_world().add_child(bamboo)
+
+	for i in range(GRASS_TUFTS.size()):
+		var spec: Dictionary = GRASS_TUFTS[i]
+		var tuft := GRASS_SCENE.instantiate() as Node3D
+		tuft.name = "JadeGrass%d" % (i + 1)
+		tuft.position = spec["pos"]
+		tuft.rotation_degrees = Vector3(0, spec["yaw"], 0)
+		tuft.scale = Vector3.ONE * float(spec["scale"])
+		_world().add_child(tuft)
+
+	for i in range(MOUNTAINS.size()):
+		var spec: Dictionary = MOUNTAINS[i]
+		var mountain := MOUNTAIN_SCENE.instantiate() as Node3D
+		mountain.name = "JadeMountain%d" % (i + 1)
+		mountain.position = spec["pos"]
+		mountain.rotation_degrees = Vector3(0, spec["yaw"], 0)
+		mountain.scale = Vector3.ONE * float(spec["scale"])
+		_world().add_child(mountain)
+
 # --- 碰撞（样板规模：显式盒，不引入布局 JSON） -----------------------------
 
 
@@ -291,6 +460,40 @@ func _build_collision() -> void:
 		var s := float(spec["scale"])
 		_add_box(container, "RockBody%d" % (i + 1),
 			Vector3(pos.x, 1.0 * s, pos.z), Vector3(1.7 * s, 2.0 * s, 1.6 * s))
+	# 竹丛根部：细盒防穿。
+	for i in range(BAMBOOS.size()):
+		var spec: Dictionary = BAMBOOS[i]
+		var pos: Vector3 = spec["pos"]
+		var s := float(spec["scale"])
+		_add_box(container, "BambooRoot%d" % (i + 1),
+			Vector3(pos.x, 0.6 * s, pos.z), Vector3(1.1 * s, 1.2 * s, 1.1 * s))
+	# 山门柱：中门可走，两侧柱体近似（宽门按 4.5 m 净宽留白）。
+	_add_box(container, "GatePostWest", Vector3(-2.9, 1.8, -14.0), Vector3(1.2, 3.6, 1.2))
+	_add_box(container, "GatePostEast", Vector3(2.9, 1.8, -14.0), Vector3(1.2, 3.6, 1.2))
+	# 石灯笼座。
+	for i in range(LANTERNS.size()):
+		var spec: Dictionary = LANTERNS[i]
+		var pos: Vector3 = spec["pos"]
+		_add_box(container, "LanternBase%d" % (i + 1),
+			Vector3(pos.x, 0.45, pos.z), Vector3(0.7, 0.9, 0.7))
+	# 水塘护环：10 段切向不可见墙，不可趟水。
+	var segments := 10
+	for i in range(segments):
+		var angle := TAU * float(i) / float(segments)
+		var wall_pos := POND_CENTER + Vector3(cos(angle) * (POND_RADIUS + 0.35), 0.3,
+			sin(angle) * (POND_RADIUS + 0.35))
+		var wall := _add_box(container, "PondRim%d" % (i + 1), wall_pos,
+			Vector3(2.9, 0.6, 0.7))
+		wall.rotation.y = -angle
+	# 石桥踏步：三板 + 台面（0.22/0.34 拱高差用小台阶过渡）。
+	for i in range(BRIDGE_SLABS.size()):
+		var spec: Dictionary = BRIDGE_SLABS[i]
+		var pos: Vector3 = spec["pos"]
+		var size: Vector3 = spec["size"]
+		_add_box(container, "BridgeDeck%d" % (i + 1),
+			pos, size)
+	_add_box(container, "BridgeStepWest", Vector3(7.0, 0.11, 2.5), Vector3(0.9, 0.22, 1.7))
+	_add_box(container, "BridgeStepEast", Vector3(16.0, 0.11, 2.5), Vector3(0.9, 0.22, 1.7))
 
 
 func _build_boundaries() -> void:
@@ -309,7 +512,7 @@ func _build_boundaries() -> void:
 		Vector3(BOUND * 2 + thickness * 2, height, thickness))
 
 
-func _add_box(parent: Node3D, box_name: String, center: Vector3, size: Vector3) -> void:
+func _add_box(parent: Node3D, box_name: String, center: Vector3, size: Vector3) -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.name = box_name
 	body.position = center
@@ -322,6 +525,7 @@ func _add_box(parent: Node3D, box_name: String, center: Vector3, size: Vector3) 
 	shape_node.shape = shape
 	body.add_child(shape_node)
 	parent.add_child(body)
+	return body
 
 
 func _world() -> Node3D:

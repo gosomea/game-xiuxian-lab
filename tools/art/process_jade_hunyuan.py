@@ -34,6 +34,11 @@ TARGETS = {
     "pine": {"height": 6.0, "max_tris": 60000},
     "rock": {"height": 2.2, "max_tris": 30000},
     "pavilion": {"height": 4.6, "max_tris": 80000},  # 含基座；置于台基上顶约 5.2 m
+    "mountain": {"height": 30.0, "max_tris": 50000},  # 远景剪影，场景内再放大 1.0–1.5
+    "gate": {"height": 7.0, "max_tris": 80000},       # 三门牌坊，门洞可走
+    "lantern": {"height": 1.6, "max_tris": 30000},
+    "bamboo": {"height": 4.0, "max_tris": 40000},
+    "character": {"height": 1.75, "max_tris": 60000},  # 混元人物（后处理前的基础归一）
 }
 
 # 色卡（线性值）。
@@ -48,7 +53,11 @@ PALETTE = {
 SEGMENTS = {
     "pine": ([(0.20, 0.60, 0.08, "foliage")], "wood"),
     "pavilion": ([(0.20, 0.60, 0.08, "tile"), (0.02, 0.14, 0.12, "wood")], "stone"),
-    "rock": ([], "stone"),  # 单段整体青灰
+    "rock": ([], "stone"),          # 单段整体青灰
+    "mountain": ([], "stone"),      # 单段整体青灰（远景剪影）
+    "gate": ([], "stone"),          # 单段整体青灰石牌坊
+    "lantern": ([], "stone"),       # 单段整体青灰
+    "bamboo": ([], "foliage"),      # 单段整体深松绿（竿叶同调）
 }
 
 

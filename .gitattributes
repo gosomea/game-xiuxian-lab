@@ -8,3 +8,16 @@
 /docs/art/jade_paper_sample/jade_rock.blend filter=lfs diff=lfs merge=lfs -text
 /docs/art/jade_paper_sample/jade_rock.blend1 filter=lfs diff=lfs merge=lfs -text
 /src/levels/experiments/character_movement/jade_pavilion.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_jade/cultivator_jade.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_jade/cultivator_jade.blend1 filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/bamboo_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/character_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/gate_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/lantern_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/hunyuan_raw/mountain_raw.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_bamboo.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_gate.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_lantern.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/jade_paper_sample/jade_mountain.blend filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_jade.glb filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_jade_texture_20250901.png filter=lfs diff=lfs merge=lfs -text
