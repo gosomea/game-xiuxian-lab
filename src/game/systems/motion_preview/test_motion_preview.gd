@@ -592,6 +592,12 @@ static func _assert_display_pose(t) -> void:
 	t.track(display)
 	# 不 await：本套件必须同步跑完，否则 runner 会在协程挂起期间 cleanup 并释放已登记的节点。
 	display.reset_preview()
+	var shared_character := display.get_node_or_null("CultivatorVisual/Cultivator") as Node3D
+	t.assert_true(shared_character != null, "动作预览实例化共享 Blender 原创角色")
+	if shared_character != null:
+		t.assert_eq(shared_character.scene_file_path,
+			"res://game/actors/swordsman/models/cultivator.glb",
+			"默认移动场景不再读取宽袖袍 cultivator_jade.glb")
 	var preview_sword := display.sword_visual()
 	t.assert_true(preview_sword != null, "动作预览实例化共享飞剑视觉适配根")
 	if preview_sword != null:
