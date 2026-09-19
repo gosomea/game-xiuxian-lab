@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+; 无仙侠衣装的清俊少年动画底座 v7（中性动画底座，非最终角色美术）。
+; 与 cultivator_visual.tscn（分件刚体版）/ cultivator_visual_rigged.tscn（旧青玉长袍）
+; 同位互换：根下 = 模型实例 + CultivatorSkeletonPresentation；不含碰撞/组件/装配。
+;
+; 模型：Generic Anime Male（CC-BY-4.0，jonshipman）原身体表面 + 深靛中性遮挡层，
+; 无交领/腰封/袍摆/护腕/绑腿，无硬板发片；clips = idle/walk/run/jump。
+; 依据 notes/proposed/art/2026-09-19-neutral-youth-animation-base-v7.md。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_neutral_youth_v7.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorVisualNeutralYouthV7" type="Node3D"]
+
+[node name="CultivatorNeutralYouthV7" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorSkeletonPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")

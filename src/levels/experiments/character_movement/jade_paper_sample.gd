@@ -2,6 +2,9 @@ extends Node3D
 
 ## 青玉纸白样板场景（美术方向实施，第二轮：补山水草竹与建筑群，替换人物）。
 ##
+## 2026-09-19 v7：人物换成无仙侠衣装的中性动画底座
+## （cultivator_visual_neutral_youth_v7.tscn）。旧青玉长袍视觉不再接入。
+##
 ## 职责边界：
 ## - 只装配视觉与碰撞：地形 GLB（台基/台阶/铺装/收边）+ 混元生成资产（亭/松/岩/远山/山门/
 ##   石灯笼/竹丛）+ 程序草簇 + Godot 侧水面/石桥 + 共享角色。
@@ -17,8 +20,10 @@ extends Node3D
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-const RIGGED_VISUAL_SCENE: PackedScene = preload(
-	"res://game/actors/swordsman/cultivator_visual_rigged.tscn")
+## 样板人物视觉：v7 无仙侠衣装的中性动画底座（原身体 + 深靛遮挡层，四动作）。
+## 旧青玉长袍骨骼视觉 cultivator_visual_rigged.tscn 保留为回退与故障对照，不再接入本场景。
+const NEUTRAL_YOUTH_VISUAL_SCENE: PackedScene = preload(
+	"res://game/actors/swordsman/cultivator_visual_neutral_youth_v7.tscn")
 const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
 const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const InputHelper := preload("res://levels/experiments/character_movement/movement_lab_input.gd")
@@ -548,7 +553,7 @@ func _spawn_player() -> void:
 	assert(legacy_visual != null, "jade_paper_sample: 默认角色缺少 Visual，无法替换骨骼视觉")
 	actor.remove_child(legacy_visual)
 	legacy_visual.queue_free()
-	var rigged_visual := RIGGED_VISUAL_SCENE.instantiate() as Node3D
+	var rigged_visual := NEUTRAL_YOUTH_VISUAL_SCENE.instantiate() as Node3D
 	assert(rigged_visual != null, "jade_paper_sample: 骨骼视觉场景根必须是 Node3D")
 	rigged_visual.name = "Visual"
 	actor.add_child(rigged_visual)
