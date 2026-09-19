@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+; 骨骼动画角色视觉（Mixamo 绑骨 + 4 动作 clip）。与 cultivator_visual.tscn（分件刚体版）
+; 同位互换：根下 = 模型实例 + CultivatorSkeletonPresentation；不含碰撞/组件/装配。
+; 接入方（如 jade_paper_sample）用本场景替换 Swordsman 的 Visual 子树。
+; 依据 notes/implemented/art/2026-09-19-jade-paper-sample-implementation.md 第四轮。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_rigged.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorVisualRigged" type="Node3D"]
+
+[node name="CultivatorRigged" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorSkeletonPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")

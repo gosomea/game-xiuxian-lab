@@ -146,6 +146,22 @@ Status: implemented
   全局 `~/.workbuddy/mcp.json` 的 mixamo 条目改指本仓路径。
 - 原 `projects/mixamo-mcp/` 保留为原型备份，不再维护。
 
+
+### 第四轮实施记录（骨骼角色接入新场景）
+
+使用者指示：新场景装上骨骼角色，动作配合运动，实现易懂。决策：
+
+1. **只接新场景**：`jade_paper_sample.gd` 在 `_spawn_player()` 后把 Visual 子树替换为
+   `cultivator_visual_rigged.tscn`（rigged GLB + 骨骼驱动表现层）；其余场景维持分件
+   刚体视觉（motion 预览测试零影响）。
+2. **表现层 drop-in**：`cultivator_skeleton_presentation.gd` 沿用 CultivatorPresentation
+   的公开 API（auto_read_actor / actor_path / advance_state / sample_state / pose_state /
+   reset_pose），只读 motion() 快照驱动 AnimationPlayer，不碰物理。
+3. **动作映射（含速度同步）**：御剑=idle 0.6 倍速+前倾 12°；空中=jump 播完保持；
+   着地 speed>5.5→run、>0.3→walk（播放速率 = 实际水平速度 / 动作自然速度
+   walk 1.6 / run 3.2 m/s，防滑步）；否则 idle。切换用 play(clip, 0.15) 交叉淡化。
+4. 朝向以实机截图核对（Mixamo 导出面朝可能 +Z，错则 Visual 转 180°）。
+
 ## 风险
 
 - 混元产物面数与拓扑不可控：本轮以 Decimate 预算兜底（松 40k / 岩 30k / 亭 80k），超预算对象放行前必须先减面。
