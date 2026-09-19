@@ -29,6 +29,7 @@ DOC = "mcp/README.md"
 # mcp 目录名 -> (配套 skill 目录名, 工具计数源文件, 期望工具数)
 INTEGRATIONS: dict[str, tuple[str, str, int]] = {
     "blender-mcp": ("mcp-blender", "src/blender_mcp/server.py", 25),
+    "mixamo": ("mcp-mixamo", "mcp_server.py", 8),
 }
 
 TOOL_DECORATOR = re.compile(r"@mcp\.tool\(\)")
