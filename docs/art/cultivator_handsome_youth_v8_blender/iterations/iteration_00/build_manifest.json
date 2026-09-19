@@ -1,0 +1,173 @@
+{
+ "phases": {
+  "build": {
+   "blend_sha256": "d2cb24278f9473d6127569cec6f2af914f6d086635067fe273be1634c93100ce",
+   "blender_version": "5.2.1 LTS",
+   "checks": {
+    "bbox_max": [
+     0.88855,
+     0.14482,
+     1.75472
+    ],
+    "bbox_min": [
+     -0.88855,
+     -0.224,
+     0.0
+    ],
+    "feet_on_ground": true,
+    "height_m": 1.7547,
+    "height_ok": true,
+    "material_count": 12,
+    "materials_in_range_6_12": true,
+    "non_finite_total": 0,
+    "non_manifold_total": 380,
+    "object_count": 4,
+    "origin_between_feet": true,
+    "triangles_in_range_15k_45k": true,
+    "triangles_total": 20932,
+    "zero_area_total": 0
+   },
+   "export": {
+    "fbx": "docs/art/cultivator_handsome_youth_v8_blender/cultivator_handsome_youth_v8_blender.fbx",
+    "fbx_note": "静态无骨骼；unrigged 供后续自动绑骨",
+    "fbx_sha256": "2378897fea8183ec0bafd4bf2a9278ade231a28b95108dfdda3e1623cdfe361d",
+    "glb": "docs/art/cultivator_handsome_youth_v8_blender/cultivator_handsome_youth_v8_blender.glb",
+    "glb_sha256": "cbe2954e544cf406e88a6e62b77c4852f9216f2be2d86498ec241f5c66797ab2"
+   },
+   "glb_audit": {
+    "animations": 0,
+    "attributes": [
+     "NORMAL",
+     "POSITION"
+    ],
+    "bounds_max": [
+     0.88855,
+     1.75472,
+     0.224
+    ],
+    "bounds_min": [
+     -0.88855,
+     0,
+     -0.14482
+    ],
+    "bytes": 464472,
+    "cameras": 0,
+    "images": 0,
+    "material_count": 12,
+    "materials": [
+     "V8_Skin",
+     "V8_Hair",
+     "V8_Jade",
+     "V8_Inner",
+     "V8_Iris",
+     "V8_Dark",
+     "V8_Lips",
+     "V8_Sash",
+     "V8_Trim",
+     "V8_Outer",
+     "V8_Pants",
+     "V8_Boots"
+    ],
+    "meshes": 4,
+    "nodes": 4,
+    "sha256": "cbe2954e544cf406e88a6e62b77c4852f9216f2be2d86498ec241f5c66797ab2",
+    "skins": 0,
+    "triangles": 20932
+   },
+   "meshes": [
+    {
+     "materials": 1,
+     "name": "V8_Body",
+     "non_finite_verts": 0,
+     "non_manifold_edges": 0,
+     "polygons": 1262,
+     "triangles": 2820,
+     "vertices": 1448,
+     "zero_area_faces": 0
+    },
+    {
+     "materials": 5,
+     "name": "V8_Head_Face",
+     "non_finite_verts": 0,
+     "non_manifold_edges": 340,
+     "polygons": 1288,
+     "triangles": 2242,
+     "vertices": 1312,
+     "zero_area_faces": 0
+    },
+    {
+     "materials": 2,
+     "name": "V8_Hair",
+     "non_finite_verts": 0,
+     "non_manifold_edges": 40,
+     "polygons": 907,
+     "triangles": 1866,
+     "vertices": 962,
+     "zero_area_faces": 0
+    },
+    {
+     "materials": 7,
+     "name": "V8_Outfit",
+     "non_finite_verts": 0,
+     "non_manifold_edges": 0,
+     "polygons": 6844,
+     "triangles": 14004,
+     "vertices": 7042,
+     "zero_area_faces": 0
+    }
+   ],
+   "orientation": {
+    "axis_helper": "FRONT_+Z 为空物体，Blender 中箭头指向 -Y（导出后 +Z），不导出",
+    "blender_front": "-Y",
+    "export_yup": true,
+    "gltf_front_after_export": "+Z"
+   },
+   "renders": [
+    "v8_front",
+    "v8_back",
+    "v8_side_left",
+    "v8_side_right",
+    "v8_three_quarter_front",
+    "v8_three_quarter_back",
+    "v8_head_closeup",
+    "v8_head_three_quarter",
+    "v8_hands_closeup",
+    "v8_hand_left_three_quarter",
+    "v8_hand_left_top",
+    "v8_feet_closeup",
+    "v8_front_with_axis",
+    "v8_front_no_axis",
+    "v8_2p5d_128",
+    "v8_2p5d_256",
+    "v8_grey_front",
+    "v8_grey_back",
+    "v8_grey_side",
+    "v8_grey_three_quarter"
+   ],
+   "symmetry": {
+    "body": {
+     "mirror_unmatched": 0,
+     "ratio": 0.0,
+     "vertices": 1448
+    },
+    "hair": {
+     "mirror_unmatched": 0,
+     "ratio": 0.0,
+     "vertices": 962
+    },
+    "head": {
+     "mirror_unmatched": 0,
+     "ratio": 0.0,
+     "vertices": 1312
+    },
+    "outfit": {
+     "mirror_unmatched": 1315,
+     "ratio": 0.1867,
+     "vertices": 7042
+    }
+   },
+   "unapplied_transforms": [],
+   "units": "metric, 1.0 m"
+  }
+ }
+}
