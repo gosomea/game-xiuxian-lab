@@ -99,3 +99,19 @@
   踝切线必须低于靴筒顶（0.06H 切不开 → Foot 缺失 → 表现层断言失败）。
 - 遮缝策略实测有效：腰缝靠贴图自带腰带（静侧）覆盖、肩缝靠扁肩垫覆盖、髋缝藏裙内；
   无需额外腰封环（烘焙腰带已跨缝，加环反而突兀）。
+
+## 第三轮条目（Mixamo 真骨骼角色，2026-09-19）
+
+| 字段 | 值 |
+|---|---|
+| 资产 | `cultivator_rigged`（蒙皮角色 + Skeleton3D + AnimationPlayer，clips=[idle,jump,run,walk]） |
+| 来源 | 自产模型（cultivator_jade 合并单网格 OBJ）经 Mixamo Auto-Rigger 绑骨（**标记点由使用者人工拖放**）+ Mixamo 动画库 4 clip 下载；Blender 组装 + 袍子权重锁定 |
+| 动画 | Walking（skin=true）/ Idle / Running / Jump Up，inplace=on，fbx_unity 30fps |
+| 上传源 | 本目录 `cultivator_jade_for_mixamo.obj`（6.0 MB）/ `.fbx`（16 MB，备用） |
+| 源文件 | `docs/art/cultivator_jade/cultivator_rigged.blend` |
+| 运行输出 | `src/game/actors/swordsman/models/cultivator_rigged.glb`（+抽取贴图 PNG 为运行时依赖） |
+| 三角形/骨骼 | 34,013 tris（Decimate 后）；mixamorig 骨架约 65 骨 |
+| Godot 验证 | AnimationPlayer clips=[idle,jump,run,walk]，Skeleton3D ×1，walk 实播通过（probe） |
+| 驱动脚本 | `projects/mixamo-mcp/mixamo_driver_phase{1,2,3}.py`（上传绑骨/下载/组装；phase1 标记步为人工） |
+| 接入状态 | **资产就绪，场景接入下一轮**（cultivator_visual_rigged.tscn + 骨骼驱动表现层） |
+| 权重锁定 | 袍子岛仅保留 Hips（外袍刚体挂髋等效）；腿/袖各保留骨链；躯干/头不动 |

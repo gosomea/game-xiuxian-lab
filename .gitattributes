@@ -21,3 +21,5 @@
 /docs/art/jade_paper_sample/jade_mountain.blend filter=lfs diff=lfs merge=lfs -text
 /src/game/actors/swordsman/models/cultivator_jade.glb filter=lfs diff=lfs merge=lfs -text
 /src/game/actors/swordsman/models/cultivator_jade_texture_20250901.png filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_jade/cultivator_jade_for_mixamo.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_jade/cultivator_jade_for_mixamo.obj filter=lfs diff=lfs merge=lfs -text

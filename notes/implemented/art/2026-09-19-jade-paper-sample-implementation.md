@@ -117,6 +117,25 @@ Status: implemented
   远山摆位多轮标定为台基正后方 25–45 m 矮山包（正交+雾的可见窗口极窄，机制见台账）。
 - 门禁 `--with-tests` 全绿（959/0）；实机证据 [round2](../../../docs/playtest/2026-09-19-jade-paper-sample-round2.md)。
 
+
+### 第三轮实施记录（Mixamo 真骨骼动画，资产就绪）
+
+- 使用者指示接入其 mixamo-mcp（`projects/mixamo-mcp/`，Edge 持久登录态）：
+  合并单网格 OBJ 上传 → **人工拖放标记点**（repo 自动化不支持 marker 拖放，
+  Edge 有头窗口由使用者完成 3 步）→ 自动绑骨成功（角色 cultivator_jade_for_mixamo）。
+- 动画下载 ×4：Walking（skin=true，带蒙皮角色）/ Idle / Running / Jump Up（仅骨架动作），
+  inplace=on，fbx_unity 30fps。下载经 S3 预签名 URL 拦截 + urllib（Edge 打开跨域附件会崩，
+  mcp_server 同款 workaround；每动画独立浏览器会话）。
+- 组装（`mixamo-mcp/mixamo_driver_phase3.py`）：Mixamo FBX 是 **cm 单位**（骨架 scale 0.01），
+  只把骨架 ×100（网格局部数据已是米，×100 会变 172m）；动作重命名 walk/idle/run/jump；
+  **袍子权重锁定**（robe 岛只保留 Hips，腿/袖各自保留骨链，空权重回填首骨）——
+  即"人物与衣服分开"的等效实现（外袍刚体挂髋，腿在裙内摆）。
+- 产物：`src/game/actors/swordsman/models/cultivator_rigged.glb`
+  （Skeleton3D + AnimationPlayer，clips=[idle,jump,run,walk]，walk 实播验证通过）；
+  源 `docs/art/cultivator_jade/cultivator_rigged.blend`；上传源 FBX/OBJ 同目录留存。
+- **接入未做（下一轮）**：`cultivator_visual_rigged.tscn` + 骨骼驱动表现层
+  （drop-in 替换 CultivatorPresentation，同节点名 + 同 API）+ motion 预览测试适配。
+
 ## 风险
 
 - 混元产物面数与拓扑不可控：本轮以 Decimate 预算兜底（松 40k / 岩 30k / 亭 80k），超预算对象放行前必须先减面。
