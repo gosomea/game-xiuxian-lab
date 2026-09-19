@@ -50,3 +50,5 @@
 /docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_BaseColor.png filter=lfs diff=lfs merge=lfs -text
 /docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_Normal.png filter=lfs diff=lfs merge=lfs -text
 /docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_ORM.png filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend1 filter=lfs diff=lfs merge=lfs -text

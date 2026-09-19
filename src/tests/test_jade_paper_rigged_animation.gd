@@ -1,9 +1,12 @@
 extends RefCounted
-## 青玉纸白样板的真人骨骼动作接线回归测试。
+## 青玉纸白样板的真人骨骼动作接线回归测试（v7 中性动画底座）。
 ##
 ## 覆盖真实入口而非孤立资源：样板实例化 Swordsman 时必须在入树前把默认分件 Visual
-## 换成骨骼 Visual；ActorAssembly 随后仍应把 FlyingSword 装到新 Visual 下。
-## 动作映射只经公开 advance_state()/pose_state() 读写，不访问表现层私有字段。
+## 换成 v7 中性动画底座视觉（无仙侠衣装）；ActorAssembly 随后仍应把 FlyingSword
+## 装到新 Visual 下。动作映射只经公开 advance_state()/pose_state() 读写，
+## 不访问表现层私有字段。
+##
+## 依据 notes/proposed/art/2026-09-19-neutral-youth-animation-base-v7.md。
 
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
 const EPSILON := 0.0001
@@ -22,10 +25,12 @@ static func run(t) -> void:
 		return
 	var visual := actor.get_node_or_null("Visual") as Node3D
 	t.assert_true(visual != null, "骨骼视觉保持角色公开节点名 Visual")
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorRigged") != null,
-		"样板正式运行路径装入 Mixamo 骨骼模型")
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorNeutralYouthV7") != null,
+		"样板正式运行路径装入 v7 中性动画底座模型")
 	t.assert_true(actor.get_node_or_null("Visual/Cultivator") == null,
 		"样板不再保留旧分件模型")
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorRigged") == null,
+		"样板不再加载旧青玉长袍骨骼模型（保留为回退资产，不接入运行时）")
 	var presentation := actor.get_node_or_null(
 		"Visual/CultivatorSkeletonPresentation") as CultivatorSkeletonPresentation
 	t.assert_true(presentation != null, "样板装入骨骼表现层")

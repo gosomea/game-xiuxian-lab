@@ -47,15 +47,32 @@
 | 人物切割脚本 | `tools/art/process_cultivator_jade.py` |
 | Mixamo 驱动 | `mcp/mixamo/mixamo_driver_phase{1,2,3}.py`（MCP 集成已收编进本仓 `mcp/mixamo/`） |
 | 骨骼表现层 | `src/game/actors/swordsman/cultivator_skeleton_presentation.gd` |
-| 骨骼视觉场景 | `src/game/actors/swordsman/cultivator_visual_rigged.tscn` |
+| 骨骼视觉场景（旧长袍，保留为回退） | `src/game/actors/swordsman/cultivator_visual_rigged.tscn` |
+| **现役人物视觉（v7 中性底座）** | `src/game/actors/swordsman/cultivator_visual_neutral_youth_v7.tscn` |
 | 纪律 skill | `skills/mcp-mixamo/SKILL.md` |
+
+## 三·五、2026-09-19 v7 人物替换（本交接之后的最新状态）
+
+使用者已决定**停止仙侠衣装制作**，本轮只做中性动画底座。样板人物视觉已从
+`cultivator_visual_rigged.tscn`（旧青玉长袍）换成
+`cultivator_visual_neutral_youth_v7.tscn`（无仙侠衣装，原身体 + 深靛遮挡层）。
+
+- 依据：`notes/proposed/art/2026-09-19-neutral-youth-animation-base-v7.md`；
+  实施记录：`notes/implemented/art/2026-09-19-neutral-youth-animation-base-v7-implementation.md`；
+  台账（含全部踩坑）：`docs/art/cultivator_neutral_youth_v7/asset_ledger.md`；
+  验收：`docs/playtest/2026-09-19-neutral-youth-v7.md`。
+- 旧长袍视觉与 `cultivator_rigged.glb` **保留未删**，作为回退与故障对照，只是不再接入运行时。
+- v7 是**临时美术底座**：无服装、无头发、遮挡层只服务动作验证；后续完整角色走 3D 生成。
+- 动作迁移不是按骨名直拷（实测 37/64 骨 rest 朝向差 >5°，最大 179.3°），
+  而是 rest 帧共轭 + armature 空间标准形重定向，整数帧端点误差 2e-6 m。
 
 ## 四、立即待办（按优先级）
 
 1. **实机试玩验收（使用者本人，审美结论唯一来源）**：
    `./run.command` → 角色移动 → 第 8 项「青玉纸白样板」。
-   核对：走/跑/跳动作是否配合（滑步？）、跳跃节奏、御剑姿态、朝向是否正确
-   （若背对镜头：把 `cultivator_visual_rigged.tscn` 里模型实例转 180°）。
+   核对：走/跑/跳动作是否配合（滑步？）、跳跃节奏、御剑姿态、朝向是否正确。
+   v7 模型导出用 `export_yup=True`（Blender -Y 正面 → Godot +Z 正面），已按此验证；
+   若仍背对镜头，再考虑旋转视觉场景里的模型实例。
 2. **速度同步校准**：`cultivator_skeleton_presentation.gd` 的 `walk_stride_meters=1.6` /
    `run_stride_meters=3.2` 是 Mixamo 近似值——实机看滑步就调这两个数（步频跟不上调小，漂移调大）。
 3. **跳跃手感**：当前 airborne 播 `jump` 单次并保持末帧，落地切 walk/idle——若体验差，
