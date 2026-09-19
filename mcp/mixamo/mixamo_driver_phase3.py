@@ -50,7 +50,9 @@ def island_class(world_verts):
     cx = (min(xs) + max(xs)) / 2
     span = max(xs) - min(xs)
     z0, z1, zmid = min(zs), max(zs), (min(zs) + max(zs)) / 2
-    side = "left" if cx < 0 else "right"
+    # Mixamo 的解剖学 Left 位于角色局部 +X，Right 位于 -X。这里不能按观察者视角猜左右，
+    # 否则会把左侧网格锁到 Right 骨链、右侧网格锁到 Left 骨链。
+    side = "Left" if cx >= 0 else "Right"
     if z0 >= F_WAIST - 0.05 and abs(cx) < 0.22:
         return None
     if z1 <= 0.16 and span < 0.22:
@@ -58,9 +60,11 @@ def island_class(world_verts):
     if z1 <= F_HIP + 0.12 and span < 0.24:
         return ["%sUpLeg" % side, "%sLeg" % side, "%sFoot" % side, "%sToeBase" % side]
     if zmid >= F_ELBOW and abs(cx) >= 0.19:
-        return ["%sArm" % side, "%sForeArm" % side, "%sHand" % side]
+        return ["%sArm" % side, "%sForeArm" % side, "%sHand*" % side,
+                "%sShoulder" % side]
     if abs(cx) >= 0.19 and zmid >= F_WAIST - 0.05:
-        return ["%sArm" % side, "%sForeArm" % side, "%sHand" % side]
+        return ["%sArm" % side, "%sForeArm" % side, "%sHand*" % side,
+                "%sShoulder" % side]
     if z1 <= F_WAIST + 0.06:
         return ["Hips"]
     return None
@@ -77,7 +81,14 @@ def fix_weights_island(obj):
 
     def keep_group(name):
         tail = name.split(":")[-1].split("_")[-1].lower()
-        return any(tail == k.lower() for k in keep_suffixes)
+        for suffix in keep_suffixes:
+            wanted = suffix.lower()
+            if wanted.endswith("*"):
+                if tail.startswith(wanted[:-1]):
+                    return True
+            elif tail == wanted:
+                return True
+        return False
 
     # 回填目标 = 保留集第一顺位骨（袖/腿各自的首骨，袍子=Hips）
     fallback_idx = None
@@ -86,7 +97,7 @@ def fix_weights_island(obj):
         tail = name.split(":")[-1].split("_")[-1].lower()
         if tail == "hips":
             hips_idx = idx
-        if fallback_idx is None and tail == keep_suffixes[0].lower():
+        if fallback_idx is None and tail == keep_suffixes[0].rstrip("*").lower():
             fallback_idx = idx
     if fallback_idx is None:
         fallback_idx = hips_idx
@@ -121,6 +132,41 @@ def fix_weights_island(obj):
             if vg:
                 obj.vertex_groups.remove(vg)
     return "locked:%s emptied=%d" % ("+".join(keep_suffixes), emptied)
+
+
+def weighted_center_x(obj, group_name):
+    group = obj.vertex_groups.get(group_name)
+    assert group is not None, "缺少权重组 %s" % group_name
+    weighted_sum = 0.0
+    weight_total = 0.0
+    for vert in obj.data.vertices:
+        weight = next((item.weight for item in vert.groups
+                       if item.group == group.index), 0.0)
+        weighted_sum += vert.co.x * weight
+        weight_total += weight
+    assert weight_total > 1e-3, "权重组为空 %s" % group_name
+    return weighted_sum / weight_total, weight_total
+
+
+def validate_limb_sides(obj):
+    """防止观察者左右与 Mixamo 解剖学左右再次互换，并确保手指链未被裁掉。"""
+    checks = [
+        ("mixamorig:LeftArm", 1.0),
+        ("mixamorig:LeftHand", 1.0),
+        ("mixamorig:LeftHandIndex1", 1.0),
+        ("mixamorig:LeftUpLeg", 1.0),
+        ("mixamorig:RightArm", -1.0),
+        ("mixamorig:RightHand", -1.0),
+        ("mixamorig:RightHandIndex1", -1.0),
+        ("mixamorig:RightUpLeg", -1.0),
+    ]
+    evidence = []
+    for group_name, expected_sign in checks:
+        center_x, total = weighted_center_x(obj, group_name)
+        assert center_x * expected_sign > 0.02, (
+            "%s 权重位于错误身体侧 x=%.4f" % (group_name, center_x))
+        evidence.append("%s:x=%.3f,w=%.1f" % (group_name, center_x, total))
+    print("LIMB_SIDE_CHECK " + " ".join(evidence), flush=True)
 
 
 def main():
@@ -177,6 +223,7 @@ def main():
             h = max(zs) - min(zs)
             print("HEIGHT %.3f" % h, flush=True)
             assert 1.4 < h < 2.1, "角色高度异常 %.3f" % h
+            validate_limb_sides(obj)
 
     # 贴图
     try:

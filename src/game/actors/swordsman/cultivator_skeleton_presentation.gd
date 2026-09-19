@@ -114,7 +114,9 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	if target != _current:
 		_current = target
 		_player.play(target, BLEND)
-	elif target == "walk" or target == "run":
+	# 切换动作的第一帧也必须同步播放速率；否则每次 idle -> walk/run 都会以旧速率播放一帧，
+	# 在低帧率或反复起停时形成可见脚步脉冲。
+	if target == "walk" or target == "run":
 		_player.speed_scale = clampf(rate, 0.5, 2.5)
 	else:
 		_player.speed_scale = rate
@@ -129,6 +131,7 @@ func advance_state(state: Dictionary, delta: float) -> void:
 
 ## 回到中性姿态（预览循环起点用）。
 func reset_pose() -> void:
+	_clock = 0.0
 	_current = "idle"
 	_player.speed_scale = 1.0
 	_player.play("idle", BLEND)

@@ -108,10 +108,11 @@
 | 来源 | 自产模型（cultivator_jade 合并单网格 OBJ）经 Mixamo Auto-Rigger 绑骨（**标记点由使用者人工拖放**）+ Mixamo 动画库 4 clip 下载；Blender 组装 + 袍子权重锁定 |
 | 动画 | Walking（skin=true）/ Idle / Running / Jump Up，inplace=on，fbx_unity 30fps |
 | 上传源 | 本目录 `cultivator_jade_for_mixamo.obj`（6.0 MB）/ `.fbx`（16 MB，备用） |
-| 源文件 | `docs/art/cultivator_jade/cultivator_rigged.blend` |
-| 运行输出 | `src/game/actors/swordsman/models/cultivator_rigged.glb`（+抽取贴图 PNG 为运行时依赖） |
+| 源文件 | `docs/art/cultivator_jade/cultivator_rigged.blend`（3,329,954 bytes；sha256 `e71cf47423d1082952b931cebd74cb8137e09b41a0e29b1c65c24b799baa1174`） |
+| 归档源 | `cultivator_rigged_pre_side_fix.blend`（交叉绑肢故障对照；sha256 `904e1170e1b60e186ad9a9f7926c066bd8b717bfce26b763fca3dd635b955143`）；`cultivator_rigged_side_fix_pre_validation.blend`（左右已修、生成器断言落地前；sha256 `43988a77af2dcab5d014cf8af166129992edd80fd46bf9bcd9603f0f8ac1561e`）；二者不得用于运行时 |
+| 运行输出 | `src/game/actors/swordsman/models/cultivator_rigged.glb`（3,304,672 bytes；sha256 `911fd380333b85fc3f66a2b9303140cb63f20638f2a94d81eefa4cba8f16e843`；+抽取贴图 PNG 为运行时依赖） |
 | 三角形/骨骼 | 34,013 tris（Decimate 后）；mixamorig 骨架约 65 骨 |
 | Godot 验证 | AnimationPlayer clips=[idle,jump,run,walk]，Skeleton3D ×1，walk 实播通过（probe） |
 | 驱动脚本 | `projects/mixamo-mcp/mixamo_driver_phase{1,2,3}.py`（上传绑骨/下载/组装；phase1 标记步为人工） |
 | 接入状态 | **资产就绪，场景接入下一轮**（cultivator_visual_rigged.tscn + 骨骼驱动表现层） |
-| 权重锁定 | 袍子岛仅保留 Hips（外袍刚体挂髋等效）；腿/袖各保留骨链；躯干/头不动 |
+| 权重锁定 | 袍子岛仅保留 Hips（外袍刚体挂髋等效）；按 Mixamo 静止骨架坐标 `+X=Left/-X=Right` 为腿/袖保留同侧完整骨链（含手指子链）；躯干/头不动 |
