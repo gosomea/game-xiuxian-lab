@@ -101,10 +101,19 @@ static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentati
 
 	presentation.advance_state(_state(Vector3(12.0, 0.0, 0.0), false, true), 0.1)
 	var flight := presentation.pose_state()
-	t.assert_eq(str(flight.get("current_clip", "")), "idle", "御剑状态映射到慢速 idle")
+	# 御剑现在优先用专门手作的「御剑而立」姿态（自带前倾），不再拿 idle 抬速充数。
+	# 旧资材缺该 clip 时退回 idle@0.6；两种路径都要被覆盖，因此按资产实际内容分支断言。
+	var ride_expected := "sword_ride" if presentation.has_state("sword_ride") else "idle"
+	t.assert_eq(str(flight.get("current_clip", "")), ride_expected,
+		"御剑状态映射到 %s" % ride_expected)
 	t.assert_true(bool(flight.get("flying", false)), "御剑状态写入公开姿态快照")
-	t.assert_true(absf(animation_player.speed_scale - 0.6) < EPSILON,
-		"御剑 idle 播放率为 0.6（%.3f）" % animation_player.speed_scale)
+	if ride_expected == "sword_ride":
+		t.assert_true(absf(animation_player.speed_scale - 1.0) < EPSILON,
+			"御剑而立按原速播放（%.3f）——前倾由姿态自带，无需倍速或叠加倾斜"
+			% animation_player.speed_scale)
+	else:
+		t.assert_true(absf(animation_player.speed_scale - 0.6) < EPSILON,
+			"退回路径：御剑 idle 播放率为 0.6（%.3f）" % animation_player.speed_scale)
 
 	presentation.reset_pose()
 	var reset := presentation.pose_state()
