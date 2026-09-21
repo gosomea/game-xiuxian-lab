@@ -13,7 +13,7 @@ extends SceneTree
 ## 资产里若没有这些 clip（旧的四段版本），本用例打印 SKIP 而不是失败——
 ## 它们是增量状态，不是核心契约。
 const SCENE := "res://levels/experiments/character_movement/motion_stage.tscn"
-const CAP := 6000
+const CAP := 12000
 var _prefix := ""
 var _actor: CharacterBody3D
 var _pres: Node
@@ -48,13 +48,44 @@ func _run() -> void:
 			await _capture(clip)
 		_pres.call("release_state")
 		await _frames(4)
+	# 真实飞行：按 F 切御剑，断言表现层自动选 sword_ride 且不叠加节点倾斜。
+	var model := _actor.get_node_or_null("Visual/CultivatorTripoV9") as Node3D
+	_key(KEY_F, true)
+	_key(KEY_F, false)
+	await _frames(30)
+	var fly: Dictionary = _pres.call("pose_state")
+	_check(bool(fly.get("flying", false)), "按 F 进入御剑状态")
+	if _pres.call("has_state", "sword_ride"):
+		_check(str(fly.get("current_clip")) == "sword_ride",
+			"御剑时自动选 sword_ride（实际 %s）" % fly.get("current_clip"))
+		if model != null:
+			_check(absf(model.rotation.x) < 0.01,
+				"御剑而立不叠加节点前倾（rotation.x=%.4f）——前倾由姿态自带" % model.rotation.x)
+		if not _prefix.is_empty():
+			await _capture("sword_ride_flying")
+	_key(KEY_F, true)
+	_key(KEY_F, false)
+	await _frames(20)
 	_report()
+
+
+func _key(code: Key, pressed: bool) -> void:
+	var e := InputEventKey.new()
+	e.keycode = code
+	e.physical_keycode = code
+	e.pressed = pressed
+	Input.parse_input_event(e)
+
 
 func _capture(suffix: String) -> void:
 	_drawn = false
 	RenderingServer.frame_post_draw.connect(func(): _drawn = true, CONNECT_ONE_SHOT)
+	# Wait for real draw frames until the deadline. A single `await process_frame` is not
+	# enough right after an input-driven state change: the viewport can still be mid-resize
+	# or waiting on a physics step, so the connect callback may not fire within one frame.
 	var deadline := Time.get_ticks_msec() + CAP
 	while not _drawn and Time.get_ticks_msec() < deadline:
+		await process_frame
 		await process_frame
 	if not _drawn: _check(false, "等待渲染帧超时：%s" % suffix); return
 	var path := "%s-%s.png" % [_prefix, suffix]

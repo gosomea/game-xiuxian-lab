@@ -12,7 +12,8 @@ extends Node3D
 ##   不新增 Capability、不移动物理根。删除本节点后角色行为与碰撞完全不变。
 ##
 ## 动作映射（速度同步防滑步）：
-##   御剑  → idle @0.6 倍速 + 前倾 FLIGHT_LEAN
+##   御剑  → sword_ride（手作「御剑而立」姿态，负手前倾）@1.0；资产没有该 clip 时
+##           退回 idle @0.6 倍速 + 前倾 FLIGHT_LEAN
 ##   空中  → jump（单次，播完保持末帧）
 ##   着地  → speed >= RUN_SPEED_MPS → run；>= WALK_SPEED_MPS → walk；否则 idle
 ##   播放速率 = 实际水平速度 / 该动作的原速参考（walk 1.288 / run 3.426 m/s）
@@ -31,7 +32,8 @@ extends Node3D
 @export var walk_reference_mps: float = 1.288
 ## run 动作以原速播放时对应的移动速度（米/秒）。实测 3.426 m/s。
 @export var run_reference_mps: float = 3.426
-## 御剑前倾（弧度）。
+## 御剑前倾（弧度）。**仅用于退回路径**：资产没有 sword_ride 时，御剑以 idle 抬速呈现，
+## 由本参数补出前倾。有 sword_ride 时前倾由该姿态自带，本参数不参与。
 @export var flight_lean: float = 0.21
 
 ## 动作切换阈值（米/秒）：取在两档实际速度之间，使按住/松开加速键时真的切换 clip。
@@ -156,8 +158,14 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	var target := ""
 	var rate := 1.0
 	if flying:
-		target = "idle"
-		rate = IDLE_FLIGHT_RATE
+		# 御剑优先用专门手作的「御剑而立」姿态；它自带前倾，因此不再叠加节点前倾
+		# （叠加会变成弯腰）。旧的四段资产没有该 clip，退回原来的 idle@0.6 + 前倾。
+		if has_state(OPTIONAL_SWORD_RIDE):
+			target = OPTIONAL_SWORD_RIDE
+			rate = 1.0
+		else:
+			target = "idle"
+			rate = IDLE_FLIGHT_RATE
 	elif not grounded:
 		target = "jump"
 	elif speed > RUN_SPEED_MPS:
@@ -187,8 +195,13 @@ func advance_state(state: Dictionary, delta: float) -> void:
 		_player.advance(delta)
 
 	# 御剑前倾：只倾斜模型节点（表现层），与刚体版的 body 前倾同语义。
+	#
+	# 用 sword_ride 姿态时不再叠加节点前倾：那套姿态的脊柱本身已经前倾（髋 +9°、脊柱
+	# 逐节累加），再叠 flight_lean 会变成弯腰。节点前倾因此只服务于退回路径（idle 抬速），
+	# 那条路径没有自带前倾，正需要它。
 	if _model != null:
-		var lean := flight_lean if flying else 0.0
+		var authored_ride := flying and has_state(OPTIONAL_SWORD_RIDE)
+		var lean := 0.0 if authored_ride else (flight_lean if flying else 0.0)
 		_model.rotation.x = lerpf(_model.rotation.x, -lean, minf(delta * 6.0, 1.0))
 
 	_record_pose(velocity, speed, grounded, flying)

@@ -731,3 +731,55 @@ Phase 5 的 `sword_riding` 两臂前伸，是西方飞行姿态的读法。改�
 Phase 1–5 全部产物零删除。被替换的 `sword_riding` 旧版 FBX 与渲染仍在
 `renders/authored/` 的历史迭代中；求解报告 `hand_solve.json`、`hands_behind_solve.json` 保留，
 作为「为什么需要求解器」的证据。
+
+---
+
+## Phase 7 — 御剑姿态接管飞行（2026-09-21）
+
+### 关闭遗留缺口
+
+Phase 5/6 的 `sword_ride` 只能经 `play_state()` 手动驱动，而**真实的御剑飞行仍在用
+`idle @0.6 倍速 + 节点前倾`** 这个占位实现——即「有资产没用法」。本轮让飞行状态直接采用
+该姿态，占位实现退为旧资产的回退路径。
+
+改动（`cultivator_skeleton_presentation.gd`）：
+
+| 项 | 改前 | 改后 |
+|---|---|---|
+| `flying` 选用的 clip | `idle` | `sword_ride`（有该 clip 时） |
+| 播放速率 | 0.6 | 1.0 |
+| 节点 `rotation.x` 前倾 | `-flight_lean`（0.21 rad） | **0**（前倾由姿态自带） |
+| 旧四段资产 | — | 退回原路径：`idle @0.6` + `-flight_lean` |
+
+**为什么不再叠加节点前倾**：`sword_ride` 的脊柱本身已经前倾（髋 +9°、脊柱逐节累加），
+再叠 0.21 rad 会变成弯腰。节点前倾因此只服务于回退路径——那条路径没有自带前倾，正需要它。
+`flight_lean` 保留为导出参数并已在文档说明其仅用于回退。
+
+### 实机验证
+
+| 断言 | 结果 |
+|---|---|
+| 按 F 进入御剑状态 | PASS |
+| 御剑时自动选 `sword_ride` | PASS（实际 `sword_ride`） |
+| 不叠加节点前倾 | PASS（`rotation.x=0.0000`） |
+| 落地回到 `idle` | PASS |
+
+状态轨迹实测：`地面 idle,rot.x=0.0000` → `御剑 sword_ride,flying=true,rot.x=0.0000`
+→ `关飞 idle,flying=false`。
+
+截图：`docs/playtest/evidence/v9-sword_ride_flying.png`（HUD 显示「御剑=是 / 着地=否」，
+人物以负手前倾姿态悬于空中）。
+
+### 测试
+
+`test_jade_paper_rigged_animation.gd` 的御剑断言改为**按资产实际内容分支**：有 `sword_ride`
+时断言 `sword_ride` + 速率 1.0，没有时断言旧路径 `idle` + 速率 0.6。两种路径都被覆盖，
+不写死单一期望值——写死会在换资产时产生假失败（本用例已如此失败过一次）。
+
+`v9_authored_state_playtest.gd` 增补真实 F 键飞行的三条断言与一张截图。
+
+1189 运行时测试通过。
+
+### 保留
+
+Phase 1–6 全部产物零删除。
