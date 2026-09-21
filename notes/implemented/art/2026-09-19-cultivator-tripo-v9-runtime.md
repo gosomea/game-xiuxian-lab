@@ -20,9 +20,15 @@ Status: implemented
 非流形/退化面和多视图渲染对比（`export_audit.json` required 24/24）。
 
 **二、绑骨。** Phase 2 的 Mixamo Auto-Rigger 三次上传全部卡在服务端 `Processing upload`，
-未进入 marker 页面。改用本机部署的 **Make-It-Animatable**（Gradio 5.50.0）完成绑骨。
+未进入 marker 页面。改用 **Make-It-Animatable**（Gradio 5.50.0）完成绑骨，服务真实地址
+`http://21.6.90.117:7860/`；该主机**不在本机网卡上**（经 `utun6` 可达），因此使用者给出的
+`127.0.0.1:7860` 当时没有监听，需先建立端口转发
+（`tools/art/port_forward_mia_7860.py`），或给驱动脚本传
+`--base-url http://21.6.90.117:7860/` 直连。
 该服务接受 `.glb` 输入，因此 599,417-tri 的 clean 网格**直接绑骨**：不经过低面代理件，
 也不存在事后权重转移。产出 22 根 Mixamo 兼容骨（`mixamorig:*`，无手指骨）。
+服务为有状态会话：同一客户端内先 `/pipeline` 绑骨、再 `/vis_blender` 逐 clip 取件，
+四个 clip 必须来自同一次运行。
 
 动作映射为 `idle=Idle.fbx`、`walk=Walking.fbx`、`run=Run.fbx`、`jump=Jump.fbx`，全部
 `In Place=True`。**`Running.fbx` 被排除**：该库动画在本角色上 retarget 失败，脊柱持续前折，

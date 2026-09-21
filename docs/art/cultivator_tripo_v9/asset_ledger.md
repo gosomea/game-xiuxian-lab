@@ -405,13 +405,23 @@ runtime GLB，并做动作渲染验证穿插与权重。
 ### 路线变更：Mixamo → Make-It-Animatable
 
 Phase 2 的三次 Mixamo Auto-Rigger 上传全部卡在服务端
-`Processing upload`，未进入 marker 页面（见 Phase 2 台账）。本轮改用本机部署的
-**Make-It-Animatable**（Gradio 5.50.0，`http://21.6.90.117:7860/`，经 `127.0.0.1:7860`
-端口转发访问）完成绑骨。
+`Processing upload`，未进入 marker 页面（见 Phase 2 台账）。本轮改用 **Make-It-Animatable**
+（Gradio 5.50.0）完成绑骨，服务真实地址 `http://21.6.90.117:7860/`。
+
+**注意它与本机不是同一台机器**：`21.6.90.117` 不在本机网卡上（本机为 `10.31.67.55` /
+`192.168.255.10`），经 `utun6`（网关 `192.168.255.10`）可达。因此**直接访问
+`127.0.0.1:7860` 不通**——使用者给的是这个地址，但当时该端口没有监听。
+本轮用端口转发把它映射上来：`tools/art/port_forward_mia_7860.py`
+（纯 TCP 双向转发，`127.0.0.1:7860` → `21.6.90.117:7860`）。
+`tools/art/mia_rig_cultivator_tripo_v9.py` 默认就用 `http://127.0.0.1:7860/`；
+也可用 `--base-url http://21.6.90.117:7860/` 直连而完全不需要转发。
+转发进程一旦退出需重新建立，不影响已产出的资产。
 
 该服务与 Mixamo 的关键差异：**输入接受 `.glb`**，因此 599,417-tri 的 clean 网格直接绑骨，
 不需要低面代理件，也不需要事后权重转移——handoff 中「把 Mixamo 骨架/权重转回 clean mesh」
 这一步被整条消除。22 根 Mixamo 兼容骨（`mixamorig:*`，无手指骨）。
+服务是**有状态**的：一次客户端会话内先 `/pipeline` 绑骨，再 `/vis_blender` 逐个取动作；
+四个 clip 必须来自**同一次运行**，否则骨架/权重不一致。
 
 ### 输入
 
