@@ -1,0 +1,44 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "authored_pose",
+  "pose": "sword_riding",
+  "pose_description": "御剑而立：双脚并拢立于剑上，身微前倾，双臂微分保持平衡",
+  "clip_name": "sword_riding",
+  "source_rig": "clip_idle_slot2.fbx",
+  "fps": 30,
+  "frames": 90,
+  "problems": [],
+  "missing_by_design": {
+    "fingers": "本骨架无手指骨（No Fingers 绑骨），掐诀/结印的手指动作无法摆出"
+  },
+  "bones_applied": 20,
+  "bones_skipped": [],
+  "keyframed_action": "sword_riding",
+  "fcurves": 63,
+  "output": {
+    "file": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_sword_riding_slot2.fbx",
+    "bytes": 29598252
+  },
+  "bounds": {
+    "min": [
+      -0.7662,
+      -0.3022,
+      -1.0134
+    ],
+    "max": [
+      0.7404,
+      0.3008,
+      0.8461
+    ],
+    "size": [
+      1.5065,
+      0.603,
+      1.8594
+    ]
+  },
+  "rendered": [
+    "sword_riding_front.png",
+    "sword_riding_side.png",
+    "sword_riding_threequarter.png"
+  ]
+}

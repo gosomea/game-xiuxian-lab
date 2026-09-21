@@ -1,0 +1,59 @@
+{
+  "source": "clip_idle_slot2.fbx",
+  "fixes": {},
+  "results": [
+    {
+      "chain": "hand_l",
+      "target": [
+        0.055,
+        0.165,
+        -0.055
+      ],
+      "reached": [
+        0.0603,
+        0.1644,
+        -0.0449
+      ],
+      "error_m": 0.0114,
+      "degrees": {
+        "mixamorig:LeftArm": [
+          82.0,
+          -2.0,
+          56.0
+        ],
+        "mixamorig:LeftForeArm": [
+          27.0,
+          -22.0,
+          21.0
+        ]
+      }
+    },
+    {
+      "chain": "hand_r",
+      "target": [
+        -0.055,
+        0.165,
+        -0.055
+      ],
+      "reached": [
+        -0.0548,
+        0.1676,
+        -0.0451
+      ],
+      "error_m": 0.01022,
+      "degrees": {
+        "mixamorig:RightArm": [
+          72.0,
+          -20.0,
+          95.0
+        ],
+        "mixamorig:RightForeArm": [
+          34.0,
+          -23.0,
+          -36.0
+        ]
+      }
+    }
+  ],
+  "problems": []
+}
