@@ -1,0 +1,44 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "authored_pose",
+  "pose": "meditate",
+  "pose_description": "盘腿打坐（半跏趺坐）：小腿收向身体中线交叠，脊柱正直，双手相叠于腹前",
+  "clip_name": "meditate_seat",
+  "source_rig": "clip_idle_slot2.fbx",
+  "fps": 30,
+  "frames": 90,
+  "problems": [],
+  "missing_by_design": {
+    "fingers": "本骨架无手指骨（No Fingers 绑骨），掐诀/结印的手指动作无法摆出"
+  },
+  "bones_applied": 20,
+  "bones_skipped": [],
+  "keyframed_action": "meditate_seat",
+  "fcurves": 63,
+  "output": {
+    "file": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_meditate_seat_slot2.fbx",
+    "bytes": 29598236
+  },
+  "bounds": {
+    "min": [
+      -0.4183,
+      -0.4351,
+      -0.2569
+    ],
+    "max": [
+      0.4354,
+      0.3824,
+      0.7896
+    ],
+    "size": [
+      0.8537,
+      0.8176,
+      1.0465
+    ]
+  },
+  "rendered": [
+    "meditate_seat_front.png",
+    "meditate_seat_side.png",
+    "meditate_seat_threequarter.png"
+  ]
+}

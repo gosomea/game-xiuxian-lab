@@ -601,3 +601,53 @@ ground_contact_course、state_transition_lab（剑术训练场为飞行场景，
 
 Phase 1–3 全部产物零删除。本轮新增的候选会话、候选渲染、`Flying`/`Floating` 对照渲染
 一并入库。被替换的 `Idle.fbx` 版本仍完整保留在 `20260921-ship/`（以及更早的 `final2/`）。
+
+---
+
+## Phase 5 — 手工制作的修仙姿态（2026-09-21）
+
+### 动机
+
+库中没有打坐、负手而立、结印这类姿态，最近的（`Ninja_Idle` 武术架势、`Focus` 抱头、
+`Breathing_Idle` 立如松）只解决「站」，解决不了「坐」与「负手」。本轮在**现有骨架**上
+手工摆姿态，不引入第二套骨架。
+
+### 工具
+
+| 工具 | 作用 |
+|---|---|
+| `tools/art/author_cultivator_pose.py` | 按骨骼局部欧拉角摆姿态 + 轻微呼吸循环，导出 `clip_<name>_slot2.fbx`（与下载姿态同形，走同一条落地管线） |
+| `tools/art/solve_pose_targets.py` | 给定链末端目标坐标，坐标下降反解骨骼角度（带关节限位） |
+
+**为什么必须有求解器**：实测 `LeftArm` 绕 X +45° 让手向**外上方**走（+X/+Z），
+不是直觉的「前抬」。按直觉写成负 X「后旋」的结果是**双手举到头顶**（首次渲染即如此）。
+求解器把这类错误变成可测量的厘米数。
+
+### 骨架边界（实测）
+
+22 骨：hips、3×spine、neck、head、2×(shoulder, arm, forearm, hand)、
+2×(upleg, leg, foot, toe)。**无手指骨** → 掐诀/结印的**指印做不出来**，
+只能到「手叠手」。此限制由工具在 `MISSING_BY_DESIGN` 中显式输出，不静默忽略。
+
+### 产出
+
+| 姿态 | 说明 | 手臂求解误差 | 状态 |
+|---|---|---|---|
+| `meditate_seat` | 盘腿打坐（半跏趺坐），手叠于腹前 | 3.6–4.4 cm | 可接受 |
+| `hands_behind_back` | 负手而立，双手背后交叠 | 1.0–1.1 cm | 可接受 |
+| `sword_riding` | 御剑而立，双脚并拢微前倾 | — | **未达标准，手臂需重解** |
+
+文件：`iterations/authored_poses/clip_<name>_slot2.fbx`（各 28.2 MB，90 帧 @30fps，含呼吸循环）；
+渲染：`renders/authored/<name>_{front,side,threequarter}.png`；报告：`*_report.json`。
+
+### 与运行时的关系
+
+**这三个姿态尚未接入运行时。** `cultivator_tripo_v9.glb` 仍是四段 `idle/walk/run/jump`。
+它们是候选资产：要接入需再跑一次 `build_cultivator_tripo_v9_runtime_glb.py`
+（把姿态目录作为 `--iteration`）并重新拼接材质。是否接入、接入到哪个场景，
+属于玩法层选择，留给使用者决定。
+
+### 保留
+
+Phase 1–4 全部产物零删除。三个姿态的中间迭代渲染（含失败的「双手举顶」版本）保留在
+`renders/authored/` 与求解报告 `*_solve.json` 中，作为「为什么需要求解器」的证据。
