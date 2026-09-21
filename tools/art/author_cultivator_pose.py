@@ -132,31 +132,35 @@ POSES: dict[str, dict] = {
             "mixamorig:RightLeg": (-2.0, 0.0, 0.0),
         },
     },
-    # 御剑：脚踏飞剑的站姿。双脚并拢、微前倾、双臂微分保持平衡。
+    # 御剑：脚踏飞剑而立。手臂复用已解好的「负手」角度——负手御剑才是修士的标志姿态，
+    # 双臂微分保持平衡是西方飞行姿态的读法，不是这一套。
+    # 与 hands_behind_back 的差别只在体势：上身前倾迎风、双膝屈以吸震、双脚并拢。
     "sword_riding": {
-        "description": "御剑而立：双脚并拢立于剑上，身微前倾，双臂微分保持平衡",
+        "description": "御剑而立：负手于背，上身前倾迎风，双膝微屈，双脚并拢立于剑上",
         "bones": {
-            "mixamorig:Hips": (6.0, 0.0, 0.0),
-            "mixamorig:Spine": (4.0, 0.0, 0.0),
-            "mixamorig:Spine1": (3.0, 0.0, 0.0),
-            "mixamorig:Spine2": (2.0, 0.0, 0.0),
-            "mixamorig:Neck": (-6.0, 0.0, 0.0),
-            "mixamorig:Head": (-5.0, 0.0, 0.0),
-            "mixamorig:LeftShoulder": (0.0, 0.0, -8.0),
-            "mixamorig:RightShoulder": (0.0, 0.0, 8.0),
-            "mixamorig:LeftArm": (14.0, 0.0, 34.0),
-            "mixamorig:RightArm": (14.0, 0.0, -34.0),
-            "mixamorig:LeftForeArm": (-22.0, 0.0, 0.0),
-            "mixamorig:RightForeArm": (-22.0, 0.0, 0.0),
-            "mixamorig:LeftHand": (-8.0, 0.0, 0.0),
-            "mixamorig:RightHand": (-8.0, 0.0, 0.0),
-            # 并腿，膝微屈以吸收颠簸
-            "mixamorig:LeftUpLeg": (-4.0, 0.0, 2.0),
-            "mixamorig:RightUpLeg": (-4.0, 0.0, -2.0),
-            "mixamorig:LeftLeg": (-10.0, 0.0, 0.0),
-            "mixamorig:RightLeg": (-10.0, 0.0, 0.0),
-            "mixamorig:LeftFoot": (6.0, 0.0, 0.0),
-            "mixamorig:RightFoot": (6.0, 0.0, 0.0),
+            # 迎风前倾：从髋起逐节前倾，颈项反向上抬以保持目视前方。
+            "mixamorig:Hips": (9.0, 0.0, 0.0),
+            "mixamorig:Spine": (6.0, 0.0, 0.0),
+            "mixamorig:Spine1": (5.0, 0.0, 0.0),
+            "mixamorig:Spine2": (4.0, 0.0, 0.0),
+            "mixamorig:Neck": (-13.0, 0.0, 0.0),
+            "mixamorig:Head": (-10.0, 0.0, 0.0),
+            # 手臂：与 hands_behind_back 同源（同一次反解结果，误差 1.0–1.1 cm）。
+            "mixamorig:LeftShoulder": (0.0, 0.0, -6.0),
+            "mixamorig:RightShoulder": (0.0, 0.0, 6.0),
+            "mixamorig:LeftArm": (82.0, -2.0, 56.0),
+            "mixamorig:RightArm": (72.0, -20.0, 95.0),
+            "mixamorig:LeftForeArm": (27.0, -22.0, 21.0),
+            "mixamorig:RightForeArm": (34.0, -23.0, -36.0),
+            "mixamorig:LeftHand": (-6.0, 0.0, 0.0),
+            "mixamorig:RightHand": (-6.0, 0.0, 0.0),
+            # 双腿并拢立于剑上，膝微屈吸震（不是双腿微分悬空）。
+            "mixamorig:LeftUpLeg": (-7.0, 0.0, 3.0),
+            "mixamorig:RightUpLeg": (-7.0, 0.0, -3.0),
+            "mixamorig:LeftLeg": (-14.0, 0.0, 0.0),
+            "mixamorig:RightLeg": (-14.0, 0.0, 0.0),
+            "mixamorig:LeftFoot": (10.0, 0.0, 0.0),
+            "mixamorig:RightFoot": (10.0, 0.0, 0.0),
         },
     },
 }
@@ -240,6 +244,87 @@ def apply_pose(armature, spec: dict, report: dict) -> None:
     bpy.context.view_layer.update()
 
 
+def lowest_vertex_z(armature, mesh) -> float:
+    """Lowest evaluated world Z of the skinned mesh in its current pose."""
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    evaluated = mesh.evaluated_get(depsgraph)
+    matrix = evaluated.matrix_world
+    return min((matrix @ v.co).z for v in evaluated.data.vertices)
+
+
+def align_floor_with_rest(armature, mesh, rest_lowest: float, report: dict) -> Vector:
+    """Remove the height a pose gained or lost, by moving the HIPS BONE (not the object).
+
+    Three separate traps make the obvious implementations wrong; all three were hit:
+
+    1. "Put the lowest vertex on z=0" is wrong. The build step afterwards lifts the whole
+       scene root by the standing clips' lowest point (~+1.01 m), applied to every clip
+       equally, so normalising here would be lifted again and hover a metre up. The correct
+       target is the REST pose's own floor.
+
+    2. Moving the ARMATURE OBJECT is silently discarded. Measured: an FBX round-trip returns
+       the pose at exactly its pre-shift height (and the glTF export writes `T=None` on the
+       Armature node). The displacement must live in the POSE data, i.e. on the root bone.
+
+    3. The relationship between `hips.location` and world height is NOT a clean axis scale.
+       Measured on this rig (armature scale 0.01, cm rig): `location.Y += 1.0` raises the
+       silhouette by 0.0098 m and `location.Z += 1.0` by only 0.0021 m, because the bone's
+       rest matrix rotates the translation axes. Assuming "Z is up" or "divide by 0.01"
+       gives a corrective that does nothing or goes sideways.
+
+    So the effective direction is solved numerically: probe each local axis, then scale the
+    unit response to reach the requested world offset. This is cheap (3 evaluations) and
+    immune to however the importer chose to orient the root bone.
+    """
+    posed_lowest = lowest_vertex_z(armature, mesh)
+    world_offset = rest_lowest - posed_lowest
+
+    hips = bone_lookup(armature, "mixamorig:Hips")
+    if hips is None:
+        raise RuntimeError("no Hips bone to carry the floor offset")
+
+    base_location = hips.location.copy()
+    baseline = posed_lowest
+    response: list[float] = []
+    for axis in range(3):
+        trial = base_location.copy()
+        trial[axis] += 1.0
+        hips.location = trial
+        bpy.context.view_layer.update()
+        bpy.context.evaluated_depsgraph_get().update()
+        response.append(lowest_vertex_z(armature, mesh) - baseline)
+
+    # Choose the axis that actually moves the character vertically, then scale it.
+    best_axis = max(range(3), key=lambda i: abs(response[i]))
+    if abs(response[best_axis]) < 1e-9:
+        raise RuntimeError("no Hips axis changes world height; cannot align the floor")
+    units = world_offset / response[best_axis]
+
+    final = base_location.copy()
+    final[best_axis] += units
+    hips.location = final
+    bpy.context.view_layer.update()
+    bpy.context.evaluated_depsgraph_get().update()
+    after = lowest_vertex_z(armature, mesh)
+
+    report["ground"] = {
+        "rest_lowest": round(rest_lowest, 5),
+        "posed_lowest_before": round(posed_lowest, 5),
+        "world_offset_requested": round(world_offset, 5),
+        "axis_response_m_per_unit": [round(v, 6) for v in response],
+        "axis_used": "XYZ"[best_axis],
+        "units_applied": round(units, 5),
+        "posed_lowest_after": round(after, 5),
+        "residual_m": round(after - rest_lowest, 5),
+        "method": "solve the Hips root bone's effective vertical axis numerically; "
+                  "object-level shifts do not survive FBX/glTF export",
+    }
+    print(f"floor align: posed {posed_lowest:+.4f} -> {after:+.4f} "
+          f"(wanted {rest_lowest:+.4f}, residual {after - rest_lowest:+.5f} m; "
+          f"axis {'XYZ'[best_axis]}, response {response[best_axis]:+.5f} m/unit)", flush=True)
+    return final - base_location
+
+
 def keyframe_breath(armature, spec: dict, frames: int, report: dict) -> None:
     """Hold the pose across a loop with a subtle breath cycle.
 
@@ -258,6 +343,8 @@ def keyframe_breath(armature, spec: dict, frames: int, report: dict) -> None:
     armature.animation_data.action = action
 
     spine_names = ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+    # Captured AFTER the floor alignment, so the breathing loop oscillates around the
+    # corrected height instead of undoing it on the first keyframe.
     hips = bone_lookup(armature, "mixamorig:Hips")
     base_hips_loc = hips.location.copy() if hips is not None else None
 
@@ -285,7 +372,9 @@ def keyframe_breath(armature, spec: dict, frames: int, report: dict) -> None:
             bone.keyframe_insert("rotation_euler", frame=frame)
 
         if hips is not None and base_hips_loc is not None:
-            # Armature-local: a small lift/return, mirrored exactly at both ends.
+            # Armature-local: a small lift/return, mirrored exactly at both ends. The
+            # ground correction lives on the armature OBJECT, not here, so it is not
+            # re-applied per keyframe.
             hips.location = base_hips_loc + Vector((0.0, 0.0, 0.0))
             hips.keyframe_insert("location", frame=frame)
 
@@ -402,7 +491,11 @@ def main() -> int:
     for action in list(bpy.data.actions):
         bpy.data.actions.remove(action)
 
+    # The rest floor must be measured before the pose is applied - afterwards the pose's own
+    # silhouette has replaced it and the reference is gone.
+    rest_lowest = lowest_vertex_z(armature, mesh)
     apply_pose(armature, POSES[args.pose], report)
+    align_floor_with_rest(armature, mesh, rest_lowest, report)
     keyframe_breath(armature, POSES[args.pose], args.frames, report)
 
     out_iteration.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,73 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "material_splice",
+  "target": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb",
+  "source": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
+  "material": {
+    "name": "Material.001",
+    "base_color_texture": true,
+    "metallic_roughness_texture": true,
+    "normal_texture": true,
+    "occlusion_texture": false,
+    "emissive_texture": false,
+    "metallic_factor": null,
+    "roughness_factor": null
+  },
+  "orphan_textures_dropped": {
+    "textures": 1,
+    "images": 1,
+    "samplers": 1
+  },
+  "output": {
+    "bytes": 77513468,
+    "sha256": "166dab5e1cc2e70ac65b8fdfd13dd9219bfbdfe9ae767fbdf2472f41a041aab7",
+    "meshes": 1,
+    "triangles": 599417,
+    "nodes": 24,
+    "materials": 1,
+    "images": 3,
+    "skins": [
+      {
+        "name": "Armature",
+        "joints": 22
+      }
+    ],
+    "animations": [
+      {
+        "name": "idle",
+        "channels": 69,
+        "seconds": 9.967
+      },
+      {
+        "name": "idle_guarded",
+        "channels": 66,
+        "seconds": 3.033
+      },
+      {
+        "name": "jump",
+        "channels": 69,
+        "seconds": 2.2
+      },
+      {
+        "name": "meditate",
+        "channels": 66,
+        "seconds": 3.033
+      },
+      {
+        "name": "run",
+        "channels": 69,
+        "seconds": 0.767
+      },
+      {
+        "name": "sword_ride",
+        "channels": 66,
+        "seconds": 3.033
+      },
+      {
+        "name": "walk",
+        "channels": 69,
+        "seconds": 1.433
+      }
+    ]
+  }
+}

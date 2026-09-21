@@ -220,3 +220,11 @@
 /docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_hands_behind_back_slot2.fbx filter=lfs diff=lfs merge=lfs -text
 /docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_meditate_seat_slot2.fbx filter=lfs diff=lfs merge=lfs -text
 /docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_sword_riding_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_guarded_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_jump_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_meditate_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_run_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_sword_ride_slot2.fbx filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_walk_slot2.fbx filter=lfs diff=lfs merge=lfs -text
