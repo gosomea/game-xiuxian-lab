@@ -516,3 +516,88 @@ Phase 2 的三次 Mixamo Auto-Rigger 上传全部卡在服务端
 Phase 1/2 的全部产物（`raw/`、`source/`、`exports/` 旧文件、`renders/`、
 `iterations/phase2_upload_attempts/`）与 root 下原始 GLB 一律保留，未删除、未覆盖。
 `exports/cultivator_tripo_v9_runtime.glb`（纯 glTF 合并路线产物，早期方案）同样保留为对照。
+
+---
+
+## Phase 4 — 动作气质重选、步幅实测与 Shift 疾行（2026-09-21）
+
+### 为什么重选
+
+Phase 3 的待机是 `Idle.fbx`：手臂松垂、身体微晃、下巴略抬，读起来是**西方剑士的随手站姿**，
+与本项目的修仙者气质不符。本轮按「立如松、手收于体侧、肩平气沉」重选，并把同类候选全部
+渲染对比后决策，而不是凭名字挑。
+
+### 待机候选对比（渲染见 `renders/idle_candidates/`）
+
+| 候选 | 姿态 | 结论 |
+|---|---|---|
+| `Idle.fbx`（Phase 3 现役） | 手臂松垂、重心偏、下巴抬 | **淘汰**：休闲西方式站姿 |
+| `Standing_Idle.fbx` | 单臂抬起做手势、重心偏移 | 淘汰：更像口语化手势 |
+| `Focus.fbx` | 双手抱头 | 淘汰：姿态与角色无关 |
+| `Ninja_Idle.fbx` | 武术下蹲架势 | 淘汰：过「忍者」，与修士不符 |
+| `Warrior_Idle.fbx` | 立如松、手垂体侧、头正颈直 | 可用，与下一项同气质 |
+| **`Breathing_Idle.fbx`** | **立如松、手垂体侧、肩平、呼吸起伏** | **采用**：最贴合「站桩」，且时长 9.97 s 循环自然 |
+
+### 御剑姿态：维持「站立 + 前倾」，明确否决两个候选
+
+Phase 3 的御剑是 `idle @0.6 倍速 + 前倾`。本轮验证了两个「看起来更贴切」的候选并**否决**：
+
+| 候选 | 实际内容 | 结论 |
+|---|---|---|
+| `Flying.fbx` | **超人式水平俯冲**（身体几乎水平、双臂前伸） | 淘汰：这是飞行/坠落，不是踏剑 |
+| `Floating.fbx` | 漂浮/下坠姿态，双腿悬空张开 | 淘汰：同样不是踏剑 |
+
+结论：`Flying`/`Floating` 都不表达「脚踏飞剑、身姿直立」，**现有站立+前倾方案本来就是对的**。
+两个候选的渲染保留在 `renders/v2_final/` 与 `renders/fly_compare/`，作为否决依据。
+`fly` clip 仍打进 `iterations/mia_rig/20260921-v2/` 作对照，但不进运行时资产。
+
+### 步幅实测（新工具 `tools/art/measure_clip_stride.py`）
+
+滑步的根因是「播放速率 = 实际速度 / 参考速度」里的参考速度此前是估计值（1.6 / 3.2），
+而实际移动速度是 4.0 m/s，导致 walk 永远以 **2.5 倍速**播放、作者节奏被破坏。
+
+这些 clip 是**原地**的（根不位移，位移由物理提供），所以正确量法是**支撑期内脚相对身体的
+后移量**，它等于该步的步长，于是：
+
+    natural_speed = step_length / stance_seconds
+
+实测结果（30 fps）：
+
+| clip | step | stance | stride(2 步) | **自然速度** | 支撑脚路径摆幅 |
+|---|---|---|---|---|---|
+| idle | — | — | — | **不迈步**（如实标注） | 0 |
+| walk | 0.2147 m | 0.1667 s | 0.4294 m | **1.288 m/s** | 0.0087 m |
+| run | 0.1141 m | 0.0333 s | 0.2282 m | **3.426 m/s** | 0 |
+
+交叉验证：1.29 / 3.43 m/s 正落在真人步行（1.2–1.4）与跑步（3–4）区间内，说明量的是对的东西。
+数值调用路径也改名以免误导：`walk_stride_meters` → `walk_reference_mps`
+（契约是 `rate = speed / 该值`，它是**速度**不是长度；旧名让本轮一度把长度填了进去）。
+
+### Shift 疾行（新输入）
+
+| 项 | 值 | 依据 |
+|---|---|---|
+| `sprint_input` | bool，场景在按住 Shift 期间写入 | 与 `move_input` 同为输入，非状态 |
+| `move_speed` | 1.55 m/s | 贴近 walk 自然速度 1.288；rate ≈ 1.20 |
+| `sprint_speed` | 3.45 m/s | 贴近 run 自然速度 3.426；rate ≈ 1.01 |
+| `RUN_SPEED_MPS` 阈值 | 5.5 → **2.2** | 取两档之间，使 Shift 真的切换 clip |
+| 速率夹取带 | 0.5–2.5 → **0.6–1.8** | 实测步幅下 rate 已 ≈1.0，过宽上限只会变成快放 |
+
+疾行只在**确有移动输入**时生效：站着按 Shift 不进入奔跑姿态（已加测试断言）。
+接入场景：motion_stage、movement_garden、mountain_realm、sword_flight_course、
+ground_contact_course、state_transition_lab（剑术训练场为飞行场景，疾行仅随地面段生效）。
+
+### 产物
+
+| 项 | 值 |
+|---|---|
+| 运行时 GLB | `src/game/actors/swordsman/models/cultivator_tripo_v9.glb` |
+| sha256 | `79adbded1eafecd3f71a4bf164584d354ea024714828083dc5e805ca8e5b25b7` |
+| 来源会话 | `iterations/mia_rig/20260921-v2/`（idle=Breathing_Idle, walk=Walking, run=Run, jump=Jump） |
+| 候选会话 | `iterations/mia_rig/20260921-cand/`（10 候选）、`20260921-fly2/`（飞行候选） |
+| 步幅报告 | `iterations/mia_rig/20260921-v2/stride.json` |
+
+### 保留
+
+Phase 1–3 全部产物零删除。本轮新增的候选会话、候选渲染、`Flying`/`Floating` 对照渲染
+一并入库。被替换的 `Idle.fbx` 版本仍完整保留在 `20260921-ship/`（以及更早的 `final2/`）。

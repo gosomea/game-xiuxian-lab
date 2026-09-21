@@ -216,7 +216,11 @@ func _batch_flat() -> void:
 	_key(KEY_D, false)
 	await _frames(4)
 	var travelled := _actor.global_position - start
-	_check(travelled.length() > 0.5, "平地产生真实位移（%.3f m）" % travelled.length())
+	# 位移下限按实际速度与帧数推导：写死 0.5 m 在走速 1.55 m/s 下 14 帧只走 0.36 m，
+	# 会变成假失败。取理论位移的 0.5，仍能拒绝「按住却几乎没动」。
+	var floor_meters := _motion.move_speed * 0.5 * (18.0 / 60.0)
+	_check(travelled.length() > floor_meters,
+		"平地产生真实位移（%.3f m，下限 %.3f）" % [travelled.length(), floor_meters])
 	_check(travelled.normalized().dot(_motion.camera_right) > 0.9,
 		"D 位移沿相机右方（dot=%.3f）" % travelled.normalized().dot(_motion.camera_right))
 	_check(absf(_stage.stage_state()["floor_angle_deg"]) <= ANGLE_TOL,
@@ -242,7 +246,7 @@ func _batch_ramp() -> void:
 		var climbed := false
 		var peak := floor_before
 		var on_floor_throughout := true
-		for index in range(110):
+		for index in range(_frames_for(6.0)):
 			await _frames(1)
 			peak = maxf(peak, _actor.global_position.y)
 			if not _motion.on_floor:
@@ -267,7 +271,7 @@ func _batch_ramp() -> void:
 	await _go_to("ramp_steep", Vector3(float(steep["base"][0]) - 1.6, 0.05, float(steep["base"][2])))
 	var steep_before := _actor.global_position.y
 	_key(KEY_D, true)
-	for index in range(60):
+	for index in range(_frames_for(4.0)):
 		await _frames(1)
 	var steep_after := _actor.global_position.y
 	var steep_blocked := _actor.global_position.x
@@ -313,7 +317,7 @@ func _batch_step() -> void:
 		await _go_to(id, Vector3(face_x - 3.0, 0.05, center.z))
 		var before := _actor.global_position.y
 		_key(KEY_D, true)
-		for index in range(45):
+		for index in range(_frames_for(4.0)):
 			await _frames(1)
 		var after := _actor.global_position.y
 		var stopped_x := _actor.global_position.x
@@ -344,7 +348,7 @@ func _batch_step() -> void:
 		var peak := jump_before
 		var landed := false
 		var landed_y := jump_before
-		for index in range(80):
+		for index in range(_frames_for(5.0)):
 			await _frames(1)
 			peak = maxf(peak, _actor.global_position.y)
 			if _motion.on_floor and _actor.global_position.y > jump_before + rise - 0.06 \
@@ -386,7 +390,7 @@ func _batch_corner() -> void:
 	# 接触对象必须在**持续推进中**采样：一旦松键，角色不再挤墙，
 	# 本帧 move_and_slide 只会报地面——这是读法差异，不是行为差异。
 	var contact_seen := PackedStringArray()
-	for index in range(45):
+	for index in range(_frames_for(3.0)):
 		await _frames(1)
 		for name in _stage.stage_state()["contacts"] as PackedStringArray:
 			if not contact_seen.has(name):
@@ -409,10 +413,18 @@ func _batch_corner() -> void:
 	var corner_point := Vector3(face_x - capsule_radius - 0.02, 0.05,
 		inner_z.position.z + float(inner_device["size"][2]) * 0.5 + capsule_radius + 0.02)
 	await _go_to("corner_inner_x", corner_point)
+	# _go_to() 把角色放到 (face_x - r - 0.02)，本就已经贴住凹角；先确认真的到位，
+	# 再持续推挤。到位判定用位置收敛而不是帧数，避免把「还没走到」误判成「穿墙」。
 	_key(KEY_D, true)
 	_key(KEY_S, true)
-	for index in range(45):
+	var approached := false
+	for index in range(_frames_for(3.5)):
 		await _frames(1)
+		if absf(_actor.global_position.x - corner_point.x) < 0.2:
+			approached = true
+			break
+	_check(approached or _actor.global_position.x < inner_x.position.x - capsule_radius + 0.15,
+		"斜向推进后仍停在凹角外（x=%.2f）" % _actor.global_position.x)
 	var corner_rest := _actor.global_position
 	_key(KEY_D, false)
 	_key(KEY_S, false)
@@ -429,7 +441,7 @@ func _batch_corner() -> void:
 	var slide_start := _actor.global_position
 	_key(KEY_D, true)
 	_key(KEY_W, true)
-	for index in range(45):
+	for index in range(_frames_for(4.0)):
 		await _frames(1)
 	var slide_end := _actor.global_position
 	_key(KEY_D, false)
@@ -454,7 +466,7 @@ func _batch_corner() -> void:
 	await _go_to("wall_outer", Vector3(outer_face_x - 1.6, 0.05, outer_north_z - 0.4))
 	_key(KEY_D, true)
 	var passed := false
-	for index in range(70):
+	for index in range(_frames_for(4.0)):
 		await _frames(1)
 		if _actor.global_position.x > outer.position.x + 0.9:
 			passed = true
@@ -477,7 +489,7 @@ func _batch_narrow() -> void:
 		await _go_to(id, Vector3(7.0, 0.05, lane_z))
 		var start := _actor.global_position
 		_key(KEY_D, true)
-		for index in range(70):
+		for index in range(_frames_for(5.0)):
 			await _frames(1)
 		var end := _actor.global_position
 		_key(KEY_D, false)
@@ -494,7 +506,7 @@ func _batch_narrow() -> void:
 	await _go_to("narrow_06_s", Vector3(7.0, 0.05, tight_z))
 	var tight_start := _actor.global_position
 	_key(KEY_D, true)
-	for index in range(70):
+	for index in range(_frames_for(5.0)):
 		await _frames(1)
 	var tight_end := _actor.global_position
 	_key(KEY_D, false)
@@ -507,13 +519,25 @@ func _batch_narrow() -> void:
 # --- 批次：边缘与回收 -------------------------------------------------------
 
 
+## 按「要走的距离」换算需要的帧数，而不是写死帧数。
+##
+## 这些预算原是按 move_speed 4.0 m/s 调的；v9 把走速降到 1.55 m/s（对齐 walk clip 的
+## 自然速度，见 tools/art/measure_clip_stride.py），写死 70/110 帧就不再够走完同一段路。
+## 预算必须随组件真实速度伸缩，否则每次调速度都会产生一批假失败。
+## `slack` 给起步加速与渲染/物理帧率差留余量。
+func _frames_for(distance_m: float, slack: float = 2.5) -> int:
+	var per_frame: float = maxf(_motion.move_speed, 0.1) / 60.0
+	return int(ceil(distance_m / per_frame * slack))
+
+
 func _batch_edge() -> void:
 	# 登上边缘台（走登台坡），再从东侧无栏处真实走出并落到下层。
 	var terrace: StaticBody3D = _stage.device_collider("terrace")
 	await _go_to("terrace_ramp", Vector3(12.2, 0.05, -3.0))
 	_key(KEY_D, true)
 	var on_terrace := false
-	for index in range(70):
+	# 从 (12.2, -3.0) 走到台面 x>15.6：约 3.4 m，再留登坡余量。
+	for index in range(_frames_for(5.0)):
 		await _frames(1)
 		if _actor.global_position.y > 0.75 and _actor.global_position.x > 15.6:
 			on_terrace = true
@@ -529,7 +553,8 @@ func _batch_edge() -> void:
 	var left_floor := false
 	var landed := false
 	var landed_y := 1.0
-	for index in range(110):
+	# 走出台缘 + 自由落体：台面 x 约 16.6~20 外沿，再由重力落地。
+	for index in range(_frames_for(6.0)):
 		await _frames(1)
 		if not _motion.on_floor:
 			left_floor = true
@@ -567,7 +592,7 @@ func _batch_recovery() -> void:
 	_check(_motion.on_floor, "回收区起点着地")
 	_key(KEY_D, true)
 	var recovered := false
-	for index in range(120):
+	for index in range(_frames_for(8.0)):
 		await _frames(1)
 		if int(_stage.stage_state()["recoveries"]) > before:
 			recovered = true

@@ -101,7 +101,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key_event := event as InputEventKey
 		# 物理键码优先（不看键盘布局）；个别平台 Ctrl 等只填逻辑键码时回退。
 		var code := key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
-		if MOVE_KEYS.has(code):
+		if MOVE_KEYS.has(code) or code == KEY_SPRINT:
 			_pressed[code] = key_event.pressed
 			get_viewport().set_input_as_handled()
 			return
@@ -118,7 +118,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(_delta: float) -> void:
 	# 相机地面基由 CameraRig 桥接写入角色（同帧一致）；本场景只做屏幕相对输入与朝向。
-	_player.set_move_input(_read_move_input())
+	var move := _read_move_input()
+	_player.set_move_input(move)
+	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
+	_player.set_sprint_input(_pressed.get(KEY_SPRINT, false) and move != Vector2.ZERO)
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if _motion.move_input != Vector2.ZERO:
 		var direction := _motion.camera_right * _motion.move_input.x - _motion.camera_forward * _motion.move_input.y
@@ -292,7 +295,7 @@ func _build_hud() -> void:
 	_hud = LabHud.new()
 	add_child(_hud)
 	_hud.configure("移动庭院", "角色移动 · 庭院", "组合环绕 · WASD 移动 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 · H 详情")
-	_hud.set_controls("组合环绕（默认）：WASD 屏幕相对移动（角色朝运动方向）· Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 yaw/pitch · 镜头按钮切到固定跟随 · R 重置 · Esc 返回子实验目录")
+	_hud.set_controls("组合环绕（默认）：WASD 屏幕相对移动（角色朝移动方向）· Shift 疾行 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 yaw/pitch · 镜头按钮切到固定跟随 · R 重置 · Esc 返回子实验目录")
 	_hud.set_question("小范围地面移动和既有庭院美术与构图是否仍然成立？")
 	_hud.return_pressed.connect(_return_to_hub)
 	_hud.set_return_text("返回子实验目录")

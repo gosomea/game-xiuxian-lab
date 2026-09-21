@@ -235,7 +235,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		var actor_input_enabled := _mode == StageMode.REALTIME and not _ui_has_keyboard_focus()
 		# 移动键与升降键的按住状态交给 helper（升降键由本场景显式声明）；
 		# 跳跃语义仍是本场景决定并调用角色 API。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
+		# 升降键与疾行键都由 helper 跟踪；两者都是可选键，显式声明以免被当成未处理。
+		if _input.track_key(key_event,
+				MovementLabInput.VERTICAL_KEYS + MovementLabInput.SPRINT_KEYS):
 			var jump_edge := MovementLabInput.is_key_down_edge(key_event) and _player != null
 			if code == MovementLabInput.KEY_VERTICAL_UP and actor_input_enabled and jump_edge:
 				# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
@@ -300,10 +302,14 @@ func _physics_process(_delta: float) -> void:
 		# 不依赖「谁记得清干净」，因此它不可能因本场景输入产生位移。
 		_player.set_move_input(Vector2.ZERO)
 		_player.set_vertical_input(0.0)
+		_player.set_sprint_input(false)
 		return
 	var move := _input.move_input()
 	_player.set_move_input(move)
 	_player.set_vertical_input(_input.vertical_input())
+	# 疾行只在真有移动输入时生效：站着按 Shift 不应让角色保持「跑步」姿态。
+	_player.set_sprint_input(_input.is_down(MovementLabInput.KEY_SPRINT)
+		and move != Vector2.ZERO)
 	# 角色朝运动方向；停下时保留最后一次朝向，因此不停地在原地打转。
 	# 地面基与最终渲染一致（含混合期），因此移动方向不会与画面脱节。
 	if move != Vector2.ZERO and _rig != null:
@@ -685,7 +691,7 @@ func _build_hud() -> void:
 	# 短 kicker + 短 hint：LabHud 的 Label 不自动换行，长文案会在 960×640 下撑宽面板。
 	# 完整操作说明与实验问题放折叠详情（H / F1）与 tooltip，不常显。
 	_hud.configure("", "人物动作工作台", "程序预览 · M 实时 · H 详情")
-	_hud.set_controls("WASD 移动 · Space 跳跃/预览播放 · Ctrl 下降 · F 御剑 · M 实时/预览模式 · "
+	_hud.set_controls("WASD 移动 · Shift 疾行 · Space 跳跃/预览播放 · Ctrl 下降 · F 御剑 · M 实时/预览模式 · "
 		+ "1/2/3 正面/侧面/斜侧机位 · 滚轮缩放 · R 重置 · H 详情 · Esc 返回子实验目录")
 	_hud.set_question("待机、起步、跑动、跳跃、御剑及其过渡是否清楚？")
 	_hud.return_pressed.connect(_return_to_hub)
@@ -879,7 +885,7 @@ func realtime_snapshot() -> Dictionary:
 
 
 ## 足滑度量状态：socket 尚未建立，当前一律标注「待建立」。
-## 步幅匹配（速度 / stride_meters）不是足滑度量，不得用它冒充。
+## 原速参考（速度 / 参考速度 = 播放速率）不是足滑度量，不得用它冒充。
 func foot_sliding_status() -> String:
 	return "待建立（需 Visual/Sockets/Foot_* 世界位置；当前无 socket）"
 
@@ -1020,7 +1026,7 @@ func _update_hud() -> void:
 		lines.append("预览表现  " + _pose_text(preview.get("pose", {})))
 		lines.append("预览飞剑  显隐=%s" % ("是" if preview.get("sword_visible", false) else "否"))
 	lines.append("足滑度量  %s" % foot_sliding_status())
-	lines.append("步幅匹配  stride_meters=%.2f m（与足滑是两件事，不互相替代）" % _stride_meters())
+	lines.append("原速参考  %.2f m/s（该速度下播放速率=1.0；与足滑是两件事，不互相替代）" % _stride_meters())
 	lines.append("视角  %s（%s）" % [view_name(), VIEW_HINT[_view]])
 	_hud.set_debug_lines(lines)
 
@@ -1047,14 +1053,15 @@ func _core_summary_text() -> String:
 
 
 ## 步幅参数：从表现层导出参数读取（正式角色与预览实例同源）。
-## 刚体版导出 stride_meters（单一值），骨骼版导出 walk_stride_meters / run_stride_meters。
+## 刚体版导出 stride_meters；v9 骨骼版导出 walk_reference_mps / run_reference_mps
+## （语义是「原速对应的移动速度」，不是长度）。
 ## 两者都读：HUD 只做展示，不该因为换成骨骼表现层就静默退回常量。
 func _stride_meters() -> float:
 	if _presentation != null:
 		var value: Variant = _presentation.get("stride_meters")
 		if value != null:
 			return float(value)
-		var walk: Variant = _presentation.get("walk_stride_meters")
+		var walk: Variant = _presentation.get("walk_reference_mps")
 		if walk != null:
 			return float(walk)
 	return 1.8

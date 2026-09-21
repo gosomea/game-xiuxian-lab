@@ -47,6 +47,18 @@ Status: implemented
 采样器 Y 分量——只改静态值不够，因为导出器给该根节点烘焙了全零 translation 动画轨道，
 动画会覆盖静态值，表现为「rest pose 正常但所有 clip 仍陷地」。
 
+**三点五、步幅实测与疾行。** 滑步的根因是播放速率公式 `rate = 速度 / 参考速度` 里的参考
+速度只是估计（1.6 / 3.2），而实际移动速度 4.0 m/s，使 walk 永远以 2.5 倍速播放、作者节奏
+被破坏，且 5.5 的 run 阈值永远够不到（**run 是死分支**）。
+新增 `tools/art/measure_clip_stride.py`：这些 clip 是原地的，因此正确量法是**支撑期内脚相对
+身体的后移量**（等于步长），`natural_speed = step_length / stance_seconds`。实测 walk
+1.288 m/s、run 3.426 m/s（落在真人步速区间，交叉验证方法正确）。
+据此：`move_speed` 4.0 → **1.55**、新增 `sprint_speed` **3.45**（Shift 疾行）、
+`RUN_SPEED_MPS` 5.5 → **2.2**、速率夹取 0.5–2.5 → **0.6–1.8**。
+参数 `walk_stride_meters` 更名 `walk_reference_mps`——契约是 `rate = speed / 该值`，
+它是**速度**不是长度，旧名具误导性（本轮一度据旧名把长度填了进去）。
+疾行只在确有移动输入时生效。
+
 **四、Godot 接入。** 新增独立 `cultivator_tripo_v9_visual.tscn`（根 `CultivatorVisualTripoV9`
 → 模型实例 `CultivatorTripoV9` + `CultivatorSkeletonPresentation`），默认 `swordsman.tscn`
 改为实例化 v9 视觉，使所有经正式 Swordsman prefab 生成的移动实验自动统一；
@@ -87,6 +99,12 @@ Status: implemented
   调试脚本。
 - 骨骼无手指骨；`loop_mode` 导入后为 `LOOP_NONE`，由表现层运行时显式设置；
   3 × 4096² 纹理在 `gl_compatibility` 下约 192 MB RGBA，尚未做实机内存/帧率测量。
+- 动作气质是**取舍而非客观正确**：库中最接近东方气质的是 `Breathing_Idle`/`Warrior_Idle`
+  （立如松），并无真正的「打坐」「掐诀」「踏剑」姿态可用；`Ninja_Idle` 偏武术架势、
+  `Focus`/`Praying` 语义不符。若后续要真正的修仙动作，需要外部动作库或手工制作，
+  这不是换一个 Mixamo 名字能解决的。
+- 步幅实测值依赖当前 30 fps 导出与这套骨架；换 clip 或改帧率需重跑
+  `tools/art/measure_clip_stride.py`，否则滑步会回来。
 - 探索资产体积显著增加仓库大小（v9 目录约 1.2 GB）。使用者已明确选择「所有项目资产必须
   进入 Git」优先于仓库体积，因此不做忽略或外部存放。
 

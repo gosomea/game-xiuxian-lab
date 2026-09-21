@@ -118,7 +118,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		var code := InputHelper.key_code(key_event)
-		if _input_helper.track_key(key_event, InputHelper.VERTICAL_KEYS):
+		if _input_helper.track_key(key_event, InputHelper.VERTICAL_KEYS + InputHelper.SPRINT_KEYS):
 			# 空格既是升降输入也是跳跃边沿：按住状态进 helper，起跳语义仍由本场景调用公开 API。
 			if code == InputHelper.KEY_VERTICAL_UP and InputHelper.is_key_down_edge(key_event) and _actor != null:
 				_actor.press_jump()
@@ -150,6 +150,8 @@ func _physics_process(delta: float) -> void:
 	_relative_frame += 1
 	# 场景先写输入、actor 子节点随后 tick（父节点先于子节点）。
 	_actor.set_move_input(_input_helper.move_input())
+	_actor.set_sprint_input(_input_helper.is_down(InputHelper.KEY_SPRINT)
+		and _input_helper.move_input() != Vector2.ZERO)
 	_actor.set_vertical_input(_input_helper.vertical_input())
 	# 相机地面基由 CameraRig 桥接写入角色；本场景只读它来定朝向。
 	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT

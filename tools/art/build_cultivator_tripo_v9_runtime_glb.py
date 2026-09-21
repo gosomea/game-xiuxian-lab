@@ -47,6 +47,8 @@ from pathlib import Path
 
 import bpy
 
+## Clips baked into the runtime GLB. The shipped four are the movement states the
+## presentation layer maps to; `fly` is extra and optional.
 CLIP_ORDER = ["idle", "walk", "run", "jump"]
 
 

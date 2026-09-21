@@ -47,8 +47,17 @@ var desired_vertical: float = 0.0
 ## 意图：竖直冲量（米/秒，正上）；仅 Jump 写入，actor 覆盖 velocity.y 且不累加。
 var vertical_impulse: float = 0.0
 
+## 意图：疾行（按住加速键）；由场景写入，SwordsmanMovement 据此在 move_speed 与
+## sprint_speed 间选择。与 move_input 一样是输入而非状态，不参与任何决策记录。
+var sprint_input: bool = false
+
 ## 参数：步行水平最大速度（米/秒）。
-@export var move_speed: float = 4.0
+## 与 walk clip 的自然速度对齐（实测 1.288 m/s，见 stride 台账）：播放速率 = 速度 / 步幅，
+## 取 1.55 使 rate≈1.2，既不破坏 walk clip 的作者节奏，也不至于慢到不像赶路。
+@export var move_speed: float = 1.55
+
+## 参数：疾行水平最大速度（米/秒）。对齐 run clip 的自然速度（实测 3.426 m/s）。
+@export var sprint_speed: float = 3.45
 
 ## 参数：起跳初速（米/秒）。
 @export var jump_speed: float = 6.0

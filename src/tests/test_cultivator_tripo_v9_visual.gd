@@ -30,6 +30,7 @@ static func run(t) -> void:
 	_assert_visual_scene_contract(t)
 	_assert_preview_shares_same_source(t)
 	_assert_sample_no_longer_swaps_visual(t)
+	_assert_sprint_ladder(t)
 	_assert_facing_contract(t)
 	_assert_legacy_visuals_still_load(t)
 
@@ -111,9 +112,10 @@ static func _assert_visual_scene_contract(t) -> void:
 	if presentation != null:
 		presentation.call("reset_pose")
 		presentation.call("advance_state",
-			{"velocity": Vector3(4.0, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+			{"velocity": Vector3(3.45, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
 		var pose: Dictionary = presentation.call("pose_state")
-		t.assert_eq(str(pose.get("current_clip", "")), "walk", "4 m/s 着地映射到 walk")
+		t.assert_eq(str(pose.get("current_clip", "")), "run",
+			"3.45 m/s（疾行速度）着地映射到 run：run 现已真实可达")
 		t.assert_true(absf(float(pose.get("phase", -1.0))
 			- player.current_animation_position) < 0.0001,
 			"快照 phase 就是 AnimationPlayer 播放位置（%.4f vs %.4f）"
@@ -185,6 +187,62 @@ static func _assert_sample_no_longer_swaps_visual(t) -> void:
 			"飞剑适配根局部 yaw 补偿 180° 不变（实际 %.4f）" % sword.rotation.y)
 		t.assert_true(sword.get_node_or_null("FlyingSwordModel") != null,
 			"飞剑适配根下仍实例化原 GLB 模型")
+
+
+## 疾行两档：走/跑必须各有唯一可达速度带，且播放速率贴近原速（防快放）。
+## 这一节锁住「run 不再是死分支」——它曾因 move_speed 4.0 < 阈值 5.5 而永远选不到。
+static func _assert_sprint_ladder(t) -> void:
+	var motion_script := load(
+		"res://game/actors/swordsman/swordsman_motion_component.gd") as GDScript
+	t.assert_true(motion_script != null, "运动组件脚本可加载")
+	if motion_script == null:
+		return
+	var probe := motion_script.new() as SwordsmanMotionComponent
+	t.assert_true(probe != null, "运动组件可实例化")
+	if probe == null:
+		return
+	var walk_speed := probe.move_speed
+	var sprint_speed := probe.sprint_speed
+	t.assert_true(sprint_speed > walk_speed,
+		"疾行速度高于步行（%.2f > %.2f）" % [sprint_speed, walk_speed])
+	# 两档必须真的分居 run 阈值两侧，否则其中一档的 clip 永远选不到。
+	t.assert_true(walk_speed < CultivatorSkeletonPresentation.RUN_SPEED_MPS,
+		"步行速度低于 run 阈值（%.2f < %.2f）" % [
+			walk_speed, CultivatorSkeletonPresentation.RUN_SPEED_MPS])
+	t.assert_true(sprint_speed > CultivatorSkeletonPresentation.RUN_SPEED_MPS,
+		"疾行速度高于 run 阈值（%.2f > %.2f）=> run 可达" % [
+			sprint_speed, CultivatorSkeletonPresentation.RUN_SPEED_MPS])
+	probe.free()
+
+	# 两档各自的播放速率必须贴近原速：明显偏离说明阈值/参考速度与 clip 不匹配。
+	var packed := load(V9_VISUAL_SCENE) as PackedScene
+	if packed == null:
+		return
+	var host := Node3D.new()
+	host.name = "SprintHost"
+	t.track(host)
+	var visual := packed.instantiate() as Node3D
+	var presentation := visual.get_node_or_null("CultivatorSkeletonPresentation")
+	if presentation != null:
+		presentation.set("auto_read_actor", false)
+	host.add_child(visual)
+	if presentation == null:
+		return
+	var players := visual.find_children("*", "AnimationPlayer", true, false)
+	if players.size() != 1:
+		return
+	var player := players[0] as AnimationPlayer
+	for spec in [["walk", walk_speed], ["run", sprint_speed]]:
+		presentation.call("reset_pose")
+		presentation.call("advance_state",
+			{"velocity": Vector3(spec[1], 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+		var pose: Dictionary = presentation.call("pose_state")
+		t.assert_eq(str(pose.get("current_clip", "")), str(spec[0]),
+			"%.2f m/s 映射到 %s" % [spec[1], spec[0]])
+		# 原速 = 播放速率 1.0；0.5–2.0 之外说明该档的速度与 clip 自然速度脱节。
+		var rate := player.speed_scale
+		t.assert_true(rate > 0.5 and rate < 2.0,
+			"%s 播放速率贴近原速（%.2f，速度 %.2f m/s）" % [spec[0], rate, spec[1]])
 
 
 ## 朝向契约：模型局部 +Z 是正面，visual_yaw_for_aim 把正面转到 aim 方向。

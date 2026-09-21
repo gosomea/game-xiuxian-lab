@@ -1,0 +1,373 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "mia_auto_rig",
+  "service": "Make-It-Animatable (Gradio)",
+  "base_url": "http://127.0.0.1:7860/",
+  "started": "2026-09-21T14:38:23",
+  "input": {
+    "file": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
+    "bytes": 53974948,
+    "sha256": "749fe625e4ef4c2f133eae4f7d64f65942d9e9f625385c62214cb9492299faba"
+  },
+  "params": {
+    "remove_fingers": true,
+    "input_rest_pose": "No",
+    "input_rest_parts": [],
+    "input_is_gs": false,
+    "opacity_threshold": 0.01,
+    "use_normal": false,
+    "weight_post_processing": true,
+    "bone_vis": "LeftArm",
+    "reset_to_rest": true,
+    "retarget": true,
+    "in_place": true
+  },
+  "clip_library_names": {
+    "idle": "Breathing_Idle.fbx",
+    "walk": "Walking.fbx",
+    "run": "Run.fbx",
+    "jump": "Jump.fbx",
+    "fly": "Flying.fbx"
+  },
+  "files": [
+    {
+      "label": "pipeline_slot0",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot1",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot2",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot3",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot4",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot5",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot6",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot7",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "pipeline_slot8",
+      "status": "non_file",
+      "value_type": "dict",
+      "value_repr": "{'__type__': 'update'}"
+    },
+    {
+      "label": "clip_idle_slot0",
+      "status": "ok",
+      "file": "clip_idle_slot0.glb",
+      "bytes": 49681760,
+      "sha256": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 24,
+        "images": 2,
+        "materials": 1,
+        "skins": [
+          {
+            "name": "Armature",
+            "joints": 22
+          }
+        ],
+        "animations": []
+      }
+    },
+    {
+      "label": "clip_idle_slot1",
+      "status": "ok",
+      "file": "clip_idle_slot1.glb",
+      "bytes": 40338088,
+      "sha256": "abc34d03e50290d86e2114dedd5f53536cbcc7fafa5aed87fd85c6ed100420f7",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 25,
+        "images": 1,
+        "materials": 1,
+        "skins": [
+          {
+            "name": null,
+            "joints": 22
+          }
+        ],
+        "animations": [
+          {
+            "name": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+            "channels": 27,
+            "seconds": 9.917
+          }
+        ]
+      }
+    },
+    {
+      "label": "clip_idle_slot2",
+      "status": "ok",
+      "file": "clip_idle_slot2.fbx",
+      "bytes": 43825132,
+      "sha256": "7952590e40cd2e4e45c5e82b07f857ceaadea57610ea319eeed2ad9218051c52"
+    },
+    {
+      "label": "clip_walk_slot0",
+      "status": "ok",
+      "file": "clip_walk_slot0.glb",
+      "bytes": 49681760,
+      "sha256": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 24,
+        "images": 2,
+        "materials": 1,
+        "skins": [
+          {
+            "name": "Armature",
+            "joints": 22
+          }
+        ],
+        "animations": []
+      }
+    },
+    {
+      "label": "clip_walk_slot1",
+      "status": "ok",
+      "file": "clip_walk_slot1.glb",
+      "bytes": 40251272,
+      "sha256": "552e2f53af9e9911edb3d26f26ab4e851e44243765e4d45f1f68164c7ecc9368",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 25,
+        "images": 1,
+        "materials": 1,
+        "skins": [
+          {
+            "name": null,
+            "joints": 22
+          }
+        ],
+        "animations": [
+          {
+            "name": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+            "channels": 25,
+            "seconds": 1.375
+          }
+        ]
+      }
+    },
+    {
+      "label": "clip_walk_slot2",
+      "status": "ok",
+      "file": "clip_walk_slot2.fbx",
+      "bytes": 43708476,
+      "sha256": "c5cabce7a33a68a74546bc13f98729a23115ea4d11f0547a1e65430b892ef209"
+    },
+    {
+      "label": "clip_run_slot0",
+      "status": "ok",
+      "file": "clip_run_slot0.glb",
+      "bytes": 49681760,
+      "sha256": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 24,
+        "images": 2,
+        "materials": 1,
+        "skins": [
+          {
+            "name": "Armature",
+            "joints": 22
+          }
+        ],
+        "animations": []
+      }
+    },
+    {
+      "label": "clip_run_slot1",
+      "status": "ok",
+      "file": "clip_run_slot1.glb",
+      "bytes": 40245520,
+      "sha256": "c29b85153fe43cb20bf54115c94b6a2bbef1b02626aa29f79d600883a58712c7",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 25,
+        "images": 1,
+        "materials": 1,
+        "skins": [
+          {
+            "name": null,
+            "joints": 22
+          }
+        ],
+        "animations": [
+          {
+            "name": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+            "channels": 26,
+            "seconds": 0.708
+          }
+        ]
+      }
+    },
+    {
+      "label": "clip_run_slot2",
+      "status": "ok",
+      "file": "clip_run_slot2.fbx",
+      "bytes": 43695820,
+      "sha256": "5c45e81ad289d7d9162e5db987cb01fb7857b3dd5a0b27ab000e16f720799c65"
+    },
+    {
+      "label": "clip_jump_slot0",
+      "status": "ok",
+      "file": "clip_jump_slot0.glb",
+      "bytes": 49681760,
+      "sha256": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 24,
+        "images": 2,
+        "materials": 1,
+        "skins": [
+          {
+            "name": "Armature",
+            "joints": 22
+          }
+        ],
+        "animations": []
+      }
+    },
+    {
+      "label": "clip_jump_slot1",
+      "status": "ok",
+      "file": "clip_jump_slot1.glb",
+      "bytes": 40259600,
+      "sha256": "64d8c510b26da38bf26503f7dfe906b6f110716c4e318a1f65c046ddfee1fbe2",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 25,
+        "images": 1,
+        "materials": 1,
+        "skins": [
+          {
+            "name": null,
+            "joints": 22
+          }
+        ],
+        "animations": [
+          {
+            "name": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+            "channels": 26,
+            "seconds": 2.167
+          }
+        ]
+      }
+    },
+    {
+      "label": "clip_jump_slot2",
+      "status": "ok",
+      "file": "clip_jump_slot2.fbx",
+      "bytes": 43722716,
+      "sha256": "d5b25ee0f85659569b79794935ef101bbd91aba925d449e32d9196a54d1b12b8"
+    },
+    {
+      "label": "clip_fly_slot0",
+      "status": "ok",
+      "file": "clip_fly_slot0.glb",
+      "bytes": 49681760,
+      "sha256": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 24,
+        "images": 2,
+        "materials": 1,
+        "skins": [
+          {
+            "name": "Armature",
+            "joints": 22
+          }
+        ],
+        "animations": []
+      }
+    },
+    {
+      "label": "clip_fly_slot1",
+      "status": "ok",
+      "file": "clip_fly_slot1.glb",
+      "bytes": 40266292,
+      "sha256": "d628c9b87504daf1ce927cbe1152c3733c5083b3b2c28eda67c5239de7396058",
+      "glb": {
+        "meshes": 1,
+        "triangles": 599417,
+        "nodes": 25,
+        "images": 1,
+        "materials": 1,
+        "skins": [
+          {
+            "name": null,
+            "joints": 22
+          }
+        ],
+        "animations": [
+          {
+            "name": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+            "channels": 28,
+            "seconds": 2.625
+          }
+        ]
+      }
+    },
+    {
+      "label": "clip_fly_slot2",
+      "status": "ok",
+      "file": "clip_fly_slot2.fbx",
+      "bytes": 43722860,
+      "sha256": "90d1c6b9093f810fb4ff527241b5e2ccf7007bf90b81ecb8ac18e63d8b124a1c"
+    }
+  ],
+  "timings_s": {
+    "pipeline": 90.7,
+    "clip_idle": 70.16,
+    "clip_walk": 65.35,
+    "clip_run": 61.95,
+    "clip_jump": 69.92,
+    "clip_fly": 60.82
+  },
+  "finished": "2026-09-21T14:45:25",
+  "output_dir": "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2"
+}

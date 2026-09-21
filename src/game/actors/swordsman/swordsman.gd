@@ -88,12 +88,18 @@ func press_flight_toggle() -> void:
 	_motion.flight_toggle_pressed = true
 
 
-## 场景装配 API：失焦清理四种输入，不改变飞行状态（已开启的御剑保留悬停）。
+## 场景装配 API：疾行开关（按住加速键期间为 true）。与 move_input 同为输入，非状态。
+func set_sprint_input(active: bool) -> void:
+	_motion.sprint_input = active
+
+
+## 场景装配 API：失焦清理全部输入，不改变飞行状态（已开启的御剑保留悬停）。
 func clear_input() -> void:
 	_motion.move_input = Vector2.ZERO
 	_motion.vertical_input = 0.0
 	_motion.jump_pressed = false
 	_motion.flight_toggle_pressed = false
+	_motion.sprint_input = false
 
 
 ## 场景装配 API：相机在地面的右/前基向量（水平单位向量）。

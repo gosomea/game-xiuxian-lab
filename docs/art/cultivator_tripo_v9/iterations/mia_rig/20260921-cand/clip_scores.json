@@ -1,0 +1,302 @@
+[
+  {
+    "file": "clip_base_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 4.0,
+    "channels": 28,
+    "hips_translation": {
+      "span": 0.0271,
+      "min": -0.07659,
+      "max": -0.04949
+    },
+    "root_travel": {
+      "x_delta": 0.0,
+      "z_delta": 0.0,
+      "horizontal_delta": 0.0
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:Head",
+      "degrees": 16.99,
+      "deg_per_s": 407.9,
+      "at_sample": 35
+    },
+    "p95_angular_rate": 64.7,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 179.98
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_iStand_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 1.833,
+    "channels": 24,
+    "hips_translation": {
+      "span": 0.04045,
+      "min": -0.12522,
+      "max": -0.08476
+    },
+    "root_travel": {
+      "x_delta": -0.00015,
+      "z_delta": 0.00058,
+      "horizontal_delta": 0.0006
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:RightArm",
+      "degrees": 5.11,
+      "deg_per_s": 122.6,
+      "at_sample": 42
+    },
+    "p95_angular_rate": 58.6,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 162.3
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_iBreath_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 9.917,
+    "channels": 23,
+    "hips_translation": {
+      "span": 0.02,
+      "min": -0.03152,
+      "max": -0.01152
+    },
+    "root_travel": {
+      "x_delta": -0.00073,
+      "z_delta": 0.00024,
+      "horizontal_delta": 0.00077
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:LeftArm",
+      "degrees": 1.8,
+      "deg_per_s": 43.3,
+      "at_sample": 187
+    },
+    "p95_angular_rate": 17.4,
+    "worst_bone_angle": {
+      "bone": "mixamorig:LeftUpLeg",
+      "degrees": 177.05
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_iFocus_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 5.5,
+    "channels": 27,
+    "hips_translation": {
+      "span": 0.02712,
+      "min": -0.05235,
+      "max": -0.02524
+    },
+    "root_travel": {
+      "x_delta": 0.0,
+      "z_delta": 0.0,
+      "horizontal_delta": 0.0
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:RightArm",
+      "degrees": 17.6,
+      "deg_per_s": 422.3,
+      "at_sample": 67
+    },
+    "p95_angular_rate": 87.6,
+    "worst_bone_angle": {
+      "bone": "mixamorig:LeftUpLeg",
+      "degrees": 178.18
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_iNinja_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 9.167,
+    "channels": 25,
+    "hips_translation": {
+      "span": 0.09879,
+      "min": -0.18207,
+      "max": -0.08328
+    },
+    "root_travel": {
+      "x_delta": 0.0,
+      "z_delta": 0.0,
+      "horizontal_delta": 0.0
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:Head",
+      "degrees": 14.83,
+      "deg_per_s": 355.9,
+      "at_sample": 87
+    },
+    "p95_angular_rate": 52.1,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 179.92
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_iWarrior_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 11.458,
+    "channels": 26,
+    "hips_translation": {
+      "span": 0.03208,
+      "min": -0.04672,
+      "max": -0.01464
+    },
+    "root_travel": {
+      "x_delta": -0.00012,
+      "z_delta": -9e-05,
+      "horizontal_delta": 0.00015
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:RightArm",
+      "degrees": 7.68,
+      "deg_per_s": 184.4,
+      "at_sample": 171
+    },
+    "p95_angular_rate": 33.8,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 173.34
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_rSprint_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 0.5,
+    "channels": 28,
+    "hips_translation": {
+      "span": 0.06219,
+      "min": -0.09992,
+      "max": -0.03772
+    },
+    "root_travel": {
+      "x_delta": 0.00598,
+      "z_delta": -0.00831,
+      "horizontal_delta": 0.01024
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:RightLeg",
+      "degrees": 43.53,
+      "deg_per_s": 1044.6,
+      "at_sample": 9
+    },
+    "p95_angular_rate": 770.9,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 179.09
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_rFast_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 0.5,
+    "channels": 25,
+    "hips_translation": {
+      "span": 0.02843,
+      "min": -0.07817,
+      "max": -0.04974
+    },
+    "root_travel": {
+      "x_delta": 0.00404,
+      "z_delta": 0.00046,
+      "horizontal_delta": 0.00407
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:LeftToeBase",
+      "degrees": 64.05,
+      "deg_per_s": 1537.2,
+      "at_sample": 9
+    },
+    "p95_angular_rate": 796.8,
+    "worst_bone_angle": {
+      "bone": "mixamorig:RightUpLeg",
+      "degrees": 179.54
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_fly_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 2.625,
+    "channels": 25,
+    "hips_translation": {
+      "span": 0.00841,
+      "min": -0.04514,
+      "max": -0.03673
+    },
+    "root_travel": {
+      "x_delta": 0.00022,
+      "z_delta": 9e-05,
+      "horizontal_delta": 0.00024
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:LeftHand",
+      "degrees": 2.04,
+      "deg_per_s": 49.0,
+      "at_sample": 47
+    },
+    "p95_angular_rate": 20.5,
+    "worst_bone_angle": {
+      "bone": "mixamorig:LeftUpLeg",
+      "degrees": 166.76
+    },
+    "verdict": [],
+    "ok": true
+  },
+  {
+    "file": "clip_rWalk_slot1.glb",
+    "kind": "locomotion",
+    "animation": "Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+    "duration_s": 1.0,
+    "channels": 24,
+    "hips_translation": {
+      "span": 0.03314,
+      "min": -0.06638,
+      "max": -0.03324
+    },
+    "root_travel": {
+      "x_delta": 0.0,
+      "z_delta": 0.0,
+      "horizontal_delta": 0.0
+    },
+    "worst_single_step": {
+      "bone": "mixamorig:RightToeBase",
+      "degrees": 76.48,
+      "deg_per_s": 1835.4,
+      "at_sample": 9
+    },
+    "p95_angular_rate": 275.0,
+    "worst_bone_angle": {
+      "bone": "mixamorig:LeftUpLeg",
+      "degrees": 179.87
+    },
+    "verdict": [],
+    "ok": true
+  }
+]

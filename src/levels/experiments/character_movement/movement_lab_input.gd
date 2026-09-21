@@ -28,6 +28,11 @@ const MOVE_KEYS := {
 	KEY_RIGHT: Vector2(1.0, 0.0),
 }
 
+## 疾行键：Shift。与升降键一样是**可选**跟踪项，只有真正提供疾行的场景才通过
+## track_key 的 extra_codes 传入，避免把不相关的键变成"已处理"。
+const KEY_SPRINT := KEY_SHIFT
+const SPRINT_KEYS: Array[Key] = [KEY_SHIFT]
+
 ## 升降键：空格 +1（跳跃 / 上升），Ctrl -1（下降）。
 ## 升降键是**可选**跟踪项：只有真正使用升降输入的场景才通过 track_key 的
 ## extra_codes 传入，避免把不相关的键变成"已处理"、改变原有事件传播。

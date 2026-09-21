@@ -14,23 +14,30 @@ extends Node3D
 ## 动作映射（速度同步防滑步）：
 ##   御剑  → idle @0.6 倍速 + 前倾 FLIGHT_LEAN
 ##   空中  → jump（单次，播完保持末帧）
-##   着地  → speed > RUN_SPEED_MPS → run；> WALK_SPEED_MPS → walk；否则 idle
-##   播放速率 = 实际水平速度 / 动作自然速度（walk 1.6 / run 3.2 m/s，实测 Mixamo 步幅近似值）
+##   着地  → speed >= RUN_SPEED_MPS → run；>= WALK_SPEED_MPS → walk；否则 idle
+##   播放速率 = 实际水平速度 / 该动作的原速参考（walk 1.288 / run 3.426 m/s）
 ## 切换统一走 play(clip, BLEND) 交叉淡化。
+##
+## 阈值与步幅都是**实测值**，不是估计：`tools/art/measure_clip_stride.py` 从动作本身
+## 量出支撑期脚的相对位移，得到 walk 自然速度 1.288 m/s、run 3.426 m/s。
+## 本表现层只在角色真的接近这些速度时以 ≈1.0 速率播放，作者节奏因此不被拉快。
 
 ## 角色根（Swordsman）；本节点挂在 Visual 下，默认向上两层。
 @export var actor_path: NodePath = ^"../.."
 ## true = 每帧读宿主 motion()（正式角色）；false = 外部用 advance_state() 显式驱动（预览）。
 @export var auto_read_actor: bool = true
-## 一个 walk 步周期覆盖的距离（米）：播放速率 = 速度 / 该值。
-@export var walk_stride_meters: float = 1.6
-## 一个 run 步周期覆盖的距离（米）。
-@export var run_stride_meters: float = 3.2
+## walk 动作以**原速**（播放速率 1.0）播放时对应的移动速度（米/秒）。
+## 契约：播放速率 = 实际速度 / 该值。实测 1.288 m/s（见 tools/art/measure_clip_stride.py）。
+@export var walk_reference_mps: float = 1.288
+## run 动作以原速播放时对应的移动速度（米/秒）。实测 3.426 m/s。
+@export var run_reference_mps: float = 3.426
 ## 御剑前倾（弧度）。
 @export var flight_lean: float = 0.21
 
+## 动作切换阈值（米/秒）：取在两档实际速度之间，使按住/松开加速键时真的切换 clip。
+## 走 1.55 m/s、跑 3.45 m/s（见 SwordsmanMotionComponent），阈值取其间。
 const WALK_SPEED_MPS := 0.3
-const RUN_SPEED_MPS := 5.5
+const RUN_SPEED_MPS := 2.2
 const BLEND := 0.15
 const IDLE_FLIGHT_RATE := 0.6
 
@@ -133,10 +140,10 @@ func advance_state(state: Dictionary, delta: float) -> void:
 		target = "jump"
 	elif speed > RUN_SPEED_MPS:
 		target = "run"
-		rate = speed / maxf(run_stride_meters, 0.01)
+		rate = speed / maxf(run_reference_mps, 0.01)
 	elif speed > WALK_SPEED_MPS:
 		target = "walk"
-		rate = speed / maxf(walk_stride_meters, 0.01)
+		rate = speed / maxf(walk_reference_mps, 0.01)
 	else:
 		target = "idle"
 
@@ -146,7 +153,9 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	# 切换动作的第一帧也必须同步播放速率；否则每次 idle -> walk/run 都会以旧速率播放一帧，
 	# 在低帧率或反复起停时形成可见脚步脉冲。
 	if target == "walk" or target == "run":
-		_player.speed_scale = clampf(rate, 0.5, 2.5)
+		# 实测步幅已让 rate 在正常速度下 ≈1.0，因此夹取带收窄：过大的上限只会在极端速度下
+		# 把动作拉成「快放」，反而更假。0.6–1.8 覆盖走跑全速域且不破坏节奏。
+		_player.speed_scale = clampf(rate, 0.6, 1.8)
 	else:
 		_player.speed_scale = rate
 
