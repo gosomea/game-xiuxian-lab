@@ -76,8 +76,9 @@ func _run() -> void:
 		quit(1)
 		return
 	if _verify == "rig":
-		await _verify_rig()
-		quit(0)
+		# 表现层验证的失败必须变成非零退出码：旧实现只 push_error 后 return，
+		# 调用方随后 quit(0)，缺表现节点时静默变绿（假绿）。
+		quit(0 if await _verify_rig() else 1)
 		return
 	_apply_diag(world_env, sun)
 	_apply_overrides(world_env, sun)
@@ -93,68 +94,82 @@ func _run() -> void:
 	quit(0)
 
 
-## 角色表现验证：真实按键行走，分两个时刻采样分件枢轴的 transform。
-## 只读枢轴、只看表现层；不写任何玩法字段，不替代 QA 的物理矩阵。
-func _verify_rig() -> void:
-	var actor := current_scene.find_children("*", "CharacterBody3D", true, false)
-	if actor.is_empty():
+## 角色表现验证：真实按键行走，用 clip / 播放位置语义取证骨骼动作真的在跑。
+## 只读表现层公开 API（pose_state / AnimationPlayer），不写任何玩法字段，不替代 QA 的物理矩阵。
+##
+## v9 人物是单网格骨骼角色：没有腿/臂程序化枢轴，旧版读 _legs/_arms 的取证已失效。
+## 返回 true = 全部取证项通过；任何一项不通过返回 false，调用方转成非零退出码。
+## push_error 只用于让失败在日志里显眼，判据一律以返回值交给调用方。
+func _verify_rig() -> bool:
+	var actors := current_scene.find_children("*", "CharacterBody3D", true, false)
+	if actors.is_empty():
 		push_error("RIGCHECK 场景缺少角色")
-		return
+		print("RIGCHECK RESULT FAIL")
+		return false
+	var actor := actors[0] as Node3D
 	var presentation := _find_presentation(current_scene)
 	if presentation == null:
-		push_error("RIGCHECK 未找到 CultivatorPresentation 节点")
-		return
-	var legs: Array = [presentation.get("_legs")[0], presentation.get("_legs")[1]]
-	var arms: Array = [presentation.get("_arms")[0], presentation.get("_arms")[1]]
-	print("RIGCHECK pivots legs=%d arms=%d" % [legs.size(), arms.size()])
-	var before_leg: Array[Transform3D] = []
-	var before_arm: Array[Transform3D] = []
-	for index in range(2):
-		before_leg.append((legs[index] as Node3D).transform)
-		before_arm.append((arms[index] as Node3D).transform)
-	print("RIGCHECK t0 leg0=%s leg1=%s" % [_fmt(before_leg[0]), _fmt(before_leg[1])])
-	print("RIGCHECK t0 arm0=%s arm1=%s" % [_fmt(before_arm[0]), _fmt(before_arm[1])])
-	# 真实按键前进：走起来才能推进步态相位。
+		push_error("RIGCHECK 未找到 CultivatorSkeletonPresentation 节点")
+		print("RIGCHECK RESULT FAIL")
+		return false
+	var player := _animation_player(presentation)
+	if player == null:
+		push_error("RIGCHECK 表现层子树未取到唯一 AnimationPlayer")
+		print("RIGCHECK RESULT FAIL")
+		return false
+	var clips := PackedStringArray()
+	for clip in ["idle", "walk", "run", "jump"]:
+		if player.has_animation(clip):
+			clips.append(clip)
+	print("RIGCHECK clips=%s" % str(clips))
+	var start_position := actor.global_position
+	var before := presentation.call("pose_state") as Dictionary
+	print("RIGCHECK t0 clip=%s phase=%.4f clip_len=%.4f" % [
+		str(before.get("current_clip", "")), float(before.get("phase", 0.0)),
+		player.current_animation_length])
+	# 真实按键前进：走起来才能推进步态播放位置。
 	_key(KEY_D, true)
 	await _frames_wait(30)
-	var moved := ((actor[0] as Node3D).global_position)
 	_key(KEY_D, false)
-	var after_leg: Array[Transform3D] = []
-	var after_arm: Array[Transform3D] = []
-	for index in range(2):
-		after_leg.append((legs[index] as Node3D).transform)
-		after_arm.append((arms[index] as Node3D).transform)
-	print("RIGCHECK t1 leg0=%s leg1=%s" % [_fmt(after_leg[0]), _fmt(after_leg[1])])
-	print("RIGCHECK t1 arm0=%s arm1=%s" % [_fmt(after_arm[0]), _fmt(after_arm[1])])
-	var leg0_delta := before_leg[0].origin.distance_to(after_leg[0].origin) + absf(before_leg[0].basis.get_euler().x - after_leg[0].basis.get_euler().x)
-	var leg1_delta := before_leg[1].origin.distance_to(after_leg[1].origin) + absf(before_leg[1].basis.get_euler().x - after_leg[1].basis.get_euler().x)
-	var arm0_delta := before_arm[0].origin.distance_to(after_arm[0].origin) + absf(before_arm[0].basis.get_euler().x - after_arm[0].basis.get_euler().x)
-	var arm1_delta := before_arm[1].origin.distance_to(after_arm[1].origin) + absf(before_arm[1].basis.get_euler().x - after_arm[1].basis.get_euler().x)
-	print("RIGCHECK delta leg0=%.5f leg1=%.5f arm0=%.5f arm1=%.5f" % [leg0_delta, leg1_delta, arm0_delta, arm1_delta])
-	# 两腿必须反相，否则是同一份枢轴被复制而不是真实步态。
-	var leg0_rot: float = (legs[0] as Node3D).rotation.x
-	var leg1_rot: float = (legs[1] as Node3D).rotation.x
-	var opposite := signf(leg0_rot) != signf(leg1_rot) or absf(leg0_rot + leg1_rot) < 0.02
-	print("RIGCHECK opposite=%s (leg0=%.4f leg1=%.4f)" % [str(opposite), leg0_rot, leg1_rot])
-	var ok := leg0_delta > 0.0005 and leg1_delta > 0.0005 and arm0_delta > 0.0005 and arm1_delta > 0.0005 and opposite
+	var travelled := actor.global_position.distance_to(start_position)
+	var after := presentation.call("pose_state") as Dictionary
+	print("RIGCHECK t1 clip=%s phase=%.4f clip_len=%.4f moved=%.3f" % [
+		str(after.get("current_clip", "")), float(after.get("phase", 0.0)),
+		player.current_animation_length, travelled])
+	var phase_delta := absf(float(after.get("phase", 0.0)) - float(before.get("phase", 0.0)))
+	print("RIGCHECK delta phase=%.5f speed_scale=%.3f" % [phase_delta, player.speed_scale])
+	var walked_clip := str(after.get("current_clip", "")) == "walk"
+	var advanced := phase_delta > 0.02
+	var moved := travelled > 0.2
+	var player_playing := player.is_playing()
+	print("RIGCHECK walk_clip=%s advanced=%s moved=%s playing=%s" % [
+		str(walked_clip), str(advanced), str(moved), str(player_playing)])
+	# 停步后必须回到 idle：只在走动时取证会把「永远停在 walk」当成通过。
+	await _frames_wait(40)
+	var settled := presentation.call("pose_state") as Dictionary
+	var idle_clip := str(settled.get("current_clip", "")) == "idle"
+	print("RIGCHECK stop clip=%s speed=%.3f" % [
+		str(settled.get("current_clip", "")), float(settled.get("speed", -1.0))])
+	var ok := walked_clip and advanced and moved and player_playing and idle_clip
 	print("RIGCHECK RESULT %s" % ("PASS" if ok else "FAIL"))
-	# 手/脚必须在角色附近：枢轴世界位置与角色根的水平距离不应出现离体漂移。
-	for group in [legs, arms]:
-		for node in group:
-			var offset := (node as Node3D).global_position - (actor[0] as Node3D).global_position
-			if offset.length() > 3.0:
-				print("RIGCHECK FAIL detached pivot %s offset=%.2f" % [(node as Node3D).name, offset.length()])
+	if not ok:
+		push_error("RIGCHECK 角色骨骼表现取证未通过（walk_clip=%s advanced=%s moved=%s playing=%s idle_clip=%s）"
+			% [str(walked_clip), str(advanced), str(moved), str(player_playing), str(idle_clip)])
+	return ok
+
+
+## 表现层子树里的唯一 AnimationPlayer；不足或不止一个都返回 null（不猜哪一个在驱动画面）。
+func _animation_player(presentation: Node) -> AnimationPlayer:
+	var scope: Node = presentation.get_parent() if presentation.get_parent() != null else presentation
+	var players: Array[Node] = scope.find_children("*", "AnimationPlayer", true, false)
+	return players[0] as AnimationPlayer if players.size() == 1 else null
 
 
 func _find_presentation(root_node: Node) -> Node:
 	for node in root_node.find_children("*", "Node3D", true, false):
-		if node.get_script() != null and str(node.get_script().resource_path).ends_with("cultivator_presentation.gd"):
+		if node.get_script() != null and str(node.get_script().resource_path).ends_with("cultivator_skeleton_presentation.gd"):
 			return node
 	return null
-
-
-func _fmt(xform: Transform3D) -> String:
-	return "(%.3f,%.3f,%.3f)" % [xform.origin.x, xform.origin.y, xform.origin.z]
 
 
 func _key(code: Key, pressed: bool) -> void:

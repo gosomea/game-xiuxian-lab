@@ -1,0 +1,17 @@
+# Phase 2 上传失败证据 · 尝试 2：lowpoly FBX（216,774 tri / 8.16 MB）
+# 上传件: exports/cultivator_tripo_v9_mixamo_lowpoly.fbx  sha256 见 lowpoly_manifest.json
+# driver: mcp/mixamo/mixamo_driver_phase1.py
+# 结果: 停在 "Processing upload"，未进入 marker 页；本轮 6 分钟窗口内未推进，被主代理终止
+
+Session active.
+LOGGED_IN True
+UPLOAD ../../docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_lowpoly.fbx
+STATE processing Uploading... 0
+STATE review Processing upload Your character is processing. This should take less than half a minute. 
+(killed after ~12 min total, no transition to STATE markers)
+
+# 页面活性实测（每 10-15s 采样 pid cpu_time）：
+#   pid=31372 cpu_time 0:57.44 -> 3:24.33  (持续 +28% CPU)
+#   pid=31381 cpu_time 0:32.42 -> 1:42.90  (持续 +14% CPU)
+# 即浏览器在持续工作但始终不完成；页面自称 "less than half a minute"，与 12 分钟实测矛盾。
+# 尝试 1（标准 FBX 599,417 tri / 22.1 MB）同样停在 review/Processing upload 约 15 分钟。

@@ -1,12 +1,12 @@
 extends RefCounted
-## 青玉纸白样板的真人骨骼动作接线回归测试（v7 中性动画底座）。
+## 青玉纸白样板的骨骼动作接线回归测试（v9 现役人物）。
 ##
-## 覆盖真实入口而非孤立资源：样板实例化 Swordsman 时必须在入树前把默认分件 Visual
-## 换成 v7 中性动画底座视觉（无仙侠衣装）；ActorAssembly 随后仍应把 FlyingSword
-## 装到新 Visual 下。动作映射只经公开 advance_state()/pose_state() 读写，
+## 覆盖真实入口而非孤立资源：样板直接实例化 Swordsman，其 Visual 即共享的 v9 视觉，
+## 样板**不再**做任何场景侧视觉替换（v7 特例已移除）；ActorAssembly 仍把 FlyingSword
+## 装到同一 Visual 下。动作映射只经公开 advance_state()/pose_state() 读写，
 ## 不访问表现层私有字段。
 ##
-## 依据 notes/proposed/art/2026-09-19-neutral-youth-animation-base-v7.md。
+## 依据 notes/implemented/art/2026-09-19-cultivator-tripo-v9-runtime.md。
 
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
 const EPSILON := 0.0001
@@ -25,17 +25,19 @@ static func run(t) -> void:
 		return
 	var visual := actor.get_node_or_null("Visual") as Node3D
 	t.assert_true(visual != null, "骨骼视觉保持角色公开节点名 Visual")
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorNeutralYouthV7") != null,
-		"样板正式运行路径装入 v7 中性动画底座模型")
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorTripoV9") != null,
+		"样板正式运行路径装入 v9 人物模型")
 	t.assert_true(actor.get_node_or_null("Visual/Cultivator") == null,
 		"样板不再保留旧分件模型")
 	t.assert_true(actor.get_node_or_null("Visual/CultivatorRigged") == null,
-		"样板不再加载旧青玉长袍骨骼模型（保留为回退资产，不接入运行时）")
+		"样板不加载旧青玉长袍骨骼模型（保留为回退资产，不接入运行时）")
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorNeutralYouthV7") == null,
+		"样板不再做 v7 场景侧视觉替换（保留为回退资产，不接入运行时）")
 	var presentation := actor.get_node_or_null(
 		"Visual/CultivatorSkeletonPresentation") as CultivatorSkeletonPresentation
 	t.assert_true(presentation != null, "样板装入骨骼表现层")
 	t.assert_true(actor.get_node_or_null("Visual/FlyingSword") != null,
-		"入树前替换后 ActorAssembly 仍把飞剑装到新 Visual")
+		"ActorAssembly 仍把飞剑装到共享 Visual 下")
 	if presentation == null:
 		return
 	var players := visual.find_children("*", "AnimationPlayer", true, false)
@@ -43,8 +45,26 @@ static func run(t) -> void:
 	if players.size() != 1:
 		return
 	var animation_player := players[0] as AnimationPlayer
+	var skeletons := visual.find_children("*", "Skeleton3D", true, false)
+	t.assert_eq(skeletons.size(), 1, "v9 骨骼视觉恰好一个 Skeleton3D")
 	for clip in ["idle", "walk", "run", "jump"]:
 		t.assert_true(animation_player.has_animation(clip), "骨骼动作库包含 %s" % clip)
+
+	# 导入的 glTF clip 默认 LOOP_NONE；表现层必须把持续动作改成线性循环、jump 保持单次，
+	# 否则 idle/walk/run 播完一个周期就停在末帧，而状态快照仍报当前 gait。
+	for clip in ["idle", "walk", "run"]:
+		t.assert_eq(animation_player.get_animation(clip).loop_mode, Animation.LOOP_LINEAR,
+			"%s 为线性循环（否则一个周期后静止）" % clip)
+	t.assert_eq(animation_player.get_animation("jump").loop_mode, Animation.LOOP_NONE,
+		"jump 保持单次播放")
+
+	# 播放位置必须真的随时间推进（v9 是骨骼 clip 驱动，phase 即 current_animation_position）。
+	animation_player.play("walk")
+	var phase_before := animation_player.current_animation_position
+	animation_player.advance(0.2)
+	var phase_after := animation_player.current_animation_position
+	t.assert_true(phase_after > phase_before,
+		"walk 播放位置随时间推进（%.4f -> %.4f）" % [phase_before, phase_after])
 
 	_assert_action_mapping(t, presentation, animation_player)
 

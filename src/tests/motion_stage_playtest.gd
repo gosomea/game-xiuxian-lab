@@ -19,9 +19,14 @@ extends SceneTree
 const SCENE := "res://levels/experiments/character_movement/motion_stage.tscn"
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTOR_SOURCE := "res://game/actors/swordsman/swordsman.gd"
-const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_presentation.gd"
+const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_skeleton_presentation.gd"
 const ACTOR_SCENE_SOURCE := "res://game/actors/swordsman/swordsman.tscn"
-const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_visual.tscn"
+const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_tripo_v9_visual.tscn"
+## 表现节点路径：v9 起共享视觉装配的是 CultivatorSkeletonPresentation（骨骼 clip 版），
+## 旧 Visual/CultivatorPresentation（分件刚体版）已随共享链退场。
+const PRESENTATION_NODE_PATH := "Visual/CultivatorSkeletonPresentation"
+## 角色视觉根路径：朝向与御剑前倾都写在它身上。
+const ACTOR_VISUAL_PATH := "Visual"
 ## 工作台的固定返回目标（同提交依赖，不设顶层目录回退）。
 const MOVEMENT_HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 ## 三份能力脚本本体；actor 根是唯一物理提交点，不在其中。
@@ -160,7 +165,8 @@ func _batch_assembly() -> void:
 	for expected in EXPECTED_CAPABILITIES:
 		_check(names.has(expected), "能力装配包含 %s（实际 %s）" % [expected, str(names)])
 	_check(_actor.get_node_or_null("SwordsmanMotionComponent") != null, "角色挂载 SwordsmanMotionComponent")
-	_check(_actor.get_node_or_null("Visual/CultivatorPresentation") != null, "角色挂载表现节点 CultivatorPresentation")
+	_check(_actor.get_node_or_null(PRESENTATION_NODE_PATH) != null,
+		"角色挂载表现节点 CultivatorSkeletonPresentation")
 
 	# 唯一物理提交点：只有 actor 根调用 move_and_slide，工作台脚本与能力都不提交物理。
 	# 注释与字符串里的说明文字不算调用，只统计真实代码行。
@@ -232,11 +238,24 @@ func _batch_idle() -> void:
 	_check(_motion.actual_velocity.length() < 0.05, "无输入时实际速度为零（%.3f）" % _motion.actual_velocity.length())
 	_check(_motion.on_floor, "无输入时保持着地")
 	_check(float(pose.get("gait", 1.0)) < 0.05, "待机时步态增益归零（%.3f）" % float(pose.get("gait", 1.0)))
-	_check(absf(float(pose.get("leg_left", 1.0))) < 0.03, "待机时腿部枢轴回到静止位（%.3f）" % float(pose.get("leg_left", 1.0)))
+	# v9 人物是骨骼 clip 驱动，没有程序化枢轴可读；「站在原地不动」改用 clip 语义断言：
+	# 零速着地必须映射到 idle，且不产生世界位移。
+	_check(str(pose.get("current_clip", "")) == "idle",
+		"待机时映射到 idle clip（实际 %s）" % str(pose.get("current_clip", "")))
+	var anchor := _actor.global_position
+	# idle 是线性循环动作，播放位置持续推进——这正是「有动作在播且没停在末帧」的可观察证据
+	# （若 loop_mode 退回 glTF 默认的 LOOP_NONE，一个周期后 phase 会变成常数）。
 	var first_phase := float(pose.get("phase", 0.0))
 	await _frames(10)
 	var second_phase := float(_pose().get("phase", 0.0))
-	_check(is_equal_approx(first_phase, second_phase), "待机时相位不推进（%.3f -> %.3f）" % [first_phase, second_phase])
+	_check(not is_equal_approx(first_phase, second_phase),
+		"待机时 idle 播放位置持续推进（%.3f -> %.3f）" % [first_phase, second_phase])
+	# 快照的 phase 必须就是真实播放位置，否则读数与画面分叉。
+	var player := _animation_player()
+	_check(player != null and player.current_animation == "idle",
+		"表现层实际播放中的 clip 是 idle（实际 %s）" % (player.current_animation if player != null else "<无播放器>"))
+	_check(_actor.global_position.distance_to(anchor) < POS_TOL,
+		"待机不产生位移（%.4f m）" % _actor.global_position.distance_to(anchor))
 
 
 # --- 批次：跑动与停下归零 ---------------------------------------------------
@@ -263,19 +282,36 @@ func _batch_run() -> void:
 	_check(travelled.normalized().dot(_motion.camera_right) > 0.9,
 		"D 位移沿相机右方（dot=%.3f）" % travelled.normalized().dot(_motion.camera_right))
 	_check(float(pose_a.get("gait", 0.0)) > 0.6, "跑动时步态增益升到高位（%.3f）" % float(pose_a.get("gait", 0.0)))
+	_check(str(pose_a.get("current_clip", "")) == "walk",
+		"步行速度 4.0 m/s 映射到 walk clip（实际 %s）" % str(pose_a.get("current_clip", "")))
 	var phase_delta := absf(float(pose_b.get("phase", 0.0)) - float(pose_a.get("phase", 0.0)))
 	_check(phase_delta > 0.05 or absf(phase_delta - TAU) < 0.05,
 		"两个时间点的步态相位不同（Δ=%.3f）证明动作在变化" % phase_delta)
-	var leg_delta := absf(float(pose_b.get("leg_left", 0.0)) - float(pose_a.get("leg_left", 0.0)))
-	_check(leg_delta > 0.005, "两个时间点左腿枢轴角度不同（Δ=%.4f）" % leg_delta)
+	# 播放位置必须来自真实 AnimationPlayer（快照 phase 与播放器逐位一致），
+	# 而不是表现层自造的计数；同源是「画面与读数不分叉」的前提。
+	var player := _animation_player()
+	_check(player != null and player.current_animation == "walk",
+		"跑动表现层实际播放 walk clip（实际 %s）" % (player.current_animation if player != null else "<无播放器>"))
+	var player_position := player.current_animation_position if player != null else -1.0
+	_check(player != null and absf(player_position - float(pose_b.get("phase", -2.0))) < 0.0001,
+		"快照 phase 就是 AnimationPlayer 播放位置（%.4f vs %.4f）" % [
+			player_position, float(pose_b.get("phase", -2.0))])
 
-	# 停下归零：速度、步态与枢轴角都回到静止。
+	# 停下归零：速度、步态与播放速率都回到静止。
 	await _frames(30)
 	var resting := _pose()
 	_check(_motion.actual_velocity.length() < 0.05, "松开按键后速度归零（%.3f）" % _motion.actual_velocity.length())
 	_check(float(resting.get("gait", 1.0)) < 0.05, "停下后步态增益归零（%.3f）" % float(resting.get("gait", 1.0)))
-	_check(absf(float(resting.get("leg_left", 1.0))) < 0.03,
-		"停下后腿部枢轴回到静止位（%.3f）" % float(resting.get("leg_left", 1.0)))
+	_check(str(resting.get("current_clip", "")) == "idle",
+		"停下后映射回 idle clip（实际 %s）" % str(resting.get("current_clip", "")))
+	# 停步不再按步幅追赶：walk 时播放速率被实际速度同步同步到 4.0 / 1.6 = 2.5，停下必须回到 1.0。
+	_check(player != null and absf(player.speed_scale - 1.0) < 0.05,
+		"停下后播放速率回到 1.0（实际 %.3f）" % (player.speed_scale if player != null else -1.0))
+	await _frames(6)
+	var idle_length := player.get_animation("idle").length if player != null else -1.0
+	_check(player != null and float(_pose().get("phase", -1.0)) < idle_length,
+		"停步后播放位置仍在 idle 循环内（%.3f < %.3f）" % [
+			float(_pose().get("phase", -1.0)), idle_length])
 	_check(_motion.on_floor, "跑动停止后仍着地")
 
 	# 斜向输入不超过组件速度上限（屏幕相对输入归一化）。
@@ -307,11 +343,15 @@ func _batch_turn() -> void:
 	var d_velocity := _motion.actual_velocity
 	_key(KEY_D, false)
 	var d_end := _actor.global_position
+	# v9 没有程序化 turn 增益；转身是真实的视觉朝向（Swordsman 按 aim 写 Visual.rotation.y，
+	# 模型局部 +Z 为正面）。因此用朝向角随输入反向的变化量作为可观察量。
+	var visual := _visual_node()
+	var yaw_before_reversal := visual.rotation.y
 	_key(KEY_A, true)
 	var peak := 0.0
 	for index in range(12):
 		await _frames(1)
-		peak = maxf(peak, float(_pose().get("turn", 0.0)))
+		peak = maxf(peak, absf(angle_difference(yaw_before_reversal, _visual_node().rotation.y)))
 	var a_velocity := _motion.actual_velocity
 	var a_travel := _actor.global_position - d_end
 	_key(KEY_A, false)
@@ -327,13 +367,19 @@ func _batch_turn() -> void:
 		d_speed.length(), a_speed.length()])
 	_check(d_speed.dot(a_speed) < 0.0, "A 段速度与 D 段速度反号（点积 %.2f）" % d_speed.dot(a_speed))
 	_check(d_horizontal.dot(a_horizontal) < 0.0, "A 段位移与 D 段位移反号（点积 %.2f）" % d_horizontal.dot(a_horizontal))
-	_check(peak > 0.05, "方向反转触发转身响应（峰值 %.3f）" % peak)
+	_check(peak > 0.5, "方向反转驱动角色朝向真实转身（峰值 %.3f rad）" % peak)
 	var reversal_drift := Vector2(_actor.global_position.x + 11.5, _actor.global_position.z - 5.0).length()
 	_check(reversal_drift <= 3.0, "急转后角色仍在八方向盘内（离盘心 %.2f m）" % reversal_drift)
 	_check(_motion.on_floor, "急转后仍着地")
 	await _frames(24)
 	var settled := _pose()
-	_check(float(settled.get("turn", 1.0)) < 0.02, "转身响应衰减回零（%.3f）" % float(settled.get("turn", 1.0)))
+	# 转身到位后朝向不再抖动（表现层只在 aim 变化时写 rotation.y）。
+	var settled_yaw := _visual_node().rotation.y
+	await _frames(8)
+	_check(absf(angle_difference(settled_yaw, _visual_node().rotation.y)) < 0.02,
+		"转身到位后朝向稳定（Δ=%.4f rad）" % absf(angle_difference(settled_yaw, _visual_node().rotation.y)))
+	_check(str(settled.get("current_clip", "")) == "idle",
+		"急转结束后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
 	_check(float(settled.get("gait", 1.0)) < 0.05, "停下后步态归零（%.3f）" % float(settled.get("gait", 1.0)))
 
 	# 八方向区：八个方向都能驱动角色（真实输入，逐向验证位移）。
@@ -365,37 +411,54 @@ func _batch_jump() -> void:
 	_place(Vector3(-6.0, 0.05, 0.0))
 	await _frames(6)
 	var ground_y := _actor.global_position.y
+	# 起跳前先确认静止态是 idle：落地归零断言需要与出态对照，不能只看末态一个读数。
+	_check(str(_pose().get("current_clip", "")) == "idle",
+		"起跳前静止态为 idle clip（实际 %s）" % str(_pose().get("current_clip", "")))
 	_key(KEY_SPACE, true)
 	await _frames(1)
 	_key(KEY_SPACE, false)
-	var airborne_peak := 0.0
+	# v9 是四 clip 骨骼表现层，没有 airborne / landing 这类程序化增益；
+	# 腾空与落地的可观察量是 current_clip（jump ↔ idle）与快照里的 grounded 布尔。
+	var saw_jump_clip := false
+	var saw_airborne := false
+	var jump_clip_frames := 0
 	var apex := ground_y
-	var rise_tuck := 0.0
-	var landing_peak := 0.0
+	var max_rise_vertical := -INF
 	var land_frames := 0
+	var landed_pose := {}
 	for index in range(90):
 		await _frames(1)
 		var pose := _pose()
-		airborne_peak = maxf(airborne_peak, float(pose.get("airborne", 0.0)))
+		if not bool(pose.get("grounded", true)):
+			saw_airborne = true
+		if str(pose.get("current_clip", "")) == "jump":
+			saw_jump_clip = true
+			jump_clip_frames += 1
+			max_rise_vertical = maxf(max_rise_vertical, float(pose.get("vertical_speed", 0.0)))
 		apex = maxf(apex, _actor.global_position.y)
-		if float(pose.get("airborne", 0.0)) > 0.5:
-			rise_tuck = maxf(rise_tuck, float(pose.get("leg_right", 0.0)) - float(pose.get("leg_left", 0.0)))
-		landing_peak = maxf(landing_peak, float(pose.get("landing", 0.0)))
 		if _motion.on_floor:
 			land_frames += 1
-			if land_frames >= 3:
-				break
+			if land_frames >= 3 and landed_pose.is_empty():
+				landed_pose = pose
 		else:
 			land_frames = 0
-	_check(airborne_peak > 0.5, "跳起后表现层进入腾空姿态（峰值 %.3f）" % airborne_peak)
+			landed_pose = {}
+	_check(saw_airborne, "跳起后表现层快照进入非着地状态")
+	_check(saw_jump_clip, "跳起后表现层映射到 jump clip")
+	_check(jump_clip_frames >= 3, "腾空段持续数个物理帧播放 jump clip（%d 帧）" % jump_clip_frames)
+	_check(max_rise_vertical > 1.0, "腾空段快照回报真实上升竖速（峰值 %.2f m/s）" % max_rise_vertical)
 	_check(apex - ground_y > 0.6, "跳跃产生真实高度（Δy=%.2f）" % (apex - ground_y))
-	_check(landing_peak > 0.3, "落地触发压缩脉冲（峰值 %.3f）" % landing_peak)
+	_check(not landed_pose.is_empty() and str(landed_pose.get("current_clip", "")) == "idle",
+		"落地重新着地并映射回 idle clip（实际 %s）" % str(landed_pose.get("current_clip", "")))
 	_check(_motion.on_floor, "跳跃后重新着地")
-	var resting := _pose()
 	await _frames(20)
-	resting = _pose()
-	_check(float(resting.get("airborne", 1.0)) < 0.05, "落地后腾空增益归零（%.3f）" % float(resting.get("airborne", 1.0)))
-	_check(float(resting.get("landing", 1.0)) < 0.05, "落地脉冲衰减归零（%.3f）" % float(resting.get("landing", 1.0)))
+	var resting := _pose()
+	_check(str(resting.get("current_clip", "")) == "idle",
+		"落地稳定后保持 idle clip（实际 %s）" % str(resting.get("current_clip", "")))
+	_check(bool(resting.get("grounded", false)) and absf(float(resting.get("vertical_speed", 1.0))) < 0.05,
+		"落地稳定后着地且竖速归零（rounded=%s vy=%.3f）" % [
+			str(resting.get("grounded", false)), float(resting.get("vertical_speed", 1.0))])
+	_check(land_frames >= 3, "落地后连续着地帧数达标（%d）" % land_frames)
 
 	# 按住空格不连跳：起跳边沿只产生一次高度峰值。
 	_place(Vector3(-6.0, 0.05, 0.0))
@@ -430,14 +493,19 @@ func _batch_flight() -> void:
 	await _frames(8)
 	_check(_motion.flight_active, "F 开启御剑")
 	_check(sword != null and sword.visible, "御剑时剑可见")
-	_check(float(_pose().get("flight", 0.0)) > 0.3, "表现层进入御剑姿态（%.3f）" % float(_pose().get("flight", 0.0)))
+	# v9 御剑映射到慢速 idle + 模型前倾（不新增第五个 clip）；flying 布尔是公开可观察量。
+	_check(bool(_pose().get("flying", false)), "表现层快照写入御剑状态")
+	_check(str(_pose().get("current_clip", "")) == "idle",
+		"御剑映射到 idle clip（实际 %s）" % str(_pose().get("current_clip", "")))
 
 	# 地面启动后进入爬升：按 Space 持续上升。
 	_key(KEY_SPACE, true)
 	await _frames(20)
 	var climbing := _pose()
 	_check(_motion.actual_velocity.y > 1.0, "御剑按 Space 上升（vy=%.2f）" % _motion.actual_velocity.y)
-	_check(float(climbing.get("flight", 0.0)) > 0.8, "上升时御剑增益饱和（%.3f）" % float(climbing.get("flight", 0.0)))
+	_check(bool(climbing.get("flying", false)) and float(climbing.get("vertical_speed", 0.0)) > 1.0,
+		"上升时快照同时报告御剑与正竖速（flying=%s vy=%.2f）" % [
+			str(climbing.get("flying", false)), float(climbing.get("vertical_speed", 0.0))])
 	var high_y := _actor.global_position.y
 	_key(KEY_SPACE, false)
 	# 悬停：松开升降键且没有水平输入时竖直速度为零。
@@ -468,13 +536,22 @@ func _batch_flight() -> void:
 	var pose_a := _pose()
 	await _frames(6)
 	var pose_b := _pose()
-	_check(float(pose_a.get("flight", 0.0)) > 0.9 and float(pose_b.get("flight", 0.0)) > 0.9,
-		"悬停期间御剑增益保持饱和")
-	_check(absf(float(pose_b.get("body_pitch", 0.0))) > 0.02,
-		"御剑前倾体现在躯干俯仰（%.4f）" % float(pose_b.get("body_pitch", 0.0)))
-
-	# 关飞：同帧恢复重力，落地并触发落地过渡。
-	# 先升到有降落过程的高度，再关飞；落地脉冲在着地后才产生，
+	_check(bool(pose_a.get("flying", false)) and bool(pose_b.get("flying", false)),
+		"悬停期间快照持续报告御剑状态")
+	_check(bool(pose_b.get("flying", false)) and absf(float(pose_b.get("vertical_speed", 1.0))) < 0.05,
+		"悬停时快照竖速归零（vy=%.3f）" % float(pose_b.get("vertical_speed", 1.0)))
+	# 御剑前倾：骨骼表现层把前倾写在模型节点的 rotation.x（与刚体版 body_pitch 同语义），
+	# 不是 pose_state() 的字段——因此这里读真实节点变换，而不是读一个不存在的键。
+	var visual := _visual_node()
+	_check(absf(visual.rotation.x) > 0.02,
+		"御剑前倾体现在模型节点 rotation.x（%.4f rad）" % visual.rotation.x)
+	# 前倾幅度必须收敛到表现层导出的 flight_lean，而不是任意的非零角度。
+	var lean_while_flying := visual.rotation.x
+	var expected_lean := float(_stage.presentation().get("flight_lean"))
+	_check(absf(lean_while_flying + expected_lean) < 0.02,
+		"御剑前倾收敛到 flight_lean 导出值（%.4f vs %.4f）" % [-lean_while_flying, expected_lean])
+	# 关飞：同帧恢复重力，落地并回到 idle。
+	# 先升到有降落过程的高度，再关飞；落地读数必须在着地后才产生，
 	# 因此检测到着地后必须继续采样若干帧，不能在第一帧就跳出。
 	_place(Vector3(-6.0, 0.05, 0.0))
 	await _frames(4)
@@ -486,34 +563,47 @@ func _batch_flight() -> void:
 	await _frames(4)
 	var flight_height := _actor.global_position.y
 	_check(flight_height > 2.0, "关飞前悬停在 %.2f m" % flight_height)
+	_check(absf(_visual_node().rotation.x) > 0.02, "关飞前模型保持御剑前倾")
 	_toggle_flight()
 	await _frames(4)
 	_check(not _motion.flight_active, "再按 F 关闭御剑")
-	var landing_peak := 0.0
 	var grounded := false
+	var descent_vertical := 0.0
+	var descended_frames := 0
 	for index in range(200):
 		await _frames(1)
-		landing_peak = maxf(landing_peak, float(_pose().get("landing", 0.0)))
+		var pose := _pose()
+		if not bool(pose.get("grounded", true)):
+			descent_vertical = minf(descent_vertical, float(pose.get("vertical_speed", 0.0)))
+			descended_frames += 1
 		if _motion.on_floor:
 			grounded = true
 			break
-	for index in range(12):
-		await _frames(1)
-		landing_peak = maxf(landing_peak, float(_pose().get("landing", 0.0)))
 	_check(grounded, "关闭御剑后角色落回地面（从 %.2f m）" % flight_height)
-	_check(landing_peak > 0.3, "关飞落地触发压缩脉冲（峰值 %.3f）" % landing_peak)
+	_check(descent_vertical < -1.0 and descended_frames > 0,
+		"关飞后经历真实下落段（最低竖速 %.2f m/s，%d 帧腾空）" % [descent_vertical, descended_frames])
 	await _frames(20)
-	_check(float(_pose().get("flight", 1.0)) < 0.05, "落地后御剑增益归零（%.3f）" % float(_pose().get("flight", 1.0)))
+	var settled := _pose()
+	_check(not bool(settled.get("flying", false)), "落地后快照御剑状态归假")
+	_check(str(settled.get("current_clip", "")) == "idle",
+		"落地后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
+	_check(absf(_visual_node().rotation.x) < 0.02,
+		"落地后模型前倾归零（%.4f rad）" % _visual_node().rotation.x)
 
 	# 站立 → 御剑 → 关飞 的完整过渡在表现快照里可读。
 	_place(Vector3(-6.0, 0.05, 0.0))
 	await _frames(6)
 	var before := _pose()
+	_check(not bool(before.get("flying", false)) and absf(_visual_node().rotation.x) < 0.02,
+		"站立时无御剑状态且无前倾")
 	_toggle_flight()
 	await _frames(10)
 	var during := _pose()
-	_check(float(during.get("flight", 0.0)) > float(before.get("flight", 0.0)),
-		"站立→御剑的增益在表现快照上单调上升（%.3f -> %.3f）" % [float(before.get("flight", 0.0)), float(during.get("flight", 0.0))])
+	_check(bool(during.get("flying", false)),
+		"站立→御剑后快照翻转为御剑状态（%s -> %s）" % [
+			str(before.get("flying", false)), str(during.get("flying", false))])
+	_check(absf(_visual_node().rotation.x) > 0.02,
+		"站立→御剑后模型前倾真实建立（%.4f rad）" % _visual_node().rotation.x)
 	_toggle_flight()
 	await _frames(4)
 	_check(not _motion.flight_active, "关飞状态在组件上立即为假")
@@ -524,7 +614,8 @@ func _batch_flight() -> void:
 
 
 func _batch_landing() -> void:
-	# 空中关飞落地：从高处下降时关闭御剑，落地必须有一个压缩脉冲而不是硬着陆。
+	# 空中关飞落地：从高处下降时关闭御剑，落地过程必须在表现快照上真实可读
+	# （腾空段 + 下落竖速 + 回到 idle），而不是硬着陆后一个读数都没有。
 	_place(Vector3(-6.0, 0.05, 0.0))
 	await _frames(4)
 	_toggle_flight()
@@ -536,35 +627,41 @@ func _batch_landing() -> void:
 	var high := _actor.global_position.y
 	_check(high > 3.0, "御剑升至 %.2f m 用于落地过渡观察" % high)
 	_toggle_flight()
-	var landing_peak := 0.0
-	var airborne_seen := 0.0
+	var airborne_frame := 0
+	var min_vertical := 0.0
+	var jump_clip_seen := false
 	var grounded := false
 	for index in range(200):
 		await _frames(1)
 		var pose := _pose()
-		airborne_seen = maxf(airborne_seen, float(pose.get("airborne", 0.0)))
-		landing_peak = maxf(landing_peak, float(pose.get("landing", 0.0)))
+		if not bool(pose.get("grounded", true)):
+			airborne_frame += 1
+			min_vertical = minf(min_vertical, float(pose.get("vertical_speed", 0.0)))
+			if str(pose.get("current_clip", "")) == "jump":
+				jump_clip_seen = true
 		if _motion.on_floor:
 			grounded = true
 			break
-	for index in range(12):
-		await _frames(1)
-		landing_peak = maxf(landing_peak, float(_pose().get("landing", 0.0)))
 	_check(grounded, "空中关飞后落回地面（从 %.2f m）" % high)
-	_check(airborne_seen > 0.5, "落地前经历腾空姿态（峰值 %.3f）" % airborne_seen)
-	_check(landing_peak > 0.3, "空中落地触发压缩脉冲（峰值 %.3f）" % landing_peak)
+	_check(airborne_frame > 5, "落地前经历真实腾空段（%d 帧非着地）" % airborne_frame)
+	_check(min_vertical < -1.0, "腾空段快照回报真实下落竖速（最低 %.2f m/s）" % min_vertical)
+	_check(jump_clip_seen, "下落过程映射到 jump clip（不是硬切 idle）")
 	await _frames(24)
-	_check(float(_pose().get("landing", 1.0)) < 0.05, "落地脉冲衰减归零")
+	var settled := _pose()
+	_check(str(settled.get("current_clip", "")) == "idle",
+		"落地稳定后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
+	_check(absf(float(settled.get("vertical_speed", 1.0))) < 0.05,
+		"落地稳定后竖速归零（%.3f）" % float(settled.get("vertical_speed", 1.0)))
 	_check(_motion.on_floor and not _motion.flight_active, "落地后状态为着地且未御剑")
 
 
 func _batch_removal() -> void:
 	# 删除表现节点后三能力仍正确：移动、跳跃、御剑全部照常，且无脚本错误。
-	var presentation := _actor.get_node_or_null("Visual/CultivatorPresentation")
+	var presentation := _actor.get_node_or_null(PRESENTATION_NODE_PATH)
 	_check(presentation != null, "移除前表现节点存在")
 	presentation.queue_free()
 	await _frames(4)
-	_check(_actor.get_node_or_null("Visual/CultivatorPresentation") == null, "表现节点已从角色子树移除")
+	_check(_actor.get_node_or_null(PRESENTATION_NODE_PATH) == null, "表现节点已从角色子树移除")
 
 	_place(Vector3(-14.0, 0.05, 0.0))
 	await _frames(4)
@@ -613,7 +710,7 @@ func _batch_removal() -> void:
 
 func _batch_hud() -> void:
 	# 读数只经公开快照（stage_state / preview_snapshot / lab_hud 文本），
-	# 不读私有节点路径、不访问 _legs / _arms。
+	# 不读私有节点路径、不读 pose_state() 里不存在的键。
 	var state: Dictionary = _stage.stage_state()
 	var realtime: Dictionary = state.get("realtime", {})
 	_check(state.has("mode") and state.has("mode_name"), "stage_state() 暴露当前模式（%s）" % str(state.get("mode_name", "")))
@@ -702,10 +799,11 @@ func _batch_preview() -> void:
 
 	# 预览与正式角色共用同一模型 + 同一表现系统。
 	var visual := preview.get_node_or_null("CultivatorVisual")
-	_check(visual != null and visual.get_node_or_null("Cultivator") != null, "预览复用共享 Visual 装配的庭院模型")
+	_check(visual != null and visual.get_node_or_null("CultivatorTripoV9") != null,
+		"预览复用共享 Visual 装配的 v9 人物模型")
 	var presentation: Node = preview.presentation()
 	_check(presentation != null and str((presentation.get_script() as Script).resource_path)
-		.ends_with("cultivator_presentation.gd"), "预览复用同一表现系统脚本")
+		.ends_with("cultivator_skeleton_presentation.gd"), "预览复用同一表现系统脚本")
 	_check(presentation.get("auto_read_actor") == false, "预览表现层已切到显式 state provider 驱动")
 	# 「两条路径同脚本、不同驱动」的判据必须是批次无关的：removal 批次会删掉 actor 的表现节点，
 	# 因此这里比对正式角色 prefab 的声明（swordsman.tscn 引用的表现脚本）与预览实例实际脚本。
@@ -737,7 +835,9 @@ func _batch_preview() -> void:
 	var running_pose: Dictionary = running.get("pose", {})
 	_check(float(running.get("local_time", 0.0)) > start_time, "预览播放推进局部时钟（%.3f -> %.3f）" % [
 		start_time, float(running.get("local_time", 0.0))])
-	_check(float(running_pose.get("phase", 0.0)) > 0.0, "行走预览推进步态相位（%.3f）" % float(running_pose.get("phase", 0.0)))
+	_check(float(running_pose.get("phase", 0.0)) > 0.0, "行走预览推进播放位置（%.3f）" % float(running_pose.get("phase", 0.0)))
+	_check(str(running_pose.get("current_clip", "")) == "walk",
+		"预览选中 walk 动作时表现层报告同一 clip（实际 %s）" % str(running_pose.get("current_clip", "")))
 	var clock_sync := absf(float(running.get("local_time", 0.0)) - float(running_pose.get("clock", 0.0)))
 	_check(clock_sync < 0.1, "local_time 与表现层 clock 同步（差值 %.4f）" % clock_sync)
 
@@ -749,7 +849,7 @@ func _batch_preview() -> void:
 	_check(absf(float(paused_before.get("local_time", 0.0)) - float(paused_after.get("local_time", 0.0))) < 0.000001,
 		"暂停 30 帧后 local_time 逐位不变")
 	_check(_pose_equal(paused_before.get("pose", {}), paused_after.get("pose", {})),
-		"暂停 30 帧后完整 pose 逐字段相等（clock / phase / 增益 / 四肢）")
+		"暂停 30 帧后完整 pose 逐字段相等（clock / clip / 速度 / 状态）")
 
 	# 单步：恰好固定量，且表现层同步。
 	var step_before: Dictionary = _stage.preview_snapshot()
@@ -1616,6 +1716,28 @@ func _bind() -> void:
 
 func _pose() -> Dictionary:
 	return _stage.presentation_state()
+
+
+## 场景实际挂载的表现节点（v9：Visual/CultivatorSkeletonPresentation）。
+## 取不到返回 null——调用方必须先断言存在，不要用兜底默认值掩盖装配缺陷。
+func _presentation_node() -> Node3D:
+	return _actor.get_node_or_null(PRESENTATION_NODE_PATH) as Node3D
+
+
+## 角色视觉根：v9 的骨骼表现层把朝向（rotation.y）与御剑前倾（rotation.x）
+## 都写在 Visual 根节点上（Swordsman._face_aim 与表现层共用同一个节点）。
+func _visual_node() -> Node3D:
+	return _actor.get_node(ACTOR_VISUAL_PATH) as Node3D
+
+
+## 表现层实际驱动的 AnimationPlayer：从表现节点所在子树取，保证读到的是
+## 画面真正在播的那一个（不是另起一套预览实例）。
+func _animation_player() -> AnimationPlayer:
+	var visual := _visual_node()
+	if visual == null:
+		return null
+	var players: Array[Node] = visual.find_children("*", "AnimationPlayer", true, false)
+	return players[0] as AnimationPlayer if players.size() == 1 else null
 
 
 func _place(position: Vector3) -> void:

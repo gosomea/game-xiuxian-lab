@@ -21,3 +21,7 @@ __pycache__/
 # 父仓库默认排除 .workbuddy；本项目的 Agent 入口需要保留。
 !.workbuddy/
 !.workbuddy/skills
+
+# Playwright MCP 的会话产物：页面快照与浏览器控制台日志，属临时运行日志，可再生。
+# 不是项目资产（项目截图按资产保留规则入库，例如 docs/art/**/renders/ 与 docs/playtest/evidence/）。
+.playwright-mcp/

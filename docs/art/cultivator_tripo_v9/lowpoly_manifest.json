@@ -1,0 +1,202 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "phase2_lowpoly_build",
+  "derived_from": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend",
+  "reason": "标准上传件（599,417 tri / 22.1 MB FBX）在 Mixamo Auto-Rigger 长时间停在 'Processing upload'，未进入 marker 页；改为派生的低面上传候选。",
+  "blender": "5.2.1 LTS",
+  "started": "2026-09-20T00:01:01",
+  "target_tris": 215000,
+  "source": {
+    "blend": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend",
+    "sha256": "b0f893059e99daafae5f888d9301441ac348dbeb40b92eccbbbcbb1f513e775f",
+    "tris": 599417,
+    "verts": 331669,
+    "uv": [
+      "UVMap"
+    ],
+    "materials": [
+      "Material.001"
+    ],
+    "textures": [
+      "texture_pbr_20250901",
+      "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "texture_pbr_20250901_normal"
+    ]
+  },
+  "source_tier_census": {
+    "core_protected": 143392,
+    "soft_protected": 200231,
+    "free": 255794,
+    "total": 599417
+  },
+  "calibration": {
+    "target": 215000,
+    "tol": 4000,
+    "ratio": 0.361719,
+    "achieved_tris": 216820
+  },
+  "pre_tier_census": {
+    "core_protected": 143392,
+    "soft_protected": 200231,
+    "free": 255794,
+    "total": 599417
+  },
+  "hygiene": {
+    "before": {
+      "verts": 120023,
+      "edges": 355448,
+      "faces": 216820,
+      "tris": 216820,
+      "loose_verts": 714,
+      "loose_edges": 5660,
+      "non_manifold_edges": 54786,
+      "zero_area_faces": 0,
+      "non_finite_verts": 0
+    },
+    "after": {
+      "verts": 119233,
+      "edges": 349592,
+      "faces": 216774,
+      "tris": 216774,
+      "loose_verts": 0,
+      "loose_edges": 0,
+      "non_manifold_edges": 48872,
+      "zero_area_faces": 0,
+      "non_finite_verts": 0
+    },
+    "removed_loose_verts": 714,
+    "removed_loose_edges": 5660,
+    "removed_degenerate_faces": 0,
+    "merged_verts": 76,
+    "merge_distance_m": 1e-05
+  },
+  "height_snap": {
+    "z_scale": 1.000074528,
+    "before_height_m": 1.74987,
+    "after_height_m": 1.75,
+    "reason": "减面后身高 1.749870 m，线性归位到 1.750000 m（仅缩放 Z）"
+  },
+  "result": {
+    "tris": 216774,
+    "verts": 119233,
+    "reduction_vs_clean_percent": 63.8359,
+    "uv": {
+      "layers": 1,
+      "names": [
+        "UVMap"
+      ],
+      "u_min": 0.0003983517235610634,
+      "u_max": 0.9996010065078735,
+      "v_min": 0.000370856054360047,
+      "v_max": 0.9996039867401123,
+      "outside_0_1": 0
+    },
+    "materials": [
+      "Material.001"
+    ]
+  },
+  "region_census": {
+    "face": 76888,
+    "hands": 0,
+    "feet": 66073,
+    "hair_soft": 20193,
+    "free": 53620
+  },
+  "silhouette_deviation": {
+    "p50_mm": 1.318,
+    "p95_mm": 7.988,
+    "p99_mm": 17.8463,
+    "max_mm": 79.0024
+  },
+  "dimensions": {
+    "height_m": 1.75,
+    "foot_z": 0.0
+  },
+  "orientation": {
+    "label": "lowpoly",
+    "height_m": 1.75,
+    "head_centerline_y_min": -0.1447,
+    "head_centerline_y_max": 0.1351,
+    "toe_y_min": -0.18586,
+    "toe_y_max": 0.0631,
+    "torso_verts_front_negY": 383,
+    "torso_verts_back_posY": 2414,
+    "face_at_negative_y": true,
+    "toes_at_negative_y": true,
+    "hair_mass_at_positive_y": true
+  },
+  "renders": {
+    "lowpoly_front.png": {
+      "bytes": 453827,
+      "sha256": "9b00e2930075bbf2d7b99129272a622cf21a472604497154150e30be24274495"
+    },
+    "lowpoly_side.png": {
+      "bytes": 413985,
+      "sha256": "b4e68bad8e2df32b736d7e215c26c02637ffac26ce3a0b4a84ca4fe29f889e64"
+    },
+    "lowpoly_back.png": {
+      "bytes": 418865,
+      "sha256": "2889b4c954455f9fc1019c3c6b0c3d25000934ae75b56668e2310146e61aa4e6"
+    },
+    "lowpoly_head_closeup.png": {
+      "bytes": 449900,
+      "sha256": "8c69855c6d1f01cd87cca145e7c72a9f6e5e956d1df8b7d2026b5f771760e7f6"
+    },
+    "lowpoly_hand_closeup.png": {
+      "bytes": 245956,
+      "sha256": "ea1722523e4d0c7555b70bf94b5f6c8385debfb1af660cb79b1b8c1bbe51695b"
+    },
+    "lowpoly_hem_closeup.png": {
+      "bytes": 447106,
+      "sha256": "582c4668e801956dc069986c64892522f6d95ec21f37d7dfc74771b47ed791d3"
+    },
+    "lowpoly_comparison_front.png": {
+      "bytes": 945804,
+      "size": [
+        1134,
+        760
+      ],
+      "panels": [
+        "clean_front.png",
+        "lowpoly_front.png"
+      ],
+      "note": "左：clean 599,417 tri ｜ 右：低面候选"
+    },
+    "lowpoly_comparison_head.png": {
+      "bytes": 973256,
+      "size": [
+        1294,
+        640
+      ],
+      "panels": [
+        "clean_head_closeup.png",
+        "lowpoly_head_closeup.png"
+      ]
+    }
+  },
+  "exports": {
+    "fbx": {
+      "path": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_lowpoly.fbx",
+      "bytes": 8155548,
+      "sha256": "a2d4344f3db3692557afc04eb2be7e322ccb51ae2df4410459363ec1311f93a8"
+    }
+  },
+  "blend": {
+    "path": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend",
+    "bytes": 8872343,
+    "sha256": "62bb1054cc34a1688fbc7b6544840eb1494e4258132d0b5d6d47b583290dd5b6"
+  },
+  "finished": "2026-09-20T00:01:20",
+  "elapsed_sec": 18.6,
+  "log": [
+    "======================================================================",
+    "v9 Phase 2 低面候选 build",
+    "======================================================================",
+    "[1] 源 clean.blend: 599417 tri, UV=['UVMap'], 分级 {'core_protected': 143392, 'soft_protected': 200231, 'free': 255794, 'total': 599417}",
+    "[2] 标定 ratio=0.3617 -> 216820 tri",
+    "[3] 卫生: 216820 -> 216774 tri, 孤立点 714, 焊接 76, 非流形 48872",
+    "[4] 结果: 216774 tri (较 clean -63.8%), 1.7500 m, foot_z=0.000000000, 偏差 p95=7.99mm",
+    "[5] 渲染 8 张",
+    "[6] FBX 8.16 MB"
+  ]
+}

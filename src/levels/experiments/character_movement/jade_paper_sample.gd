@@ -20,10 +20,9 @@ extends Node3D
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-## 样板人物视觉：v7 无仙侠衣装的中性动画底座（原身体 + 深靛遮挡层，四动作）。
-## 旧青玉长袍骨骼视觉 cultivator_visual_rigged.tscn 保留为回退与故障对照，不再接入本场景。
-const NEUTRAL_YOUTH_VISUAL_SCENE: PackedScene = preload(
-	"res://game/actors/swordsman/cultivator_visual_neutral_youth_v7.tscn")
+## 样板人物视觉自 v9 起由共享 swordsman.tscn 提供（cultivator_tripo_v9_visual.tscn）。
+## 本场景不再替换 Visual：v9 已是全项目现役人物，样板换装会重新制造视觉分叉。
+## 旧 v7 中性底座、旧青玉长袍与全部分件视觉保留为回退与故障对照资产，不接入本场景。
 const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
 const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const InputHelper := preload("res://levels/experiments/character_movement/movement_lab_input.gd")
@@ -547,25 +546,19 @@ func _world() -> Node3D:
 func _spawn_player() -> void:
 	var actor := SWORDSMAN_SCENE.instantiate() as Swordsman
 	assert(actor != null, "jade_paper_sample: swordsman.tscn 根节点必须是 Swordsman")
-	# 必须在 actor 入树前换 Visual：Swordsman._ready() 会缓存 $Visual，ActorAssembly 也会在
-	# 同一阶段把 FlyingSword 装到 Visual 下。入树后再换会留下失效缓存并丢失飞剑视觉。
-	var legacy_visual := actor.get_node_or_null("Visual") as Node3D
-	assert(legacy_visual != null, "jade_paper_sample: 默认角色缺少 Visual，无法替换骨骼视觉")
-	actor.remove_child(legacy_visual)
-	legacy_visual.queue_free()
-	var rigged_visual := NEUTRAL_YOUTH_VISUAL_SCENE.instantiate() as Node3D
-	assert(rigged_visual != null, "jade_paper_sample: 骨骼视觉场景根必须是 Node3D")
-	rigged_visual.name = "Visual"
-	actor.add_child(rigged_visual)
+	# 不再替换 Visual：swordsman.tscn 已直达 v9 视觉。
+	# 历史上本场景在入树前换掉 Visual（v7 特例）；v9 统一后该替换只会制造第二套装配路径。
+	assert(actor.get_node_or_null("Visual/CultivatorTripoV9") != null,
+		"jade_paper_sample: 默认角色未装入 v9 视觉模型")
 	actor.name = "Swordsman"
 	add_child(actor)
 	_player = actor
 	_motion = actor.motion()
 	assert(_motion != null, "jade_paper_sample: 角色缺少 SwordsmanMotionComponent")
 	assert(actor.get_node_or_null("Visual/CultivatorSkeletonPresentation") != null,
-		"jade_paper_sample: 骨骼表现层未接入正式角色")
+		"jade_paper_sample: v9 骨骼表现层未接入正式角色")
 	assert(actor.get_node_or_null("Visual/FlyingSword") != null,
-		"jade_paper_sample: 骨骼视觉替换后御剑视觉必须仍由 ActorAssembly 装配")
+		"jade_paper_sample: v9 视觉下御剑视觉必须仍由 ActorAssembly 装配")
 	actor.reset_motion()
 	actor.global_position = _spawn_position
 	actor.set_aim_direction(_spawn_aim)

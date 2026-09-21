@@ -51,7 +51,14 @@ func _run() -> void:
 	await _frames(5)
 	_bind()
 	_check(_actor != null and _motion != null and _camera != null, "真实移动场景装配完成")
-	_check(_actor.get_node("Visual/Cultivator").find_children("*", "MeshInstance3D", true, false).size() > 5, "角色实例包含 Blender 导入网格")
+	# v9 是单网格骨骼角色（旧分件视觉有 23 个 MeshInstance3D）；断言语义改为
+	# 「装入 v9 模型且确有可渲染网格」，不再按分件数量判断。
+	var v9_model := _actor.get_node_or_null("Visual/CultivatorTripoV9")
+	_check(v9_model != null, "角色实例装入 v9 人物模型")
+	_check(v9_model != null and v9_model.find_children("*", "MeshInstance3D", true, false).size() >= 1,
+		"v9 模型包含 Blender 导入网格")
+	_check(_actor.find_children("*", "Skeleton3D", true, false).size() == 1,
+		"v9 角色恰好一个 Skeleton3D")
 	_check(_garden_mesh_count() > 5, "庭院实例包含 Blender 导入网格")
 	_check_no_combat_rig()
 

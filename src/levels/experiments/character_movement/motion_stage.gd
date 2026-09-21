@@ -21,7 +21,7 @@ extends Node3D
 ##   场景不再向它写输入，且失焦/切模式时调用 clear_input() 清掉已按住的键。
 ## - HUD 只读组件公共字段（actual_velocity / on_floor / flight_active / aim_direction）
 ##   与表现层只读快照 pose_state() / stage_state() / preview_snapshot()；
-##   验收脚本不得访问 _legs / _arms 等私有字段。
+##   验收脚本只读公开快照（pose_state() 的 clip/phase/speed 等字段），不访问私有成员。
 ## - 镜头归 res://game/systems/camera_rig/ 的 CameraRig（唯一 executor）；本场景不再手写跟随，
 ##   只做「视角配置 + 模式切换时换目标」。CameraRig 以 process_physics_priority=-10 先写相机并
 ##   把最终地面基发布给 target，因此本场景的物理帧不再自行计算相机基。
@@ -565,8 +565,9 @@ func _spawn_player() -> void:
 	_player = actor
 	_motion = actor.motion()
 	assert(_motion != null, "motion_stage: 角色缺少 SwordsmanMotionComponent")
-	_presentation = actor.get_node_or_null("Visual/CultivatorPresentation") as Node3D
-	assert(_presentation != null, "motion_stage: 角色缺少表现节点 Visual/CultivatorPresentation")
+	_presentation = actor.get_node_or_null("Visual/CultivatorSkeletonPresentation") as Node3D
+	assert(_presentation != null,
+		"motion_stage: 角色缺少表现节点 Visual/CultivatorSkeletonPresentation")
 	# 场景不认识 CapabilityManager 与任何具体能力：能力与御剑视觉的装配由 swordsman.tscn /
 	# ActorAssembly / FlightBundle 负责（铁律 2）。本场景只**只读**读取已绑定结果：
 	# 正式角色缺剑是装配缺陷，必须启动即断言，不做场景侧兜底新建（那会违反 owner 契约）。
@@ -952,7 +953,7 @@ func _ab_preview() -> void:
 
 ## 只读组件与表现快照，不写任何运动状态。
 ## 两种模式分开读数：实时运动读 actor 物理真值；程序动作预览读独立展示实例的预览快照。
-## 任何模式都不读 _legs / _arms 私有字段。
+## 任何模式都不读私有成员：v9 人物没有程序化枢轴，只读 pose_state() 的公开字段。
 func _update_hud() -> void:
 	if _hud == null or _motion == null or _player == null:
 		return
@@ -1046,28 +1047,39 @@ func _core_summary_text() -> String:
 
 
 ## 步幅参数：从表现层导出参数读取（正式角色与预览实例同源）。
+## 刚体版导出 stride_meters（单一值），骨骼版导出 walk_stride_meters / run_stride_meters。
+## 两者都读：HUD 只做展示，不该因为换成骨骼表现层就静默退回常量。
 func _stride_meters() -> float:
 	if _presentation != null:
 		var value: Variant = _presentation.get("stride_meters")
 		if value != null:
 			return float(value)
+		var walk: Variant = _presentation.get("walk_stride_meters")
+		if walk != null:
+			return float(walk)
 	return 1.8
 
 
-## 表现摘要：只读 pose_state() 快照字段（clock / gait / phase / 增益 / 躯干），不碰私有枢轴。
+## 表现摘要：只读 pose_state() 快照字段，不碰私有枢轴。
+##
+## v9 起人物是骨骼 clip 驱动，没有 leg_left/arm_left/body_pitch 这类程序化枢轴字段；
+## 摘要改为 clip 语义（当前动作名 + 该 clip 的播放位置 + 物理状态），并保留与两版表现层
+## 都兼容的 clock/gait/phase。播放位置用 current_clip 对应的 AnimationPlayer 位置，
+## 在 v9 下即 pose["phase"]。
 func _pose_text(pose: Dictionary) -> String:
 	if pose.is_empty():
 		return "表现节点缺失（三能力不受影响）"
-	return "t=%.2f  gait=%.2f  phase=%.2f  flight=%.2f  左腿=%+.2f  右腿=%+.2f  左臂=%+.2f  躯干俯仰=%+.3f  起伏=%+.3f" % [
+	var clip := str(pose.get("current_clip", "?"))
+	var grounded := bool(pose.get("grounded", true))
+	var flying := bool(pose.get("flying", false))
+	var movement := "御剑" if flying else ("空中" if not grounded else "着地")
+	return "t=%.2f  clip=%s  phase=%.3f  速度=%.2f m/s  竖直=%+.2f  状态=%s" % [
 		float(pose.get("clock", 0.0)),
-		float(pose.get("gait", 0.0)),
+		clip,
 		float(pose.get("phase", 0.0)),
-		float(pose.get("flight", 0.0)),
-		float(pose.get("leg_left", 0.0)),
-		float(pose.get("leg_right", 0.0)),
-		float(pose.get("arm_left", 0.0)),
-		float(pose.get("body_pitch", 0.0)),
-		float(pose.get("body_lift", 0.0)),
+		float(pose.get("speed", 0.0)),
+		float(pose.get("vertical_speed", 0.0)),
+		movement,
 	]
 
 
