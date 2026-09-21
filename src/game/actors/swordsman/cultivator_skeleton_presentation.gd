@@ -34,11 +34,18 @@ const RUN_SPEED_MPS := 5.5
 const BLEND := 0.15
 const IDLE_FLIGHT_RATE := 0.6
 
+## 循环动作：持续状态必须线性循环，否则一个周期后停在末帧而快照仍报当前 gait。
+const LOOPING_CLIPS: Array[String] = ["idle", "walk", "run"]
+## 单次动作：jump 播完保持末帧（空中状态）。
+const ONESHOT_CLIPS: Array[String] = ["jump"]
+
 var _actor: Node3D
 var _player: AnimationPlayer
 var _model: Node3D
 var _current := ""
 var _clock := 0.0
+## true = 预览式外部驱动：AnimationPlayer 走 MANUAL，由 advance_state() 的 delta 推进。
+var _manual_advance := false
 
 ## 最近一次只读快照：预览 HUD 与验收脚本读取，不参与物理。
 var _pose: Dictionary = {}
@@ -59,7 +66,29 @@ func _ready() -> void:
 		assert(_player.has_animation(clip),
 			"CultivatorSkeletonPresentation: 缺少动作 %s（GLB 导出 clips=%s）"
 			% [clip, _player.get_animation_list()])
+	_configure_looping()
+	# 预览路径（auto_read_actor=false）不接受引擎帧驱动：调用方在任意时刻用任意 delta 调
+	# advance_state()，包括同一帧内连续多次。若让 AnimationPlayer 仍按渲染帧自走，同一帧里
+	# 推进 20 次只有 1 次有效，phase 几乎不动，HUD 与验收读到的播放位置就是假的。
+	# 因此手动路径把 mixer 切到 MANUAL，改为由 advance_state() 按传入 delta 显式推进。
+	if not auto_read_actor:
+		_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+		_manual_advance = true
 	_player.play("idle")
+
+
+## glTF 导入的 clip 默认是 LOOP_NONE（实测 v9 GLB 四个 clip 全为 0）。若不显式修正，
+## idle/walk/run 播放一个周期后停在末帧，但状态快照仍会报当前 gait，形成「不动却报走动」。
+## jump 必须保持单次，播完停在末帧供空中状态使用。
+func _configure_looping() -> void:
+	for clip in LOOPING_CLIPS:
+		var animation := _player.get_animation(clip)
+		assert(animation != null, "CultivatorSkeletonPresentation: 无法读取动作 %s" % clip)
+		animation.loop_mode = Animation.LOOP_LINEAR
+	for clip in ONESHOT_CLIPS:
+		var animation := _player.get_animation(clip)
+		assert(animation != null, "CultivatorSkeletonPresentation: 无法读取动作 %s" % clip)
+		animation.loop_mode = Animation.LOOP_NONE
 
 
 func _process(delta: float) -> void:
@@ -120,6 +149,11 @@ func advance_state(state: Dictionary, delta: float) -> void:
 		_player.speed_scale = clampf(rate, 0.5, 2.5)
 	else:
 		_player.speed_scale = rate
+
+	# 手动模式：AnimationPlayer 不自走，由本次调用的 delta 显式推进（见 _ready 注释）。
+	# 放在 speed_scale 之后，使本次推进就用上刚设定的速率。
+	if _manual_advance:
+		_player.advance(delta)
 
 	# 御剑前倾：只倾斜模型节点（表现层），与刚体版的 body 前倾同语义。
 	if _model != null:

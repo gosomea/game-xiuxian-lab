@@ -1,0 +1,328 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "action_renders",
+  "views": {
+    "front": "camera at -Y (Blender front)",
+    "side": "camera at +X",
+    "back": "camera at +Y"
+  },
+  "clips": {
+    "idle": {
+      "action": "Armature|Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+      "frame_range": [
+        1.0,
+        121.0
+      ],
+      "bounds": {
+        "min": [
+          -0.4317,
+          -0.5812,
+          -1.0007
+        ],
+        "max": [
+          0.4435,
+          0.4654,
+          0.8234
+        ],
+        "z_min": -1.0007,
+        "height": 1.8241,
+        "x_span": 0.8752,
+        "y_span": 1.0465
+      },
+      "shots": [
+        {
+          "file": "idle_front_p000.png",
+          "view": "front",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "idle_side_p000.png",
+          "view": "side",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "idle_back_p000.png",
+          "view": "back",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "idle_front_p035.png",
+          "view": "front",
+          "phase": 0.35,
+          "frame": 43
+        },
+        {
+          "file": "idle_side_p035.png",
+          "view": "side",
+          "phase": 0.35,
+          "frame": 43
+        },
+        {
+          "file": "idle_back_p035.png",
+          "view": "back",
+          "phase": 0.35,
+          "frame": 43
+        },
+        {
+          "file": "idle_front_p070.png",
+          "view": "front",
+          "phase": 0.7,
+          "frame": 85
+        },
+        {
+          "file": "idle_side_p070.png",
+          "view": "side",
+          "phase": 0.7,
+          "frame": 85
+        },
+        {
+          "file": "idle_back_p070.png",
+          "view": "back",
+          "phase": 0.7,
+          "frame": 85
+        }
+      ]
+    },
+    "walk": {
+      "action": "Armature|Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+      "frame_range": [
+        1.0,
+        43.0
+      ],
+      "bounds": {
+        "min": [
+          -0.3259,
+          -0.758,
+          -1.0149
+        ],
+        "max": [
+          0.3736,
+          0.3431,
+          0.8285
+        ],
+        "z_min": -1.0149,
+        "height": 1.8434,
+        "x_span": 0.6996,
+        "y_span": 1.1011
+      },
+      "shots": [
+        {
+          "file": "walk_front_p000.png",
+          "view": "front",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "walk_side_p000.png",
+          "view": "side",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "walk_back_p000.png",
+          "view": "back",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "walk_front_p035.png",
+          "view": "front",
+          "phase": 0.35,
+          "frame": 16
+        },
+        {
+          "file": "walk_side_p035.png",
+          "view": "side",
+          "phase": 0.35,
+          "frame": 16
+        },
+        {
+          "file": "walk_back_p035.png",
+          "view": "back",
+          "phase": 0.35,
+          "frame": 16
+        },
+        {
+          "file": "walk_front_p070.png",
+          "view": "front",
+          "phase": 0.7,
+          "frame": 30
+        },
+        {
+          "file": "walk_side_p070.png",
+          "view": "side",
+          "phase": 0.7,
+          "frame": 30
+        },
+        {
+          "file": "walk_back_p070.png",
+          "view": "back",
+          "phase": 0.7,
+          "frame": 30
+        }
+      ]
+    },
+    "run": {
+      "action": "Armature|Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+      "frame_range": [
+        1.0,
+        77.0
+      ],
+      "bounds": {
+        "min": [
+          -1.3544,
+          -0.7407,
+          -1.0602
+        ],
+        "max": [
+          0.5208,
+          0.5814,
+          0.8066
+        ],
+        "z_min": -1.0602,
+        "height": 1.8668,
+        "x_span": 1.8753,
+        "y_span": 1.3221
+      },
+      "shots": [
+        {
+          "file": "run_front_p000.png",
+          "view": "front",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "run_side_p000.png",
+          "view": "side",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "run_back_p000.png",
+          "view": "back",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "run_front_p035.png",
+          "view": "front",
+          "phase": 0.35,
+          "frame": 28
+        },
+        {
+          "file": "run_side_p035.png",
+          "view": "side",
+          "phase": 0.35,
+          "frame": 28
+        },
+        {
+          "file": "run_back_p035.png",
+          "view": "back",
+          "phase": 0.35,
+          "frame": 28
+        },
+        {
+          "file": "run_front_p070.png",
+          "view": "front",
+          "phase": 0.7,
+          "frame": 54
+        },
+        {
+          "file": "run_side_p070.png",
+          "view": "side",
+          "phase": 0.7,
+          "frame": 54
+        },
+        {
+          "file": "run_back_p070.png",
+          "view": "back",
+          "phase": 0.7,
+          "frame": 54
+        }
+      ]
+    },
+    "jump": {
+      "action": "Armature|Armature|Armature.001|mixamo.com|Layer0_IN_PLACE_remap",
+      "frame_range": [
+        1.0,
+        66.0
+      ],
+      "bounds": {
+        "min": [
+          -0.6731,
+          -0.6972,
+          -0.9755
+        ],
+        "max": [
+          0.6076,
+          0.3575,
+          1.0173
+        ],
+        "z_min": -0.9755,
+        "height": 1.9928,
+        "x_span": 1.2807,
+        "y_span": 1.0546
+      },
+      "shots": [
+        {
+          "file": "jump_front_p000.png",
+          "view": "front",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "jump_side_p000.png",
+          "view": "side",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "jump_back_p000.png",
+          "view": "back",
+          "phase": 0.0,
+          "frame": 1
+        },
+        {
+          "file": "jump_front_p035.png",
+          "view": "front",
+          "phase": 0.35,
+          "frame": 24
+        },
+        {
+          "file": "jump_side_p035.png",
+          "view": "side",
+          "phase": 0.35,
+          "frame": 24
+        },
+        {
+          "file": "jump_back_p035.png",
+          "view": "back",
+          "phase": 0.35,
+          "frame": 24
+        },
+        {
+          "file": "jump_front_p070.png",
+          "view": "front",
+          "phase": 0.7,
+          "frame": 46
+        },
+        {
+          "file": "jump_side_p070.png",
+          "view": "side",
+          "phase": 0.7,
+          "frame": 46
+        },
+        {
+          "file": "jump_back_p070.png",
+          "view": "back",
+          "phase": 0.7,
+          "frame": 46
+        }
+      ]
+    }
+  },
+  "problems": []
+}

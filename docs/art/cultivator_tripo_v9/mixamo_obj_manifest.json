@@ -1,0 +1,105 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "phase2_mixamo_obj_zip",
+  "source_blend": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend",
+  "blender": "5.2.1 LTS",
+  "started": "2026-09-20T00:17:51",
+  "note": "lowpoly 网格为 proxy-only，仅用于 Mixamo 绑骨；最终须向 clean mesh 转权重",
+  "source": {
+    "blend": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend",
+    "sha256": "62bb1054cc34a1688fbc7b6544840eb1494e4258132d0b5d6d47b583290dd5b6",
+    "tris": 216774,
+    "verts": 119233,
+    "uv": [
+      "UVMap"
+    ],
+    "materials": [
+      "Material.001"
+    ]
+  },
+  "textures_packed": [
+    {
+      "file": "texture_pbr_20250901.png",
+      "bytes": 16909976,
+      "sha256": "707d696a0dd4bdf22113ea59398505535ed33aeba4c3d6bc0a39d0eab5d94f9b"
+    },
+    {
+      "file": "texture_pbr_20250901_normal.png",
+      "bytes": 7805984,
+      "sha256": "5953aae1bf053b1322a5393b488a0570dc51f3fcd491ba437144eda6696993dd"
+    }
+  ],
+  "obj": {
+    "path": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_obj/cultivator_tripo_v9_mixamo.obj",
+    "bytes": 22961814,
+    "sha256": "933171d5ba40d5161d973995c6e4748f0e2e593949a33fe626cf74c69fdda282"
+  },
+  "mtl": {
+    "path": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_obj/cultivator_tripo_v9_mixamo.mtl",
+    "bytes": 326,
+    "sha256": "e79fdb65d2498db578987e471fa6afb86229764cbc48d731a212b6516e50ff69"
+  },
+  "mtl_refs": {
+    "refs": [
+      [
+        "map_Kd",
+        "texture_pbr_20250901.png"
+      ],
+      [
+        "map_Bump",
+        "texture_pbr_20250901_normal.png"
+      ]
+    ],
+    "missing": []
+  },
+  "zip": {
+    "path": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload.zip",
+    "bytes": 30644169,
+    "sha256": "f8aef6b6c891c096192183bd4528aff87c22d0a3956f51fd463d069fcff4ea99",
+    "entries": [
+      "cultivator_tripo_v9_mixamo.obj",
+      "cultivator_tripo_v9_mixamo.mtl",
+      "texture_pbr_20250901.png",
+      "texture_pbr_20250901_normal.png"
+    ]
+  },
+  "result": {
+    "tris": 216774,
+    "height_m": 1.75,
+    "foot_z": 0.0,
+    "uv": {
+      "layers": 1,
+      "names": [
+        "UVMap"
+      ],
+      "u_min": 0.0003983517235610634,
+      "u_max": 0.9996010065078735,
+      "v_min": 0.000370856054360047,
+      "v_max": 0.9996039867401123,
+      "outside_0_1": 0
+    },
+    "orientation": {
+      "head_centerline_y_min": -0.1447,
+      "head_centerline_y_max": 0.1351,
+      "toe_y_min": -0.18586,
+      "toe_y_max": 0.0631,
+      "torso_front_negY": 383,
+      "torso_back_posY": 2414,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true
+    },
+    "single_mesh": true
+  },
+  "finished": "2026-09-20T00:17:54",
+  "elapsed_sec": 3.2,
+  "log": [
+    "====================================================================",
+    "v9 Phase 2: 导出 Mixamo OBJ + MTL + 纹理 + ZIP",
+    "====================================================================",
+    "[1] 源: 216774 tri, UV=['UVMap']",
+    "[2] 打包纹理 2 个: ['texture_pbr_20250901.png', 'texture_pbr_20250901_normal.png']",
+    "[3] OBJ 22.96 MB / MTL 326 B",
+    "[4] MTL 引用: [('map_Kd', 'texture_pbr_20250901.png'), ('map_Bump', 'texture_pbr_20250901_normal.png')]",
+    "[5] ZIP 30.64 MB, 条目 ['cultivator_tripo_v9_mixamo.obj', 'cultivator_tripo_v9_mixamo.mtl', 'texture_pbr_20250901.png', 'texture_pbr_20250901_normal.png']"
+  ]
+}

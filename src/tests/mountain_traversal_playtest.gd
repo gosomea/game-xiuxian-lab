@@ -15,6 +15,8 @@ const SCENE := "res://levels/experiments/character_movement/mountain_realm.tscn"
 const LAYOUT_PATH := "res://levels/experiments/character_movement/mountain_realm_layout.json"
 const COURTYARD_COLLISION_PATH := "res://levels/experiments/character_movement/mountain_realm_courtyards_collision.json"
 const SWORD_NODE_PATH := "Visual/FlyingSword"
+## 表现节点路径：v9 起共享视觉装配的是骨骼 clip 版表现层。
+const PRESENTATION_PATH := "Visual/CultivatorSkeletonPresentation"
 const HUB_SCENE_NAME := "LabHub"
 const MOVEMENT_HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const MOVEMENT_HUB_NODE_NAME := "MovementLabHub"
@@ -1274,41 +1276,57 @@ func _batch_valley() -> void:
 	_check(moved > 1.0, "谷地：真实按键可行走（位移 %.2f m）" % moved)
 
 
-## 纯表现层：真实走动两个时刻，腿/臂枢轴角度必须变化且反相；停步不原地踏步。
+## 纯表现层：真实走动时当前 clip 必须是 walk 且播放位置持续推进；停步回到 idle 且播放位置
+## 不再被速度驱动。v9 是骨骼 clip 驱动，没有腿/臂程序化枢轴可读，改用 clip 语义断言。
 func _batch_presentation() -> void:
 	await _reset_via_r()
 	_check(await _wait_floor(120, _spawn.y), "表现用例着地")
-	var presentation := _actor.get_node_or_null("Visual/CultivatorPresentation")
-	_check(presentation != null, "角色挂有纯表现层节点")
+	var presentation := _actor.get_node_or_null(PRESENTATION_PATH)
+	_check(presentation != null, "角色挂有纯表现层节点（%s）" % PRESENTATION_PATH)
 	if presentation == null:
 		return
-	var pivots := presentation.get("_legs") as Array
-	var arms := presentation.get("_arms") as Array
-	_check(pivots != null and pivots.size() == 2 and arms != null and arms.size() == 2,
-		"表现层建立 2 腿 + 2 臂枢轴（实际 %s / %s）" % [
-			str(pivots.size() if pivots != null else -1), str(arms.size() if arms != null else -1)])
-	if pivots == null or pivots.size() < 2 or arms == null or arms.size() < 2:
+	var player := _animation_player()
+	_check(player != null, "骨骼视觉恰好一个 AnimationPlayer（实际 %s）" % str(player))
+	if player == null:
 		return
+	# 走动：clip 必须是 walk，且播放位置在两个时刻之间真实推进。
 	_key(KEY_D, true)
 	await _frames(10)
-	var leg_a: float = (pivots[0] as Node3D).rotation.x
-	var arm_a: float = (arms[0] as Node3D).rotation.x
+	var walking := presentation.call("pose_state") as Dictionary
+	var pos_a := float(walking.get("phase", -1.0))
+	_check(str(walking.get("current_clip", "")) == "walk",
+		"走动中当前 clip 为 walk（实际 %s）" % str(walking.get("current_clip", "")))
 	await _frames(14)
-	var leg_b: float = (pivots[0] as Node3D).rotation.x
-	var arm_b: float = (arms[0] as Node3D).rotation.x
-	_check(absf(leg_a - leg_b) > 0.02, "走动中腿枢轴角度随时间变化（%.3f → %.3f）" % [leg_a, leg_b])
-	_check(absf(arm_a - arm_b) > 0.01, "走动中臂枢轴角度随时间变化（%.3f → %.3f）" % [arm_a, arm_b])
-	_check(leg_a * arm_a <= 0.0 or absf(leg_a + arm_a) < absf(leg_a - arm_a),
-		"腿臂反相摆动（腿 %.3f / 臂 %.3f）" % [leg_a, arm_a])
+	var pos_b := float((presentation.call("pose_state") as Dictionary).get("phase", -2.0))
+	_check(absf(pos_b - pos_a) > 0.02,
+		"走动中播放位置随时间推进（%.3f → %.3f）" % [pos_a, pos_b])
+	# 快照 phase 必须就是真实 AnimationPlayer 位置，读数与画面不分叉。
+	_check(absf(player.current_animation_position - pos_b) < 0.02,
+		"快照 phase 与 AnimationPlayer 播放位置同源（%.3f vs %.3f）" % [
+			pos_b, player.current_animation_position])
 	_key(KEY_D, false)
-	await _frames(30)
-	var leg_stop: float = (pivots[0] as Node3D).rotation.x
-	await _frames(20)
-	_check(absf((pivots[0] as Node3D).rotation.x - leg_stop) < 0.02,
-		"停步后不再原地踏步（%.3f → %.3f）" % [leg_stop, (pivots[0] as Node3D).rotation.x])
-	# 表现层不改变物理：能力数量与胶囊不变。
+	# 停步：速度归零后 clip 回到 idle，播放速率回到 1.0（walk 时被实际速度同步到 >1）。
+	for _index in range(30):
+		await _frames(1)
+	var stopped := presentation.call("pose_state") as Dictionary
+	_check(str(stopped.get("current_clip", "")) == "idle",
+		"停步后当前 clip 回到 idle（实际 %s）" % str(stopped.get("current_clip", "")))
+	_check(absf(float(stopped.get("speed", 1.0))) < 0.05,
+		"停步后快照水平速度归零（%.3f）" % float(stopped.get("speed", 1.0)))
+	_check(absf(player.speed_scale - 1.0) < 0.05,
+		"停步后播放速率回到 1.0，不再按步幅追赶（%.3f）" % player.speed_scale)
+	# 表现层不改变物理：能力数量不变。
 	var manager := _actor.get_node("CapabilityManager")
 	_check(manager.get_child_count() == 3, "表现层未新增 Capability（仍 3 个）")
+
+
+## 表现层实际驱动的 AnimationPlayer（从角色 Visual 子树取唯一一个）。
+func _animation_player() -> AnimationPlayer:
+	var visual := _actor.get_node_or_null("Visual")
+	if visual == null:
+		return null
+	var players := visual.find_children("*", "AnimationPlayer", true, false)
+	return players[0] as AnimationPlayer if players.size() == 1 else null
 
 
 # --- hub 回归 ---------------------------------------------------------------

@@ -1,0 +1,625 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "build",
+  "contract_note": "notes/proposed/art/2026-09-19-cultivator-tripo-v9-runtime.md",
+  "blender": "5.2.1 LTS",
+  "started": "2026-09-19T23:39:20",
+  "raw_archive": {
+    "source_glb": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/9b092e988c21840611f833788e4e4e9a.glb",
+    "raw_copy": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/raw/9b092e988c21840611f833788e4e4e9a.glb",
+    "raw_bytes": 78881664,
+    "raw_sha256": "69ed3a5b9a6279fd4756212c5ab43e25521fefbbc12baaed150d8e6dfd031627",
+    "raw_sha256_expected": "69ed3a5b9a6279fd4756212c5ab43e25521fefbbc12baaed150d8e6dfd031627",
+    "raw_sha256_matches_expected": true,
+    "source_bytes": 78881664,
+    "source_sha256": "69ed3a5b9a6279fd4756212c5ab43e25521fefbbc12baaed150d8e6dfd031627",
+    "source_sha256_matches_raw": true,
+    "source_still_present": true
+  },
+  "imported": {
+    "object_count": 1,
+    "objects": {
+      "objects": [
+        {
+          "name": "node_0",
+          "type": "MESH",
+          "matrix_world_translation": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "verts": 889030,
+          "polys": 1498548,
+          "tris": 1498548,
+          "materials": [
+            "Material.001"
+          ],
+          "uv": [
+            "UVMap"
+          ]
+        }
+      ],
+      "mesh_count": 1,
+      "armatures": 0,
+      "cameras": 0,
+      "lights": 0,
+      "empties": 0,
+      "texts": 0,
+      "other": 0
+    },
+    "mesh_health": {
+      "verts": 889030,
+      "edges": 2383467,
+      "faces": 1498548,
+      "tris": 1498548,
+      "loose_verts": 0,
+      "loose_edges": 0,
+      "non_manifold_edges": 271290,
+      "zero_area_faces": 0,
+      "duplicate_faces": 0,
+      "non_finite_verts": 0,
+      "faces_pointing_inward": 124483,
+      "edge_len_min": 1.6003847122192383e-05,
+      "edge_len_p01": 0.0004198897513560951,
+      "edge_len_p50": 0.00129089190158993,
+      "edge_len_max": 0.03282005339860916
+    },
+    "uv": {
+      "layers": 1,
+      "names": [
+        "UVMap"
+      ],
+      "u_min": 0.00039900001138448715,
+      "u_max": 0.9996010065078735,
+      "v_min": 0.0003960132598876953,
+      "v_max": 0.9996039867401123,
+      "outside_0_1": 0
+    },
+    "materials": [
+      "Material.001"
+    ],
+    "images": [
+      {
+        "name": "texture_pbr_20250901",
+        "size": [
+          4096,
+          4096
+        ],
+        "packed": true
+      },
+      {
+        "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+        "size": [
+          4096,
+          4096
+        ],
+        "packed": true
+      },
+      {
+        "name": "texture_pbr_20250901_normal",
+        "size": [
+          4096,
+          4096
+        ],
+        "packed": true
+      }
+    ],
+    "bbox_height_m": 0.28241,
+    "orientation": {
+      "label": "raw_import",
+      "height_m": 1.146991,
+      "scale_vs_original": 0.999992,
+      "head_centerline_y_min": -0.09484,
+      "head_centerline_y_max": 0.08857,
+      "head_centerline_samples": 36860,
+      "toe_y_min": -0.12182,
+      "toe_y_max": 0.04136,
+      "torso_verts_front_negY": 9022,
+      "torso_verts_back_posY": 48899,
+      "torso_y_max": 0.16059,
+      "torso_y_min": -0.10283,
+      "head_span_mid_y": -0.00313,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true,
+      "hair_mass_at_positive_y": true
+    }
+  },
+  "imported_blend": {
+    "path": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_imported.blend",
+    "bytes": 87426687,
+    "sha256": "5a76a84119bc03ac30384c94848d6a676b083e0c522668cab5564e8c716d65ff"
+  },
+  "orientation": {
+    "applied_rotation_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "reason_rotation_zero": "导入后模型已面朝 Blender -Y（鼻子与前胸在 -Y，发量在 +Y，脚尖在 -Y）；glTF 导入器已把源文件 +90°X 的节点旋转一并计入 matrix_world。",
+    "rotation_euler_before_apply_deg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "scale_before_apply": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "height_before_m": 1.146991,
+    "uniform_scale_factor": 1.52573104,
+    "height_after_m": 1.75,
+    "target_height_m": 1.75,
+    "foot_z_after_m": 0.0,
+    "before": {
+      "label": "before_normalize",
+      "height_m": 0.28241,
+      "scale_vs_original": 0.246216,
+      "head_centerline_y_min": null,
+      "head_centerline_y_max": null,
+      "head_centerline_samples": 0,
+      "toe_y_min": 8e-05,
+      "toe_y_max": 1.14699,
+      "torso_verts_front_negY": 0,
+      "torso_verts_back_posY": 0,
+      "torso_y_max": null,
+      "torso_y_min": null,
+      "head_span_mid_y": null,
+      "face_at_negative_y": false,
+      "toes_at_negative_y": false,
+      "hair_mass_at_positive_y": false
+    },
+    "after_apply": {
+      "label": "after_apply_transform",
+      "height_m": 1.146991,
+      "scale_vs_original": 0.999992,
+      "head_centerline_y_min": -0.09484,
+      "head_centerline_y_max": 0.08857,
+      "head_centerline_samples": 36860,
+      "toe_y_min": -0.12182,
+      "toe_y_max": 0.04136,
+      "torso_verts_front_negY": 9022,
+      "torso_verts_back_posY": 48899,
+      "torso_y_max": 0.16059,
+      "torso_y_min": -0.10283,
+      "head_span_mid_y": -0.00313,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true,
+      "hair_mass_at_positive_y": true
+    },
+    "after_height": {
+      "label": "after_height_normalize",
+      "height_m": 1.75,
+      "scale_vs_original": 1.525719,
+      "head_centerline_y_min": -0.1447,
+      "head_centerline_y_max": 0.13514,
+      "head_centerline_samples": 36860,
+      "toe_y_min": -0.18586,
+      "toe_y_max": 0.0631,
+      "torso_verts_front_negY": 9022,
+      "torso_verts_back_posY": 48899,
+      "torso_y_max": 0.24502,
+      "torso_y_min": -0.15689,
+      "head_span_mid_y": -0.00478,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true,
+      "hair_mass_at_positive_y": true
+    }
+  },
+  "renders": {
+    "original_front.png": {
+      "bytes": 450298,
+      "size": [
+        560,
+        760
+      ],
+      "note": "清理前（原始拓扑，未减面未焊接）",
+      "source": "normalize 后的原始网格（减面/清理之前）"
+    },
+    "original_side.png": {
+      "bytes": 411632,
+      "size": [
+        560,
+        760
+      ],
+      "note": "清理前左侧",
+      "source": "normalize 后的原始网格（减面/清理之前）"
+    },
+    "original_back.png": {
+      "bytes": 414725,
+      "size": [
+        560,
+        760
+      ],
+      "note": "清理前背面",
+      "source": "normalize 后的原始网格（减面/清理之前）"
+    },
+    "clean_front.png": {
+      "bytes": 450010,
+      "size": [
+        560,
+        760
+      ]
+    },
+    "clean_side.png": {
+      "bytes": 411632,
+      "size": [
+        560,
+        760
+      ]
+    },
+    "clean_back.png": {
+      "bytes": 414837,
+      "size": [
+        560,
+        760
+      ]
+    },
+    "clean_three_quarter_front.png": {
+      "bytes": 447458,
+      "size": [
+        560,
+        760
+      ]
+    },
+    "clean_three_quarter_back.png": {
+      "bytes": 415729,
+      "size": [
+        560,
+        760
+      ]
+    },
+    "clean_head_closeup.png": {
+      "bytes": 449586,
+      "size": [
+        640,
+        640
+      ]
+    },
+    "clean_hand_closeup.png": {
+      "bytes": 245552,
+      "size": [
+        520,
+        520
+      ]
+    },
+    "clean_foot_closeup.png": {
+      "bytes": 260532,
+      "size": [
+        520,
+        520
+      ]
+    },
+    "clean_hands_feet.png": {
+      "bytes": 1088244,
+      "size": [
+        1620,
+        760
+      ],
+      "note": "左手特写 | 靴子特写 | 3/4 全景"
+    },
+    "clean_gray_front.png": {
+      "bytes": 425671,
+      "size": [
+        560,
+        760
+      ],
+      "note": "无贴图灰模，仅用于检查轮廓与法线"
+    },
+    "orientation_proof.png": {
+      "bytes": 1374241,
+      "size": [
+        1534,
+        760
+      ],
+      "note": "左：3/4 正交（红=+X / 绿=-Y 正面箭头 / 蓝=+Z，地面写 FRONT/BACK）；右：俯视（图像上方=+Y 背面，下方=-Y 正面，人物鼻尖朝下）"
+    },
+    "comparison_front.png": {
+      "bytes": 896216,
+      "size": [
+        1134,
+        760
+      ],
+      "note": "左：原始拓扑（未减面）｜ 右：清理+减面后",
+      "panels": [
+        "original_front.png",
+        "clean_front.png"
+      ]
+    },
+    "comparison_side.png": {
+      "bytes": 813974,
+      "size": [
+        1134,
+        760
+      ],
+      "note": "左：原始拓扑（未减面）｜ 右：清理+减面后",
+      "panels": [
+        "original_side.png",
+        "clean_side.png"
+      ]
+    }
+  },
+  "decimate": {
+    "ratio_applied_to_free_geometry": 0.4,
+    "mask_definitions": {
+      "face+front_hair": {
+        "z_min": 0.925,
+        "y_max": 0.045,
+        "space": "original_1.1470m_scale"
+      },
+      "hands": {
+        "abs_x_min": 0.235,
+        "z_range": [
+          0.45,
+          0.8
+        ],
+        "space": "original_1.1470m_scale"
+      },
+      "feet_boots": {
+        "z_max": 0.1,
+        "space": "original_1.1470m_scale"
+      }
+    },
+    "protected_vertex_count": 195649,
+    "tris_before": 1498548,
+    "tris_after": 599418,
+    "reduction_percent": 60.0001,
+    "region_tris_before": {
+      "face": 145460,
+      "hands": 76248,
+      "feet": 89700,
+      "free": 1187140
+    },
+    "region_tris_after": {
+      "face": 144970,
+      "hands": 76043,
+      "feet": 89594,
+      "free": 288811
+    },
+    "mask_tris_before": 311408,
+    "mask_tris_after": 310607,
+    "free_tris_before": 1187140,
+    "free_tris_after": 288811,
+    "before": {
+      "verts": 889030,
+      "edges": 2383467,
+      "faces": 1498548,
+      "tris": 1498548,
+      "loose_verts": 0,
+      "loose_edges": 0,
+      "non_manifold_edges": 271290,
+      "zero_area_faces": 0,
+      "duplicate_faces": 0,
+      "non_finite_verts": 0,
+      "faces_pointing_inward": 124485,
+      "edge_len_min": 2.4415552616119385e-05,
+      "edge_len_p01": 0.0006406421889550984,
+      "edge_len_p50": 0.001969561679288745,
+      "edge_len_max": 0.05007472634315491
+    },
+    "after": {
+      "verts": 430322,
+      "edges": 1025629,
+      "faces": 599418,
+      "tris": 599418,
+      "loose_verts": 161,
+      "loose_edges": 82,
+      "non_manifold_edges": 252922,
+      "zero_area_faces": 0,
+      "duplicate_faces": 0,
+      "non_finite_verts": 0,
+      "faces_pointing_inward": 51761,
+      "edge_len_min": 5.1878392696380615e-05,
+      "edge_len_p01": 0.00065102509688586,
+      "edge_len_p50": 0.0020816160831600428,
+      "edge_len_max": 0.07584106922149658
+    }
+  },
+  "cleanup": {
+    "before": {
+      "verts": 430322,
+      "edges": 1025629,
+      "faces": 599418,
+      "tris": 599418,
+      "loose_verts": 161,
+      "loose_edges": 82,
+      "non_manifold_edges": 252922,
+      "zero_area_faces": 0,
+      "duplicate_faces": 0,
+      "non_finite_verts": 0,
+      "faces_pointing_inward": 51761,
+      "edge_len_min": 5.1878392696380615e-05,
+      "edge_len_p01": 0.00065102509688586,
+      "edge_len_p50": 0.0020816160831600428,
+      "edge_len_max": 0.07584106922149658
+    },
+    "after": {
+      "verts": 331669,
+      "edges": 949691,
+      "faces": 599417,
+      "tris": 599417,
+      "loose_verts": 0,
+      "loose_edges": 0,
+      "non_manifold_edges": 101141,
+      "zero_area_faces": 0,
+      "duplicate_faces": 0,
+      "non_finite_verts": 0,
+      "faces_pointing_inward": 52264,
+      "edge_len_min": 5.1878392696380615e-05,
+      "edge_len_p01": 0.0006563628558069468,
+      "edge_len_p50": 0.0021326688583940268,
+      "edge_len_max": 0.07584106922149658
+    },
+    "actions": {
+      "removed_loose_verts": 161,
+      "removed_loose_edges": 82,
+      "removed_degenerate_faces": 0,
+      "merge_distance_m": 1e-05,
+      "merged_verts": 98492,
+      "min_edge_len_before_merge_m": 5.1878392696380615e-05,
+      "merge_safety_ratio": 0.192758,
+      "removed_degenerate_faces_after_merge": 0,
+      "removed_duplicate_faces": 0
+    }
+  },
+  "silhouette_deviation": {
+    "p50_mm": 0.7067,
+    "p95_mm": 6.0081,
+    "p99_mm": 9.2059,
+    "max_mm": 19.3004,
+    "body_diagonal_m": 2.0053
+  },
+  "final_materials": [
+    "Material.001"
+  ],
+  "textures": [
+    {
+      "image": "texture_pbr_20250901",
+      "file": "texture_pbr_20250901.png",
+      "size": [
+        4096,
+        4096
+      ],
+      "action": "overwrote_existing_then_unpacked",
+      "packed_after": false,
+      "filepath_after": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901.png",
+      "bytes": 16909976,
+      "sha256": "707d696a0dd4bdf22113ea59398505535ed33aeba4c3d6bc0a39d0eab5d94f9b",
+      "filepath_after_relative": "//../textures/texture_pbr_20250901.png",
+      "resolved_from_source_dir": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901.png",
+      "resolves": true
+    },
+    {
+      "image": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "file": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png",
+      "size": [
+        4096,
+        4096
+      ],
+      "action": "overwrote_existing_then_unpacked",
+      "packed_after": false,
+      "filepath_after": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png",
+      "bytes": 8274929,
+      "sha256": "579f66f10ceb7464d2f8285b4576f866cd71caa209943bdf8e1a273e07c2963f",
+      "filepath_after_relative": "//../textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png",
+      "resolved_from_source_dir": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png",
+      "resolves": true
+    },
+    {
+      "image": "texture_pbr_20250901_normal",
+      "file": "texture_pbr_20250901_normal.png",
+      "size": [
+        4096,
+        4096
+      ],
+      "action": "overwrote_existing_then_unpacked",
+      "packed_after": false,
+      "filepath_after": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_normal.png",
+      "bytes": 7805984,
+      "sha256": "5953aae1bf053b1322a5393b488a0570dc51f3fcd491ba437144eda6696993dd",
+      "filepath_after_relative": "//../textures/texture_pbr_20250901_normal.png",
+      "resolved_from_source_dir": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_normal.png",
+      "resolves": true
+    }
+  ],
+  "final_uv": {
+    "layers": 1,
+    "names": [
+      "UVMap"
+    ],
+    "u_min": 0.0003962042392231524,
+    "u_max": 0.9996010065078735,
+    "v_min": 0.0003960132598876953,
+    "v_max": 0.9996039867401123,
+    "outside_0_1": 0
+  },
+  "final_health": {
+    "verts": 331669,
+    "edges": 949691,
+    "faces": 599417,
+    "tris": 599417,
+    "loose_verts": 0,
+    "loose_edges": 0,
+    "non_manifold_edges": 101141,
+    "zero_area_faces": 0,
+    "duplicate_faces": 0,
+    "non_finite_verts": 0,
+    "faces_pointing_inward": 52264,
+    "edge_len_min": 5.1878392696380615e-05,
+    "edge_len_p01": 0.0006563628558069468,
+    "edge_len_p50": 0.0021326688583940268,
+    "edge_len_max": 0.07584106922149658
+  },
+  "exports": {
+    "glb_bytes": 53974948,
+    "fbx_bytes": 22127948,
+    "obj_bytes": 64912801,
+    "fbx_yup_bytes": 22127948,
+    "obj_yup_bytes": 64913081,
+    "cultivator_tripo_v9_clean.glb": {
+      "bytes": 53974948,
+      "sha256": "749fe625e4ef4c2f133eae4f7d64f65942d9e9f625385c62214cb9492299faba"
+    },
+    "cultivator_tripo_v9_mixamo_upload.fbx": {
+      "bytes": 22127948,
+      "sha256": "83f543f3153c43475939d0856fb686001e05bbd91aaa30167f8a126069853275"
+    },
+    "cultivator_tripo_v9_mixamo_upload.obj": {
+      "bytes": 64912801,
+      "sha256": "f289f1f17eb94e86f09e6252c09a31969903c21f6da5b7ae308ecd83589a266a"
+    },
+    "cultivator_tripo_v9_mixamo_upload_yup.fbx": {
+      "bytes": 22127948,
+      "sha256": "f070e209d4811d8dc06076bc92200f412acc9d34f5a7db5278624f0fc55203a6"
+    },
+    "cultivator_tripo_v9_mixamo_upload_yup.obj": {
+      "bytes": 64913081,
+      "sha256": "0ce8c4954552b92bd18fe58aced87c828b76a6eca56f6b20dbaaa2e50b21d2f6"
+    },
+    "cultivator_tripo_v9_mixamo_upload.mtl": {
+      "bytes": 327,
+      "sha256": "57d1b4139da03d2a6e553dfd2020a88faf582be2a4403824442ef0f8e8f55c90"
+    },
+    "cultivator_tripo_v9_mixamo_upload_yup.mtl": {
+      "bytes": 327,
+      "sha256": "57d1b4139da03d2a6e553dfd2020a88faf582be2a4403824442ef0f8e8f55c90"
+    },
+    "obj_dir_files": {
+      "cultivator_tripo_v9_mixamo_upload.mtl": 327,
+      "cultivator_tripo_v9_mixamo_upload.obj": 64912801,
+      "cultivator_tripo_v9_mixamo_upload_yup.mtl": 327,
+      "cultivator_tripo_v9_mixamo_upload_yup.obj": 64913081,
+      "texture_pbr_20250901.png": 16909976,
+      "texture_pbr_20250901_normal.png": 7805984
+    }
+  },
+  "clean_blend": {
+    "path": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend",
+    "bytes": 24563411,
+    "sha256": "b0f893059e99daafae5f888d9301441ac348dbeb40b92eccbbbcbb1f513e775f"
+  },
+  "finished": "2026-09-19T23:40:07",
+  "elapsed_sec": 47.2,
+  "log": [
+    "========================================================================",
+    "cultivator_tripo_v9 第一阶段 build",
+    "========================================================================",
+    "[1] raw SHA-256 69ed3a5b9a6279fd... (expected match=True)",
+    "[2] 原始: verts=889030 polys=1498548 tris=1498548 uv=['UVMap'] mats=['Material.001'] bbox_h=0.2824m",
+    "[2] imported.blend 87.4 MB",
+    "[3] 朝向: face@-Y=True toes@-Y=True hair@+Y=True | rot=[0.0, 0.0, 0.0] | scale x1.52573 -> 1.7500 m",
+    "    original trio: {'original_front.png': 450298, 'original_side.png': 411632, 'original_back.png': 414725}",
+    "[5] 减面: 1498548 -> 599418 tris (-60.00%) | face 145460->144970 hands 76248->76043 feet 89700->89594 free 1187140->288811",
+    "[4] 清理: loose_v=161 loose_e=82 degen=0 merged=98492 dup_faces=0 nonmanifold 252922->101141",
+    "[5] 轮廓偏差 p50=0.71mm p95=6.01mm p99=9.21mm max=19.30mm",
+    "[6] 贴图解包: ['/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901.png', '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png', '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/textures/texture_pbr_20250901_normal.png']",
+    "[7] 渲染 16 张",
+    "[8] 导出 GLB 54.0MB / FBX 22.1MB / OBJ 64.9MB",
+    "[9] clean.blend 24.6 MB"
+  ]
+}

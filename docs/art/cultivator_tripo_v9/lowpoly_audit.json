@@ -1,0 +1,248 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "phase2_lowpoly_audit",
+  "blender": "5.2.1 LTS",
+  "started": "2026-09-20T00:01:24",
+  "phase1_intact": {
+    "clean_blend_sha256": "b0f893059e99daafae5f888d9301441ac348dbeb40b92eccbbbcbb1f513e775f",
+    "clean_blend_expected": "b0f893059e99daafae5f888d9301441ac348dbeb40b92eccbbbcbb1f513e775f",
+    "clean_blend_unchanged": true,
+    "clean_glb_sha256": "749fe625e4ef4c2f133eae4f7d64f65942d9e9f625385c62214cb9492299faba",
+    "clean_glb_expected": "749fe625e4ef4c2f133eae4f7d64f65942d9e9f625385c62214cb9492299faba",
+    "standard_fbx_sha256": "83f543f3153c43475939d0856fb686001e05bbd91aaa30167f8a126069853275",
+    "standard_fbx_expected": "83f543f3153c43475939d0856fb686001e05bbd91aaa30167f8a126069853275",
+    "clean_glb_unchanged": true,
+    "standard_fbx_unchanged": true
+  },
+  "lowpoly_blend": {
+    "path": "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend",
+    "bytes": 8872343,
+    "sha256": "62bb1054cc34a1688fbc7b6544840eb1494e4258132d0b5d6d47b583290dd5b6",
+    "object_count": 1,
+    "mesh_count": 1,
+    "armatures": 0,
+    "cameras": 0,
+    "lights": 0,
+    "actions": 0,
+    "health": {
+      "verts": 119233,
+      "edges": 349592,
+      "faces": 216774,
+      "tris": 216774,
+      "loose_verts": 0,
+      "loose_edges": 0,
+      "non_manifold_edges": 48872,
+      "zero_area_faces": 0,
+      "non_finite_verts": 0
+    },
+    "uv": {
+      "layers": 1,
+      "names": [
+        "UVMap"
+      ],
+      "u_min": 0.0003983517235610634,
+      "u_max": 0.9996010065078735,
+      "v_min": 0.000370856054360047,
+      "v_max": 0.9996039867401123,
+      "outside_0_1": 0
+    },
+    "materials": [
+      "Material.001"
+    ],
+    "textures": [
+      {
+        "name": "texture_pbr_20250901",
+        "filepath": "//../textures/texture_pbr_20250901.png",
+        "packed": false,
+        "resolved": true,
+        "size": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+        "filepath": "//../textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png",
+        "packed": false,
+        "resolved": true,
+        "size": [
+          4096,
+          4096
+        ]
+      },
+      {
+        "name": "texture_pbr_20250901_normal",
+        "filepath": "//../textures/texture_pbr_20250901_normal.png",
+        "packed": false,
+        "resolved": true,
+        "size": [
+          4096,
+          4096
+        ]
+      }
+    ],
+    "height_m": 1.75,
+    "foot_z": 0.0,
+    "orientation": {
+      "label": "lowpoly_blend",
+      "height_m": 1.75,
+      "head_centerline_y_min": -0.1447,
+      "head_centerline_y_max": 0.1351,
+      "toe_y_min": -0.18586,
+      "toe_y_max": 0.0631,
+      "torso_verts_front_negY": 383,
+      "torso_verts_back_posY": 2414,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true,
+      "hair_mass_at_positive_y": true
+    }
+  },
+  "lowpoly_fbx": {
+    "path": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_lowpoly.fbx",
+    "bytes": 8155548,
+    "sha256": "a2d4344f3db3692557afc04eb2be7e322ccb51ae2df4410459363ec1311f93a8",
+    "mesh_count": 1,
+    "armatures": 0,
+    "actions": 0,
+    "cameras": 0,
+    "lights": 0,
+    "tris": 216774,
+    "verts": 119233,
+    "height_m": 1.75,
+    "foot_z": 0.0,
+    "uv": {
+      "layers": 1,
+      "names": [
+        "UVMap"
+      ],
+      "u_min": 0.0003983517235610634,
+      "u_max": 0.9996010065078735,
+      "v_min": 0.000370856054360047,
+      "v_max": 0.9996039867401123,
+      "outside_0_1": 0
+    },
+    "materials": [
+      "Material.001"
+    ],
+    "orientation": {
+      "label": "lowpoly_fbx",
+      "height_m": 1.75,
+      "head_centerline_y_min": -0.1447,
+      "head_centerline_y_max": 0.1351,
+      "toe_y_min": -0.18586,
+      "toe_y_max": 0.0631,
+      "torso_verts_front_negY": 383,
+      "torso_verts_back_posY": 2414,
+      "face_at_negative_y": true,
+      "toes_at_negative_y": true,
+      "hair_mass_at_positive_y": true
+    }
+  },
+  "manifest_reference": {
+    "path": "docs/art/cultivator_tripo_v9/lowpoly_manifest.json",
+    "sha256": "fb767687a89432369646b8befab93a09f54a7b3a46ab5ab37cd4ac3e536f8647"
+  },
+  "tris": {
+    "clean": 599417,
+    "lowpoly": 216774,
+    "reduction_percent": 63.8359,
+    "in_target_band": true
+  },
+  "checks": [
+    {
+      "check": "Phase 1 clean.blend 未被覆盖",
+      "ok": true,
+      "detail": "b0f893059e99daaf",
+      "optional": false
+    },
+    {
+      "check": "Phase 1 clean.glb 未被覆盖",
+      "ok": true,
+      "detail": "749fe625e4ef4c2f",
+      "optional": false
+    },
+    {
+      "check": "Phase 1 标准上传 FBX 未被覆盖",
+      "ok": true,
+      "detail": "83f543f3153c4347",
+      "optional": false
+    },
+    {
+      "check": "低面 blend 恰好 1 网格",
+      "ok": true,
+      "detail": "mesh=1 objs=1",
+      "optional": false
+    },
+    {
+      "check": "低面 blend 0 armature/action/camera/light",
+      "ok": true,
+      "detail": "",
+      "optional": false
+    },
+    {
+      "check": "低面 blend UV 存在且未越界",
+      "ok": true,
+      "detail": "{\"layers\": 1, \"names\": [\"UVMap\"], \"u_min\": 0.0003983517235610634, \"u_max\": 0.9996010065078735, \"v_min\": 0.000370856054360047, \"v_max\": 0.9996039867401123, \"outside_0_1\": 0}",
+      "optional": false
+    },
+    {
+      "check": "低面 blend 纹理相对路径可解析",
+      "ok": true,
+      "detail": "[[\"//../textures/texture_pbr_20250901.png\", true], [\"//../textures/texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png\", true], [\"//../textures/texture_pbr_20250901_normal.png\", true]]",
+      "optional": false
+    },
+    {
+      "check": "低面 blend 身高≈1.75m 且足底 z≈0",
+      "ok": true,
+      "detail": "h=1.750000 foot_z=0.000000000",
+      "optional": false
+    },
+    {
+      "check": "低面 blend 面朝 -Y",
+      "ok": true,
+      "detail": "nose_y=-0.1447 toes_y=[-0.18586,0.0631]",
+      "optional": false
+    },
+    {
+      "check": "低面 FBX 恰好 1 网格 / 0 armature / 0 action / 0 camera / 0 light",
+      "ok": true,
+      "detail": "mesh=1 arm=0 act=0 cam=0 light=0",
+      "optional": false
+    },
+    {
+      "check": "低面 FBX 有 UV",
+      "ok": true,
+      "detail": "{\"layers\": 1, \"names\": [\"UVMap\"], \"u_min\": 0.0003983517235610634, \"u_max\": 0.9996010065078735, \"v_min\": 0.000370856054360047, \"v_max\": 0.9996039867401123, \"outside_0_1\": 0}",
+      "optional": false
+    },
+    {
+      "check": "低面 FBX 身高≈1.75m / 足底≈0 / 面朝 -Y",
+      "ok": true,
+      "detail": "h=1.7500 foot_z=0.000000 nose_y=-0.1447",
+      "optional": false
+    },
+    {
+      "check": "低面三角面落在 180k–250k 目标区间",
+      "ok": true,
+      "detail": "216774 tri",
+      "optional": false
+    },
+    {
+      "check": "低面 FBX < 15 MB",
+      "ok": true,
+      "detail": "8.16 MB",
+      "optional": false
+    },
+    {
+      "check": "保护分级未锁死全部面（free > 0）",
+      "ok": true,
+      "detail": "{\"core_protected\": 143392, \"soft_protected\": 200231, \"free\": 255794, \"total\": 599417}",
+      "optional": false
+    }
+  ],
+  "checks_passed": 15,
+  "checks_total": 15,
+  "required_all_passed": true,
+  "all_passed": true,
+  "finished": "2026-09-20T00:01:27"
+}

@@ -1,0 +1,151 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "runtime_assembly",
+  "started": "2026-09-21T12:09:17",
+  "source_iteration": "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2",
+  "clips": {
+    "idle": {
+      "file": "clip_idle_slot1.glb",
+      "animations": 1,
+      "rig_identical_to_base": true,
+      "root_translation": {
+        "samples": 97,
+        "x_span": 0.018095,
+        "y_span": 0.027004,
+        "z_span": 0.014231,
+        "x_first_last": 0.0,
+        "z_first_last": 0.0
+      },
+      "channels": 27
+    },
+    "walk": {
+      "file": "clip_walk_slot1.glb",
+      "animations": 1,
+      "rig_identical_to_base": true,
+      "root_translation": {
+        "samples": 34,
+        "x_span": 0.04012,
+        "y_span": 0.041346,
+        "z_span": 0.047165,
+        "x_first_last": 0.001612,
+        "z_first_last": 0.003726
+      },
+      "channels": 29
+    },
+    "run": {
+      "file": "clip_run_slot1.glb",
+      "animations": 1,
+      "rig_identical_to_base": true,
+      "root_translation": {
+        "samples": 61,
+        "x_span": 0.843909,
+        "y_span": 0.631594,
+        "z_span": 0.320612,
+        "x_first_last": 0.03305,
+        "z_first_last": -0.009587
+      },
+      "channels": 26
+    },
+    "jump": {
+      "file": "clip_jump_slot1.glb",
+      "animations": 1,
+      "rig_identical_to_base": true,
+      "root_translation": {
+        "samples": 53,
+        "x_span": 0.079708,
+        "y_span": 0.407141,
+        "z_span": 0.102537,
+        "x_first_last": 0.0,
+        "z_first_last": 0.0
+      },
+      "channels": 28
+    }
+  },
+  "checks": {
+    "base_rig": {
+      "nodes": 25,
+      "joints": 22,
+      "vertices": 430587,
+      "indices": 1798251,
+      "attributes": [
+        "JOINTS_0",
+        "POSITION",
+        "TEXCOORD_0",
+        "WEIGHTS_0"
+      ]
+    },
+    "orphan_textures_dropped": {
+      "textures": 1,
+      "images": 1,
+      "samplers": 1
+    },
+    "material_splice": {
+      "from": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
+      "source_material": 0,
+      "destination_material": 0,
+      "name": "Material.001",
+      "base_color_texture": true,
+      "metallic_roughness_texture": true,
+      "normal_texture": true,
+      "occlusion_texture": false,
+      "emissive_texture": false
+    }
+  },
+  "problems": [],
+  "output": {
+    "file": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime.glb",
+    "bytes": 73434452,
+    "sha256": "30b9baaab53dddc862b534a32212d88810f654adb5e560b62115163e5df16f17",
+    "meshes": 1,
+    "triangles": 599417,
+    "nodes": 25,
+    "materials": 1,
+    "images": 3,
+    "skins": [
+      {
+        "name": null,
+        "joints": 22
+      }
+    ],
+    "animations": [
+      {
+        "name": "idle",
+        "channels": 27,
+        "seconds": 4.0
+      },
+      {
+        "name": "walk",
+        "channels": 29,
+        "seconds": 1.375
+      },
+      {
+        "name": "run",
+        "channels": 26,
+        "seconds": 2.5
+      },
+      {
+        "name": "jump",
+        "channels": 28,
+        "seconds": 2.167
+      }
+    ]
+  },
+  "finished": "2026-09-21T12:09:17",
+  "known_limitations": [
+    {
+      "issue": "no NORMAL attribute",
+      "detail": "The service's animated GLB (clip_*_slot1.glb) omits NORMAL; the rigged rest-pose export (clip_*_slot0.glb) and the service FBX (clip_*_slot2.fbx, LayerElementNormal present) both carry normals. Building an animatable mesh from the animated export therefore needs normals recomputed at import (Godot glTF import synthesises flat normals when absent) or rebuilt from the FBX in Blender.",
+      "impact": "Flat/synthesised shading until a normals-bearing variant is produced."
+    },
+    {
+      "issue": "root translation not exactly zero",
+      "detail": "Make-It-Animatable 'In Place' removes forward travel (idle/jump start==end exactly; walk 0.4 cm, run 3.3 cm residual over the whole clip), but the Hips translation track still carries the vertical bob and small lateral sway.",
+      "impact": "Expected in-place behaviour: no net travel; bob/sway are part of the performance."
+    },
+    {
+      "issue": "texture resolution",
+      "detail": "The spliced clean-GLB textures are 4096x4096 PNG (base colour 16.9 MB, metallic-roughness 8.3 MB, normal 7.8 MB).",
+      "impact": "~192 MB RGBA at runtime on the gl_compatibility renderer; asset_ledger 已知限制 3 permits dropping to 2048 if profiling demands it."
+    }
+  ]
+}

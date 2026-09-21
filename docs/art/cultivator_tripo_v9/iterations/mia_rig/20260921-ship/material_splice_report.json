@@ -1,0 +1,58 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "material_splice",
+  "target": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_blender.glb",
+  "source": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
+  "material": {
+    "name": "Material.001",
+    "base_color_texture": true,
+    "metallic_roughness_texture": true,
+    "normal_texture": true,
+    "occlusion_texture": false,
+    "emissive_texture": false,
+    "metallic_factor": null,
+    "roughness_factor": null
+  },
+  "orphan_textures_dropped": {
+    "textures": 1,
+    "images": 1,
+    "samplers": 1
+  },
+  "output": {
+    "bytes": 77065808,
+    "sha256": "87707b3f5382325f48bf8cafa79d63b5950067f993d100ba27a44ed57a23b14c",
+    "meshes": 1,
+    "triangles": 599417,
+    "nodes": 24,
+    "materials": 1,
+    "images": 3,
+    "skins": [
+      {
+        "name": "Armature",
+        "joints": 22
+      }
+    ],
+    "animations": [
+      {
+        "name": "idle",
+        "channels": 69,
+        "seconds": 4.033
+      },
+      {
+        "name": "jump",
+        "channels": 69,
+        "seconds": 2.2
+      },
+      {
+        "name": "run",
+        "channels": 69,
+        "seconds": 0.767
+      },
+      {
+        "name": "walk",
+        "channels": 69,
+        "seconds": 1.433
+      }
+    ]
+  }
+}

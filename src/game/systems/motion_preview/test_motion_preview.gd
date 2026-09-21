@@ -5,9 +5,11 @@ extends RefCounted
 ## 依据 notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md「动作工作台与动作库（S2）」。
 ## 断言纪律：
 ## - 只经公开 API（state() / advance / step_once / select_action / preview_snapshot）驱动；
-## - 不访问 _legs / _arms 等私有字段，不镜像实现常量去凑绿；
+## - 不访问表现层私有字段，不镜像实现常量去凑绿，也不读 pose_state() 里不存在的键
+##   （v9 骨骼表现层只给 clock/gait/phase/current_clip/speed/vertical_speed/grounded/flying；
+##   旧程序化枢轴字段 leg_left/arm_left/body_pitch 已随刚体版退场）；
 ## - 暂停 / 单步 / 倍率 / 帧率一致 / 循环回卷 / 切换连续性都断言**可观察量**：
-##   local_time、consumed_delta、clock、phase、gait、过渡进度与动作 id。
+##   local_time、consumed_delta、clock、phase、current_clip、过渡进度与动作 id。
 
 const MotionPreviewState := preload("res://game/systems/motion_preview/motion_preview_state.gd")
 const MotionPreviewDisplay := preload("res://game/systems/motion_preview/motion_preview_display.gd")
@@ -592,12 +594,17 @@ static func _assert_display_pose(t) -> void:
 	t.track(display)
 	# 不 await：本套件必须同步跑完，否则 runner 会在协程挂起期间 cleanup 并释放已登记的节点。
 	display.reset_preview()
-	var shared_character := display.get_node_or_null("CultivatorVisual/Cultivator") as Node3D
-	t.assert_true(shared_character != null, "动作预览实例化共享 Blender 原创角色")
+	var shared_character := display.get_node_or_null("CultivatorVisual/CultivatorTripoV9") as Node3D
+	t.assert_true(shared_character != null, "动作预览实例化共享 v9 角色模型")
 	if shared_character != null:
 		t.assert_eq(shared_character.scene_file_path,
-			"res://game/actors/swordsman/models/cultivator.glb",
+			"res://game/actors/swordsman/models/cultivator_tripo_v9.glb",
 			"默认移动场景不再读取宽袖袍 cultivator_jade.glb")
+	# 预览与正式角色必须同源：同一 v9 场景，且恰好一个 Skeleton3D + 一个 AnimationPlayer。
+	var players := shared_character.find_children("*", "AnimationPlayer", true, false)
+	t.assert_eq(players.size(), 1, "v9 预览模型恰好一个 AnimationPlayer")
+	var skeletons := shared_character.find_children("*", "Skeleton3D", true, false)
+	t.assert_eq(skeletons.size(), 1, "v9 预览模型恰好一个 Skeleton3D")
 	var preview_sword := display.sword_visual()
 	t.assert_true(preview_sword != null, "动作预览实例化共享飞剑视觉适配根")
 	if preview_sword != null:
@@ -625,7 +632,12 @@ static func _assert_display_pose(t) -> void:
 	t.assert_true(float(pose_running.get("clock", 0.0)) > 0.0, "播放时表现层 clock 前进（%.3f）" % float(pose_running.get("clock", 0.0)))
 	t.assert_true(absf(float(running.get("local_time", 0.0)) - float(pose_running.get("clock", 0.0))) < 0.02,
 		"local_time 与表现层 clock 同步（%.4f vs %.4f）" % [float(running.get("local_time", 0.0)), float(pose_running.get("clock", 0.0))])
-	t.assert_true(float(pose_running.get("phase", 0.0)) > 0.0, "行走时步态相位在推进（%.3f）" % float(pose_running.get("phase", 0.0)))
+	# v9 人物由骨骼 clip 驱动：phase 即 AnimationPlayer.current_animation_position。
+	# 预览走 MANUAL mixer，按 advance() 的 delta 显式推进，因此 20 帧后相位必须真的前进。
+	t.assert_true(float(pose_running.get("phase", 0.0)) > 0.0,
+		"行走时播放位置在推进（%.3f）" % float(pose_running.get("phase", 0.0)))
+	t.assert_eq(str(pose_running.get("current_clip", "")), "walk",
+		"预览选中 walk 动作时表现层报告同一 clip")
 
 	# 暂停：完整 pose 与 clock 逐位不变。
 	display.state().playing = false
@@ -638,7 +650,7 @@ static func _assert_display_pose(t) -> void:
 	t.assert_true(float(after_pause.get("consumed_delta", -1.0)) == 0.0, "暂停时 consumed_delta 为 0")
 	t.assert_true(not bool(after_pause.get("advanced_last_frame", true)), "暂停时标记为未推进姿态")
 	t.assert_true(_pose_equal(before_pause.get("pose", {}), after_pause.get("pose", {})),
-		"暂停 30 帧后完整 pose 快照逐字段相等（clock/phase/gait/四肢/俯仰/起伏）")
+		"暂停 30 帧后完整 pose 快照逐字段相等（clock/phase/current_clip/速度/状态）")
 
 	# 单步：恰好一步，clock 前进 STEP_SECONDS * rate，且姿态真的变了。
 	var step_before := display.preview_snapshot()
