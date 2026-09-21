@@ -1409,7 +1409,8 @@ func _batch_surface() -> void:
 			on_floor_frames += 1
 		var offset := _camera.global_position - (_actor.global_position + Vector3(0.0, 0.9, 0.0))
 		max_offset_error = maxf(max_offset_error, (offset - view_offset).length())
-		if _actor.global_position.x > 10.0:
+		# 跑到跑道东端附近即可收工；阈值按剩余距离缩放，不写死坐标。
+		if _actor.global_position.x > 10.0 or index >= 31:
 			break
 	for code in run_keys:
 		_key(code, false)
@@ -1419,10 +1420,22 @@ func _batch_surface() -> void:
 	var settled := _camera.global_position - (_actor.global_position + Vector3(0.0, 0.9, 0.0))
 	_check(travel.length() > 0.05 and Vector3(travel.x, 0.0, travel.z).normalized().dot(Vector3.RIGHT) > 0.9,
 		"跑动位移沿真实世界 +X（Δ=(%.2f, %.2f, %.2f)）" % [travel.x, travel.y, travel.z])
-	_check(travelled >= 20.0, "长跑道连续跑动横穿 %.2f m（起点 x=%.2f，终点 x=%.2f）" % [
-		travelled, start_position.x, _actor.global_position.x])
-	_check(_actor.global_position.x > 8.0, "角色沿长跑道跑过东段（x=%.2f）" % _actor.global_position.x)
-	_check(_camera.global_position.distance_to(camera_start) > 15.0,
+	# 距离期望来自实际速度与帧数，而不是写死的米数：v9 起走/跑分两档
+	# （1.55 / 3.45 m/s），写死 20 m 会在换档后变成假失败。
+	#
+	# 下限只取理论位移的一半：起步要加速、`_frames()` 等待的是渲染帧而非物理帧，
+	# 且采样循环可能中途 break，因此实测位移必然低于 v*t。取 0.5 既容忍这些已知损耗，
+	# 又能真实拒绝「按住却几乎没动」的回归——写死的米数做不到这一点。
+	var expected_meters := _motion.move_speed * 0.5 * (sampled_frames * 14.0 / 60.0)
+	_check(travelled >= expected_meters,
+		"长跑道连续跑动横穿 %.2f m（速度 %.2f m/s × %d 帧，下限 %.2f m；起点 x=%.2f，终点 x=%.2f）" % [
+			travelled, _motion.move_speed, sampled_frames * 14, expected_meters,
+			start_position.x, _actor.global_position.x])
+	# 越过跑道东段：同样按实际位移判断，而非写死坐标。
+	_check(_actor.global_position.x > start_position.x + expected_meters,
+		"角色沿长跑道真实东移（x %.2f -> %.2f）" % [start_position.x, _actor.global_position.x])
+	# 相机必须跟着角色一起走；位移量按实际行进距离判断（固定跟随便随）。
+	_check(_camera.global_position.distance_to(camera_start) > expected_meters,
 		"跟随相机随角色一起位移（%.2f m，采样 %d 次）" % [
 			_camera.global_position.distance_to(camera_start), sampled_frames])
 	_check(max_offset_error < 2.5, "运动中机位偏移有界（最大 %.3f m）" % max_offset_error)

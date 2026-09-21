@@ -110,7 +110,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		# 共享 helper 管移动键与升降键的按住状态；本场景只决定语义边沿。
-		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS):
+		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS + InputHelper.SPRINT_KEYS):
 			if InputHelper.key_code(key_event) == InputHelper.KEY_VERTICAL_UP \
 					and InputHelper.is_key_down_edge(key_event) and _player != null:
 				_player.press_jump()
@@ -141,6 +141,8 @@ func _physics_process(delta: float) -> void:
 	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
 	var move := _input.move_input()
 	_player.set_move_input(move)
+	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
+	_player.set_sprint_input(_input.is_down(InputHelper.KEY_SPRINT) and move != Vector2.ZERO)
 	_player.set_vertical_input(_input.vertical_input())
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if move != Vector2.ZERO:
@@ -566,7 +568,7 @@ func _build_hud() -> void:
 	_hud = HUD_SCRIPT.new()
 	add_child(_hud)
 	_hud.configure("MOUNTAIN", "角色移动 · 群山宗门", "WASD 移动 · Space 跳跃 · F 御剑 · R 复位 · Esc 返回 · H 详情")
-	_hud.set_controls("WASD / 方向键 移动 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 复位 · Esc 返回子实验目录")
+	_hud.set_controls("WASD / 方向键 移动 · Shift 疾行 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 复位 · Esc 返回子实验目录")
 	_hud.set_question("三项移动能力在完整空间与美术中的组合体验是否成立？")
 	_hud.set_return_text("返回子实验目录")
 	_hud.return_pressed.connect(_return_to_hub)

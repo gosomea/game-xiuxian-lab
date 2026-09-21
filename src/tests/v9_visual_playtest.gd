@@ -72,19 +72,40 @@ func _run() -> void:
 	_key(KEY_W, false)
 	await _frames(30)
 
-	# 奔跑：**实测结论**——地面 move_speed 固定 4.0 m/s，低于 RUN_SPEED_MPS = 5.5，
-	# 因此着地状态永远走不到 run；御剑飞行（12.0 m/s）虽超过阈值，但表现层的 flying 分支
-	# 优先于速度分支，映射到 idle@0.6 而不是 run。也就是说 run clip 在真实玩法里当前不可达
-	# （这是从 v7 就存在的阈值/常量关系，不是 v9 引入的）。本用例如实断言这一点，
-	# 而不是伪造速度去「凑」一张 run 截图。
+	# 疾行：按住 Shift 必须真正进入 run 档。走速 1.55 / 跑速 3.45 m/s 分别对齐各自 clip 的
+	# 自然速度（实测 1.288 / 3.426，见 tools/art/measure_clip_stride.py），因此两档都不再
+	# 以夸张的倍速播放。
 	_key(KEY_W, true)
-	await _frames(40)
-	var ground_pose: Dictionary = _presentation.call("pose_state")
-	_check(str(ground_pose.get("current_clip", "")) == "walk",
-		"着地全速仍映射到 walk（速度 %.2f m/s < RUN_SPEED_MPS %.1f）"
-		% [float(ground_pose.get("speed", 0.0)), CultivatorSkeletonPresentation.RUN_SPEED_MPS])
+	_key(KEY_SHIFT, true)
+	var sprint_frames := 0
+	while sprint_frames < 240 and str(_presentation.call("pose_state").get("current_clip", "")) != "run":
+		await _frames(1)
+		sprint_frames += 1
+	await _capture_state("run", 6, false)
+	var run_pose: Dictionary = _presentation.call("pose_state")
+	_check(str(run_pose.get("current_clip", "")) == "run",
+		"W+Shift 进入 run 档（%.2f m/s，用时 %d 帧）" % [
+			float(run_pose.get("speed", 0.0)), sprint_frames])
+	_check(float(run_pose.get("speed", 0.0)) > CultivatorSkeletonPresentation.RUN_SPEED_MPS,
+		"疾行速度越过 run 阈值（%.2f > %.2f）" % [
+			float(run_pose.get("speed", 0.0)), CultivatorSkeletonPresentation.RUN_SPEED_MPS])
+	# 松开 Shift 必须退回 walk。
+	_key(KEY_SHIFT, false)
+	var back_frames := 0
+	while back_frames < 180 and str(_presentation.call("pose_state").get("current_clip", "")) != "walk":
+		await _frames(1)
+		back_frames += 1
+	_check(str(_presentation.call("pose_state").get("current_clip", "")) == "walk",
+		"松开 Shift 退回 walk 档（用时 %d 帧）" % back_frames)
 	_key(KEY_W, false)
 	await _frames(20)
+	# 静立时按 Shift 不得进入 run：疾行只在真有移动输入时生效。
+	_key(KEY_SHIFT, true)
+	await _frames(20)
+	_check(str(_presentation.call("pose_state").get("current_clip", "")) == "idle",
+		"静立按 Shift 仍是 idle（不误触发奔跑姿态）")
+	_key(KEY_SHIFT, false)
+	await _frames(10)
 
 	# 御剑：用真实的 F 键切换，确认 flying 优先于速度分支，同样映射到 idle。
 	_key(KEY_F, true)

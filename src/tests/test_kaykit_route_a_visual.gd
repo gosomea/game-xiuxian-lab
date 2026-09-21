@@ -5,8 +5,11 @@ extends RefCounted
 ## 武器隐藏、披风保留、材质存在，并只经公开 API（set_motion_state / advance_state /
 ## pose_state / reset_pose）验证状态映射，不访问表现层私有字段。
 ##
-## 受控 A/B 契约：阈值 0.3 / 5.5、步幅 1.6 / 3.2、blend 0.15 必须与
-## CultivatorSkeletonPresentation 逐字一致 —— 本测试同时锁死这组常量。
+## 常量是**本路线自己的**：阈值/步幅按 KayKit 自己的 clip 自然速度调，不跟随
+## CultivatorSkeletonPresentation（v9 现役人物经实测重新标定了阈值 2.2 与参考速度
+## 1.288 / 3.426，与本路线的 5.5 与 1.6 / 3.2 已无关）。
+## 本测试只锁定本路线自身的取值，并断言两条路线**互不牵连**——若有人把其中一条的
+## 常量复制到另一条上，这里会失败。
 
 const VISUAL_SCENE := "res://game/actors/swordsman/kaykit_route_a/kaykit_route_a_visual.tscn"
 const STAGE_SCENE := "res://game/actors/swordsman/kaykit_route_a/kaykit_route_a_stage.tscn"
@@ -171,18 +174,22 @@ static func _assert_contract_constants(t) -> void:
 		return
 	for name in ["WALK_SPEED_MPS", "RUN_SPEED_MPS", "BLEND"]:
 		t.assert_true(name in route_a, "路线 A 声明常量 %s" % name)
-		t.assert_true(name in route_c, "既有骨骼表现层声明常量 %s" % name)
-		t.assert_eq(route_a.get(name), route_c.get(name),
-			"受控 A/B 常量一致：%s（A=%s C=%s）" % [name, route_a.get(name), route_c.get(name)])
-	t.assert_eq(route_a.get("WALK_SPEED_MPS"), 0.3, "walk 阈值 = 0.3")
-	t.assert_eq(route_a.get("RUN_SPEED_MPS"), 5.5, "run 阈值 = 5.5")
-	t.assert_eq(route_a.get("BLEND"), 0.15, "blend = 0.15")
+		t.assert_true(name in route_c, "v9 骨骼表现层声明常量 %s" % name)
+	# 本路线自身的取值。
+	t.assert_eq(route_a.get("WALK_SPEED_MPS"), 0.3, "路线 A walk 阈值 = 0.3")
+	t.assert_eq(route_a.get("RUN_SPEED_MPS"), 5.5, "路线 A run 阈值 = 5.5")
+	t.assert_eq(route_a.get("BLEND"), 0.15, "路线 A blend = 0.15")
 	var probe := route_a.new() as Node
-	t.assert_true(absf(probe.walk_stride_meters - 1.6) < EPSILON, "walk 步幅 = 1.6")
-	t.assert_true(absf(probe.run_stride_meters - 3.2) < EPSILON, "run 步幅 = 3.2")
+	t.assert_true(absf(probe.walk_stride_meters - 1.6) < EPSILON, "路线 A walk 步幅 = 1.6")
+	t.assert_true(absf(probe.run_stride_meters - 3.2) < EPSILON, "路线 A run 步幅 = 3.2")
 	t.assert_true(absf(probe.flight_lean - deg_to_rad(21.0)) < EPSILON,
 		"御剑前倾 = deg_to_rad(21)（%.6f rad）" % probe.flight_lean)
 	probe.free()
+	# 互不牵连：两条路线的 clip 自然速度不同，因此按各自标定的阈值必须不同。
+	# 若这里相等，说明有人把一条路线的常量抄到了另一条上，两边的防滑都会失准。
+	t.assert_true(route_a.get("RUN_SPEED_MPS") != route_c.get("RUN_SPEED_MPS"),
+		"两条路线各自的 run 阈值独立（A=%s，v9=%s）—— 各自按自己的 clip 标定" % [
+			route_a.get("RUN_SPEED_MPS"), route_c.get("RUN_SPEED_MPS")])
 
 
 ## 状态映射（只经公开 API）。

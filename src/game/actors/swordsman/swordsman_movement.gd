@@ -1,7 +1,7 @@
 class_name SwordsmanMovement
 extends Capability
 
-## 修士水平移动：把屏幕相对输入映射到相机地面基，按 move_speed 只写水平速度意图。
+## 修士水平移动：把屏幕相对输入映射到相机地面基，按 move_speed / sprint_speed 只写水平速度意图。
 ##
 ## 输入来自 SwordsmanMotionComponent，本能力不读取键鼠、不认识实验场景，
 ## 也不执行物理——唯一 move_and_slide() 在 Swordsman 根节点。
@@ -30,7 +30,10 @@ func _tick_active(_delta: float) -> void:
 	# 斜向输入先归一化再乘速度，避免两键同时按下时加速。
 	if direction.length() > 1.0:
 		direction = direction.normalized()
-	motion.desired_horizontal = direction * motion.move_speed
+	# 疾行：按住加速键时改用 sprint_speed。走/跑两档速度分别对齐各自 clip 的自然速度
+	# （实测 walk 1.288、run 3.426 m/s），表现层据此选 clip 并同步播放速率。
+	var speed := motion.sprint_speed if motion.sprint_input else motion.move_speed
+	motion.desired_horizontal = direction * speed
 
 
 func _should_deactivate() -> bool:

@@ -64,7 +64,7 @@
       ],
       "script": "src/game/actors/swordsman/swordsman_movement.gd",
       "signals": [],
-      "summary": "修士水平移动：把屏幕相对输入映射到相机地面基，按 move_speed 只写水平速度意图。",
+      "summary": "修士水平移动：把屏幕相对输入映射到相机地面基，按 move_speed / sprint_speed 只写水平速度意图。",
       "test": "src/game/actors/swordsman/test_swordsman_movement.gd",
       "uses_groups": [],
       "uses_tags": [

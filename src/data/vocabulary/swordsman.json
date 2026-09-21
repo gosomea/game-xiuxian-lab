@@ -20,6 +20,8 @@
         "desired_vertical": "竖直速度意图（m/s，正上）；仅 SwordFlight 每 tick 写入",
         "vertical_impulse": "竖直冲量意图（m/s，正上）；仅 Jump 写入，actor 覆盖 velocity.y 不累加",
         "move_speed": "步行水平最大速度（米/秒）",
+        "sprint_input": "疾行意图（bool）：场景在按住加速键期间写入；Movement 据它在 move_speed 与 sprint_speed 间选择",
+        "sprint_speed": "疾行水平最大速度（米/秒）；sprint_input 为真时替代 move_speed",
         "jump_speed": "起跳初速（米/秒）",
         "gravity": "非御剑时的重力加速度（米/秒^2），由 actor 统一施加",
         "flight_speed": "御剑水平最大速度（米/秒）",

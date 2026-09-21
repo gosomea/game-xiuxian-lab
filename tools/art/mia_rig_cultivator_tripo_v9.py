@@ -209,13 +209,12 @@ def main() -> int:
 
     wanted = [c.strip() for c in args.clips.split(",") if c.strip()]
     by_name = dict(CLIPS)
+    # --map may both override a shipped clip and INTRODUCE a new logical name. Introducing
+    # names is what makes candidate exploration possible: we want to rig and render a dozen
+    # idle/run/flight alternatives before deciding which become the shipped four.
     for pair in (p.strip() for p in args.map.split(",") if p.strip()):
-        logical, _, library = pair.partition("=")
-        if logical not in by_name:
-            print(f"FAIL: --map logical clip {logical!r} not one of {list(by_name)}",
-                  file=sys.stderr)
-            return 2
-        if not library:
+        logical, sep, library = pair.partition("=")
+        if not sep or not library:
             print(f"FAIL: --map entry {pair!r} needs <logical>=<library.fbx>",
                   file=sys.stderr)
             return 2

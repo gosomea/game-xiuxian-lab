@@ -202,7 +202,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key_event := event as InputEventKey
 		var code := MovementLabInput.key_code(key_event)
 		# 移动键 / 升降键由 helper 记按住状态；本场景决定语义边沿。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
+		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS + MovementLabInput.SPRINT_KEYS):
 			if MovementLabInput.is_key_down_edge(key_event):
 				if code == MovementLabInput.KEY_VERTICAL_UP:
 					_player.press_jump()
@@ -234,6 +234,8 @@ func _physics_process(delta: float) -> void:
 	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
 	var move := _input.move_input()
 	_player.set_move_input(move)
+	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
+	_player.set_sprint_input(_input.is_down(MovementLabInput.KEY_SPRINT) and move != Vector2.ZERO)
 	_player.set_vertical_input(_input.vertical_input())
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y

@@ -72,17 +72,28 @@ static func run(t) -> void:
 static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentation,
 		animation_player: AnimationPlayer) -> void:
 	presentation.reset_pose()
-	presentation.advance_state(_state(Vector3(4.0, 0.0, 0.0), true, false), 0.1)
+	# 走：1.55 m/s（SwordsmanMotionComponent.move_speed）落在 walk 带。
+	presentation.advance_state(_state(Vector3(1.55, 0.0, 0.0), true, false), 0.1)
 	var walk := presentation.pose_state()
-	t.assert_eq(str(walk.get("current_clip", "")), "walk", "4 m/s 着地状态映射到 walk")
-	t.assert_true(absf(animation_player.speed_scale - 2.5) < EPSILON,
+	t.assert_eq(str(walk.get("current_clip", "")), "walk", "1.55 m/s 着地状态映射到 walk")
+	# 播放速率 = 速度 / walk 原速参考（实测 1.288 m/s），此处 ≈1.203。
+	t.assert_true(absf(animation_player.speed_scale - 1.55 / 1.288) < EPSILON,
 		"walk 切换首帧即按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
 
-	presentation.advance_state(_state(Vector3(6.0, 0.0, 0.0), true, false), 0.1)
+	# 疾行：3.45 m/s（sprint_speed）越过 2.2 阈值，进入 run 带。
+	presentation.advance_state(_state(Vector3(3.45, 0.0, 0.0), true, false), 0.1)
 	var run := presentation.pose_state()
-	t.assert_eq(str(run.get("current_clip", "")), "run", "6 m/s 着地状态映射到 run")
-	t.assert_true(absf(animation_player.speed_scale - 1.875) < EPSILON,
+	t.assert_eq(str(run.get("current_clip", "")), "run",
+		"3.45 m/s（疾行）映射到 run —— run 不再是死分支")
+	t.assert_true(absf(animation_player.speed_scale - 3.45 / 3.426) < EPSILON,
 		"run 按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
+	# 走/跑两档都必须真能触发，否则 run clip 仍不可达。
+	t.assert_true(
+		float(walk.get("speed", 0.0)) < CultivatorSkeletonPresentation.RUN_SPEED_MPS
+		and float(run.get("speed", 0.0)) > CultivatorSkeletonPresentation.RUN_SPEED_MPS,
+		"两档速度分居 run 阈值两侧（walk %.2f / run %.2f，阈值 %.2f）" % [
+			float(walk.get("speed", 0.0)), float(run.get("speed", 0.0)),
+			CultivatorSkeletonPresentation.RUN_SPEED_MPS])
 
 	presentation.advance_state(_state(Vector3(0.0, 4.0, 0.0), false, false), 0.1)
 	var jump := presentation.pose_state()
