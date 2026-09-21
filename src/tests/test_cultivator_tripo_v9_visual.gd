@@ -21,7 +21,10 @@ const LEGACY_VISUALS := {
 	"旧分件刚体": "res://game/actors/swordsman/cultivator_visual.tscn",
 	"旧青玉长袍骨骼": "res://game/actors/swordsman/cultivator_visual_rigged.tscn",
 }
+## 四段核心动作：表现层按速度自动选择，资产必须全部具备。
 const CLIPS := ["idle", "walk", "run", "jump"]
+## 手工摆出的额外状态（库里没有）。可选：缺失时表现层照常工作，对应状态退化为 idle。
+const OPTIONAL_STATES := ["idle_guarded", "meditate", "sword_ride"]
 
 
 static func run(t) -> void:
@@ -31,6 +34,7 @@ static func run(t) -> void:
 	_assert_preview_shares_same_source(t)
 	_assert_sample_no_longer_swaps_visual(t)
 	_assert_sprint_ladder(t)
+	_assert_optional_states(t)
 	_assert_facing_contract(t)
 	_assert_legacy_visuals_still_load(t)
 
@@ -85,10 +89,19 @@ static func _assert_visual_scene_contract(t) -> void:
 		return
 	var player := players[0] as AnimationPlayer
 	var listed := player.get_animation_list()
-	t.assert_eq(listed.size(), CLIPS.size(),
-		"v9 恰好四段 clip（实际 %s）" % [listed])
+	# 四段核心动作必须齐备；手作额外状态是增量，因此断言「至少四段且核心齐全」，
+	# 而不是写死总数——写死总数会在每次新增手作姿态时变成假失败（本用例已如此失败过一次）。
 	for clip in CLIPS:
 		t.assert_true(player.has_animation(clip), "v9 动作库包含精确名 %s" % clip)
+	t.assert_true(listed.size() >= CLIPS.size(),
+		"v9 至少四段核心 clip（实际 %d：%s）" % [listed.size(), listed])
+	# 不得混入非预期 clip：除核心四段与登记的手作状态之外，不该有别的。
+	var allowed := {}
+	for clip in CLIPS + OPTIONAL_STATES:
+		allowed[clip] = true
+	for clip in listed:
+		t.assert_true(allowed.has(clip),
+			"资产只含核心四段与登记的手作状态，未混入 %s（全部 %s）" % [clip, listed])
 
 	# 模型实例必须指向 v9 GLB 本体，而不是旧模型。
 	var model := visual.get_node_or_null("CultivatorTripoV9") as Node3D
@@ -243,6 +256,62 @@ static func _assert_sprint_ladder(t) -> void:
 		var rate := player.speed_scale
 		t.assert_true(rate > 0.5 and rate < 2.0,
 			"%s 播放速率贴近原速（%.2f，速度 %.2f m/s）" % [spec[0], rate, spec[1]])
+
+
+## 手作额外状态：资产里有就必须可用，且显式覆盖不被速度推翻。
+static func _assert_optional_states(t) -> void:
+	var packed := load(V9_VISUAL_SCENE) as PackedScene
+	if packed == null:
+		return
+	var host := Node3D.new()
+	host.name = "StatesHost"
+	t.track(host)
+	var visual := packed.instantiate() as Node3D
+	var presentation := visual.get_node_or_null("CultivatorSkeletonPresentation")
+	if presentation != null:
+		presentation.set("auto_read_actor", false)
+	host.add_child(visual)
+	if presentation == null:
+		return
+	var players := visual.find_children("*", "AnimationPlayer", true, false)
+	if players.size() != 1:
+		return
+	var player := players[0] as AnimationPlayer
+
+	for clip in OPTIONAL_STATES:
+		if not presentation.call("has_state", clip):
+			# 允许旧的四段资产：缺就跳过，但要说清楚为什么没测。
+			t.assert_true(not player.has_animation(clip),
+				"has_state(%s) 与实际 clip 表一致（%s 不在表里）" % [clip, clip])
+			continue
+		t.assert_true(player.has_animation(clip),
+			"手作状态 %s 已打进运行时资产" % clip)
+		# 额外状态是持续姿态，必须线性循环（否则 3 秒后停在末帧）。
+		t.assert_eq(player.get_animation(clip).loop_mode, Animation.LOOP_LINEAR,
+			"%s 为线性循环" % clip)
+
+	# 显式覆盖：play_state 后即便速度很高也不得被自动选择推翻。
+	if presentation.call("has_state", "meditate"):
+		t.assert_true(bool(presentation.call("play_state", "meditate")),
+			"play_state(meditate) 成功")
+		presentation.call("advance_state",
+			{"velocity": Vector3(9.0, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+		var held: Dictionary = presentation.call("pose_state")
+		t.assert_eq(str(held.get("current_clip", "")), "meditate",
+			"显式覆盖不被速度推翻（9 m/s 仍保持 meditate）")
+		t.assert_true(bool(held.get("overridden", false)), "快照标记 overridden")
+		# 解除覆盖后必须回到速度驱动。
+		presentation.call("release_state")
+		presentation.call("advance_state",
+			{"velocity": Vector3(3.45, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+		var released: Dictionary = presentation.call("pose_state")
+		t.assert_eq(str(released.get("current_clip", "")), "run",
+			"release_state 后回到速度驱动（3.45 m/s -> run）")
+		t.assert_true(not bool(released.get("overridden", false)),
+			"释放后 overridden 归假")
+	# 未知状态必须被拒绝，不能静默成功。
+	t.assert_true(not bool(presentation.call("play_state", "no_such_clip")),
+		"play_state 拒绝不存在的 clip")
 
 
 ## 朝向契约：模型局部 +Z 是正面，visual_yaw_for_aim 把正面转到 aim 方向。

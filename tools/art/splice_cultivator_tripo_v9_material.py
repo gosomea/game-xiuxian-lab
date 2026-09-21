@@ -43,6 +43,9 @@ def main() -> int:
     parser.add_argument("--clean", default=str(CLEAN_GLB),
                         help="source of the authoritative PBR material")
     parser.add_argument("--report", default="", help="optional JSON report path")
+    parser.add_argument("--expect-clips", default="idle,walk,run,jump",
+                        help="comma-separated clip names the GLB must contain; "
+                             "pass the full set when the asset ships extra states")
     args = parser.parse_args()
 
     target = Path(args.glb)
@@ -119,7 +122,7 @@ def main() -> int:
     if not report["material"]["normal_texture"]:
         print("FAIL: normal texture did not land", file=sys.stderr)
         return 1
-    expected = {"idle", "walk", "run", "jump"}
+    expected = {c.strip() for c in args.expect_clips.split(",") if c.strip()}
     found = {a["name"] for a in probe["animations"]}
     if found != expected:
         print(f"FAIL: clips {sorted(found)} != {sorted(expected)}", file=sys.stderr)

@@ -13,6 +13,21 @@
   },
   "bones_applied": 20,
   "bones_skipped": [],
+  "ground": {
+    "rest_lowest": -0.98077,
+    "posed_lowest_before": -0.25693,
+    "world_offset_requested": -0.72384,
+    "axis_response_m_per_unit": [
+      -0.0001,
+      0.009777,
+      0.002096
+    ],
+    "axis_used": "Y",
+    "units_applied": -74.03226,
+    "posed_lowest_after": -0.98077,
+    "residual_m": -0.0,
+    "method": "solve the Hips root bone's effective vertical axis numerically; object-level shifts do not survive FBX/glTF export"
+  },
   "keyframed_action": "meditate_seat",
   "fcurves": 63,
   "output": {
@@ -21,14 +36,14 @@
   },
   "bounds": {
     "min": [
-      -0.4183,
-      -0.4351,
-      -0.2569
+      -0.4255,
+      -0.5903,
+      -0.9808
     ],
     "max": [
-      0.4354,
-      0.3824,
-      0.7896
+      0.4282,
+      0.2273,
+      0.0657
     ],
     "size": [
       0.8537,

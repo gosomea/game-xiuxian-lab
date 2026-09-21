@@ -42,15 +42,25 @@ const BLEND := 0.15
 const IDLE_FLIGHT_RATE := 0.6
 
 ## 循环动作：持续状态必须线性循环，否则一个周期后停在末帧而快照仍报当前 gait。
-const LOOPING_CLIPS: Array[String] = ["idle", "walk", "run"]
+const LOOPING_CLIPS: Array[String] = ["idle", "walk", "run", "idle_guarded", "meditate",
+	"sword_ride"]
 ## 单次动作：jump 播完保持末帧（空中状态）。
 const ONESHOT_CLIPS: Array[String] = ["jump"]
+
+## 额外的手作状态（本骨架手工摆出，库里没有）。它们是**可选**的：资产里没有这些 clip 时
+## 表现层照常工作，只是对应状态退化为 idle。用 `has_animation` 判定，不做硬前置断言——
+## 旧的四段资产仍必须能跑。
+const OPTIONAL_GUARDED_IDLE := "idle_guarded"
+const OPTIONAL_MEDITATE := "meditate"
+const OPTIONAL_SWORD_RIDE := "sword_ride"
 
 var _actor: Node3D
 var _player: AnimationPlayer
 var _model: Node3D
 var _current := ""
 var _clock := 0.0
+## 非空 = 显式状态覆盖（见 play_state）；此时不按速度自动选 clip。
+var _override := ""
 ## true = 预览式外部驱动：AnimationPlayer 走 MANUAL，由 advance_state() 的 delta 推进。
 var _manual_advance := false
 
@@ -88,9 +98,12 @@ func _ready() -> void:
 ## idle/walk/run 播放一个周期后停在末帧，但状态快照仍会报当前 gait，形成「不动却报走动」。
 ## jump 必须保持单次，播完停在末帧供空中状态使用。
 func _configure_looping() -> void:
+	# 四段核心动作必须存在（_ready 已断言过）；手作额外状态是可选的，缺失就跳过，
+	# 这样四段旧资产与新七段资产都能跑。
 	for clip in LOOPING_CLIPS:
 		var animation := _player.get_animation(clip)
-		assert(animation != null, "CultivatorSkeletonPresentation: 无法读取动作 %s" % clip)
+		if animation == null:
+			continue
 		animation.loop_mode = Animation.LOOP_LINEAR
 	for clip in ONESHOT_CLIPS:
 		var animation := _player.get_animation(clip)
@@ -125,6 +138,15 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	if state.is_empty():
 		return
 	_clock += delta
+	if not _override.is_empty():
+		# 显式覆盖期间只推进时间与快照，不改 clip：覆盖是玩法层的决定，不被速度推翻。
+		if _manual_advance:
+			_player.advance(delta)
+		var ov_velocity: Vector3 = state.get("velocity", Vector3.ZERO)
+		_record_pose(ov_velocity,
+			Vector3(ov_velocity.x, 0.0, ov_velocity.z).length(),
+			bool(state.get("grounded", true)), bool(state.get("flying", false)))
+		return
 	var velocity: Vector3 = state.get("velocity", Vector3.ZERO)
 	var grounded: bool = state.get("grounded", true)
 	var flying: bool = state.get("flying", false)
@@ -172,6 +194,33 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	_record_pose(velocity, speed, grounded, flying)
 
 
+## 是否有某个额外手作状态（资产可能是四段旧版，此时为 false）。
+func has_state(clip: String) -> bool:
+	return _player != null and _player.has_animation(clip)
+
+
+## 手动切到某个额外状态（打坐 / 负手而立 / 御剑而立）。用于实验场景演示与截图取证。
+##
+## 这是**显式覆盖**：调用后表现层不再按速度自动选 clip，直到 `release_state()`。
+## 不做成自动判定，是因为「这个角色现在是在打坐还是在待机」是玩法层的问题，
+## 表现层没有依据替它决定。
+func play_state(clip: String) -> bool:
+	if not has_state(clip):
+		return false
+	_override = clip
+	_current = clip
+	_player.play(clip, BLEND)
+	_player.speed_scale = 1.0
+	_record_pose(Vector3.ZERO, 0.0, true, false)
+	return true
+
+
+## 解除显式状态覆盖，回到按速度自动选 clip。
+func release_state() -> void:
+	_override = ""
+	reset_pose()
+
+
 ## 回到中性姿态（预览循环起点用）。
 func reset_pose() -> void:
 	_clock = 0.0
@@ -194,6 +243,7 @@ func _record_pose(velocity: Vector3, speed: float, grounded: bool, flying: bool)
 		"gait": 1.0 if _current == "walk" or _current == "run" else 0.0,
 		"phase": _player.current_animation_position if _player != null else 0.0,
 		"current_clip": _current,
+		"overridden": not _override.is_empty(),
 		"speed": speed,
 		"vertical_speed": velocity.y,
 		"grounded": grounded,

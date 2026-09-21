@@ -47,9 +47,10 @@ from pathlib import Path
 
 import bpy
 
-## Clips baked into the runtime GLB. The shipped four are the movement states the
-## presentation layer maps to; `fly` is extra and optional.
-CLIP_ORDER = ["idle", "walk", "run", "jump"]
+## Clips baked into the runtime GLB, in order. The first four are the movement states the
+## presentation layer maps to; the rest are extra states it can play by name (hands-behind-
+## back idle, seated meditation, sword-riding). Override with --clips to build a subset.
+DEFAULT_CLIPS = ["idle", "walk", "run", "jump", "idle_guarded", "meditate", "sword_ride"]
 
 
 def parse_args() -> argparse.Namespace:
@@ -59,6 +60,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iteration", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--report", required=True)
+    parser.add_argument("--clips", default="",
+                        help="comma-separated clip names to bake, in order "
+                             "(default: %s)" % ",".join(DEFAULT_CLIPS))
     return parser.parse_args(argv)
 
 
@@ -134,10 +138,10 @@ def export_glb(out_path: Path) -> None:
     )
 
 
-def phase_one(iteration: Path, scratch: Path, report: dict) -> list[Path]:
+def phase_one(iteration: Path, scratch: Path, report: dict, clips: list[str]) -> list[Path]:
     """Extract each clip's action into its own scratch .blend; return those paths."""
     written: list[Path] = []
-    for clip in CLIP_ORDER:
+    for clip in clips:
         fbx = iteration / f"clip_{clip}_slot2.fbx"
         if not fbx.is_file():
             raise RuntimeError(f"{clip}: missing {fbx}")
@@ -181,10 +185,10 @@ def phase_one(iteration: Path, scratch: Path, report: dict) -> list[Path]:
 
 
 def phase_two(iteration: Path, scratch_files: list[Path], out_path: Path,
-              report: dict) -> None:
+              report: dict, clips: list[str]) -> None:
     """One rig, four renamed actions, one GLB."""
     empty_scene()
-    import_fbx(iteration / f"clip_{CLIP_ORDER[0]}_slot2.fbx")
+    import_fbx(iteration / f"clip_{clips[0]}_slot2.fbx")
     armature = find_one("ARMATURE")
     mesh = find_one("MESH")
 
@@ -192,7 +196,7 @@ def phase_two(iteration: Path, scratch_files: list[Path], out_path: Path,
     for action in list(bpy.data.actions):
         bpy.data.actions.remove(action)
 
-    for scratch_file, clip in zip(scratch_files, CLIP_ORDER):
+    for scratch_file, clip in zip(scratch_files, clips):
         before = set(bpy.data.actions.keys())
         with bpy.data.libraries.load(str(scratch_file), link=False) as (src, dst):
             dst.actions = list(src.actions)
@@ -235,7 +239,10 @@ def phase_two(iteration: Path, scratch_files: list[Path], out_path: Path,
             "y_span": round(max(c.y for c in coords) - min(c.y for c in coords), 4),
         }
 
-    ground = measure_ground(armature, mesh, CLIP_ORDER, report)
+    # Only grounded states may decide the ground offset: jump, meditation and sword-riding
+    # are airborne or seated by definition and would drag the character into the floor.
+    grounded_clips = [c for c in clips if c in ("idle", "walk", "run")]
+    ground = measure_ground(armature, mesh, grounded_clips or clips, report)
     report["ground_offset_m"] = round(-ground["lowest"], 5)
 
     export_glb(out_path)
@@ -415,19 +422,21 @@ def main() -> int:
     if not report_path.is_absolute():
         report_path = repo / report_path
 
+    clips = [c.strip() for c in args.clips.split(",") if c.strip()] or list(DEFAULT_CLIPS)
     report: dict = {
         "asset": "cultivator_tripo_v9",
         "phase": "blender_fbx_to_glb",
         "route": "fbx",
         "source_iteration": str(iteration),
+        "requested_clips": clips,
         "clips": {},
         "problems": [],
     }
     try:
         with tempfile.TemporaryDirectory(prefix="tripo_v9_actions_") as tmp:
             scratch = Path(tmp)
-            scratch_files = phase_one(iteration, scratch, report)
-            phase_two(iteration, scratch_files, out_path, report)
+            scratch_files = phase_one(iteration, scratch, report, clips)
+            phase_two(iteration, scratch_files, out_path, report, clips)
     except Exception as exc:  # noqa: BLE001 - reported, not swallowed
         report["problems"].append(f"{type(exc).__name__}: {exc}")
         report_path.parent.mkdir(parents=True, exist_ok=True)
