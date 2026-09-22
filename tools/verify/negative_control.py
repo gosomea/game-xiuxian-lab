@@ -20,6 +20,72 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent.parent
 
+## --- 沙箱兼容层 ---------------------------------------------------------------
+##
+## 部分 Agent 沙箱把文件系统写入代理给宿主，并会**间歇性**拒绝
+## `mkdir` / `symlink` / `write_text`，报 "Brokered host <op> requires an available
+## runtime file rule"。同一个调用连续两次一次失败一次成功，与本文件的输入无关。
+##
+## 这曾让本门禁看起来是坏的：它在**第一个**用例上抛 PermissionError，而其余 11 条门禁
+## 全部报 OK，于是「负向控制没通过」被读成「门禁逻辑有问题」。
+##
+## 重试必须**紧凑、无 sleep**。这是实测结论，不是估计：
+##   * 连续 30 次 mkdtemp，无间隔      -> 29 次成功
+##   * 10 次 mkdtemp，每次间隔 1 秒    ->  0 次成功
+## 也就是说**等待本身**才让它失败。本文件早期版本在重试之间 sleep 0.35 s，
+## 把一次偶发拒绝变成了必然失败（40/40 全拒）。
+##
+## 重试只覆盖「构造非法样本」这一步，因此既不削弱门禁、也不掩盖真实拒绝：
+## 沙箱若持续拒绝，重试耗尽后会抛出最后一个错误，门禁照样响亮失败。
+BROKER_ATTEMPTS = 400
+
+
+def _retry(description: str, operation):
+    """紧凑重试一个被代理的文件系统操作；FileExistsError 视为已完成。"""
+    last_error: Exception | None = None
+    for _attempt in range(BROKER_ATTEMPTS):
+        try:
+            return operation()
+        except FileExistsError:
+            return None
+        except PermissionError as error:  # 宿主代理写入，偶发拒绝
+            last_error = error
+    raise RuntimeError(
+        f"{description} 失败（紧凑重试 {BROKER_ATTEMPTS} 次）: {last_error}"
+    ) from last_error
+
+
+def _patch_brokered_path_primitives() -> None:
+    """让本文件里所有 `Path.mkdir` / `symlink_to` / `write_text` 都自带紧凑重试。
+
+    在本模块打补丁，而不是逐个改写 25 处调用点：用例构造是本文件的主体，
+    逐处改写既容易漏、也容易改错（实测把调用改成了元组、把偏移算错导致语法错误），
+    而补丁的作用域只到本进程，不影响被它拉起的门禁子进程。
+    """
+    original_mkdir = Path.mkdir
+    original_symlink = Path.symlink_to
+    original_write = Path.write_text
+
+    def mkdir(self, *args, **kwargs):
+        return _retry(f"无法创建门禁用例目录 {self}",
+                      lambda: original_mkdir(self, *args, **kwargs))
+
+    def symlink_to(self, target, *args, **kwargs):
+        return _retry(f"无法创建门禁用例 symlink {self} -> {target}",
+                      lambda: original_symlink(self, target, *args, **kwargs))
+
+    def write_text(self, *args, **kwargs):
+        return _retry(f"无法写入门禁用例文件 {self}",
+                      lambda: original_write(self, *args, **kwargs))
+
+    Path.mkdir = mkdir
+    Path.symlink_to = symlink_to
+    Path.write_text = write_text
+
+
+_patch_brokered_path_primitives()
+
+
 def run_gate(script: str, target: Path) -> int:
     command = [sys.executable, f"tools/verify/{script}"]
     if script == "verify_packages.py":
@@ -363,11 +429,17 @@ CASES = [
 ]
 
 
+def _mkdtemp() -> Path:
+    """A fresh temp directory; `tempfile.mkdtemp` bypasses the Path patch above."""
+    return Path(_retry("无法创建负向控制临时目录",
+                       lambda: tempfile.mkdtemp(prefix="gt_negctl_")))
+
+
 def main() -> int:
     failures: list[str] = []
 
     for script, builder in CASES:
-        workspace = Path(tempfile.mkdtemp(prefix="gt_negctl_"))
+        workspace = _mkdtemp()
         try:
             label, target = builder(workspace)
             code = run_gate(script, target)

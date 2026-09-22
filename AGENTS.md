@@ -117,7 +117,25 @@ v7 中性底座全部保留为回退资产。
 `tools/art/measure_clip_stride.py` 与 `measure_clip_excursion.py`（步幅）、
 `measure_glb_upright.py` 与 `measure_spine_axis.py`（站姿是否竖直）、
 `render_upright_check.py`（画真实铅垂线再渲染，把「是不是真的斜」变成一眼可判）、
-`score_mia_clip.py`（clip 结构评分，含髋部 yaw 偏差判据）。
+`score_mia_clip.py`（clip 结构评分，含髋部 yaw 偏差判据）、
+`measure_glb_ground_contact.py`（**贴地的权威口径**：逐 clip 逐帧量蒙皮网格最低顶点）、
+`measure_glb_foot_bones.py`（骨骼级同一件事，给 Godot 测试定阈值用）、
+`measure_glb_balance.py`（骨盆相对双脚 / 骨盆相对头，分离「没站住」与「没竖直」）、
+`render_ground_contact.py`（z=0 平面 + 脚部近景 + 铅垂参考条，把米数变成一眼可判）。
+
+**贴地逐 clip 标定，不是一个全局常数。** 构建期原按「各 locomotion clip 最低点的
+**最小值**」求一个统一偏移，那必然让恰好一个 clip 贴地、其余各自浮空（实测差 4–7 cm：
+`idle_guarded` 浮空 7.3 cm 而 `run` 只浮 1.7 cm）。修法见
+`tools/art/apply_per_clip_ground_offset.py`：有根平移轨道的 clip 改该轨道，手作三段没有
+轨道则**追加一条常量通道**；静态根 `translation` 保持不动。改完 GLB 后**必须**重跑
+`godot --headless --path src --import`，否则测试读到上一版资产、表现为「判据太严」。
+
+**「斜」和「浮空」是两件事，别用同一个量具回答。** `measure_glb_upright` 全绿（躯干 1.7°）
+不代表角色站得住；`render_upright_check.py` 的「头偏离踝铅垂线 8.3°」也不代表躯干歪——
+被接受的 v7 同样报 10.3°，那个角度主要由站姿的解剖学自然偏移构成。判定「斜」要指明是
+**躯干相对骨盆**还是**骨盆相对双脚**：这两个问题在两轮反馈里分别出过错，各修了一次。
+骨盆相对双脚前移 0.154 m（被接受的 v7 为 0.051 m）**已量、未修**，理由见
+[贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)。
 
 实机证据见 [v9 人物接入全移动链](docs/playtest/2026-09-21-cultivator-tripo-v9-movement-integration.md)、
 [Phase 3/5–8 台账](docs/art/cultivator_tripo_v9/asset_ledger.md)；依据
