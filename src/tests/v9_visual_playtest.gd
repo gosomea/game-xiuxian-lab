@@ -199,13 +199,22 @@ func _find_actor(node: Node) -> CharacterBody3D:
 	return null
 
 
+## 等待一个真实绘制帧并把视口存成 PNG。
+##
+## 连接前必须检查是否已有未触发的 one-shot 连接：超时路径会留下一个已注册但从未触发的
+## 连接，下一次 connect 同一个 callable 会直接报错，随后每次截图都超时——一次超时会伪装成
+## 「每一次截图都失败」。这里先断开再连，并在超时后同样断开。
 func _capture(suffix: String) -> void:
 	_frame_drawn = false
+	if RenderingServer.frame_post_draw.is_connected(_on_frame_drawn):
+		RenderingServer.frame_post_draw.disconnect(_on_frame_drawn)
 	RenderingServer.frame_post_draw.connect(_on_frame_drawn, CONNECT_ONE_SHOT)
 	var deadline := Time.get_ticks_msec() + CAPTURE_TIMEOUT_MSEC
 	while not _frame_drawn and Time.get_ticks_msec() < deadline:
 		await process_frame
 	if not _frame_drawn:
+		if RenderingServer.frame_post_draw.is_connected(_on_frame_drawn):
+			RenderingServer.frame_post_draw.disconnect(_on_frame_drawn)
 		_check(false, "等待渲染帧超时，未能截图：%s" % suffix)
 		return
 	var path := "%s-%s.png" % [_prefix, suffix]
