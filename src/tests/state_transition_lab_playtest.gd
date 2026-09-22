@@ -31,8 +31,14 @@ const CAPTURE_TIMEOUT_MSEC := 15000
 const POS_TOL := 0.08
 const VERT_TOL := 0.06
 const GRAVITY := 18.0
-const MOVE_SPEED := 4.0
-const FLIGHT_SPEED := 12.0
+## 速度常量**不本地复制**：写死值会与组件实际参数脱钩，组件调速后阈值全部失效
+## （同一模式已在 mountain_traversal_playtest 造成 11 条假失败）。从活动组件读取。
+func move_speed() -> float:
+	return _motion.move_speed if _motion != null else 1.55
+
+
+func flight_speed() -> float:
+	return _motion.flight_speed if _motion != null else 12.0
 
 var _failed := 0
 var _prefix := ""
@@ -221,7 +227,9 @@ func _batch_runjump() -> void:
 	_key(KEY_D, true)
 	await _frames(14)
 	var running_speed := Vector2(_actor.velocity.x, _actor.velocity.z).length()
-	_check(running_speed > MOVE_SPEED * 0.8, "真实按键跑动建立水平速度（%.2f m/s）" % running_speed)
+	var move_cap := move_speed()
+	_check(running_speed > move_cap * 0.8,
+		"真实按键跑动建立水平速度（%.2f m/s，下限 %.2f）" % [running_speed, move_cap * 0.8])
 	_check(_motion.move_input != Vector2.ZERO, "移动意图由公开 API 写入")
 
 	# 跳跃：空格边沿，起跳当帧竖直冲量被 actor 消费。

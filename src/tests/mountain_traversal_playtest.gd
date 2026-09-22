@@ -25,8 +25,25 @@ const MOVE_MODULE := "character_movement"
 const SWORD_MODULE := "sword_combat"
 const FLIGHT_TAG := &"sword_flight_block"
 const GRAVITY := 18.0
-const MOVE_SPEED := 4.0
-const FLIGHT_SPEED := 12.0
+## 速度常量**不再本地复制**：早先这里写死 4.0，与组件实际值重复，组件调速后本文件
+## 的阈值全部失效（实测走速改为 1.55 m/s 时本套件 11 条断言假失败）。
+## 改为从活动组件的导出参数读取，单一真相源。
+## 按当前走速换算需要的帧数。
+##
+## 这些循环是「驱动角色走到某处，走到就退出」，帧数是**上限**而非固定值。上限必须随速度
+## 缩放：同一条路在 1.55 m/s 下需要的帧数是 4.0 m/s 时的约 2.6 倍，写死上限会在调速后
+## 变成「走不到」的假失败（本文件实测如此失败了 8 条）。
+## 基准是 4.0 m/s 下的原预算：`frames_at_reference` 传原值即可。
+func frames_for_walk(frames_at_reference: int) -> int:
+	const REFERENCE_SPEED := 4.0
+	return int(ceil(frames_at_reference * REFERENCE_SPEED / maxf(move_speed(), 0.1)))
+
+func move_speed() -> float:
+	return _motion.move_speed if _motion != null else 1.55
+
+
+func flight_speed() -> float:
+	return _motion.flight_speed if _motion != null else 12.0
 ## 物理位置容差：0.08 m 覆盖 60Hz 单步落地修正；只用于位置断言。
 const POS_TOL := 0.08
 ## 竖直速度容差（m/s）。
@@ -362,29 +379,41 @@ func _batch_move() -> void:
 	await _reset_via_r()
 	await _frames(4)
 	start = _actor.global_position
+	# 走够距离而不是走固定帧数：阈值 0.5 m 本来是按 4.0 m/s 标定的，速度改为实测 1.55 m/s 后
+	# 同样的帧数只能走约 0.36 m，会对一个正常移动的角色误判失败。
 	_key(KEY_RIGHT, true)
-	await _frames(14)
+	var arrow_travel := 0.0
+	for _index in range(frames_for_walk(40)):
+		await physics_frame
+		arrow_travel = _actor.global_position.distance_to(start)
+		if arrow_travel > 0.5:
+			break
 	_key(KEY_RIGHT, false)
 	await _frames(3)
-	_check(_actor.global_position.distance_to(start) > 0.5, "方向键 → 与 WASD 等价地产生位移")
+	_check(arrow_travel > 0.5,
+		"方向键 → 与 WASD 等价地产生位移（位移 %.3f m）" % arrow_travel)
 	_check(_motion.aim_direction.dot(_motion.camera_right) > 0.9, "方向键 → 转向相机右方")
 
 	await _reset_via_r()
 	await _frames(4)
 	_key(KEY_W, true)
 	await _frames(6)
-	_check(_motion.actual_velocity.dot(_motion.camera_forward) > 3.5, "W 对应相机地面前方速度")
+	# 阈值由组件当前速度推导；写死 3.5 在调速后失效。
+	_check(_motion.actual_velocity.dot(_motion.camera_forward) > move_speed() * 0.8,
+		"W 对应相机地面前方速度（%.2f m/s）" % _motion.actual_velocity.dot(_motion.camera_forward))
 	_key(KEY_D, true)
 	await _frames(6)
 	var horizontal := Vector2(_actor.velocity.x, _actor.velocity.z).length()
-	_check(horizontal <= MOVE_SPEED + 0.001 and horizontal > MOVE_SPEED * 0.8,
-		"W+D 斜向不超速（%.2f m/s）" % horizontal)
+	var move_cap := move_speed()
+	_check(horizontal <= move_cap + 0.001 and horizontal > move_cap * 0.8,
+		"W+D 斜向不超速（%.2f m/s，上限 %.2f）" % [horizontal, move_cap])
 	_key(KEY_W, false)
 	_key(KEY_D, false)
 	await _frames(3)
 	_key(KEY_S, true)
 	await _frames(6)
-	_check(_motion.actual_velocity.dot(_motion.camera_forward) < -3.5, "S 对应相机地面后方速度")
+	_check(_motion.actual_velocity.dot(_motion.camera_forward) < -move_speed() * 0.8,
+		"S 对应相机地面后方速度（%.2f m/s）" % _motion.actual_velocity.dot(_motion.camera_forward))
 	_key(KEY_S, false)
 	await _frames(3)
 	_check(_actor.velocity.length() < 0.01, "松键后停止")
@@ -404,7 +433,7 @@ func _batch_jump() -> void:
 	var takeoffs := 0
 	var was_floor := true
 	var landed := false
-	for _index in range(180):
+	for _index in range(frames_for_walk(180)):
 		_key_echo(KEY_SPACE)
 		await physics_frame
 		apex = maxf(apex, _actor.global_position.y)
@@ -435,7 +464,7 @@ func _batch_jump() -> void:
 	_key(KEY_SPACE, true)
 	await _frames(2)
 	_key(KEY_SPACE, false)
-	for _index in range(180):
+	for _index in range(frames_for_walk(180)):
 		await physics_frame
 		apex = maxf(apex, _actor.global_position.y)
 		if was_floor and not _motion.on_floor:
@@ -488,7 +517,9 @@ func _batch_flight() -> void:
 	_key(KEY_W, true)
 	await _frames(10)
 	var horizontal := Vector2(_actor.velocity.x, _actor.velocity.z).length()
-	_check(horizontal > 6.0 and horizontal <= FLIGHT_SPEED + 0.001, "御剑水平速度显著快于步行（%.2f m/s）" % horizontal)
+	var flight_cap := flight_speed()
+	_check(horizontal > flight_cap * 0.5 and horizontal <= flight_cap + 0.001,
+		"御剑水平速度显著快于步行（%.2f m/s，御剑上限 %.2f）" % [horizontal, flight_cap])
 	_key(KEY_W, false)
 	await _frames(10)
 
@@ -539,10 +570,16 @@ func _batch_tags() -> void:
 	# 其余能力仍工作：移动可用、跳跃可起跳。
 	var before := _actor.global_position
 	_key(KEY_D, true)
-	await _frames(12)
+	var after_flight_travel := 0.0
+	for _index in range(frames_for_walk(40)):
+		await physics_frame
+		after_flight_travel = _actor.global_position.distance_to(before)
+		if after_flight_travel > 0.5:
+			break
 	_key(KEY_D, false)
 	await _frames(3)
-	_check(_actor.global_position.distance_to(before) > 0.5, "移除 Flight 后 Movement 仍工作")
+	_check(after_flight_travel > 0.5,
+		"移除 Flight 后 Movement 仍工作（位移 %.3f m）" % after_flight_travel)
 	# 恢复装配供后续批次使用。
 	var restored := SwordFlight.new()
 	restored.name = "SwordFlight"
@@ -690,7 +727,7 @@ func _batch_collision() -> void:
 	var contact_frames := 0
 	var violations := 0
 	var deepest := 0.0
-	for _index in range(240):
+	for _index in range(frames_for_walk(240)):
 		await physics_frame
 		if _slide_contacts(wall):
 			contact_frames += 1
@@ -789,7 +826,8 @@ func _batch_landing(landing_name: String) -> void:
 	_check(await _cruise_to(descent, safe_y, 900),
 		"② 平移到 %s 上空（水平偏移 %.2f m；轨迹 %s）" % [landing_name, _horizontal_distance(descent), " | ".join(_cruise_trace)])
 	# 步幅必须证明真的在动（>0）且不超过御剑速度 × dt（防零常量假通过）。
-	var flight_step_limit := FLIGHT_SPEED * _actor.get_physics_process_delta_time() + 0.01
+	# 类型必须显式标注：flight_speed() 是函数调用，GDScript 无法从返回值推断（:= 会报错）。
+	var flight_step_limit: float = flight_speed() * _actor.get_physics_process_delta_time() + 0.01
 	_check(_cruise_step > 0.05 and _cruise_step <= flight_step_limit,
 		"巡航步幅真实且不超御剑速度（最大 %.3f m/帧，上限 %.3f）" % [_cruise_step, flight_step_limit])
 	_check(_motion.flight_active, "③ 抵达 %s 上空时御剑仍开启" % landing_name)
@@ -956,11 +994,23 @@ func _batch_step() -> void:
 	_set_actor(Vector3(-32.0, 12.02, 30.0))
 	_check(await _wait_floor(120, 12.0), "站在低台阶西侧庭院地面")
 	var target := Vector3(step.position.x, 0.0, step.position.z)
+	# 阶段一：先真实走到台阶边缘附近再起跳。
+	#
+	# 原本是「从起点直接起跳」，那在疾行 3.45 m/s 时成立（0.667 s 弧线内水平走 2.30 m，够跨过
+	# 1.4 m 的间距）。疾行改为实测 2.25 m/s 后弧线只走 1.50 m，落点差一点，永远上不去。
+	# 台阶高 0.55 m 远低于 1.0 m 顶点，跳跃本身没问题，错的只是起跳时机。
+	var edge_x := float(step.position.x) + 1.4   # 台阶在 X 方向半宽 1.1，留 0.3 余量
+	for _index in range(frames_for_walk(120)):
+		_drive_move_keys(Vector3(edge_x, 0.0, target.z))
+		await physics_frame
+		if absf(_actor.global_position.x - edge_x) < 0.25:
+			break
+	# 阶段二：保持前进，在边缘处起跳。
 	_key(KEY_SPACE, true)
 	await _frames(1)
 	_key(KEY_SPACE, false)
 	var on_step := false
-	for _index in range(180):
+	for _index in range(frames_for_walk(180)):
 		_drive_move_keys(target)
 		await physics_frame
 		if _motion.on_floor and absf(_actor.global_position.y - top_y) < 0.12:
@@ -1068,7 +1118,7 @@ func _batch_bounds() -> void:
 	_release_all()
 	_key(KEY_SPACE, true)
 	var ceiling_hit := false
-	for _index in range(600):
+	for _index in range(frames_for_walk(600)):
 		await physics_frame
 		if _slide_contacts(current_scene.get_node_or_null("World/Boundaries/Ceiling")):
 			ceiling_hit = true
@@ -1087,7 +1137,7 @@ func _batch_bounds() -> void:
 ## 真实按键飞向目标方向直到被指定边界节点挡住（滑动碰撞命中或速度被压到 0）。
 func _cruise_blocked(target: Vector3, boundary_path: String) -> bool:
 	var boundary := current_scene.get_node_or_null(boundary_path)
-	for index in range(900):
+	for index in range(frames_for_walk(900)):
 		if index % 4 == 0:
 			_drive_move_keys(target)
 		await physics_frame
@@ -1097,6 +1147,16 @@ func _cruise_blocked(target: Vector3, boundary_path: String) -> bool:
 			return true
 	_release_move_keys()
 	return false
+
+
+## 静止默认 clip：负手而立（资产含该手作姿态时），否则 idle。
+## 集中一处，默认待机再变时只改这里。
+func _idle_clip() -> String:
+	var presentation := _actor.get_node_or_null("Visual/CultivatorSkeletonPresentation")
+	if presentation != null and bool(presentation.get("prefer_guarded_idle")) \
+			and bool(presentation.call("has_state", "idle_guarded")):
+		return "idle_guarded"
+	return "idle"
 
 
 func _box_top_y(box_name: String) -> float:
@@ -1152,7 +1212,7 @@ func _batch_hall() -> void:
 	var entered := false
 	var through_door := true
 	_key(KEY_S, true)
-	for _index in range(300):
+	for _index in range(frames_for_walk(300)):
 		if _index % 4 == 0:
 			_walk_step_toward(Vector3(4.0, 0.0, -49.5))
 		await physics_frame
@@ -1175,7 +1235,7 @@ func _batch_hall() -> void:
 	_release_move_keys()
 	var back_out := false
 	_key(KEY_W, false)
-	for _index in range(300):
+	for _index in range(frames_for_walk(300)):
 		if _index % 4 == 0:
 			_walk_step_toward(Vector3(4.0, 0.0, -42.0))
 		await physics_frame
@@ -1190,8 +1250,12 @@ func _batch_hall() -> void:
 ## 台阶爬升：面向目标分级推进，每级用跳跃，直到「平面到达 + 着地 + 高度贴合」才接受。
 ## 只在跳跃途中满足高度会假通过（随后落地高度不同），因此必须要求 on_floor。
 func _climb_stairs_to(target: Vector3, timeout_frames: int) -> bool:
+	# 上台阶靠「边走边跳」，跳跃间隔决定了每个跳弧的水平覆盖距离：弧线滞空 0.667 s，
+	# 间隔 6 帧（0.1 s）在疾行 3.45 m/s 时够用，改到实测 2.25 m/s 后每级台阶都差一点。
+	# 按当前速度换算间隔，使每个弧线覆盖的水平距离与原来一致。
+	var jump_interval := maxi(4, int(round(6.0 * 3.45 / maxf(_motion.sprint_speed, 0.1))))
 	for _index in range(timeout_frames):
-		if _index % 6 == 0:
+		if _index % jump_interval == 0:
 			_walk_step_toward(target)
 			_key(KEY_SPACE, true)
 			await physics_frame
@@ -1309,8 +1373,9 @@ func _batch_presentation() -> void:
 	for _index in range(30):
 		await _frames(1)
 	var stopped := presentation.call("pose_state") as Dictionary
-	_check(str(stopped.get("current_clip", "")) == "idle",
-		"停步后当前 clip 回到 idle（实际 %s）" % str(stopped.get("current_clip", "")))
+	_check(str(stopped.get("current_clip", "")) == _idle_clip(),
+		"停步后当前 clip 回到静止默认 %s（实际 %s）"
+		% [_idle_clip(), str(stopped.get("current_clip", ""))])
 	_check(absf(float(stopped.get("speed", 1.0))) < 0.05,
 		"停步后快照水平速度归零（%.3f）" % float(stopped.get("speed", 1.0)))
 	_check(absf(player.speed_scale - 1.0) < 0.05,

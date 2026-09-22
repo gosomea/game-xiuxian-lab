@@ -102,8 +102,11 @@ func _run() -> void:
 	# 静立时按 Shift 不得进入 run：疾行只在真有移动输入时生效。
 	_key(KEY_SHIFT, true)
 	await _frames(20)
-	_check(str(_presentation.call("pose_state").get("current_clip", "")) == "idle",
-		"静立按 Shift 仍是 idle（不误触发奔跑姿态）")
+	# 静止默认姿态是负手而立（若资产含该手作姿态），否则 idle。按 Shift 不得改变它。
+	var still_wanted := "idle_guarded" if _presentation.call("has_state", "idle_guarded") \
+		and bool(_presentation.get("prefer_guarded_idle")) else "idle"
+	_check(str(_presentation.call("pose_state").get("current_clip", "")) == still_wanted,
+		"静立按 Shift 仍是 %s（不误触发奔跑姿态）" % still_wanted)
 	_key(KEY_SHIFT, false)
 	await _frames(10)
 
@@ -119,9 +122,12 @@ func _run() -> void:
 	await _capture_state("flight", 2, false)
 	var flight_pose: Dictionary = _presentation.call("pose_state")
 	_check(bool(flight_pose.get("flying", false)), "御剑状态写入公开快照")
-	_check(str(flight_pose.get("current_clip", "")) == "idle",
-		"御剑映射到 idle@0.6（flying 分支优先于速度分支，实际 %s）"
-		% str(flight_pose.get("current_clip", "")))
+	# 御剑优先用专门手作的 sword_ride 姿态；旧四段资产才退回 idle@0.6。
+	var ride_present: bool = _presentation.call("has_state", "sword_ride")
+	var wanted_clip := "sword_ride" if ride_present else "idle"
+	_check(str(flight_pose.get("current_clip", "")) == wanted_clip,
+		"御剑映射到 %s（flying 分支优先于速度分支，实际 %s）"
+		% [wanted_clip, str(flight_pose.get("current_clip", ""))])
 	_check(float(flight_pose.get("speed", 0.0)) > CultivatorSkeletonPresentation.RUN_SPEED_MPS,
 		"御剑速度确实超过 run 阈值（%.2f m/s），证明 run 分支是被 flying 抢先而非速度不足"
 		% float(flight_pose.get("speed", 0.0)))

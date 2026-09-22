@@ -1,0 +1,19 @@
+{
+  "run_sprint": {
+    "frames": 17,
+    "fps": 30,
+    "duration_s": 0.5667,
+    "method": "planted-foot-stance",
+    "stationary": true,
+    "usable_stance_steps": 0,
+    "step_meters": 0.0,
+    "stride_meters": 0.0,
+    "stance_seconds": 0.0,
+    "cycle_seconds": 0.5667,
+    "cadence_cycles_per_s": 1.7647,
+    "natural_speed_mps": 0.0,
+    "median_path_wobble_m": 0.0,
+    "max_path_wobble_m": 0.0,
+    "detail": []
+  }
+}

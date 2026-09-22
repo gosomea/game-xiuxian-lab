@@ -10,6 +10,10 @@ subjective, so this scores the raw animation tracks instead:
   centimetres, not tens of centimetres, and should never fold the spine.
 * **root travel** -- the Hips translation's horizontal first-to-last delta. `In Place` is
   on, so this should be near zero.
+* **facing bias** -- the MEAN of the hips yaw over the clip. A retarget can rotate the whole
+  body about the vertical axis while leaving height, step rate and root travel all healthy,
+  which is how a run clip that faced 32 degrees off its own forward once shipped. Gait
+  normally wobbles around zero, so the check is on the sustained offset, not the span.
 * **per-bone rotation sanity** -- the angular rate per second across every bone. A retarget
   glitch shows up as a near-180 degree snap inside one frame; a genuinely fast motion
   spreads the same rotation over many frames.
@@ -94,7 +98,8 @@ def quat_delta(a, b) -> float:
 LOCOMOTION = {"idle", "walk", "run"}
 
 
-def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> dict:
+def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0,
+          yaw_bias_limit_deg: float = 20.0) -> dict:
     doc, blob = read_glb(path)
     names = [n.get("name") for n in doc["nodes"]]
     if not doc.get("animations"):
@@ -107,6 +112,8 @@ def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> 
     worst_bone_angle = {"bone": None, "degrees": 0.0}
     all_rates: list[float] = []
     duration = 0.0
+    # Root yaw samples, for the facing check below.
+    hips_rotations: list[list[float]] = []
 
     for channel in anim["channels"]:
         target = channel["target"]
@@ -116,6 +123,12 @@ def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> 
         stride = TYPE_COUNT[doc["accessors"][sampler["output"]]["type"]]
         duration = max(duration, float(times[-1]))
         bone = names[target["node"]]
+
+        if target["path"] == "rotation" and bone.endswith("Hips"):
+            hips_rotations = [
+                values[i * stride : (i + 1) * stride]
+                for i in range(len(values) // stride)
+            ]
 
         if target["path"] == "translation" and bone.endswith("Hips"):
             ys = values[1::stride]
@@ -165,6 +178,36 @@ def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> 
     )
     worst_rate = worst_step["deg_per_s"] if math.isfinite(worst_step["deg_per_s"]) else 0.0
 
+    # --- facing check -------------------------------------------------------------
+    # A retarget can rotate the whole body about the vertical axis while leaving every other
+    # measurable property intact. That is exactly how a badly-rotated run clip shipped once:
+    # its hips sat at a steady +32 deg of yaw for the whole loop, so the character ran facing
+    # 32 degrees off its own forward, while the clip still passed the collapse, step-rate and
+    # in-place checks. A wobble around zero is normal gait; a sustained offset is not, so the
+    # test is on the MEAN, not the span.
+    hip_yaw = None
+    if hips_rotations:
+        yaws = []
+        for q in hips_rotations:
+            x, y, z, w = q
+            # Which quaternion component carries "turned sideways" was established by
+            # comparing against Blender, not assumed: the good clips sit near the identity
+            # with their weight in X (a small forward pitch), while a clip measured at +32
+            # deg of yaw has its weight in Y (0.320 vs 0.001). Reading Z instead reported
+            # only +1.6 deg and silently missed the defect. So yaw is read from Y:
+            #   angle = 2 * asin(y)
+            # which is exact for a pure yaw and agrees with Blender to a few degrees when
+            # pitch and roll are also present (X/Z coupling).
+            y_yaw = max(-1.0, min(1.0, y))
+            yaws.append(math.degrees(2.0 * math.asin(y_yaw)))
+        mean_yaw = sum(yaws) / len(yaws)
+        hip_yaw = {
+            "mean_deg": round(mean_yaw, 2),
+            "min_deg": round(min(yaws), 2),
+            "max_deg": round(max(yaws), 2),
+            "span_deg": round(max(yaws) - min(yaws), 2),
+        }
+
     verdict = []
     if hips_y and hips_y["span"] > span_limit:
         verdict.append(
@@ -179,6 +222,11 @@ def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> 
         verdict.append(
             f"root travels {hips_xz_travel['horizontal_delta']:.3f} m (In Place expected ~0)"
         )
+    if hip_yaw and abs(hip_yaw["mean_deg"]) > yaw_bias_limit_deg:
+        verdict.append(
+            f"body is rotated {hip_yaw['mean_deg']:+.1f} deg off its forward axis for the whole "
+            f"loop (limit {yaw_bias_limit_deg:.0f} deg) -- retarget turned the character sideways"
+        )
 
     return {
         "file": path.name,
@@ -187,6 +235,7 @@ def score(path: Path, kind: str = "locomotion", max_step_deg: float = 100.0) -> 
         "duration_s": round(duration, 3),
         "channels": len(anim["channels"]),
         "hips_translation": hips_y,
+        "hips_yaw": hip_yaw,
         "root_travel": hips_xz_travel,
         "worst_single_step": worst_step,
         "p95_angular_rate": round(baseline, 1),
@@ -203,6 +252,10 @@ def main() -> int:
     parser.add_argument("--report", default="")
     parser.add_argument("--max-step-deg", type=float, default=100.0,
                         help="largest rotation allowed in one sample (default: %(default)s)")
+    parser.add_argument("--yaw-bias-deg", type=float, default=20.0,
+                        help="largest sustained offset of the hips yaw from the forward axis; "
+                             "a retarget that turns the body sideways trips this "
+                             "(default: %(default)s)")
     args = parser.parse_args()
 
     results = []
@@ -217,7 +270,7 @@ def main() -> int:
         if not path.is_file():
             print(f"FAIL: missing {path}", file=sys.stderr)
             return 2
-        results.append(score(path, kind, args.max_step_deg))
+        results.append(score(path, kind, args.max_step_deg, args.yaw_bias_deg))
 
     for entry in results:
         if "error" in entry:

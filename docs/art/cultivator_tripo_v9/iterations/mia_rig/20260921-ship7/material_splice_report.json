@@ -1,7 +1,7 @@
 {
   "asset": "cultivator_tripo_v9",
   "phase": "material_splice",
-  "target": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb",
+  "target": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v4.glb",
   "source": "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
   "material": {
     "name": "Material.001",
@@ -19,8 +19,8 @@
     "samplers": 1
   },
   "output": {
-    "bytes": 77513468,
-    "sha256": "166dab5e1cc2e70ac65b8fdfd13dd9219bfbdfe9ae767fbdf2472f41a041aab7",
+    "bytes": 77507924,
+    "sha256": "229c5d1cc0970cb7a57b1bfe6e545c514c7d636df7766c8a8be8c08ded447c0e",
     "meshes": 1,
     "triangles": 599417,
     "nodes": 24,
@@ -56,7 +56,7 @@
       {
         "name": "run",
         "channels": 69,
-        "seconds": 0.767
+        "seconds": 0.567
       },
       {
         "name": "sword_ride",

@@ -120,6 +120,12 @@ const FLIGHT_RING_RADIUS := 3.2
 ## 三个机位都抬高到 3 m 以上，让地面刻度不再是近乎正切的窄带。
 enum StageView { FRONT, SIDE, THREE_QUARTER }
 const VIEW_NAMES: Array[String] = ["正面", "侧面", "斜侧"]
+## 手作姿态循环表（G 键）。空串代表「回到自动选动作」。
+## 这三个状态是库中没有、在本骨架上手工摆出的（tools/art/author_cultivator_pose.py），
+## 此前只能经表现层 API 手动驱动，工作台上看不到——G 键让它们可被人直接查看。
+const AUTHORED_STATES: Array[String] = ["idle_guarded", "meditate", "sword_ride", ""]
+const KEY_AUTHORED_CYCLE := KEY_G
+
 const VIEW_HINT: Array[String] = [
 	"相机在跑道尽头（读角色正面与转身）",
 	"相机在跑道侧面（横贯画面，读步态）",
@@ -159,11 +165,17 @@ var _player: Swordsman
 var _motion: SwordsmanMotionComponent
 var _presentation: Node3D
 var _input := MovementLabInput.new()
-var _view: int = StageView.THREE_QUARTER
+## 默认机位：正面。角色 aim 固定为 +X，而正面机位在跑道 +X 端回看，人物正对镜头。
+## 曾经的默认是 THREE_QUARTER（3/4 俯视），此时人物相对屏幕是斜的，容易被误读成
+## 「人物站歪了」——实际是取景角度。3/4 仍可用 3 键或 TAB 切换。
+var _view: int = StageView.FRONT
 ## 镜头装配（camera_rig 包）：本场景只持有引用用于视角配置与目标切换，不写 Camera3D。
 var _rig: CameraRig
 var _jump_edges := 0
 var _flight_edges := 0
+## AUTHORED_STATES 的当前下标。初值取末项（空串 = 自动），因此**第一次按 G 会到达
+## 表首的 idle_guarded**，而不是跳过它——下标在切换时先自增。
+var _authored_index := AUTHORED_STATES.size() - 1
 var _physics_ticks := 0
 
 ## 共享 HUD 与预览面板都用无类型变量持有：它们来自别的包/别的 agent 维护的脚本，
@@ -268,6 +280,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				KEY_TAB:
 					_apply_view((_view + 1) % VIEW_NAMES.size(), false)
 					get_viewport().set_input_as_handled()
+				KEY_G:
+					# 循环手作姿态。走表现层公开 API，不直接碰 AnimationPlayer。
+					_cycle_authored_state()
+					get_viewport().set_input_as_handled()
 				KEY_R:
 					get_viewport().set_input_as_handled()
 					_reset_experiment()
@@ -291,6 +307,27 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## 场景先写输入、actor 子节点随后 tick（父节点 _physics_process 先于子节点）。
+## G 键：依次切到手作姿态，最后一项回到自动选动作。
+##
+## 只在实时模式生效（预览模式有自己的一套程序化动作，混入会互相打架）。
+## 打坐是坐姿，与站立动作之间不做物理插值——切换即换姿态，与表现层的交叉淡化一致。
+func _cycle_authored_state() -> void:
+	if _mode != StageMode.REALTIME or _presentation == null:
+		return
+	_authored_index = (_authored_index + 1) % AUTHORED_STATES.size()
+	var wanted := AUTHORED_STATES[_authored_index]
+	if wanted.is_empty():
+		_presentation.call("release_state")
+		return
+	if not bool(_presentation.call("has_state", wanted)):
+		# 资产没有这个手作状态（旧四段资产）：如实报一次并继续循环，不静默假装成功。
+		push_warning("motion_stage: 资产不含手作状态 %s，跳过" % wanted)
+		_authored_index = AUTHORED_STATES.size() - 1
+		_presentation.call("release_state")
+		return
+	_presentation.call("play_state", wanted)
+
+
 func _physics_process(_delta: float) -> void:
 	if _player == null or _motion == null:
 		return
@@ -691,7 +728,7 @@ func _build_hud() -> void:
 	# 短 kicker + 短 hint：LabHud 的 Label 不自动换行，长文案会在 960×640 下撑宽面板。
 	# 完整操作说明与实验问题放折叠详情（H / F1）与 tooltip，不常显。
 	_hud.configure("", "人物动作工作台", "程序预览 · M 实时 · H 详情")
-	_hud.set_controls("WASD 移动 · Shift 疾行 · Space 跳跃/预览播放 · Ctrl 下降 · F 御剑 · M 实时/预览模式 · "
+	_hud.set_controls("WASD 移动 · Shift 疾行 · Space 跳跃/预览播放 · G 手作姿态 · Ctrl 下降 · F 御剑 · M 实时/预览模式 · "
 		+ "1/2/3 正面/侧面/斜侧机位 · 滚轮缩放 · R 重置 · H 详情 · Esc 返回子实验目录")
 	_hud.set_question("待机、起步、跑动、跳跃、御剑及其过渡是否清楚？")
 	_hud.return_pressed.connect(_return_to_hub)
@@ -1028,6 +1065,12 @@ func _update_hud() -> void:
 	lines.append("足滑度量  %s" % foot_sliding_status())
 	lines.append("原速参考  %.2f m/s（该速度下播放速率=1.0；与足滑是两件事，不互相替代）" % _stride_meters())
 	lines.append("视角  %s（%s）" % [view_name(), VIEW_HINT[_view]])
+	# 手作姿态状态：空 = 自动选动作。让 G 键的效果在 HUD 上可读，而不是只能靠看画面。
+	var authored := AUTHORED_STATES[_authored_index]
+	if authored.is_empty():
+		lines.append("手作姿态  自动（G 循环：负手 / 打坐 / 御剑）")
+	else:
+		lines.append("手作姿态  %s（G 循环，末项回到自动）" % authored)
 	_hud.set_debug_lines(lines)
 
 

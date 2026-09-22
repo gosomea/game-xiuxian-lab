@@ -1,0 +1,66 @@
+{
+  "input": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_run_slot2.fbx",
+  "output": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_run_slot2.fbx",
+  "bytes": 29436940,
+  "frames": [
+    1,
+    17
+  ],
+  "lean_before_deg": -17.465,
+  "lean_after_deg": 1.314,
+  "target_lean_deg": 1.6,
+  "residual_deg": -0.286,
+  "probe_axis": "X",
+  "probe_bone": "mixamorig:Spine",
+  "probe_response_deg_per_deg": -0.827,
+  "probe_all_axes": {
+    "mixamorig:Spine.X": -0.827,
+    "mixamorig:Spine.Y": -0.0975,
+    "mixamorig:Spine.Z": 0.1712,
+    "mixamorig:Spine1.X": -0.6452,
+    "mixamorig:Spine1.Y": -0.0514,
+    "mixamorig:Spine1.Z": 0.2029,
+    "mixamorig:Spine2.X": -0.4408,
+    "mixamorig:Spine2.Y": 0.0076,
+    "mixamorig:Spine2.Z": 0.1907
+  },
+  "rotation_applied_total_deg": -34.822,
+  "refinement_passes": [
+    {
+      "pass": 1,
+      "before": -17.465,
+      "after": -4.998,
+      "correction_deg": -23.053,
+      "accepted": true
+    },
+    {
+      "pass": 2,
+      "before": -4.998,
+      "trial": -0.72,
+      "correction_deg": -7.978,
+      "accepted": true
+    },
+    {
+      "pass": 3,
+      "before": -0.72,
+      "trial": 0.785,
+      "correction_deg": -2.806,
+      "accepted": true
+    },
+    {
+      "pass": 4,
+      "before": 0.785,
+      "trial": 1.314,
+      "correction_deg": -0.985,
+      "accepted": true
+    }
+  ],
+  "converged": true,
+  "rotation_per_bone_deg": -7.684,
+  "stripped_object_curves": [
+    "location",
+    "rotation_euler",
+    "scale"
+  ],
+  "method": "measure mean hips->head lean, probe the spine axis that moves it, bake a constant counter-rotation across the spine chain, then export bone curves only so the downstream floor shift is not applied twice"
+}

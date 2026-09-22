@@ -30,16 +30,19 @@ extends Node3D
 ## walk 动作以**原速**（播放速率 1.0）播放时对应的移动速度（米/秒）。
 ## 契约：播放速率 = 实际速度 / 该值。实测 1.288 m/s（见 tools/art/measure_clip_stride.py）。
 @export var walk_reference_mps: float = 1.288
-## run 动作以原速播放时对应的移动速度（米/秒）。实测 3.426 m/s。
-@export var run_reference_mps: float = 3.426
+## run 动作以原速播放时对应的移动速度（米/秒）。
+## 实测 2.0305 m/s —— 由 tools/art/measure_clip_excursion.py 量出（Sprint 只有 17 帧，
+## 支撑期仅 1–2 帧，measure_clip_stride.py 的支撑法无法判定，故用脚相对髋的摆幅法）。
+@export var run_reference_mps: float = 2.0305
 ## 御剑前倾（弧度）。**仅用于退回路径**：资产没有 sword_ride 时，御剑以 idle 抬速呈现，
 ## 由本参数补出前倾。有 sword_ride 时前倾由该姿态自带，本参数不参与。
 @export var flight_lean: float = 0.21
 
 ## 动作切换阈值（米/秒）：取在两档实际速度之间，使按住/松开加速键时真的切换 clip。
-## 走 1.55 m/s、跑 3.45 m/s（见 SwordsmanMotionComponent），阈值取其间。
+## 走 1.55 m/s、疾行 2.25 m/s（见 SwordsmanMotionComponent）。取两档中点 1.9 而不是贴着
+## 其中一档，这样任一侧调速后阈值仍有意义，不至于因一点点偏差就跳档。
 const WALK_SPEED_MPS := 0.3
-const RUN_SPEED_MPS := 2.2
+const RUN_SPEED_MPS := 1.9
 const BLEND := 0.15
 const IDLE_FLIGHT_RATE := 0.6
 
@@ -53,6 +56,10 @@ const ONESHOT_CLIPS: Array[String] = ["jump"]
 ## 表现层照常工作，只是对应状态退化为 idle。用 `has_animation` 判定，不做硬前置断言——
 ## 旧的四段资产仍必须能跑。
 const OPTIONAL_GUARDED_IDLE := "idle_guarded"
+## true = 静止时用「负手而立」手作姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
+## 默认开启：负手而立比库里的休闲站姿更贴修士气质，这是使用者的选择。
+## 仍走 has_state() 判定，因此旧四段资产照常工作。
+@export var prefer_guarded_idle: bool = true
 const OPTIONAL_MEDITATE := "meditate"
 const OPTIONAL_SWORD_RIDE := "sword_ride"
 
@@ -93,7 +100,8 @@ func _ready() -> void:
 	if not auto_read_actor:
 		_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 		_manual_advance = true
-	_player.play("idle")
+	_current = _default_idle_clip()
+	_player.play(_current)
 
 
 ## glTF 导入的 clip 默认是 LOOP_NONE（实测 v9 GLB 四个 clip 全为 0）。若不显式修正，
@@ -174,6 +182,10 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	elif speed > WALK_SPEED_MPS:
 		target = "walk"
 		rate = speed / maxf(walk_reference_mps, 0.01)
+	elif prefer_guarded_idle and has_state(OPTIONAL_GUARDED_IDLE):
+		# 静止：优先用手作的「负手而立」。它自带端正站姿，不需要按速度调整速率。
+		target = OPTIONAL_GUARDED_IDLE
+		rate = 1.0
 	else:
 		target = "idle"
 
@@ -207,6 +219,16 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	_record_pose(velocity, speed, grounded, flying)
 
 
+## 静止默认 clip：负手而立（若可用且启用），否则普通 idle。
+##
+## 起手与 reset 都走这里，保证「进场景看到的站姿」与「停下后的站姿」一致——
+## 两处各写一次会让静止姿态在 reset 后悄悄变回 idle。
+func _default_idle_clip() -> String:
+	if prefer_guarded_idle and has_state(OPTIONAL_GUARDED_IDLE):
+		return OPTIONAL_GUARDED_IDLE
+	return "idle"
+
+
 ## 是否有某个额外手作状态（资产可能是四段旧版，此时为 false）。
 func has_state(clip: String) -> bool:
 	return _player != null and _player.has_animation(clip)
@@ -237,9 +259,9 @@ func release_state() -> void:
 ## 回到中性姿态（预览循环起点用）。
 func reset_pose() -> void:
 	_clock = 0.0
-	_current = "idle"
+	_current = _default_idle_clip()
 	_player.speed_scale = 1.0
-	_player.play("idle", BLEND)
+	_player.play(_default_idle_clip(), BLEND)
 	if _model != null:
 		_model.rotation.x = 0.0
 	_record_pose(Vector3.ZERO, 0.0, true, false)

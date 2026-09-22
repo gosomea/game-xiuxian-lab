@@ -1,0 +1,50 @@
+{
+  "sprint": {
+    "file": "clip_run_slot2.fbx",
+    "frames": 17,
+    "fps": 30,
+    "duration_s": 0.5667,
+    "foot_excursion_m": 1.1506,
+    "per_foot_excursion_m": {
+      "mixamorig:LeftToeBase": 1.1538,
+      "mixamorig:RightToeBase": 1.1474
+    },
+    "step_meters": 0.5753,
+    "stride_meters": 1.1506,
+    "natural_speed_mps": 2.0305,
+    "method": "foot excursion relative to hips / one cycle per clip",
+    "assumption": "clip contains exactly one gait cycle"
+  },
+  "fast_run": {
+    "file": "clip_run_slot2.fbx",
+    "frames": 17,
+    "fps": 30,
+    "duration_s": 0.5667,
+    "foot_excursion_m": 1.2486,
+    "per_foot_excursion_m": {
+      "mixamorig:LeftToeBase": 1.2506,
+      "mixamorig:RightToeBase": 1.2466
+    },
+    "step_meters": 0.6243,
+    "stride_meters": 1.2486,
+    "natural_speed_mps": 2.2034,
+    "method": "foot excursion relative to hips / one cycle per clip",
+    "assumption": "clip contains exactly one gait cycle"
+  },
+  "walk": {
+    "file": "clip_walk_slot2.fbx",
+    "frames": 43,
+    "fps": 30,
+    "duration_s": 1.4333,
+    "foot_excursion_m": 0.9385,
+    "per_foot_excursion_m": {
+      "mixamorig:LeftToeBase": 0.9498,
+      "mixamorig:RightToeBase": 0.9273
+    },
+    "step_meters": 0.4693,
+    "stride_meters": 0.9385,
+    "natural_speed_mps": 0.6548,
+    "method": "foot excursion relative to hips / one cycle per clip",
+    "assumption": "clip contains exactly one gait cycle"
+  }
+}
