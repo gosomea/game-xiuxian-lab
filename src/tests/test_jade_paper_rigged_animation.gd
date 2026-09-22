@@ -80,13 +80,20 @@ static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentati
 	t.assert_true(absf(animation_player.speed_scale - 1.55 / 1.288) < EPSILON,
 		"walk 切换首帧即按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
 
-	# 疾行：3.45 m/s（sprint_speed）越过 2.2 阈值，进入 run 带。
-	presentation.advance_state(_state(Vector3(3.45, 0.0, 0.0), true, false), 0.1)
+	# 疾行：用组件实际导出值（当前 2.25 m/s），越过 run 阈值进入 run 带。
+	# 不写死数字：写死会在每次标定后变成假失败（本用例已如此失败过一次）。
+	var script := load("res://game/actors/swordsman/swordsman_motion_component.gd") as GDScript
+	var probe_motion := script.new() as SwordsmanMotionComponent
+	var sprint_speed := probe_motion.sprint_speed
+	var run_reference := float(presentation.get("run_reference_mps"))
+	probe_motion.free()
+	presentation.advance_state(_state(Vector3(sprint_speed, 0.0, 0.0), true, false), 0.1)
 	var run := presentation.pose_state()
 	t.assert_eq(str(run.get("current_clip", "")), "run",
-		"3.45 m/s（疾行）映射到 run —— run 不再是死分支")
-	t.assert_true(absf(animation_player.speed_scale - 3.45 / 3.426) < EPSILON,
-		"run 按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
+		"%.2f m/s（疾行）映射到 run —— run 不再是死分支" % sprint_speed)
+	t.assert_true(absf(animation_player.speed_scale - sprint_speed / run_reference) < EPSILON,
+		"run 按实际速度同步播放率（%.3f，参考 %.3f m/s）" % [
+			animation_player.speed_scale, run_reference])
 	# 走/跑两档都必须真能触发，否则 run clip 仍不可达。
 	t.assert_true(
 		float(walk.get("speed", 0.0)) < CultivatorSkeletonPresentation.RUN_SPEED_MPS
@@ -117,7 +124,12 @@ static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentati
 
 	presentation.reset_pose()
 	var reset := presentation.pose_state()
-	t.assert_eq(str(reset.get("current_clip", "")), "idle", "reset_pose 回到 idle")
+	# 静止默认 clip 是「负手而立」（若资产含该手作姿态），否则退回普通 idle。
+	# 断言实际默认而不是写死 idle：写死会在默认待机换代时变成假失败。
+	var want_idle := "idle_guarded" if presentation.has_state("idle_guarded") \
+		and bool(presentation.get("prefer_guarded_idle")) else "idle"
+	t.assert_eq(str(reset.get("current_clip", "")), want_idle,
+		"reset_pose 回到默认静止姿态 %s" % want_idle)
 	t.assert_true(absf(float(reset.get("clock", -1.0))) < EPSILON,
 		"reset_pose 同步归零表现时钟（%.3f）" % float(reset.get("clock", -1.0)))
 

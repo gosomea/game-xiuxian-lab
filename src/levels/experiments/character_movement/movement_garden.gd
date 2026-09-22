@@ -31,6 +31,10 @@ const OBSTACLE_POSITIONS: Array[Vector3] = [
 ]
 
 ## 物理键 → 屏幕输入（x = 右，y = 下）。用物理键码维护 pressed 字典，不看键盘布局。
+## 疾行键。本场景自带输入表、不加载 MovementLabInput，因此在此本地声明，
+## 而不是引用那个 helper 的常量（裸引用会解析失败——本场景曾因此整篇解析错误）。
+const KEY_SPRINT := KEY_SHIFT
+
 const MOVE_KEYS := {
 	KEY_W: Vector2(0.0, -1.0),
 	KEY_S: Vector2(0.0, 1.0),

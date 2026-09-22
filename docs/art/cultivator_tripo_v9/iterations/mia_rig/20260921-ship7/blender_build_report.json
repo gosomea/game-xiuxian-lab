@@ -54,7 +54,7 @@
       "action": "run",
       "frame_range": [
         1.0,
-        23.0
+        17.0
       ],
       "fcurves": 229,
       "smooth_normals": true,
@@ -177,20 +177,20 @@
     "per_clip_low": {
       "idle": -0.98607,
       "walk": -1.01232,
-      "run": -1.00537
+      "run": -1.05332
     },
-    "lowest": -1.01232
+    "lowest": -1.05332
   },
-  "ground_offset_m": 1.01232,
+  "ground_offset_m": 1.05332,
   "ground_shift": {
-    "offset_y": 1.01232,
+    "offset_y": 1.05332,
     "static_root_translations": [
       {
         "node": 23,
         "name": "Armature",
         "translation": [
           0.0,
-          1.01232,
+          1.05332,
           0.0
         ]
       }
@@ -209,7 +209,7 @@
       {
         "animation": "run",
         "accessor": 347,
-        "samples": 23
+        "samples": 17
       },
       {
         "animation": "walk",
@@ -222,7 +222,7 @@
     ]
   },
   "output": {
-    "file": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb",
-    "bytes": 44521976
+    "file": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v4.glb",
+    "bytes": 44516432
   }
 }

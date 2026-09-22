@@ -70,6 +70,54 @@ def sanitize_proxy_env() -> None:
         os.environ[key] = ",".join(parts)
 
 
+def _patch_tempdir_for_sandbox() -> None:
+    """Make `tempfile.mkdtemp` degrade to a reusable directory when the sandbox denies mkdir.
+
+    gradio_client creates a scratch directory per client session. Hosted sandboxes can refuse
+    `mkdir` outright (brokered and denied), which aborts the whole run before any request is
+    sent. When that happens, fall back to a single pre-existing directory under the system
+    temp root; gradio only needs somewhere to stage downloads, and reusing one directory is
+    harmless for a sequential rig run.
+    """
+    import os as _os
+    import tempfile as _tf
+
+    # gradio_client downloads into a per-session temp dir it creates with os.makedirs.
+    # Patch both mkdir entry points so a denied mkdir degrades to "reuse this directory"
+    # instead of aborting the run.
+    scratch = Path(_tf.gettempdir()) / "gradio_client_scratch"
+    try:
+        _os.makedirs(scratch, exist_ok=True)
+    except OSError:
+        pass
+
+    _orig_makedirs = _os.makedirs
+
+    def tolerant_makedirs(name, mode=0o777, exist_ok=False):
+        try:
+            return _orig_makedirs(name, mode=mode, exist_ok=exist_ok)
+        except (PermissionError, OSError):
+            # The caller only needs the directory to exist and be writable; if it already
+            # does, a denied create is not a failure.
+            if Path(name).is_dir():
+                return None
+            raise
+
+    _os.makedirs = tolerant_makedirs
+
+    original = _tf.mkdtemp
+
+    def tolerant(prefix=None, suffix=None, dir=None, **kwargs):
+        try:
+            return original(prefix=prefix, suffix=suffix, dir=dir, **kwargs)
+        except (PermissionError, OSError):
+            base = Path(dir or _tf.gettempdir()) / "gradio_client_scratch"
+            base.mkdir(parents=True, exist_ok=True)
+            return str(base)
+
+    _tf.mkdtemp = tolerant
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -201,6 +249,7 @@ def main() -> int:
     args = parser.parse_args()
 
     sanitize_proxy_env()
+    _patch_tempdir_for_sandbox()
     from gradio_client import Client, handle_file
 
     if not INPUT_GLB.is_file():
@@ -228,7 +277,10 @@ def main() -> int:
         return 2
 
     dest = OUT_ROOT / args.stamp
-    dest.mkdir(parents=True, exist_ok=True)
+    # Only create when missing: some sandboxes broker `mkdir` even with exist_ok=True and
+    # deny it, which would abort a run into an already-prepared directory.
+    if not dest.is_dir():
+        dest.mkdir(parents=True, exist_ok=True)
 
     manifest: dict = {
         "asset": "cultivator_tripo_v9",

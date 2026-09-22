@@ -56,8 +56,9 @@ var sprint_input: bool = false
 ## 取 1.55 使 rate≈1.2，既不破坏 walk clip 的作者节奏，也不至于慢到不像赶路。
 @export var move_speed: float = 1.55
 
-## 参数：疾行水平最大速度（米/秒）。对齐 run clip 的自然速度（实测 3.426 m/s）。
-@export var sprint_speed: float = 3.45
+## 参数：疾行水平最大速度（米/秒）。略高于 run clip 的自然速度 2.03 m/s，
+## 使疾行时播放速率 ≈1.1（略快于原速，读起来像发力），而不是大幅快放。
+@export var sprint_speed: float = 2.25
 
 ## 参数：起跳初速（米/秒）。
 @export var jump_speed: float = 6.0

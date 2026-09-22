@@ -1,0 +1,238 @@
+{
+  "asset": "cultivator_tripo_v9",
+  "phase": "blender_fbx_to_glb",
+  "route": "fbx",
+  "source_iteration": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright",
+  "requested_clips": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "idle_guarded",
+    "meditate",
+    "sword_ride"
+  ],
+  "clips": {
+    "idle": {
+      "fbx": "clip_idle_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "idle",
+      "frame_range": [
+        1.0,
+        299.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "walk": {
+      "fbx": "clip_walk_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "walk",
+      "frame_range": [
+        1.0,
+        43.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "run": {
+      "fbx": "clip_run_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "run",
+      "frame_range": [
+        1.0,
+        17.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "jump": {
+      "fbx": "clip_jump_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "jump",
+      "frame_range": [
+        1.0,
+        66.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "idle_guarded": {
+      "fbx": "clip_idle_guarded_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "idle_guarded",
+      "frame_range": [
+        1.0,
+        90.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "meditate": {
+      "fbx": "clip_meditate_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "meditate",
+      "frame_range": [
+        2.0,
+        91.0
+      ],
+      "fcurves": 220,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    },
+    "sword_ride": {
+      "fbx": "clip_sword_ride_slot2.fbx",
+      "armature": "Armature",
+      "mesh": "mesh",
+      "action": "sword_ride",
+      "frame_range": [
+        1.0,
+        90.0
+      ],
+      "fcurves": 229,
+      "smooth_normals": true,
+      "vertices": 430910,
+      "polygons": 599417,
+      "uv_layers": [
+        "UVMap"
+      ]
+    }
+  },
+  "problems": [],
+  "scene": {
+    "armature": "Armature",
+    "mesh": "mesh",
+    "actions": [
+      "idle",
+      "idle_guarded",
+      "jump",
+      "meditate",
+      "run",
+      "sword_ride",
+      "walk"
+    ],
+    "bones": 27
+  },
+  "mesh": {
+    "name": "mesh",
+    "vertices": 430910,
+    "polygons": 599417,
+    "triangles": 599417,
+    "uv_layers": [
+      "UVMap"
+    ],
+    "materials": [
+      "Material.001"
+    ],
+    "has_custom_normals": true,
+    "vertex_groups": 22
+  },
+  "rest_bounds": {
+    "z_min": -0.9808,
+    "z_max": 0.8617,
+    "height": 1.8425,
+    "x_span": 0.6275,
+    "y_span": 0.6967
+  },
+  "ground_measure": {
+    "method": "lowest evaluated world Z per locomotion clip",
+    "excluded": [
+      "jump"
+    ],
+    "per_clip_low": {
+      "idle": -0.98607,
+      "walk": -1.01232,
+      "run": -1.05332
+    },
+    "lowest": -1.05332
+  },
+  "ground_offset_m": 1.05332,
+  "ground_shift": {
+    "offset_y": 1.05332,
+    "static_root_translations": [
+      {
+        "node": 28,
+        "name": "Armature",
+        "translation": [
+          0.0,
+          1.05332,
+          0.0
+        ]
+      }
+    ],
+    "animated_root_samplers_patched": [
+      {
+        "animation": "idle",
+        "accessor": 89,
+        "samples": 299
+      },
+      {
+        "animation": "idle_guarded",
+        "accessor": 174,
+        "samples": 90
+      },
+      {
+        "animation": "jump",
+        "accessor": 259,
+        "samples": 66
+      },
+      {
+        "animation": "run",
+        "accessor": 426,
+        "samples": 17
+      },
+      {
+        "animation": "sword_ride",
+        "accessor": 174,
+        "samples": 90
+      },
+      {
+        "animation": "walk",
+        "accessor": 591,
+        "samples": 43
+      }
+    ],
+    "root_names": [
+      "Armature"
+    ]
+  },
+  "output": {
+    "file": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v5.glb",
+    "bytes": 30602788
+  }
+}

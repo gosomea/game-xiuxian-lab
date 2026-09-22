@@ -132,7 +132,12 @@ func _run_input_and_physics() -> void:
 	await _frames(2)
 	_key(KEY_W, true)
 	await _frames(3)
-	_check(_motion.actual_velocity.dot(_motion.camera_forward) > 3.5, "W 输入对应相机地面前方速度")
+	# 阈值取自组件当前速度（move_speed），不写死 3.5：写死会在调速度后变成假失败
+	# （实测走速改为 1.55 m/s 后本行即失败）。取 0.8 倍留出加速余量。
+	var speed_floor := _motion.move_speed * 0.8
+	_check(_motion.actual_velocity.dot(_motion.camera_forward) > speed_floor,
+		"W 输入对应相机地面前方速度（%.2f > %.2f m/s）" % [
+			_motion.actual_velocity.dot(_motion.camera_forward), speed_floor])
 	_key(KEY_D, true)
 	await _frames(3)
 	_check(_actor.velocity.length() <= _motion.move_speed + 0.001, "斜向移动不额外加速")
@@ -141,7 +146,9 @@ func _run_input_and_physics() -> void:
 	await _frames(2)
 	_key(KEY_S, true)
 	await _frames(3)
-	_check(_motion.actual_velocity.dot(_motion.camera_forward) < -3.5, "S 输入对应相机地面后方速度")
+	_check(_motion.actual_velocity.dot(_motion.camera_forward) < -speed_floor,
+		"S 输入对应相机地面后方速度（%.2f < -%.2f m/s）" % [
+			_motion.actual_velocity.dot(_motion.camera_forward), speed_floor])
 	_key(KEY_S, false)
 	await _frames(2)
 

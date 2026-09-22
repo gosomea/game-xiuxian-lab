@@ -60,6 +60,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iteration", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--report", required=True)
+    parser.add_argument("--target-lean-deg", type=float, default=1.6,
+                        help="target torso lean in degrees; a little residual keeps the "
+                             "posture from reading as rigid (default: %(default)s)")
     parser.add_argument("--clips", default="",
                         help="comma-separated clip names to bake, in order "
                              "(default: %s)" % ",".join(DEFAULT_CLIPS))
@@ -68,6 +71,21 @@ def parse_args() -> argparse.Namespace:
 
 def empty_scene() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
+
+
+def _lean_module():
+    """Load `cultivator_lean_fix.py` from beside this script.
+
+    Blender runs this file as `__main__` with no package context, so a plain `import` does not
+    find a sibling module; loading it by path keeps the two files independent.
+    """
+    import importlib.util
+
+    module_path = Path(__file__).resolve().parent / "cultivator_lean_fix.py"
+    spec = importlib.util.spec_from_file_location("cultivator_lean_fix", module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def import_fbx(path: Path) -> None:
@@ -157,6 +175,31 @@ def phase_one(iteration: Path, scratch: Path, report: dict, clips: list[str]) ->
         # the longest one.
         actions.sort(key=lambda n: bpy.data.actions[n].frame_range[1], reverse=True)
         action = bpy.data.actions[actions[0]]
+
+        # Correct the inherited torso lean here, in memory, BEFORE anything is exported.
+        #
+        # The auto-rigger hands back a character whose torso leans about 12.5 degrees off
+        # vertical, which reads in game as the figure standing crooked. Fixing it in a separate
+        # tool meant importing and re-exporting an FBX, and Blender's FBX exporter always bakes
+        # the armature OBJECT transform into an animation track - which the floor shift below
+        # then applies a second time, floating the character 1.09 m (measured Armature
+        # translation +2.1066 m = 2 x the 1.0533 m shift). Correcting the pose in memory
+        # removes that whole class of problem.
+        if not armature.animation_data:
+            armature.animation_data_create()
+        armature.animation_data.action = action
+        lean_report = _lean_module().correct_action(
+            armature, bpy.context.scene, action, clip,
+            float(report.get("target_lean_deg", 1.6)))
+        report.setdefault("lean_correction", {})[clip] = lean_report
+        _lean_note = ""
+        if "lean_before_deg" in lean_report:
+            _lean_note = (f" lean {lean_report['lean_before_deg']:+.2f}->"
+                          f"{lean_report['lean_after_deg']:+.2f}deg")
+        elif "skipped" in lean_report:
+            _lean_note = f" lean skipped ({lean_report['skipped']})"
+        else:
+            _lean_note = f" lean ERROR {lean_report.get('error')}"
         for extra in actions[1:]:
             bpy.data.actions.remove(bpy.data.actions[extra])
         action.name = clip
@@ -180,7 +223,7 @@ def phase_one(iteration: Path, scratch: Path, report: dict, clips: list[str]) ->
         }
         print(f"[{clip}] action={action.name} fcurves={count_fcurves(action)} "
               f"frames={tuple(round(v, 2) for v in action.frame_range)} "
-              f"verts={len(mesh.data.vertices)}", flush=True)
+              f"verts={len(mesh.data.vertices)}{_lean_note}", flush=True)
     return written
 
 
@@ -345,7 +388,7 @@ def apply_ground_offset(path: Path, offset: float, report: dict) -> None:
     names = [n.get("name") for n in doc["nodes"]]
     roots = doc["scenes"][doc.get("scene", 0)]["nodes"]
 
-    # (1) static translation on every scene root
+    # (1) static translation on every scene root.
     static = []
     for index in roots:
         node = doc["nodes"][index]
@@ -353,6 +396,7 @@ def apply_ground_offset(path: Path, offset: float, report: dict) -> None:
         translation[1] += offset
         node["translation"] = translation
         static.append({"node": index, "name": node.get("name"), "translation": translation})
+
 
     # (2) the avatar's own translation animation tracks, so clips move with the rest pose
     accessors = doc.get("accessors", [])
@@ -429,6 +473,7 @@ def main() -> int:
         "route": "fbx",
         "source_iteration": str(iteration),
         "requested_clips": clips,
+        "target_lean_deg": args.target_lean_deg,
         "clips": {},
         "problems": [],
     }

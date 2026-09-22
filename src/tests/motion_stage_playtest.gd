@@ -129,6 +129,9 @@ func _run_batches() -> void:
 	if _has("landing"):
 		print("--- batch landing ---")
 		await _batch_landing()
+	if _has("authored"):
+		print("--- batch authored ---")
+		await _batch_authored()
 	if _has("removal"):
 		print("--- batch removal ---")
 		await _batch_removal()
@@ -240,8 +243,8 @@ func _batch_idle() -> void:
 	_check(float(pose.get("gait", 1.0)) < 0.05, "待机时步态增益归零（%.3f）" % float(pose.get("gait", 1.0)))
 	# v9 人物是骨骼 clip 驱动，没有程序化枢轴可读；「站在原地不动」改用 clip 语义断言：
 	# 零速着地必须映射到 idle，且不产生世界位移。
-	_check(str(pose.get("current_clip", "")) == "idle",
-		"待机时映射到 idle clip（实际 %s）" % str(pose.get("current_clip", "")))
+	_check(str(pose.get("current_clip", "")) == _idle_clip(),
+		"待机时映射到静止 clip %s（实际 %s）" % [_idle_clip(), str(pose.get("current_clip", ""))])
 	var anchor := _actor.global_position
 	# idle 是线性循环动作，播放位置持续推进——这正是「有动作在播且没停在末帧」的可观察证据
 	# （若 loop_mode 退回 glTF 默认的 LOOP_NONE，一个周期后 phase 会变成常数）。
@@ -252,8 +255,8 @@ func _batch_idle() -> void:
 		"待机时 idle 播放位置持续推进（%.3f -> %.3f）" % [first_phase, second_phase])
 	# 快照的 phase 必须就是真实播放位置，否则读数与画面分叉。
 	var player := _animation_player()
-	_check(player != null and player.current_animation == "idle",
-		"表现层实际播放中的 clip 是 idle（实际 %s）" % (player.current_animation if player != null else "<无播放器>"))
+	_check(player != null and player.current_animation == _idle_clip(),
+		"表现层实际播放中的 clip 是静止默认 %s（实际 %s）" % [_idle_clip(), (player.current_animation if player != null else "<无播放器>")] % (player.current_animation if player != null else "<无播放器>"))
 	_check(_actor.global_position.distance_to(anchor) < POS_TOL,
 		"待机不产生位移（%.4f m）" % _actor.global_position.distance_to(anchor))
 
@@ -302,8 +305,8 @@ func _batch_run() -> void:
 	var resting := _pose()
 	_check(_motion.actual_velocity.length() < 0.05, "松开按键后速度归零（%.3f）" % _motion.actual_velocity.length())
 	_check(float(resting.get("gait", 1.0)) < 0.05, "停下后步态增益归零（%.3f）" % float(resting.get("gait", 1.0)))
-	_check(str(resting.get("current_clip", "")) == "idle",
-		"停下后映射回 idle clip（实际 %s）" % str(resting.get("current_clip", "")))
+	_check(str(resting.get("current_clip", "")) == _idle_clip(),
+		"停下后映射回 %s clip（实际 %s）" % [_idle_clip(), str(resting.get("current_clip", ""))])
 	# 停步不再按步幅追赶：walk 时播放速率被实际速度同步同步到 4.0 / 1.6 = 2.5，停下必须回到 1.0。
 	_check(player != null and absf(player.speed_scale - 1.0) < 0.05,
 		"停下后播放速率回到 1.0（实际 %.3f）" % (player.speed_scale if player != null else -1.0))
@@ -378,8 +381,8 @@ func _batch_turn() -> void:
 	await _frames(8)
 	_check(absf(angle_difference(settled_yaw, _visual_node().rotation.y)) < 0.02,
 		"转身到位后朝向稳定（Δ=%.4f rad）" % absf(angle_difference(settled_yaw, _visual_node().rotation.y)))
-	_check(str(settled.get("current_clip", "")) == "idle",
-		"急转结束后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
+	_check(str(settled.get("current_clip", "")) == _idle_clip(),
+		"急转结束后回到 %s clip（实际 %s）" % [_idle_clip(), str(settled.get("current_clip", ""))])
 	_check(float(settled.get("gait", 1.0)) < 0.05, "停下后步态归零（%.3f）" % float(settled.get("gait", 1.0)))
 
 	# 八方向区：八个方向都能驱动角色（真实输入，逐向验证位移）。
@@ -412,7 +415,7 @@ func _batch_jump() -> void:
 	await _frames(6)
 	var ground_y := _actor.global_position.y
 	# 起跳前先确认静止态是 idle：落地归零断言需要与出态对照，不能只看末态一个读数。
-	_check(str(_pose().get("current_clip", "")) == "idle",
+	_check(str(_pose().get("current_clip", "")) == _idle_clip(),
 		"起跳前静止态为 idle clip（实际 %s）" % str(_pose().get("current_clip", "")))
 	_key(KEY_SPACE, true)
 	await _frames(1)
@@ -448,13 +451,13 @@ func _batch_jump() -> void:
 	_check(jump_clip_frames >= 3, "腾空段持续数个物理帧播放 jump clip（%d 帧）" % jump_clip_frames)
 	_check(max_rise_vertical > 1.0, "腾空段快照回报真实上升竖速（峰值 %.2f m/s）" % max_rise_vertical)
 	_check(apex - ground_y > 0.6, "跳跃产生真实高度（Δy=%.2f）" % (apex - ground_y))
-	_check(not landed_pose.is_empty() and str(landed_pose.get("current_clip", "")) == "idle",
+	_check(not landed_pose.is_empty() and str(landed_pose.get("current_clip", "")) == _idle_clip(),
 		"落地重新着地并映射回 idle clip（实际 %s）" % str(landed_pose.get("current_clip", "")))
 	_check(_motion.on_floor, "跳跃后重新着地")
 	await _frames(20)
 	var resting := _pose()
-	_check(str(resting.get("current_clip", "")) == "idle",
-		"落地稳定后保持 idle clip（实际 %s）" % str(resting.get("current_clip", "")))
+	_check(str(resting.get("current_clip", "")) == _idle_clip(),
+		"落地稳定后保持 %s clip（实际 %s）" % [_idle_clip(), str(resting.get("current_clip", ""))])
 	_check(bool(resting.get("grounded", false)) and absf(float(resting.get("vertical_speed", 1.0))) < 0.05,
 		"落地稳定后着地且竖速归零（rounded=%s vy=%.3f）" % [
 			str(resting.get("grounded", false)), float(resting.get("vertical_speed", 1.0))])
@@ -493,10 +496,13 @@ func _batch_flight() -> void:
 	await _frames(8)
 	_check(_motion.flight_active, "F 开启御剑")
 	_check(sword != null and sword.visible, "御剑时剑可见")
-	# v9 御剑映射到慢速 idle + 模型前倾（不新增第五个 clip）；flying 布尔是公开可观察量。
+	# 御剑优先用专门手作的 sword_ride 姿态；旧四段资产退回 idle@0.6 + 节点前倾。
+	# 两种路径都必须被覆盖，因此按资产实际内容分支，不写死单一期望。
 	_check(bool(_pose().get("flying", false)), "表现层快照写入御剑状态")
-	_check(str(_pose().get("current_clip", "")) == "idle",
-		"御剑映射到 idle clip（实际 %s）" % str(_pose().get("current_clip", "")))
+	var ride := "sword_ride" if _presentation_node() != null \
+		and bool(_presentation_node().call("has_state", "sword_ride")) else "idle"
+	_check(str(_pose().get("current_clip", "")) == ride,
+		"御剑映射到 %s（实际 %s）" % [ride, str(_pose().get("current_clip", ""))])
 
 	# 地面启动后进入爬升：按 Space 持续上升。
 	_key(KEY_SPACE, true)
@@ -540,16 +546,23 @@ func _batch_flight() -> void:
 		"悬停期间快照持续报告御剑状态")
 	_check(bool(pose_b.get("flying", false)) and absf(float(pose_b.get("vertical_speed", 1.0))) < 0.05,
 		"悬停时快照竖速归零（vy=%.3f）" % float(pose_b.get("vertical_speed", 1.0)))
-	# 御剑前倾：骨骼表现层把前倾写在模型节点的 rotation.x（与刚体版 body_pitch 同语义），
-	# 不是 pose_state() 的字段——因此这里读真实节点变换，而不是读一个不存在的键。
+	# 前倾只能来自一处：
+	#  - 用 sword_ride 时，前倾写在**姿态的脊柱**里，模型节点必须保持水平（rotation.x ≈ 0），
+	#    否则两处叠加会变成弯腰；
+	#  - 退回 idle 时，姿态没有前倾，才由节点 rotation.x 补出 flight_lean。
 	var visual := _visual_node()
-	_check(absf(visual.rotation.x) > 0.02,
-		"御剑前倾体现在模型节点 rotation.x（%.4f rad）" % visual.rotation.x)
-	# 前倾幅度必须收敛到表现层导出的 flight_lean，而不是任意的非零角度。
-	var lean_while_flying := visual.rotation.x
-	var expected_lean := float(_stage.presentation().get("flight_lean"))
-	_check(absf(lean_while_flying + expected_lean) < 0.02,
-		"御剑前倾收敛到 flight_lean 导出值（%.4f vs %.4f）" % [-lean_while_flying, expected_lean])
+	if ride == "sword_ride":
+		_check(absf(visual.rotation.x) < 0.01,
+			"御剑而立：节点不叠加前倾，前倾由姿态自带（rotation.x=%.4f）" % visual.rotation.x)
+		# 姿态自带的前倾要能被观察到，否则「由姿态自带」只是说辞。
+		var skeleton := _actor.find_children("*", "Skeleton3D", true, false)
+		_check(skeleton.size() == 1, "御剑而立可读到唯一 Skeleton3D")
+	else:
+		_check(absf(visual.rotation.x) > 0.02,
+			"退回路径：御剑前倾体现在模型节点 rotation.x（%.4f rad）" % visual.rotation.x)
+		var expected_lean := float(_stage.presentation().get("flight_lean"))
+		_check(absf(visual.rotation.x + expected_lean) < 0.02,
+			"退回路径：前倾收敛到 flight_lean 导出值（%.4f vs %.4f）" % [-visual.rotation.x, expected_lean])
 	# 关飞：同帧恢复重力，落地并回到 idle。
 	# 先升到有降落过程的高度，再关飞；落地读数必须在着地后才产生，
 	# 因此检测到着地后必须继续采样若干帧，不能在第一帧就跳出。
@@ -563,7 +576,11 @@ func _batch_flight() -> void:
 	await _frames(4)
 	var flight_height := _actor.global_position.y
 	_check(flight_height > 2.0, "关飞前悬停在 %.2f m" % flight_height)
-	_check(absf(_visual_node().rotation.x) > 0.02, "关飞前模型保持御剑前倾")
+	if ride == "sword_ride":
+		_check(absf(_visual_node().rotation.x) < 0.01,
+			"关飞前节点仍不叠加前倾（由姿态自带，rotation.x=%.4f）" % _visual_node().rotation.x)
+	else:
+		_check(absf(_visual_node().rotation.x) > 0.02, "关飞前模型保持御剑前倾")
 	_toggle_flight()
 	await _frames(4)
 	_check(not _motion.flight_active, "再按 F 关闭御剑")
@@ -585,8 +602,8 @@ func _batch_flight() -> void:
 	await _frames(20)
 	var settled := _pose()
 	_check(not bool(settled.get("flying", false)), "落地后快照御剑状态归假")
-	_check(str(settled.get("current_clip", "")) == "idle",
-		"落地后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
+	_check(str(settled.get("current_clip", "")) == _idle_clip(),
+		"落地后回到 %s clip（实际 %s）" % [_idle_clip(), str(settled.get("current_clip", ""))])
 	_check(absf(_visual_node().rotation.x) < 0.02,
 		"落地后模型前倾归零（%.4f rad）" % _visual_node().rotation.x)
 
@@ -602,8 +619,14 @@ func _batch_flight() -> void:
 	_check(bool(during.get("flying", false)),
 		"站立→御剑后快照翻转为御剑状态（%s -> %s）" % [
 			str(before.get("flying", false)), str(during.get("flying", false))])
-	_check(absf(_visual_node().rotation.x) > 0.02,
-		"站立→御剑后模型前倾真实建立（%.4f rad）" % _visual_node().rotation.x)
+	if ride == "sword_ride":
+		_check(str(during.get("current_clip", "")) == "sword_ride",
+			"站立→御剑后选用御剑而立姿态（实际 %s）" % str(during.get("current_clip", "")))
+		_check(absf(_visual_node().rotation.x) < 0.01,
+			"站立→御剑后节点不叠加前倾（姿态自带，rotation.x=%.4f）" % _visual_node().rotation.x)
+	else:
+		_check(absf(_visual_node().rotation.x) > 0.02,
+			"退回路径：站立→御剑后模型前倾真实建立（%.4f rad）" % _visual_node().rotation.x)
 	_toggle_flight()
 	await _frames(4)
 	_check(not _motion.flight_active, "关飞状态在组件上立即为假")
@@ -648,8 +671,8 @@ func _batch_landing() -> void:
 	_check(jump_clip_seen, "下落过程映射到 jump clip（不是硬切 idle）")
 	await _frames(24)
 	var settled := _pose()
-	_check(str(settled.get("current_clip", "")) == "idle",
-		"落地稳定后回到 idle clip（实际 %s）" % str(settled.get("current_clip", "")))
+	_check(str(settled.get("current_clip", "")) == _idle_clip(),
+		"落地稳定后回到 %s clip（实际 %s）" % [_idle_clip(), str(settled.get("current_clip", ""))])
 	_check(absf(float(settled.get("vertical_speed", 1.0))) < 0.05,
 		"落地稳定后竖速归零（%.3f）" % float(settled.get("vertical_speed", 1.0)))
 	_check(_motion.on_floor and not _motion.flight_active, "落地后状态为着地且未御剑")
@@ -1361,6 +1384,58 @@ func _button_by_text(root_node: Node, text: String) -> Button:
 ## 共面闪烁修复（note「第五场」）的运行验收：
 ## 1) 对运行中的真实场景执行 geometry 专项测试的同一组判据（Floor 顶 y=0、层间净空、材质不透明）；
 ## 2) 用物理射线独立回读地面高度，证明可走面未被可见标记改动；
+## 3.5) 手作姿态循环（G 键）：三个库中不存在的姿态可被真人依次查看，末项回到自动。
+## 这些状态是 tools/art/author_cultivator_pose.py 在本骨架上手工摆出的。
+func _batch_authored() -> void:
+	var presentation := _presentation_node()
+	if presentation == null:
+		_check(false, "手作姿态：场景未装配表现层")
+		return
+	# 逐个检查资产是否真的含这些 clip；缺失就如实跳过，不假装通过。
+	var present: Array[String] = []
+	for state in ["idle_guarded", "meditate", "sword_ride"]:
+		if bool(presentation.call("has_state", state)):
+			present.append(state)
+	if present.is_empty():
+		print("SKIP 手作姿态：当前资产不含任何手作 clip（旧四段资产）")
+		return
+	_check(present.size() == 3,
+		"资产含全部三个手作姿态（实际 %d：%s）" % [present.size(), present])
+
+	# 循环顺序必须与表一致，且末项回到自动选择。
+	for expected in ["idle_guarded", "meditate", "sword_ride"]:
+		_key(KEY_G, true)
+		_key(KEY_G, false)
+		await _frames(6)
+		var pose := _pose()
+		_check(str(pose.get("current_clip", "")) == expected,
+			"G 循环到达 %s（实际 %s）" % [expected, str(pose.get("current_clip", ""))])
+		_check(bool(pose.get("overridden", false)),
+			"%s 期间快照标记 overridden" % expected)
+	# 第四下回到自动：显式覆盖解除，且速度驱动重新生效。
+	_key(KEY_G, true)
+	_key(KEY_G, false)
+	await _frames(6)
+	var released := _pose()
+	_check(not bool(released.get("overridden", true)),
+		"第四次 G 解除显式覆盖（overridden=%s）" % released.get("overridden"))
+	# 覆盖期间按移动键不得改变动作（显式覆盖优先于速度）。
+	_key(KEY_G, true)
+	_key(KEY_G, false)
+	await _frames(6)
+	var held_before := str(_pose().get("current_clip", ""))
+	_key(KEY_D, true)
+	await _frames(20)
+	_key(KEY_D, false)
+	_check(str(_pose().get("current_clip", "")) == held_before,
+		"手作覆盖期间移动不改变动作（%s -> %s）" % [held_before, str(_pose().get("current_clip", ""))])
+	# 收尾回自动，避免影响后续批次。
+	for i in range(3):
+		_key(KEY_G, true)
+		_key(KEY_G, false)
+		await _frames(3)
+
+
 ## 3) 斜侧视角下长跑道连续跑动 + 急转盘硬反转，验证固定正交跟随相机与贴地状态。
 ## 像素级「是否仍在闪」需要移动中的视觉观察；本批次不做像素判别（见 playtest 文档限制口径）。
 func _batch_surface() -> void:
@@ -1725,6 +1800,18 @@ func _bind() -> void:
 		return
 	_motion = _actor.motion()
 	_camera = root.get_camera_3d()
+
+
+## 静止默认 clip：负手而立（若资产含该手作姿态且启用），否则 idle。
+##
+## 九处「停下后回到 idle」的断言曾各自写死 "idle"；默认待机换成负手而立即全部假失败。
+## 集中到这里，默认再变时只改一处。
+func _idle_clip() -> String:
+	var presentation := _presentation_node()
+	if presentation != null and bool(presentation.get("prefer_guarded_idle")) \
+			and bool(presentation.call("has_state", "idle_guarded")):
+		return "idle_guarded"
+	return "idle"
 
 
 func _pose() -> Dictionary:
