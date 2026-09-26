@@ -37,7 +37,7 @@ const SUITES := [
 	"res://tests/test_lab_navigation.gd",
 	"res://tests/test_motion_stage_geometry.gd",
 	"res://tests/test_jade_paper_rigged_animation.gd",
-	"res://tests/test_cultivator_tripo_v9_visual.gd",
+	"res://tests/test_cultivator_xianxia_motion_v1_visual.gd",
 	"res://tests/test_cultivator_v9_ground_contact.gd",
 	"res://tests/test_kaykit_route_a_visual.gd",
 ]

@@ -52,12 +52,11 @@ var vertical_impulse: float = 0.0
 var sprint_input: bool = false
 
 ## 参数：步行水平最大速度（米/秒）。
-## 与 walk clip 的自然速度对齐（实测 1.288 m/s，见 stride 台账）：播放速率 = 速度 / 步幅，
-## 取 1.55 使 rate≈1.2，既不破坏 walk clip 的作者节奏，也不至于慢到不像赶路。
+## 现役 walk clip 的参考速度为 1.3424 m/s，1.55 m/s 时播放速率约为 1.15。
 @export var move_speed: float = 1.55
 
-## 参数：疾行水平最大速度（米/秒）。略高于 run clip 的自然速度 2.03 m/s，
-## 使疾行时播放速率 ≈1.1（略快于原速，读起来像发力），而不是大幅快放。
+## 参数：疾行水平最大速度（米/秒）。现役 run clip 的参考速度为 2.3845 m/s，
+## 2.25 m/s 时播放速率约为 0.94。
 @export var sprint_speed: float = 2.25
 
 ## 参数：起跳初速（米/秒）。

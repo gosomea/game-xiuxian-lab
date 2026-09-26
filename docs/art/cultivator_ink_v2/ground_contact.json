@@ -1,0 +1,83 @@
+{
+  "glb": "src/game/actors/swordsman/models/cultivator_ink_v2.glb",
+  "clips": {
+    "idle": {
+      "min_z": -0.0155,
+      "max_z_min_vertex": -0.0001,
+      "min_z_frame": 32,
+      "frames": [
+        1,
+        58
+      ],
+      "lift_needed_m": 0.0155,
+      "problem": null
+    },
+    "idle_guarded": {
+      "min_z": -0.0,
+      "max_z_min_vertex": 0.0011,
+      "min_z_frame": 4,
+      "frames": [
+        1,
+        58
+      ],
+      "lift_needed_m": 0.0,
+      "problem": null
+    },
+    "jump": {
+      "min_z": -0.0181,
+      "max_z_min_vertex": 0.0052,
+      "min_z_frame": 15,
+      "frames": [
+        1,
+        26
+      ],
+      "lift_needed_m": 0.0181,
+      "problem": null
+    },
+    "meditate": {
+      "min_z": -0.0041,
+      "max_z_min_vertex": -0.0,
+      "min_z_frame": 32,
+      "frames": [
+        1,
+        58
+      ],
+      "lift_needed_m": 0.0041,
+      "problem": null
+    },
+    "run": {
+      "min_z": -0.0065,
+      "max_z_min_vertex": 0.0028,
+      "min_z_frame": 8,
+      "frames": [
+        1,
+        18
+      ],
+      "lift_needed_m": 0.0065,
+      "problem": null
+    },
+    "sword_ride": {
+      "min_z": 0.0001,
+      "max_z_min_vertex": 0.0121,
+      "min_z_frame": 4,
+      "frames": [
+        1,
+        58
+      ],
+      "lift_needed_m": -0.0001,
+      "problem": null
+    },
+    "walk": {
+      "min_z": -0.005,
+      "max_z_min_vertex": 0.0048,
+      "min_z_frame": 17,
+      "frames": [
+        1,
+        25
+      ],
+      "lift_needed_m": 0.005,
+      "problem": null
+    }
+  },
+  "problems": []
+}

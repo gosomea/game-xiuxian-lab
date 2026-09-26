@@ -1,0 +1,37 @@
+{
+  "source": "tools/art/build_cultivator_ink_v1.py",
+  "mesh_objects": 35,
+  "triangles": 2550,
+  "bones": 16,
+  "clips": {
+    "idle": [
+      1.0,
+      73.0
+    ],
+    "idle_guarded": [
+      1.0,
+      73.0
+    ],
+    "jump": [
+      1.0,
+      33.0
+    ],
+    "meditate": [
+      1.0,
+      73.0
+    ],
+    "run": [
+      1.0,
+      23.0
+    ],
+    "sword_ride": [
+      1.0,
+      73.0
+    ],
+    "walk": [
+      1.0,
+      29.0
+    ]
+  },
+  "rest_foot_height_m": 0.002
+}

@@ -67,6 +67,9 @@ static func _measure(t) -> Dictionary:
 	if scene == null:
 		return {}
 	var root := scene.instantiate()
+	var historical_presentation := root.get_node_or_null("CultivatorSkeletonPresentation")
+	if historical_presentation != null:
+		historical_presentation.set("auto_read_actor", false)
 	t.track(root)
 	var skeleton := _find(root, "Skeleton3D") as Skeleton3D
 	var player := _find(root, "AnimationPlayer") as AnimationPlayer
@@ -128,6 +131,9 @@ static func _assert_jump_leaves_ground(t) -> void:
 	if scene == null:
 		return
 	var root := scene.instantiate()
+	var historical_presentation := root.get_node_or_null("CultivatorSkeletonPresentation")
+	if historical_presentation != null:
+		historical_presentation.set("auto_read_actor", false)
 	t.track(root)
 	var skeleton := _find(root, "Skeleton3D") as Skeleton3D
 	var player := _find(root, "AnimationPlayer") as AnimationPlayer

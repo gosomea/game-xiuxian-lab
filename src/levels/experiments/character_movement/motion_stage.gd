@@ -310,7 +310,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## G 键：依次切到手作姿态，最后一项回到自动选动作。
 ##
 ## 只在实时模式生效（预览模式有自己的一套程序化动作，混入会互相打架）。
-## 打坐是坐姿，与站立动作之间不做物理插值——切换即换姿态，与表现层的交叉淡化一致。
+## `meditate` 现演示站桩吐纳，与移动动作之间只在表现层做姿态交叉淡化。
 func _cycle_authored_state() -> void:
 	if _mode != StageMode.REALTIME or _presentation == null:
 		return
@@ -1068,7 +1068,7 @@ func _update_hud() -> void:
 	# 手作姿态状态：空 = 自动选动作。让 G 键的效果在 HUD 上可读，而不是只能靠看画面。
 	var authored := AUTHORED_STATES[_authored_index]
 	if authored.is_empty():
-		lines.append("手作姿态  自动（G 循环：负手 / 打坐 / 御剑）")
+		lines.append("手作姿态  自动（G 循环：负手 / 吐纳 / 御剑）")
 	else:
 		lines.append("手作姿态  %s（G 循环，末项回到自动）" % authored)
 	_hud.set_debug_lines(lines)
