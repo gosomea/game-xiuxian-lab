@@ -1,0 +1,237 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://levels/experiments/eastern_2d/market_square.gd" id="1_root"]
+[ext_resource type="Script" path="res://levels/experiments/eastern_2d/market_player.gd" id="2_player"]
+[ext_resource type="Script" path="res://levels/experiments/eastern_2d/market_atmosphere.gd" id="3_atmosphere"]
+[ext_resource type="Texture2D" path="res://levels/experiments/eastern_2d/assets/market_square_background_v1.png" id="4_background"]
+[ext_resource type="Texture2D" path="res://levels/experiments/eastern_2d/assets/market_cultivator_four_views_v1.png" id="5_player_sheet"]
+[ext_resource type="Texture2D" path="res://levels/experiments/eastern_2d/assets/market_npcs_v1.png" id="6_npc_sheet"]
+[ext_resource type="Theme" path="res://ui/lab_theme.tres" id="7_theme"]
+
+[sub_resource type="CircleShape2D" id="PlayerFeet"]
+radius = 17.0
+
+[sub_resource type="StyleBoxFlat" id="PaperPanel"]
+bg_color = Color(0.968627, 0.94902, 0.890196, 0.93)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.192157, 0.345098, 0.298039, 0.86)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+shadow_color = Color(0.0745098, 0.117647, 0.105882, 0.2)
+shadow_size = 8
+
+[node name="MarketSquare" type="Node2D"]
+script = ExtResource("1_root")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("4_background")
+centered = false
+z_index = -10
+
+[node name="Atmosphere" type="Node2D" parent="."]
+script = ExtResource("3_atmosphere")
+z_index = -1
+
+[node name="Actors" type="Node2D" parent="."]
+unique_name_in_owner = true
+y_sort_enabled = true
+
+[node name="Herbalist" type="Node2D" parent="Actors"]
+position = Vector2(590, 455)
+
+[node name="Sprite" type="Sprite2D" parent="Actors/Herbalist"]
+position = Vector2(0, -62)
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("6_npc_sheet")
+region_enabled = true
+region_rect = Rect2(0, 0, 591, 887)
+
+[node name="JadeTrader" type="Node2D" parent="Actors"]
+position = Vector2(1045, 455)
+
+[node name="Sprite" type="Sprite2D" parent="Actors/JadeTrader"]
+position = Vector2(0, -62)
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("6_npc_sheet")
+region_enabled = true
+region_rect = Rect2(591, 0, 591, 887)
+
+[node name="Traveler" type="Node2D" parent="Actors"]
+position = Vector2(1166, 671)
+
+[node name="Sprite" type="Sprite2D" parent="Actors/Traveler"]
+position = Vector2(0, -62)
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("6_npc_sheet")
+region_enabled = true
+region_rect = Rect2(1182, 0, 592, 887)
+
+[node name="Player" type="CharacterBody2D" parent="Actors"]
+unique_name_in_owner = true
+position = Vector2(795, 645)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("2_player")
+
+[node name="Shadow" type="Polygon2D" parent="Actors/Player"]
+color = Color(0.0745098, 0.0705882, 0.0588235, 0.24)
+polygon = PackedVector2Array(-24, -3, -17, -10, 0, -13, 17, -10, 24, -3, 17, 5, 0, 8, -17, 5)
+
+[node name="Visual" type="Sprite2D" parent="Actors/Player"]
+unique_name_in_owner = true
+position = Vector2(0, -75)
+scale = Vector2(0.17, 0.17)
+texture = ExtResource("5_player_sheet")
+region_enabled = true
+region_rect = Rect2(0, 0, 443, 887)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Actors/Player"]
+position = Vector2(0, -7)
+shape = SubResource("PlayerFeet")
+
+[node name="Camera2D" type="Camera2D" parent="Actors/Player"]
+position = Vector2(0, -200)
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
+limit_left = 0
+limit_top = 0
+limit_right = 1586
+limit_bottom = 992
+
+[node name="ForegroundRail" type="Sprite2D" parent="."]
+position = Vector2(0, 810)
+texture = ExtResource("4_background")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 810, 1586, 182)
+z_index = 5
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="TopPanel" type="PanelContainer" parent="UILayer"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 358.0
+offset_bottom = 143.0
+theme = ExtResource("7_theme")
+theme_override_styles/panel = SubResource("PaperPanel")
+
+[node name="Margin" type="MarginContainer" parent="UILayer/TopPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 13
+
+[node name="Column" type="VBoxContainer" parent="UILayer/TopPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Kicker" type="Label" parent="UILayer/TopPanel/Margin/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.270588, 0.454902, 0.352941, 1)
+theme_override_font_sizes/font_size = 13
+text = "XIUXIAN LAB  /  2D FIELD STUDY 01"
+
+[node name="Title" type="Label" parent="UILayer/TopPanel/Margin/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.105882, 0.196078, 0.176471, 1)
+theme_override_font_sizes/font_size = 28
+text = "青石坊市"
+
+[node name="Subtitle" type="Label" parent="UILayer/TopPanel/Margin/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.32549, 0.403922, 0.352941, 1)
+theme_override_font_sizes/font_size = 14
+text = "云山脚下 · 午后集市"
+
+[node name="BackButton" type="Button" parent="UILayer"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -174.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 68.0
+grow_horizontal = 0
+theme = ExtResource("7_theme")
+text = "返回实验目录"
+
+[node name="HintPanel" type="PanelContainer" parent="UILayer"]
+unique_name_in_owner = true
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -80.0
+offset_right = 387.0
+offset_bottom = -24.0
+grow_vertical = 0
+theme = ExtResource("7_theme")
+theme_override_styles/panel = SubResource("PaperPanel")
+
+[node name="HintMargin" type="MarginContainer" parent="UILayer/HintPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="NearbyLabel" type="Label" parent="UILayer/HintPanel/HintMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.105882, 0.196078, 0.176471, 1)
+theme_override_font_sizes/font_size = 17
+text = "WASD / 方向键 · 漫步坊市"
+
+[node name="TalkPanel" type="PanelContainer" parent="UILayer"]
+unique_name_in_owner = true
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -298.0
+offset_top = -175.0
+offset_right = 298.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("7_theme")
+theme_override_styles/panel = SubResource("PaperPanel")
+
+[node name="Margin" type="MarginContainer" parent="UILayer/TalkPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 13
+
+[node name="Column" type="VBoxContainer" parent="UILayer/TalkPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="TalkName" type="Label" parent="UILayer/TalkPanel/Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25098, 0.415686, 0.321569, 1)
+theme_override_font_sizes/font_size = 20
+
+[node name="TalkLine" type="Label" parent="UILayer/TalkPanel/Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.105882, 0.196078, 0.176471, 1)
+theme_override_font_sizes/font_size = 17
+autowrap_mode = 3
+
+[node name="TalkHint" type="Label" parent="UILayer/TalkPanel/Margin/Column"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.392157, 0.439216, 0.396078, 1)
+theme_override_font_sizes/font_size = 12
+text = "E 收起  ·  Esc 返回"

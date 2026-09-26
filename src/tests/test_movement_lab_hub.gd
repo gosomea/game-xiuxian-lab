@@ -73,7 +73,12 @@ static func run(t) -> void:
 		var module: Dictionary = value
 		if str(module["id"]) == "character_movement":
 			continue
-		t.assert_false(Catalog.can_open(module), "其余模块仍无运行入口：%s" % module["id"])
+		if str(module["id"]) == "eastern_2d":
+			t.assert_eq(str(module["scene"]), "res://levels/experiments/eastern_2d/market_square.tscn",
+				"二维坊市入口指向独立场景")
+			t.assert_true(Catalog.can_open(module), "二维坊市可从顶层进入")
+		elif str(module["status"]) == "planned":
+			t.assert_false(Catalog.can_open(module), "待探索模块仍无运行入口：%s" % module["id"])
 
 	t.begin_case()
 	var base := _base_entries()
