@@ -2,6 +2,21 @@
   "schema_version": 1,
   "modules": [
     {
+      "id": "eastern_2d",
+      "title": "二维坊市",
+      "category": "视觉",
+      "summary": "东方动漫风的俯视斜角坊市：漫步青石广场，与三位行人交谈，观察二维人物、建筑与遮挡的关系。",
+      "question": "二维画面里，坊市的空间、人物和氛围是否构成值得继续探索的方向？",
+      "scope": [
+        "俯视斜角街口与可走区域",
+        "二维人物四向行走和场景合成",
+        "摊铺、行人、灯光与交谈气氛"
+      ],
+      "depends_on": [],
+      "status": "exploring",
+      "scene": "res://levels/experiments/eastern_2d/market_square.tscn"
+    },
+    {
       "id": "world_map",
       "title": "地图探索",
       "category": "空间",
