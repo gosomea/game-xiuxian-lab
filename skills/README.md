@@ -77,7 +77,7 @@ MCP 服务器提供工具，`mcp-` skill 提供纪律（何时用、按什么顺
 
 | Skill | 对应 MCP | 为什么需要 |
 |---|---|---|
-| `mcp-blender` | `mcp/blender-mcp`（25 个工具） | 上游只给工具不给纪律：`execute_blender_code` 可执行任意 Python、AI 生成资产需轮询与台账登记、Sketchfab 各模型许可不同需逐个确认 |
+| `mcp-blender` | `mcp/blender-mcp`（25 个工具）及 Blender 命令行 | 连接与状态核验、3D 资产和人物动作处理、导出验证、资产保留与台账登记 |
 
 `blender-mcp` 本身**不在** `skills/` 下 —— 它是 PyPI 包加 Blender 插件，无 SKILL.md（已核对上游 v1.8.7）。分目录决策见 [mcp-directory-separation](../notes/implemented/process/2026-08-28-mcp-directory-separation.md)。
 

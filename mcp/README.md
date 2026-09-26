@@ -46,6 +46,14 @@ uvx blender-mcp install-addon        # 安装 Blender 插件（会写入 addons 
 claude mcp add blender uvx blender-mcp
 ```
 
+Codex 如需使用仓库收录的确定版本，可先在 `mcp/blender-mcp/` 执行 `uv sync --locked`，再注册本机的绝对路径：
+
+```bash
+codex mcp add blender -- /absolute/path/to/game-xiuxian-lab/mcp/blender-mcp/.venv/bin/blender-mcp
+```
+
+`codex mcp get blender` 只证明客户端已注册。还需在 Blender 的 `N` 侧栏打开 **BlenderMCP → Connect to MCP server**，并用 `get_scene_info` 等只读工具验证实时连接。新注册的 MCP 工具通常要开启新的 Codex 会话才能发现。社区版 1.8.7 的 `get_addon_status` 在本轮实测会因缺少 `blender_mcp.config` 报错；此时以连接日志和 `get_scene_info` 的结果判断实际连接，勿把状态工具故障误判为 Blender 未连接。
+
 其他客户端（Claude Desktop / Cursor / VS Code / OpenCode）配置见 `blender-mcp/README.md`。**同一时间只能运行一个实例。**
 
 `spawn uvx ENOENT` 是最常见故障：GUI 启动的客户端不继承终端 PATH，用 `which uvx` 的绝对路径填 `command`，改完完全退出并重启客户端。
