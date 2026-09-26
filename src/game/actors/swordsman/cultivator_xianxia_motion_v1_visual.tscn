@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+; 新修仙动作装配：人物网格和蒙皮沿用 v9；七段 Action 从绑定姿态重新制作。
+; 原 v9 场景和全部动画文件保留作探索历史，不在现役移动链中实例化。
+; 依据 notes/implemented/art/2026-09-26-ink-cultivator-runtime.md。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_xianxia_motion_v1.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorVisualXianxiaV1" type="Node3D"]
+
+[node name="CultivatorXianxiaV1" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorSkeletonPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")
+walk_reference_mps = 1.3424
+run_reference_mps = 2.3845

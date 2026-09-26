@@ -16,24 +16,22 @@ extends Node3D
 ##           退回 idle @0.6 倍速 + 前倾 FLIGHT_LEAN
 ##   空中  → jump（单次，播完保持末帧）
 ##   着地  → speed >= RUN_SPEED_MPS → run；>= WALK_SPEED_MPS → walk；否则 idle
-##   播放速率 = 实际水平速度 / 该动作的原速参考（walk 1.288 / run 3.426 m/s）
+##   播放速率 = 实际水平速度 / 该动作的原速参考（现役 walk 1.3424 / run 2.3845 m/s）
 ## 切换统一走 play(clip, BLEND) 交叉淡化。
 ##
-## 阈值与步幅都是**实测值**，不是估计：`tools/art/measure_clip_stride.py` 从动作本身
-## 量出支撑期脚的相对位移，得到 walk 自然速度 1.288 m/s、run 3.426 m/s。
-## 本表现层只在角色真的接近这些速度时以 ≈1.0 速率播放，作者节奏因此不被拉快。
+## 现役动作参考速度由 `build_cultivator_xianxia_motion_v1.py` 的步距和周期估算，
+## 随场景显式覆盖；动作换代后要重新测量，避免走跑滑步。
 
 ## 角色根（Swordsman）；本节点挂在 Visual 下，默认向上两层。
 @export var actor_path: NodePath = ^"../.."
 ## true = 每帧读宿主 motion()（正式角色）；false = 外部用 advance_state() 显式驱动（预览）。
 @export var auto_read_actor: bool = true
 ## walk 动作以**原速**（播放速率 1.0）播放时对应的移动速度（米/秒）。
-## 契约：播放速率 = 实际速度 / 该值。实测 1.288 m/s（见 tools/art/measure_clip_stride.py）。
-@export var walk_reference_mps: float = 1.288
+## 契约：播放速率 = 实际速度 / 该值。现役动作估算 1.3424 m/s。
+@export var walk_reference_mps: float = 1.3424
 ## run 动作以原速播放时对应的移动速度（米/秒）。
-## 实测 2.0305 m/s —— 由 tools/art/measure_clip_excursion.py 量出（Sprint 只有 17 帧，
-## 支撑期仅 1–2 帧，measure_clip_stride.py 的支撑法无法判定，故用脚相对髋的摆幅法）。
-@export var run_reference_mps: float = 2.0305
+## 现役动作估算 2.3845 m/s；旧 v9 的参考值保留在历史资产台账。
+@export var run_reference_mps: float = 2.3845
 ## 御剑前倾（弧度）。**仅用于退回路径**：资产没有 sword_ride 时，御剑以 idle 抬速呈现，
 ## 由本参数补出前倾。有 sword_ride 时前倾由该姿态自带，本参数不参与。
 @export var flight_lean: float = 0.21
@@ -78,7 +76,7 @@ var _pose: Dictionary = {}
 
 
 func _ready() -> void:
-	_actor = get_node_or_null(actor_path) if not actor_path.is_empty() else null
+	_actor = (get_node_or_null(actor_path) as Node3D) if not actor_path.is_empty() else null
 	if auto_read_actor:
 		assert(_actor != null, "CultivatorSkeletonPresentation: actor_path 未指向角色根（%s）" % actor_path)
 		assert(_actor.has_method("motion"), "CultivatorSkeletonPresentation: 角色根缺少 motion() 读取接口")
@@ -102,6 +100,7 @@ func _ready() -> void:
 		_manual_advance = true
 	_current = _default_idle_clip()
 	_player.play(_current)
+	_player.advance(0.0)
 
 
 ## glTF 导入的 clip 默认是 LOOP_NONE（实测 v9 GLB 四个 clip 全为 0）。若不显式修正，
@@ -261,7 +260,10 @@ func reset_pose() -> void:
 	_clock = 0.0
 	_current = _default_idle_clip()
 	_player.speed_scale = 1.0
-	_player.play(_default_idle_clip(), BLEND)
+	# 显式复位应立刻写入骨架。预览默认暂停时没有后续 advance，若仍
+	# crossfade 或只调用 play()，展示实例会一直停在 GLB 的绑定 T 姿态。
+	_player.play(_current)
+	_player.advance(0.0)
 	if _model != null:
 		_model.rotation.x = 0.0
 	_record_pose(Vector3.ZERO, 0.0, true, false)
