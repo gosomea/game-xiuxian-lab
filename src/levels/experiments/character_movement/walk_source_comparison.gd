@@ -71,7 +71,8 @@ func select_candidate(index: int) -> void:
 	_model = (BASE_MODEL if index == 0 else SOURCE_MODEL).instantiate() as Node3D
 	assert(_model != null, "步行对照：GLB 必须实例化为 Node3D")
 	_visual_root.add_child(_model)
-	_model.rotation.y = -PI / 2.0
+	# 现役人物以局部 +Z 为正面；三段试验统一朝世界 +X 行进。
+	_model.rotation.y = Swordsman.visual_yaw_for_aim(Vector3.RIGHT)
 	_visual_root.position.x = START_X
 	var players: Array[Node] = _model.find_children("*", "AnimationPlayer", true, false)
 	assert(players.size() == 1, "步行对照：每个模型需恰有一个 AnimationPlayer")

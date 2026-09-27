@@ -33,6 +33,10 @@ func _run() -> void:
 		_check(stage.active_candidate() == index and stage.active_clip() == EXPECTED_CLIPS[index],
 			"候选 %d 绑定正确 clip" % index)
 		var visual := stage.get_node("候选人物") as Node3D
+		var model := visual.get_child(visual.get_child_count() - 1) as Node3D
+		var facing := (model.global_transform.basis * Vector3.BACK).normalized()
+		_check(facing.dot(Vector3.RIGHT) > 0.999,
+			"候选 %d 正面与世界 +X 行进方向同向（dot=%.4f）" % [index, facing.dot(Vector3.RIGHT)])
 		var players: Array[Node] = visual.find_children("*", "AnimationPlayer", true, false)
 		_check(players.size() == 1, "候选 %d 恰有一个动作播放器" % index)
 		if players.size() == 1:
