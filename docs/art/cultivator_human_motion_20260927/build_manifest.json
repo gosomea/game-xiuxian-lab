@@ -50,7 +50,11 @@
         0.1058,
         0.4327
       ],
-      "fixed_ground_correction_m": -0.1231
+      "fixed_ground_correction_m": -0.1231,
+      "spine_roll_correction_deg": [
+        -30.0,
+        5.948
+      ]
     }
   },
   "kept_clips": [
@@ -60,5 +64,5 @@
     "sword_ride"
   ],
   "output": "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb",
-  "output_sha256": "e451087aa171e0ed15f715bd24b073163a084084a0be6d31046762140eba4ce7"
+  "output_sha256": "c74d03bd6fb42284579178732164298aae6aff60f2e0c9630c984888f14f3822"
 }

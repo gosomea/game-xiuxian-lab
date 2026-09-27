@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import bpy
@@ -96,6 +97,37 @@ def shoe_floor(mesh: bpy.types.Object, indices: list[int]) -> float:
         evaluated.to_mesh_clear()
 
 
+def straighten_jump_spine(rig: bpy.types.Object) -> float:
+    """Level the jumping torso in world space without rotating either leg."""
+    spine = rig.pose.bones["mixamorig:Spine"]
+
+    def roll() -> float:
+        bpy.context.view_layer.update()
+        head = rig.matrix_world @ rig.pose.bones["mixamorig:Head"].head
+        hips = rig.matrix_world @ rig.pose.bones["mixamorig:Hips"].head
+        axis = head - hips
+        return math.degrees(math.atan2(axis.x, axis.z))
+
+    total = 0.0
+    for _ in range(3):
+        before = roll()
+        if abs(before) <= 1.5:
+            break
+        initial = spine.rotation_quaternion.copy()
+        spine.rotation_quaternion = initial @ Quaternion((1, 0, 0), math.radians(1.0))
+        response = roll() - before
+        spine.rotation_quaternion = initial
+        if abs(response) < .1:
+            raise RuntimeError(f"Jump torso roll cannot be corrected: {before:.2f}°")
+        correction = max(-30.0 - total, min(30.0 - total, -before / response))
+        spine.rotation_quaternion = (
+            initial @ Quaternion((1, 0, 0), math.radians(correction)))
+        total += correction
+    if abs(roll()) > 2.5:
+        raise RuntimeError(f"Jump torso still leans {roll():.2f}°")
+    return total
+
+
 def author_clip(rig: bpy.types.Object, mesh: bpy.types.Object,
                 indices: list[int], source: dict, clip: str,
                 home: Vector, idle_basis: dict[str, Quaternion]) -> dict:
@@ -117,6 +149,7 @@ def author_clip(rig: bpy.types.Object, mesh: bpy.types.Object,
     rig.animation_data.action = action
     lows = []
     hip_trace = []
+    jump_roll_corrections = []
     for index, sample in enumerate(samples):
         frame = index + 1
         bpy.context.scene.frame_set(frame)
@@ -144,6 +177,17 @@ def author_clip(rig: bpy.types.Object, mesh: bpy.types.Object,
                 basis = idle_basis[name].slerp(basis.normalized(), .45)
             pose_bone.rotation_quaternion = basis.normalized()
             solved[name] = desired
+        if clip == "walk":
+            # Source walk keeps its upper body about 10 degrees behind the
+            # pelvis in every phase. A local Spine X rotation brings the
+            # hips-to-head axis back over the support leg without changing
+            # the source leg motion or the root's vertical bounce.
+            spine = rig.pose.bones["mixamorig:Spine"]
+            spine.rotation_quaternion = (
+                spine.rotation_quaternion
+                @ Quaternion((1, 0, 0), math.radians(10.0)))
+        elif clip == "jump":
+            jump_roll_corrections.append(straighten_jump_spine(rig))
         # Root object height carries source hip bounce. Horizontal source root
         # motion is removed because gameplay owns movement in world space.
         hip_z = sample["hip_delta"][2]
@@ -165,10 +209,15 @@ def author_clip(rig: bpy.types.Object, mesh: bpy.types.Object,
     action.frame_start = 1
     action.frame_end = len(samples)
     rig.animation_data.action = None
-    return {"frames": len(samples), "duration_s": round((len(samples)-1)/FPS, 4),
+    result = {"frames": len(samples), "duration_s": round((len(samples)-1)/FPS, 4),
             "hip_vertical_range_m": [round(min(hip_trace), 4), round(max(hip_trace), 4)],
             "raw_shoe_floor_range_m": [round(min(lows), 4), round(max(lows), 4)],
             "fixed_ground_correction_m": round(correction, 4)}
+    if jump_roll_corrections:
+        result["spine_roll_correction_deg"] = [
+            round(min(jump_roll_corrections), 3),
+            round(max(jump_roll_corrections), 3)]
+    return result
 
 
 def main() -> None:
