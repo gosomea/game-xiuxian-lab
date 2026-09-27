@@ -12,25 +12,25 @@ extends Node3D
 ##   不新增 Capability、不移动物理根。删除本节点后角色行为与碰撞完全不变。
 ##
 ## 动作映射（速度同步防滑步）：
-##   御剑  → sword_ride（手作「御剑而立」姿态，负手前倾）@1.0；资产没有该 clip 时
+##   御剑  → sword_ride（独立的平衡站姿）@1.0；资产没有该 clip 时
 ##           退回 idle @0.6 倍速 + 前倾 FLIGHT_LEAN
 ##   空中  → jump（单次，播完保持末帧）
 ##   着地  → speed >= RUN_SPEED_MPS → run；>= WALK_SPEED_MPS → walk；否则 idle
-##   播放速率 = 实际水平速度 / 该动作的原速参考（现役 walk 1.3424 / run 2.3845 m/s）
+##   播放速率 = 实际水平速度 / 该动作的原速参考（现役场景逐档覆盖）
 ## 切换统一走 play(clip, BLEND) 交叉淡化。
 ##
-## 现役动作参考速度由 `build_cultivator_xianxia_motion_v1.py` 的步距和周期估算，
-## 随场景显式覆盖；动作换代后要重新测量，避免走跑滑步。
+## 动作参考速度由所用资产的脚趾水平行程和周期估算，由视觉场景显式覆盖。
+## 换动作后应重新测量，避免走跑滑步。
 
 ## 角色根（Swordsman）；本节点挂在 Visual 下，默认向上两层。
 @export var actor_path: NodePath = ^"../.."
 ## true = 每帧读宿主 motion()（正式角色）；false = 外部用 advance_state() 显式驱动（预览）。
 @export var auto_read_actor: bool = true
 ## walk 动作以**原速**（播放速率 1.0）播放时对应的移动速度（米/秒）。
-## 契约：播放速率 = 实际速度 / 该值。现役动作估算 1.3424 m/s。
+## 契约：播放速率 = 实际速度 / 该值；当前视觉场景覆盖本默认值。
 @export var walk_reference_mps: float = 1.3424
 ## run 动作以原速播放时对应的移动速度（米/秒）。
-## 现役动作估算 2.3845 m/s；旧 v9 的参考值保留在历史资产台账。
+## 当前视觉场景覆盖本默认值；旧 v9 的参考值保留在历史资产台账。
 @export var run_reference_mps: float = 2.3845
 ## 御剑前倾（弧度）。**仅用于退回路径**：资产没有 sword_ride 时，御剑以 idle 抬速呈现，
 ## 由本参数补出前倾。有 sword_ride 时前倾由该姿态自带，本参数不参与。
@@ -54,7 +54,7 @@ const ONESHOT_CLIPS: Array[String] = ["jump"]
 ## 表现层照常工作，只是对应状态退化为 idle。用 `has_animation` 判定，不做硬前置断言——
 ## 旧的四段资产仍必须能跑。
 const OPTIONAL_GUARDED_IDLE := "idle_guarded"
-## true = 静止时用「负手而立」手作姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
+## true = 静止时用额外待命姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
 ## 默认关闭：现役人物静止与预览重置使用双臂自然放松的普通站姿。
 @export var prefer_guarded_idle: bool = false
 const OPTIONAL_MEDITATE := "meditate"

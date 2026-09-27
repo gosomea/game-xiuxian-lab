@@ -96,49 +96,19 @@ game-xiuxian-lab/
 - 本文件超过 150 行时：relocating（下沉子树文件）→ condense → 显式 raise，按此顺序。
 - 不用比喻，不写无法机械或人工核验的句子。
 
-## 当前状态（2026-09-22）
+## 当前状态（2026-09-27）
 
-角色移动模块为 exploring，现役人物为 `cultivator_tripo_v9`（Tripo 源模型清理到 599,417 tri，
-经 Make-It-Animatable 自动绑骨得到 22 根 Mixamo 兼容骨）。运行时资产含**七段原地动作**：
-核心四段 `idle/walk/run/jump` + 手作三段 `idle_guarded`（负手而立）/`meditate`（盘腿打坐）/
-`sword_ride`（御剑而立）——后三段是库里没有、在本骨架上手工摆出的
-（`tools/art/author_cultivator_pose.py` + `solve_pose_targets.py`）。默认 `swordsman.tscn`、motion preview
-与青玉纸样板同源指向 `src/game/actors/swordsman/cultivator_tripo_v9_visual.tscn`；v1–v8、旧长袍与
-v7 中性底座全部保留为回退资产。
+角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`，
+七段动作由 `tools/art/build_cultivator_motion_20260927.py` 从绑定姿态全新制作，导入后先删
+v9 旧 Action，未采样旧帧。运行时为 `src/game/actors/swordsman/models/cultivator_motion_20260927.glb`，
+`src/game/actors/swordsman/cultivator_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
+`idle` 为普通站立；另含待命、步行、疾行、跳跃、御剑和静修共七段。步行 1.55、疾行 2.25 m/s，
+`RUN_SPEED_MPS = 1.9`。v1–v6 人物建模与废弃动作试验已按用户明确要求从当前树删除；v7–v9
+以及仍被使用的第三方原件保留。删除清单见 `docs/playtest/2026-09-27-fresh-motion/retired_assets.json`。
 
-速度与动作映射：静止为 `idle_guarded`（`prefer_guarded_idle` 默认开，无该 clip 时退回 `idle`）；
-`Shift` 疾行：走 1.55 / 疾行 2.25 m/s，两档对齐各自 clip 的实测自然速度（1.288 / 2.0305 m/s），
-切换阈值 `RUN_SPEED_MPS = 1.9` 取两档中点；御剑时自动用 `sword_ride`。
+骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`
+逐 clip 逐帧量蒙皮鞋底，用 `measure_glb_balance.py` 与 `render_ground_contact.py` 查重心和视觉姿态；
+重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
+见 [贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)，当前动作数据以新台账为准。
 
-**骨架能力硬边界**：22 骨、**无手指骨**，因此掐诀/结印/剑诀这类以手型为核心的动作做不出来，
-最多到「手叠手」。要突破需先加手指骨并重绑权重，属另一轮工作。
-
-新增的量具（改动作或调速后应重跑，否则滑步与歪斜会回来）：
-`tools/art/measure_clip_stride.py` 与 `measure_clip_excursion.py`（步幅）、
-`measure_glb_upright.py` 与 `measure_spine_axis.py`（站姿是否竖直）、
-`render_upright_check.py`（画真实铅垂线再渲染，把「是不是真的斜」变成一眼可判）、
-`score_mia_clip.py`（clip 结构评分，含髋部 yaw 偏差判据）、
-`measure_glb_ground_contact.py`（**贴地的权威口径**：逐 clip 逐帧量蒙皮网格最低顶点）、
-`measure_glb_foot_bones.py`（骨骼级同一件事，给 Godot 测试定阈值用）、
-`measure_glb_balance.py`（骨盆相对双脚 / 骨盆相对头，分离「没站住」与「没竖直」）、
-`render_ground_contact.py`（z=0 平面 + 脚部近景 + 铅垂参考条，把米数变成一眼可判）。
-
-**贴地逐 clip 标定，不是一个全局常数。** 构建期原按「各 locomotion clip 最低点的
-**最小值**」求一个统一偏移，那必然让恰好一个 clip 贴地、其余各自浮空（实测差 4–7 cm：
-`idle_guarded` 浮空 7.3 cm 而 `run` 只浮 1.7 cm）。修法见
-`tools/art/apply_per_clip_ground_offset.py`：有根平移轨道的 clip 改该轨道，手作三段没有
-轨道则**追加一条常量通道**；静态根 `translation` 保持不动。改完 GLB 后**必须**重跑
-`godot --headless --path src --import`，否则测试读到上一版资产、表现为「判据太严」。
-
-**「斜」和「浮空」是两件事，别用同一个量具回答。** `measure_glb_upright` 全绿（躯干 1.7°）
-不代表角色站得住；`render_upright_check.py` 的「头偏离踝铅垂线 8.3°」也不代表躯干歪——
-被接受的 v7 同样报 10.3°，那个角度主要由站姿的解剖学自然偏移构成。判定「斜」要指明是
-**躯干相对骨盆**还是**骨盆相对双脚**：这两个问题在两轮反馈里分别出过错，各修了一次。
-骨盆相对双脚前移 0.154 m（被接受的 v7 为 0.051 m）**已量、未修**，理由见
-[贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)。
-
-实机证据见 [v9 人物接入全移动链](docs/playtest/2026-09-21-cultivator-tripo-v9-movement-integration.md)、
-[Phase 3/5–8 台账](docs/art/cultivator_tripo_v9/asset_ledger.md)；依据
-[cultivator-tripo-v9-runtime](notes/implemented/art/2026-09-19-cultivator-tripo-v9-runtime.md)。
-
-顶层入口 `src/levels/experiments/character_movement/movement_lab_hub.tscn`（顶层移动子实验目录，独立启动后 Esc 可返回顶层目录）：七项子实验全部可运行——镜头实验室 `camera_lab.tscn`、人物动作工作台 `motion_stage.tscn`、地形接触训练场 `ground_contact_course.tscn`、御剑飞行训练场 `sword_flight_course.tscn`、状态切换压力场 `state_transition_lab.tscn`、移动庭院 `movement_garden.tscn`（小场景回归）、群山宗门 `mountain_realm.tscn`（180×160 m、五峰三落脚点，屏幕相对移动 + 独立跳跃 + 御剑飞行三能力与共享 CameraRig 跟随的综合场景）。七个子场景统一返回移动子实验目录；三能力与唯一物理提交点不变。剑法及其余六个模块为 planned；移动场景不定义战斗规则。`orbit` 已定义为组合环绕 / 自由跟随：镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出 WASD / Q-E / 滚轮 / 右键四组输入；`CameraRigConfig.consume_unowned_rmb` 默认关闭，实验场景显式开启后非 orbit 的世界区域右键只被消费、不捕获、不改 `mouse_mode`、不写拖动位移（避免泄漏为编辑器嵌入 Game 视图的上下文操作）；orbit 的右键在 UI 未占用时同一事件内捕获，release / Esc / 失焦 / 离树 / 切模式释放并恢复进入前的 `mouse_mode`。自动证据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)；**编辑器嵌入 Game 视图的人工验收未做**。依据：[character-movement-garden](notes/implemented/gameplay/2026-09-18-character-movement-garden.md)、[character-movement-composable-labs](notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md)（S0–S3 统一决策：装配适配器与飞剑包、共享 CameraRig 四模式、程序动作预览 P0、两级 2 击导航与共享 LabHud；**骨骼 clip 库 P1/P2 已由 v9 落地**——人物改为真实骨骼 clip 驱动，程序近似版留在 `cultivator_presentation.gd` 作回退，旧视觉链全部保留）、[character-movement-subexperiments](notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（上一阶段集成快照）。启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。先读 README 获取运行方式。
+顶层入口 `src/levels/experiments/character_movement/movement_lab_hub.tscn`（顶层移动子实验目录，独立启动后 Esc 可返回顶层目录）：七项子实验全部可运行——镜头实验室 `camera_lab.tscn`、人物动作工作台 `motion_stage.tscn`、地形接触训练场 `ground_contact_course.tscn`、御剑飞行训练场 `sword_flight_course.tscn`、状态切换压力场 `state_transition_lab.tscn`、移动庭院 `movement_garden.tscn`（小场景回归）、群山宗门 `mountain_realm.tscn`（180×160 m、五峰三落脚点，屏幕相对移动 + 独立跳跃 + 御剑飞行三能力与共享 CameraRig 跟随的综合场景）。七个子场景统一返回移动子实验目录；三能力与唯一物理提交点不变。剑法及其余六个模块为 planned；移动场景不定义战斗规则。`orbit` 已定义为组合环绕 / 自由跟随：镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出 WASD / Q-E / 滚轮 / 右键四组输入；`CameraRigConfig.consume_unowned_rmb` 默认关闭，实验场景显式开启后非 orbit 的世界区域右键只被消费、不捕获、不改 `mouse_mode`、不写拖动位移（避免泄漏为编辑器嵌入 Game 视图的上下文操作）；orbit 的右键在 UI 未占用时同一事件内捕获，release / Esc / 失焦 / 离树 / 切模式释放并恢复进入前的 `mouse_mode`。自动证据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)；**编辑器嵌入 Game 视图的人工验收未做**。依据：[character-movement-garden](notes/implemented/gameplay/2026-09-18-character-movement-garden.md)、[character-movement-composable-labs](notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md)（S0–S3 统一决策：装配适配器与飞剑包、共享 CameraRig 四模式、程序动作预览 P0、两级 2 击导航与共享 LabHud；**骨骼 clip 库 P1/P2 已由 v9 落地**——人物改为真实骨骼 clip 驱动，程序近似版留在 `cultivator_presentation.gd` 作回退，v7–v9 视觉链保留）、[character-movement-subexperiments](notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（上一阶段集成快照）。启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。先读 README 获取运行方式。

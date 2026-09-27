@@ -73,7 +73,7 @@ func _run() -> void:
 	await _frames(30)
 
 	# 疾行：按住 Shift 必须真正进入 run 档。当前走速 1.55 / 疾行 2.25 m/s，
-	# 新动作的参考速度分别为 1.3424 / 2.3845 m/s。
+	# 新动作的脚趾行程估算自然速度约为 1.59 / 2.28 m/s。
 	_key(KEY_W, true)
 	_key(KEY_SHIFT, true)
 	var sprint_frames := 0

@@ -21,7 +21,7 @@ const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTOR_SOURCE := "res://game/actors/swordsman/swordsman.gd"
 const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_skeleton_presentation.gd"
 const ACTOR_SCENE_SOURCE := "res://game/actors/swordsman/swordsman.tscn"
-const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_xianxia_motion_v1_visual.tscn"
+const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_motion_20260927_visual.tscn"
 ## 表现节点路径：v9 起共享视觉装配的是 CultivatorSkeletonPresentation（骨骼 clip 版），
 ## 旧 Visual/CultivatorPresentation（分件刚体版）已随共享链退场。
 const PRESENTATION_NODE_PATH := "Visual/CultivatorSkeletonPresentation"
@@ -822,7 +822,7 @@ func _batch_preview() -> void:
 
 	# 预览与正式角色共用同一模型 + 同一表现系统。
 	var visual := preview.get_node_or_null("CultivatorVisual")
-	_check(visual != null and visual.get_node_or_null("CultivatorXianxiaV1") != null,
+	_check(visual != null and visual.get_node_or_null("CultivatorMotion20260927") != null,
 		"预览复用共享 Visual 装配的 v9 人物模型")
 	var presentation: Node = preview.presentation()
 	_check(presentation != null and str((presentation.get_script() as Script).resource_path)
