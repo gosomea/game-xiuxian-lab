@@ -3,7 +3,7 @@ extends RefCounted
 ##
 ## 覆盖范围超出单一资源：默认 Swordsman prefab、motion preview、青玉纸样板三条消费路径
 ## 必须到达**同一个** 修仙动作视觉场景，且该场景提供唯一 Skeleton3D + 唯一 AnimationPlayer +
-## 精确七段 clip。同时验证未删除的 v7–v9 视觉资产可加载，以及朝向契约与飞剑装配
+## 精确七段 clip，以及朝向契约与飞剑装配
 ## 不因换人而改变。
 ##
 ## 依据 notes/implemented/art/2026-09-26-ink-cultivator-runtime.md。
@@ -15,13 +15,6 @@ const PREVIEW_DISPLAY := "res://game/systems/motion_preview/motion_preview_displ
 const SAMPLE_SCRIPT := "res://levels/experiments/character_movement/jade_paper_sample.gd"
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
 
-## 旧视觉链：必须是「仍可独立加载」的回退资产，只是不再接入现役移动链。
-const LEGACY_VISUALS := {
-	"v7 中性底座": "res://game/actors/swordsman/cultivator_visual_neutral_youth_v7.tscn",
-	"旧分件刚体": "res://game/actors/swordsman/cultivator_visual.tscn",
-	"旧 v9 骨骼与动画": "res://game/actors/swordsman/cultivator_tripo_v9_visual.tscn",
-	"旧青玉长袍骨骼": "res://game/actors/swordsman/cultivator_visual_rigged.tscn",
-}
 ## 四段核心动作：表现层按速度自动选择，资产必须全部具备。
 const CLIPS := ["idle", "walk", "run", "jump"]
 ## 新动作库还必须包含这三段独立状态。
@@ -37,7 +30,6 @@ static func run(t) -> void:
 	_assert_sprint_ladder(t)
 	_assert_optional_states(t)
 	_assert_facing_contract(t)
-	_assert_legacy_visuals_still_load(t)
 
 
 ## 默认 prefab 必须直达 全新修仙动作，且保持 Visual 这个公开节点名（FlightBundle 与 Swordsman 都依赖它）。
@@ -344,20 +336,3 @@ static func _assert_facing_contract(t) -> void:
 	if visual != null:
 		t.assert_true(absf(visual.rotation.y) < 0.0001 or is_finite(visual.rotation.y),
 			"Visual 朝向初始为有限值（%.4f）" % visual.rotation.y)
-
-
-## 探索资产保留：三条旧视觉链必须仍能独立加载（不再接入，但不得被删除或破坏）。
-static func _assert_legacy_visuals_still_load(t) -> void:
-	for label in LEGACY_VISUALS:
-		var path: String = LEGACY_VISUALS[label]
-		var packed := load(path) as PackedScene
-		t.assert_true(packed != null, "旧视觉仍可加载：%s（%s）" % [label, path])
-		if packed == null:
-			continue
-		var node := packed.instantiate() as Node3D
-		t.assert_true(node != null, "旧视觉可实例化：%s" % label)
-		if node != null:
-			t.assert_true(node.get_child_count() > 0,
-				"旧视觉实例保留子树（%s 实际 %d 个子节点）"
-				% [label, node.get_child_count()])
-			node.free()

@@ -2,11 +2,10 @@
 
 ## 来源与保存
 
-- 人物网格、材质、22 骨与蒙皮：保留的 `src/game/actors/swordsman/models/cultivator_motion_20260927.glb`。没有重新建模。
-- 步行、疾跑关节运动：项目内 `docs/art/cultivator_jade/cultivator_rigged.blend` 的早期 Mixamo 人体动作；按绑定姿态映射到 v9 骨架，保留原地根运动。跳跃使用 v9 底座的正向双脚跳跃轨道，并加双臂对称的小幅上摆。原 Mixamo `jump` 的偏航和盘坐收腿未进入本版。
-- 构建脚本：`tools/art/build_cultivator_aligned_motion_20260927.py`；可编辑源：`cultivator_aligned_motion_20260927.blend`；运行时导出：`src/game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb`。`build_manifest.json` 记录输入与输出 SHA-256、逐 clip 来源和构建数值。
-- 新视觉入口：`src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn`，由默认 `Swordsman`、动作预览和青玉纸样板共享。旧 `cultivator_human_motion_20260927` 的源、GLB、预览和视觉场景全部保留，供前后对照。
-- GLB 导入生成的三张贴图及其 `.import` 边车与该版本一同保存。Blender 构建后须运行 `godot --headless --path src --import`。
+- 人物网格、材质、22 骨与蒙皮来自先前的 v9 人物；步行和疾跑来自早期人体动作重定向，跳跃来自正向双脚跳跃轨道。`build_manifest.json` 保留首次构建时的输入 SHA-256 和逐 clip 数值记录；其中的旧输入路径已按使用者本次明确要求清理，不再是现役构建依赖。
+- 当前可编辑源 `cultivator_aligned_motion_20260927.blend` 从已验收的现役 GLB 重新导入，七段 action 均设为持久保存，三张贴图内嵌。运行时导出仍为 `src/game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb`。独立重导出使用 `tools/art/export_cultivator_aligned_motion_20260927.py`，脚本会拒绝缺失动作、贴图未打包或骨架数量变化。
+- 视觉入口 `src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 由默认 `Swordsman`、动作预览和青玉纸样板共享。旧人物源、GLB、预览和旧视觉场景已按[清理决策](../../../notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)移除。
+- GLB 导入生成的三张贴图及其 `.import` 边车与该版本一同保存。Blender 重导出后须运行 `godot --headless --path src --import`，再复测七段动作、姿态和贴地。临时重导出与当前 GLB 在这些检查上结果一致；字节 SHA 不相同，故本次清理未覆盖已经验收的运行时 GLB。
 
 ## 改动与逐帧证据
 
