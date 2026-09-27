@@ -3,11 +3,11 @@ extends Node3D
 
 ## 骨骼动画表现层（纯表现）：读 motion() 快照驱动 AnimationPlayer 的动作混合。
 ##
-## 与 CultivatorPresentation（分件刚体版）同 API 形状，便于互换与预览驱动：
+## 由正式角色或动作预览调用的表现层接口：
 ##   auto_read_actor / actor_path / advance_state(state, delta) / sample_state()
 ##   / pose_state() / reset_pose()
 ##
-## 职责边界（与刚体版一致）：
+## 职责边界：
 ## - 只读 motion() 的 actual_velocity / on_floor / flight_active；不写 Component、
 ##   不新增 Capability、不移动物理根。删除本节点后角色行为与碰撞完全不变。
 ##
@@ -50,9 +50,8 @@ const LOOPING_CLIPS: Array[String] = ["idle", "walk", "run", "idle_guarded", "me
 ## 单次动作：jump 播完保持末帧（空中状态）。
 const ONESHOT_CLIPS: Array[String] = ["jump"]
 
-## 额外的手作状态（本骨架手工摆出，库里没有）。它们是**可选**的：资产里没有这些 clip 时
-## 表现层照常工作，只是对应状态退化为 idle。用 `has_animation` 判定，不做硬前置断言——
-## 旧的四段资产仍必须能跑。
+## 额外的手作状态。表现层保留缺失时退化为 idle 的兼容行为；
+## 现役资产的七段 clip 由视觉契约测试完整校验。
 const OPTIONAL_GUARDED_IDLE := "idle_guarded"
 ## true = 静止时用额外待命姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
 ## 默认关闭：现役人物静止与预览重置使用双臂自然放松的普通站姿。

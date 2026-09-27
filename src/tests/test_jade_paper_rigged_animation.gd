@@ -1,5 +1,5 @@
 extends RefCounted
-## 青玉纸白样板的骨骼动作接线回归测试（v9 现役人物）。
+## 青玉纸白样板的现役骨骼动作接线回归测试。
 ##
 ## 覆盖真实入口而非孤立资源：样板直接实例化 Swordsman，其 Visual 即共享的 v9 视觉，
 ## 样板**不再**做任何场景侧视觉替换（v7 特例已移除）；ActorAssembly 仍把 FlyingSword
@@ -30,9 +30,9 @@ static func run(t) -> void:
 	t.assert_true(actor.get_node_or_null("Visual/Cultivator") == null,
 		"样板不再保留旧分件模型")
 	t.assert_true(actor.get_node_or_null("Visual/CultivatorRigged") == null,
-		"样板不加载旧青玉长袍骨骼模型（保留为回退资产，不接入运行时）")
+		"样板不加载旧青玉长袍骨骼模型")
 	t.assert_true(actor.get_node_or_null("Visual/CultivatorNeutralYouthV7") == null,
-		"样板不再做 v7 场景侧视觉替换（保留为回退资产，不接入运行时）")
+		"样板不做旧人物的场景侧视觉替换")
 	var presentation := actor.get_node_or_null(
 		"Visual/CultivatorSkeletonPresentation") as CultivatorSkeletonPresentation
 	t.assert_true(presentation != null, "样板装入骨骼表现层")

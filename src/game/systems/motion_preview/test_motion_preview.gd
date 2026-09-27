@@ -599,7 +599,7 @@ static func _assert_display_pose(t) -> void:
 	if shared_character != null:
 		t.assert_eq(shared_character.scene_file_path,
 			"res://game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb",
-			"默认移动场景不再读取宽袖袍 cultivator_jade.glb")
+			"动作预览读取现役角色模型")
 	# 预览与正式角色必须同源：同一 v9 场景，且恰好一个 Skeleton3D + 一个 AnimationPlayer。
 	var players := shared_character.find_children("*", "AnimationPlayer", true, false)
 	t.assert_eq(players.size(), 1, "v9 预览模型恰好一个 AnimationPlayer")

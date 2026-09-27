@@ -2,8 +2,7 @@ extends Node3D
 
 ## 青玉纸白样板场景（美术方向实施，第二轮：补山水草竹与建筑群，替换人物）。
 ##
-## 2026-09-19 v7：人物换成无仙侠衣装的中性动画底座
-## （cultivator_visual_neutral_youth_v7.tscn）。旧青玉长袍视觉不再接入。
+## 人物由共享 Swordsman 场景提供现役七段骨骼动作。
 ##
 ## 职责边界：
 ## - 只装配视觉与碰撞：地形 GLB（台基/台阶/铺装/收边）+ 混元生成资产（亭/松/岩/远山/山门/
@@ -21,8 +20,7 @@ extends Node3D
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
 ## 样板人物视觉由共享 swordsman.tscn 提供（现役全新修仙动作）。
-## 本场景不再替换 Visual：v9 已是全项目现役人物，样板换装会重新制造视觉分叉。
-## 旧 v7 中性底座、旧青玉长袍与全部分件视觉保留为回退与故障对照资产，不接入本场景。
+## 本场景不替换 Visual，保持样板与移动实验使用同一人物。
 const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
 const RIG_SHEET: PackedScene = preload("res://game/systems/camera_rig/camera_rig_sheet.tscn")
 const InputHelper := preload("res://levels/experiments/character_movement/movement_lab_input.gd")

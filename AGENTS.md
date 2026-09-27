@@ -76,7 +76,7 @@ game-xiuxian-lab/
 
 **每轮开发必须 Git 保存。** 本项目保持为独立 Git 仓库；每轮有文件变更的开发结束前，完成适用检查并创建本地 commit，长任务在可独立解释的阶段提交，不能仅暂存。开始前检查已有改动，提交前审查文件清单与差异，保留改动归属，排除凭据、缓存和临时日志；相关代码、场景、源资产、导出资产、notes 与必要验收证据一起保存。未完成或检查失败的保存必须标记 WIP 并记录问题；提交受阻须报告，不能声称已保存。交付报告提交号与剩余改动；无变更不创建空提交。本地提交已获长期授权，push、强推及改写历史不在此授权内。依据：[开发 Git 保存](notes/implemented/process/2026-09-18-development-git-checkpoints.md)。
 
-**探索资产不得删除。** Lab 探索中产出的模型、材质、贴图、动画、场景及其源文件和导出资产，即使版本废弃、被替换、优化或不再引用，也必须保留；可连同依赖归档并维护引用、登记替代关系。只有在原模型上继续修改时，才允许更新该模型及对应导出文件，并在台账注明；重新建模或新方案必须另存文件名或版本目录，禁止覆盖旧资产。Git 历史、截图、生成脚本或仅存源文件不能替代旧源文件与导出资产的保留；清理缓存不得连带删除探索资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
+**探索资产默认不得删除。** Lab 探索中产出的模型、材质、贴图、动画、场景及其源文件和导出资产，即使版本废弃、被替换、优化或不再引用，也必须保留；可连同依赖归档并维护引用、登记替代关系。只有在原模型上继续修改时，才允许更新该模型及对应导出文件，并在台账注明；重新建模或新方案必须另存文件名或版本目录，禁止覆盖旧资产。Git 历史、截图、生成脚本或仅存源文件不能替代旧源文件与导出资产的保留；清理缓存不得连带删除探索资产。使用者明确指定的旧人物清理按[本次例外清单](notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)执行，不自动推广到其他探索资产。通则依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
 
 **所有项目资产必须进入 Git。** 所有探索版本的模型、材质、贴图、动画、音频、字体、场景、预览图及其源文件和导出文件，均须放在本仓库并提交跟踪，包括停用和归档版本；不得只保存在本机外部目录、只登记路径或只提交生成脚本。禁止用忽略规则排除项目资产，提交前须核对未跟踪与被忽略文件；文件较大也不能直接漏交。可再生的引擎导入缓存、系统缓存和临时运行日志不属于源资产或交付资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
 
@@ -99,16 +99,16 @@ game-xiuxian-lab/
 ## 当前状态（2026-09-27）
 
 角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`；
-普通站立、待命、御剑和静修沿用新制动作；步行、疾跑从保留的早期 Mixamo 完整人体动作源
-重定向到 v9 骨架并收窄摆臂，跳跃用 v9 正向双脚跳跃轨道加对称手臂上摆。现役资产为
+普通站立、待命、御剑和静修沿用新制动作；步行、疾跑来自早期人体动作重定向并收窄摆臂，
+跳跃为正向双脚跳跃加对称手臂上摆。现役资产为
 `src/game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb`，
 `src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
 普通走速 1.25、Shift 疾跑 2.25 m/s，`RUN_SPEED_MPS = 1.9`；七段 clip 为
-`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。前一版人体动作与新制程序动画版均作为回退资产保留。
-v1–v6 人物建模与废弃动作试验已按用户明确要求从当前树删除；v7–v9 及仍被使用的第三方原件保留。
+`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_aligned_motion_20260927/cultivator_aligned_motion_20260927.blend` 内嵌三张贴图和全部七段动作；
+旧人物候选、动作中间件与专属场景已按使用者要求从当前树清理，不再是回退资源。
 新动作依据见 [完整人体动作 note](notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)，
-现役资产台账见 `docs/art/cultivator_aligned_motion_20260927/asset_ledger.md`；旧删除清单见
-`docs/playtest/2026-09-27-fresh-motion/retired_assets.json`。
+现役资产台账见 `docs/art/cultivator_aligned_motion_20260927/asset_ledger.md`；清理依据见
+[旧人物清理 note](notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)。
 
 骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`
 逐 clip 逐帧量蒙皮鞋底，用 `tools/art/measure_aligned_motion_geometry.py` 查朝向与摆臂，用
@@ -116,4 +116,4 @@ v1–v6 人物建模与废弃动作试验已按用户明确要求从当前树删
 重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
 见 [贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)，当前动作数据以新台账为准。
 
-顶层入口 `src/levels/experiments/character_movement/movement_lab_hub.tscn`（顶层移动子实验目录，独立启动后 Esc 可返回顶层目录）：七项子实验全部可运行——镜头实验室 `camera_lab.tscn`、人物动作工作台 `motion_stage.tscn`、地形接触训练场 `ground_contact_course.tscn`、御剑飞行训练场 `sword_flight_course.tscn`、状态切换压力场 `state_transition_lab.tscn`、移动庭院 `movement_garden.tscn`（小场景回归）、群山宗门 `mountain_realm.tscn`（180×160 m、五峰三落脚点，屏幕相对移动 + 独立跳跃 + 御剑飞行三能力与共享 CameraRig 跟随的综合场景）。七个子场景统一返回移动子实验目录；三能力与唯一物理提交点不变。剑法及其余六个模块为 planned；移动场景不定义战斗规则。`orbit` 已定义为组合环绕 / 自由跟随：镜头实验室与移动庭院默认进入 orbit 并在 HUD 写出 WASD / Q-E / 滚轮 / 右键四组输入；`CameraRigConfig.consume_unowned_rmb` 默认关闭，实验场景显式开启后非 orbit 的世界区域右键只被消费、不捕获、不改 `mouse_mode`、不写拖动位移（避免泄漏为编辑器嵌入 Game 视图的上下文操作）；orbit 的右键在 UI 未占用时同一事件内捕获，release / Esc / 失焦 / 离树 / 切模式释放并恢复进入前的 `mouse_mode`。自动证据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)；**编辑器嵌入 Game 视图的人工验收未做**。依据：[character-movement-garden](notes/implemented/gameplay/2026-09-18-character-movement-garden.md)、[character-movement-composable-labs](notes/implemented/gameplay/2026-09-18-character-movement-composable-labs.md)（S0–S3 统一决策：装配适配器与飞剑包、共享 CameraRig 四模式、程序动作预览 P0、两级 2 击导航与共享 LabHud；**骨骼 clip 库 P1/P2 已由 v9 落地**——人物改为真实骨骼 clip 驱动，程序近似版留在 `cultivator_presentation.gd` 作回退，v7–v9 视觉链保留）、[character-movement-subexperiments](notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)（上一阶段集成快照）。启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。先读 README 获取运行方式。
+顶层移动入口为 `src/levels/experiments/character_movement/movement_lab_hub.tscn`，七项子实验均可运行：镜头、动作工作台、地形接触、御剑飞行、状态切换、移动庭院和群山宗门。每项均可返回移动目录；默认人物与动作预览共用现役视觉场景。移动仍由平面移动、跳跃、御剑三能力和共享 CameraRig 组合，场景不定义战斗规则。`orbit` 的右键捕获与释放有自动验收，编辑器嵌入 Game 视图的人工验收仍未做；依据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)。剑法与其它六个模块仍为 planned；以 `src/data/content/experiments.json` 为状态真相源。全局启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。运行方式见 README。
