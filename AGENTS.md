@@ -99,18 +99,20 @@ game-xiuxian-lab/
 ## 当前状态（2026-09-27）
 
 角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`；
-普通站立、待命、御剑和静修沿用新制动作，步行、疾跑、跳跃则从保留的早期 Mixamo 完整人体
-动作源重定向到 v9 骨架。现役资产为 `src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb`，
-`src/game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
+普通站立、待命、御剑和静修沿用新制动作；步行、疾跑从保留的早期 Mixamo 完整人体动作源
+重定向到 v9 骨架并收窄摆臂，跳跃用 v9 正向双脚跳跃轨道加对称手臂上摆。现役资产为
+`src/game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb`，
+`src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
 普通走速 1.25、Shift 疾跑 2.25 m/s，`RUN_SPEED_MPS = 1.9`；七段 clip 为
-`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。新制程序动画版作为回退资产保留。
+`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。前一版人体动作与新制程序动画版均作为回退资产保留。
 v1–v6 人物建模与废弃动作试验已按用户明确要求从当前树删除；v7–v9 及仍被使用的第三方原件保留。
 新动作依据见 [完整人体动作 note](notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)，
-资产台账见 `docs/art/cultivator_human_motion_20260927/asset_ledger.md`；旧删除清单见
+现役资产台账见 `docs/art/cultivator_aligned_motion_20260927/asset_ledger.md`；旧删除清单见
 `docs/playtest/2026-09-27-fresh-motion/retired_assets.json`。
 
 骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`
-逐 clip 逐帧量蒙皮鞋底，用 `measure_glb_balance.py` 与 `render_ground_contact.py` 查重心和视觉姿态；
+逐 clip 逐帧量蒙皮鞋底，用 `tools/art/measure_aligned_motion_geometry.py` 查朝向与摆臂，用
+`measure_human_motion_posture.py` 查上身倾斜；
 重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
 见 [贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)，当前动作数据以新台账为准。
 

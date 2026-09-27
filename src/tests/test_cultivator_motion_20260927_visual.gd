@@ -9,8 +9,8 @@ extends RefCounted
 ## 依据 notes/implemented/art/2026-09-26-ink-cultivator-runtime.md。
 
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
-const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn"
-const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_human_motion_20260927.glb"
+const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn"
+const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb"
 const PREVIEW_DISPLAY := "res://game/systems/motion_preview/motion_preview_display.gd"
 const SAMPLE_SCRIPT := "res://levels/experiments/character_movement/jade_paper_sample.gd"
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
