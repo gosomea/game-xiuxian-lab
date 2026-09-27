@@ -81,6 +81,12 @@ static func _assert_visual_scene_contract(t) -> void:
 	if presentation != null:
 		presentation.set("auto_read_actor", false)
 	host.add_child(visual)
+	if presentation != null:
+		t.assert_true(not bool(presentation.get("prefer_guarded_idle")),
+			"现役静止默认关闭负手偏好")
+		presentation.call("reset_pose")
+		t.assert_eq(str(presentation.call("pose_state").get("current_clip", "")), "idle",
+			"现役静止与预览重置选用普通站姿 idle")
 
 	var skeletons := visual.find_children("*", "Skeleton3D", true, false)
 	t.assert_eq(skeletons.size(), 1, "修仙动作 v1 视觉恰好一个 Skeleton3D")
