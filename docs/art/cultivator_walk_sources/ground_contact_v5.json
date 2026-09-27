@@ -1,0 +1,28 @@
+{
+  "glb": "src/game/actors/swordsman/models/cultivator_walk_sources_v5.glb",
+  "clips": {
+    "walk_cmu": {
+      "min_z": -0.0015,
+      "max_z_min_vertex": 0.0015,
+      "min_z_frame": 1,
+      "frames": [
+        1,
+        28
+      ],
+      "lift_needed_m": 0.0015,
+      "problem": null
+    },
+    "walk_kaykit": {
+      "min_z": -0.0028,
+      "max_z_min_vertex": 0.0001,
+      "min_z_frame": 14,
+      "frames": [
+        1,
+        25
+      ],
+      "lift_needed_m": 0.0028,
+      "problem": null
+    }
+  },
+  "problems": []
+}
