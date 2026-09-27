@@ -55,9 +55,8 @@ const ONESHOT_CLIPS: Array[String] = ["jump"]
 ## 旧的四段资产仍必须能跑。
 const OPTIONAL_GUARDED_IDLE := "idle_guarded"
 ## true = 静止时用「负手而立」手作姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
-## 默认开启：负手而立比库里的休闲站姿更贴修士气质，这是使用者的选择。
-## 仍走 has_state() 判定，因此旧四段资产照常工作。
-@export var prefer_guarded_idle: bool = true
+## 默认关闭：现役人物静止与预览重置使用双臂自然放松的普通站姿。
+@export var prefer_guarded_idle: bool = false
 const OPTIONAL_MEDITATE := "meditate"
 const OPTIONAL_SWORD_RIDE := "sword_ride"
 
@@ -218,7 +217,7 @@ func advance_state(state: Dictionary, delta: float) -> void:
 	_record_pose(velocity, speed, grounded, flying)
 
 
-## 静止默认 clip：负手而立（若可用且启用），否则普通 idle。
+## 静止默认 clip：普通 idle；仅显式启用负手偏好时改用 idle_guarded。
 ##
 ## 起手与 reset 都走这里，保证「进场景看到的站姿」与「停下后的站姿」一致——
 ## 两处各写一次会让静止姿态在 reset 后悄悄变回 idle。

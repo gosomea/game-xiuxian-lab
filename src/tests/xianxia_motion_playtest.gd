@@ -101,11 +101,9 @@ func _run() -> void:
 	# 静立时按 Shift 不得进入 run：疾行只在真有移动输入时生效。
 	_key(KEY_SHIFT, true)
 	await _frames(20)
-	# 静止默认姿态是负手而立（若资产含该手作姿态），否则 idle。按 Shift 不得改变它。
-	var still_wanted := "idle_guarded" if _presentation.call("has_state", "idle_guarded") \
-		and bool(_presentation.get("prefer_guarded_idle")) else "idle"
-	_check(str(_presentation.call("pose_state").get("current_clip", "")) == still_wanted,
-		"静立按 Shift 仍是 %s（不误触发奔跑姿态）" % still_wanted)
+	# 静止默认是普通站姿；按 Shift 不得切到负手或奔跑。
+	_check(str(_presentation.call("pose_state").get("current_clip", "")) == "idle",
+		"静立按 Shift 仍是普通 idle（不误触发负手或奔跑姿态）")
 	_key(KEY_SHIFT, false)
 	await _frames(10)
 
