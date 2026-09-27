@@ -1,0 +1,56 @@
+{
+  "glb": "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb",
+  "forward": [
+    -0.01722,
+    -0.99985,
+    0.0
+  ],
+  "clips": {
+    "idle": {
+      "frames": 47,
+      "pitch_mean_deg": -1.831,
+      "pitch_min_deg": -2.305,
+      "pitch_max_deg": -1.356,
+      "roll_mean_deg": -0.031,
+      "roll_min_deg": -0.032,
+      "roll_max_deg": -0.03
+    },
+    "walk": {
+      "frames": 26,
+      "pitch_mean_deg": -1.941,
+      "pitch_min_deg": -3.068,
+      "pitch_max_deg": -0.348,
+      "roll_mean_deg": 1.025,
+      "roll_min_deg": -0.504,
+      "roll_max_deg": 2.17
+    },
+    "run": {
+      "frames": 16,
+      "pitch_mean_deg": 3.318,
+      "pitch_min_deg": 1.201,
+      "pitch_max_deg": 6.057,
+      "roll_mean_deg": -0.799,
+      "roll_min_deg": -1.953,
+      "roll_max_deg": 1.059
+    },
+    "jump": {
+      "frames": 14,
+      "pitch_mean_deg": -4.191,
+      "pitch_min_deg": -6.026,
+      "pitch_max_deg": -1.458,
+      "roll_mean_deg": -0.364,
+      "roll_min_deg": -1.994,
+      "roll_max_deg": -0.056
+    },
+    "sword_ride": {
+      "frames": 47,
+      "pitch_mean_deg": -0.554,
+      "pitch_min_deg": -0.555,
+      "pitch_max_deg": -0.553,
+      "roll_mean_deg": -0.017,
+      "roll_min_deg": -0.424,
+      "roll_max_deg": 0.389
+    }
+  },
+  "problems": []
+}
