@@ -41,7 +41,7 @@ from mathutils import Matrix, Quaternion, Vector
 
 ROOT = "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab"
 SRC_BLEND = os.path.join(
-    ROOT, "docs/art/cultivator_handsome_youth_v5_anime/source/generic_anime_male_original.blend")
+    ROOT, "docs/art/cultivator_neutral_youth_v7/source/generic_anime_male_original.blend")
 ANIM_BLEND = os.path.join(ROOT, "docs/art/cultivator_jade/cultivator_rigged.blend")
 OUT_DIR = os.path.join(ROOT, "docs/art/cultivator_neutral_youth_v7")
 OUT_BLEND = os.path.join(OUT_DIR, "cultivator_neutral_youth_v7.blend")

@@ -20,7 +20,7 @@ extends Node3D
 
 const HUB_SCENE := "res://levels/experiments/character_movement/movement_lab_hub.tscn"
 const SWORDSMAN_SCENE: PackedScene = preload("res://game/actors/swordsman/swordsman.tscn")
-## 样板人物视觉由共享 swordsman.tscn 提供（现役修仙动作 v1）。
+## 样板人物视觉由共享 swordsman.tscn 提供（现役全新修仙动作）。
 ## 本场景不再替换 Visual：v9 已是全项目现役人物，样板换装会重新制造视觉分叉。
 ## 旧 v7 中性底座、旧青玉长袍与全部分件视觉保留为回退与故障对照资产，不接入本场景。
 const HUD_SCRIPT := preload("res://ui/lab_hud.gd")
@@ -548,7 +548,7 @@ func _spawn_player() -> void:
 	assert(actor != null, "jade_paper_sample: swordsman.tscn 根节点必须是 Swordsman")
 	# 不再替换 Visual：swordsman.tscn 已直达 v9 视觉。
 	# 历史上本场景在入树前换掉 Visual（v7 特例）；v9 统一后该替换只会制造第二套装配路径。
-	assert(actor.get_node_or_null("Visual/CultivatorXianxiaV1") != null,
+	assert(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
 		"jade_paper_sample: 默认角色未装入 v9 视觉模型")
 	actor.name = "Swordsman"
 	add_child(actor)

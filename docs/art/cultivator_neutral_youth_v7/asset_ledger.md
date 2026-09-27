@@ -12,7 +12,7 @@
 ## 来源与许可
 
 - 人体与骨架：**Generic Anime Male**，作者 jonshipman，Sketchfab CC-BY-4.0。
-  未改原件 `docs/art/cultivator_handsome_youth_v5_anime/source/generic_anime_male_original.blend`，
+  未改原件 `docs/art/cultivator_neutral_youth_v7/source/generic_anime_male_original.blend`，
   SHA-256 `a58cb67a0451b9198692e75385259dd8c72c914ea4c49e44e205ce34d986cc2a`（本轮未改动）。
 - 动作：旧四动作骨架 `docs/art/cultivator_jade/cultivator_rigged.blend` 的
   `idle` / `walk` / `run` / `jump`（Mixamo 来源，见该目录台账）。**未上传 Mixamo。**

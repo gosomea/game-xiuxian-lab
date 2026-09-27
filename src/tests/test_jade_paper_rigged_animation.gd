@@ -25,7 +25,7 @@ static func run(t) -> void:
 		return
 	var visual := actor.get_node_or_null("Visual") as Node3D
 	t.assert_true(visual != null, "骨骼视觉保持角色公开节点名 Visual")
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorXianxiaV1") != null,
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
 		"样板正式运行路径装入重做动画的人物模型")
 	t.assert_true(actor.get_node_or_null("Visual/Cultivator") == null,
 		"样板不再保留旧分件模型")

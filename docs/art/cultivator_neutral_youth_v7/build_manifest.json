@@ -250,7 +250,7 @@
   "path": "src/game/actors/swordsman/models/cultivator_neutral_youth_v7_cultivator_neutral_youth_v7_neutral_body.png",
   "sha256": "1042a17fca07584fede018e77af432a829c4072869a07551bbce03c56a3bb431"
  },
- "source_blend": "docs/art/cultivator_handsome_youth_v5_anime/source/generic_anime_male_original.blend",
+ "source_blend": "docs/art/cultivator_neutral_youth_v7/source/generic_anime_male_original.blend",
  "source_sha256": "a58cb67a0451b9198692e75385259dd8c72c914ea4c49e44e205ce34d986cc2a",
  "steps": []
 }

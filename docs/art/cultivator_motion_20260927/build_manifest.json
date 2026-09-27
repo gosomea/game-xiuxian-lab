@@ -1,0 +1,61 @@
+{
+  "source_model": "src/game/actors/swordsman/models/cultivator_tripo_v9.glb",
+  "discarded_imported_actions": [
+    "idle",
+    "idle_guarded",
+    "jump",
+    "meditate",
+    "run",
+    "sword_ride",
+    "walk"
+  ],
+  "sampled_imported_action_frames": 0,
+  "neutral_spine_correction_degrees": [
+    12.73,
+    0.115
+  ],
+  "clips": {
+    "idle": {
+      "frames": 73,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": -0.0186,
+      "shoe_floor_raw_max_m": -0.0186
+    },
+    "idle_guarded": {
+      "frames": 73,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": -0.0186,
+      "shoe_floor_raw_max_m": -0.0186
+    },
+    "walk": {
+      "frames": 29,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": -0.0203,
+      "shoe_floor_raw_max_m": 0.0515
+    },
+    "run": {
+      "frames": 25,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": -0.0188,
+      "shoe_floor_raw_max_m": 0.085
+    },
+    "jump": {
+      "frames": 37,
+      "grounded_floor_track": false,
+      "shoe_floor_raw_min_m": -0.0287,
+      "shoe_floor_raw_max_m": 0.0053
+    },
+    "sword_ride": {
+      "frames": 73,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": -0.0103,
+      "shoe_floor_raw_max_m": -0.0102
+    },
+    "meditate": {
+      "frames": 91,
+      "grounded_floor_track": true,
+      "shoe_floor_raw_min_m": 0.4157,
+      "shoe_floor_raw_max_m": 0.4157
+    }
+  }
+}

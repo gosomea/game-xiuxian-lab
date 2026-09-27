@@ -52,7 +52,7 @@ func _run() -> void:
 	_bind()
 	_check(_actor != null and _motion != null and _camera != null, "真实移动场景装配完成")
 	# 现役动画版本仍使用单网格骨骼人物，不按旧分件数量判断。
-	var active_model := _actor.get_node_or_null("Visual/CultivatorXianxiaV1")
+	var active_model := _actor.get_node_or_null("Visual/CultivatorMotion20260927")
 	_check(active_model != null, "角色实例装入重做动画的人物模型")
 	_check(active_model != null and active_model.find_children("*", "MeshInstance3D", true, false).size() >= 1,
 		"现役人物包含 Blender 导入网格")
