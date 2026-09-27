@@ -21,7 +21,7 @@ const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTOR_SOURCE := "res://game/actors/swordsman/swordsman.gd"
 const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_skeleton_presentation.gd"
 const ACTOR_SCENE_SOURCE := "res://game/actors/swordsman/swordsman.tscn"
-const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn"
+const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn"
 ## 表现节点路径：v9 起共享视觉装配的是 CultivatorSkeletonPresentation（骨骼 clip 版），
 ## 旧 Visual/CultivatorPresentation（分件刚体版）已随共享链退场。
 const PRESENTATION_NODE_PATH := "Visual/CultivatorSkeletonPresentation"

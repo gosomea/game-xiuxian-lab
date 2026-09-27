@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+; v9 人物与蒙皮：收窄走跑摆臂，跳跃使用正向双脚起跳姿态。
+; 依据 notes/implemented/art/2026-09-27-human-locomotion-on-v9.md。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorAlignedMotion20260927Visual" type="Node3D"]
+
+; 保持共享模型节点路径，供青玉纸样板和角色预览引用。
+[node name="CultivatorHumanMotion20260927" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorSkeletonPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")
+walk_reference_mps = 1.02
+run_reference_mps = 2.10
