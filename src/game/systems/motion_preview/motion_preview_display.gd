@@ -26,7 +26,7 @@ extends Node3D
 ##   实际姿态继续（transition_from_* 由 state.note_effective 采样）。
 ## - rotation.y（朝向）归本节点所有；回卷与 reset 时一并归零，因此转身类动作不会跨循环累积。
 
-const CULTIVATOR_VISUAL: PackedScene = preload("res://game/actors/swordsman/cultivator_motion_20260927_visual.tscn")
+const CULTIVATOR_VISUAL: PackedScene = preload("res://game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn")
 ## 共享御剑表现资源：与 sword_flight 能力包使用同一个轴适配场景，不复制、不另写旋转。
 const FLYING_SWORD_SCENE: PackedScene = preload(
 	"res://game/abilities/sword_flight/flying_sword_visual.tscn")
@@ -64,7 +64,7 @@ func _ready() -> void:
 	# 实例化共享 Visual 装配，并在入树前把表现层切到预览驱动：
 	# 它没有任何 actor 路径可读，必须只由 advance() 显式推进。
 	var visual := CULTIVATOR_VISUAL.instantiate() as Node3D
-	assert(visual != null, "MotionPreviewDisplay: cultivator_motion_20260927_visual.tscn 根必须是 Node3D")
+	assert(visual != null, "MotionPreviewDisplay: cultivator_human_motion_20260927_visual.tscn 根必须是 Node3D")
 	visual.name = "CultivatorVisual"
 	var presentation := visual.get_node_or_null("CultivatorSkeletonPresentation")
 	assert(presentation != null, "MotionPreviewDisplay: 共享 Visual 缺少 CultivatorSkeletonPresentation")

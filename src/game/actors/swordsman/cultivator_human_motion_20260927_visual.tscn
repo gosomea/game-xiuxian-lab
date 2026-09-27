@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+; v9 人物与蒙皮，步行/疾跑/跳跃来自保留的完整人体动作，经绑定姿态重定向。
+; 依据 notes/implemented/art/2026-09-27-human-locomotion-on-v9.md。
+
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_human_motion_20260927.glb" id="1_model"]
+[ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
+
+[node name="CultivatorHumanMotion20260927Visual" type="Node3D"]
+
+[node name="CultivatorHumanMotion20260927" parent="." instance=ExtResource("1_model")]
+
+[node name="CultivatorSkeletonPresentation" type="Node3D" parent="."]
+script = ExtResource("2_presentation")
+walk_reference_mps = 1.02
+run_reference_mps = 2.10

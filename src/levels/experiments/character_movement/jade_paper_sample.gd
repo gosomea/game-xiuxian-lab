@@ -548,7 +548,7 @@ func _spawn_player() -> void:
 	assert(actor != null, "jade_paper_sample: swordsman.tscn 根节点必须是 Swordsman")
 	# 不再替换 Visual：swordsman.tscn 已直达 v9 视觉。
 	# 历史上本场景在入树前换掉 Visual（v7 特例）；v9 统一后该替换只会制造第二套装配路径。
-	assert(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
+	assert(actor.get_node_or_null("Visual/CultivatorHumanMotion20260927") != null,
 		"jade_paper_sample: 默认角色未装入 v9 视觉模型")
 	actor.name = "Swordsman"
 	add_child(actor)

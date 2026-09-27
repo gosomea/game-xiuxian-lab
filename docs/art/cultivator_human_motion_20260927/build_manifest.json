@@ -1,0 +1,64 @@
+{
+  "source": "docs/art/cultivator_jade/cultivator_rigged.blend",
+  "source_sha256": "e71cf47423d1082952b931cebd74cb8137e09b41a0e29b1c65c24b799baa1174",
+  "target_base": "src/game/actors/swordsman/models/cultivator_motion_20260927.glb",
+  "target_base_sha256": "050fd39563f0f48c8dc884324c6eb87f3b2ac246e4e823830597239f69795ad5",
+  "original_actions": [
+    "idle",
+    "idle_guarded",
+    "jump",
+    "meditate",
+    "run",
+    "sword_ride",
+    "walk"
+  ],
+  "retargeted_clips": {
+    "walk": {
+      "frames": 32,
+      "duration_s": 1.0333,
+      "hip_vertical_range_m": [
+        -0.0773,
+        0.0155
+      ],
+      "raw_shoe_floor_range_m": [
+        -0.0349,
+        0.066
+      ],
+      "fixed_ground_correction_m": 0.0349
+    },
+    "run": {
+      "frames": 20,
+      "duration_s": 0.6333,
+      "hip_vertical_range_m": [
+        -0.0065,
+        0.0469
+      ],
+      "raw_shoe_floor_range_m": [
+        0.0231,
+        0.2665
+      ],
+      "fixed_ground_correction_m": -0.0231
+    },
+    "jump": {
+      "frames": 17,
+      "duration_s": 0.5333,
+      "hip_vertical_range_m": [
+        -0.2797,
+        0.0138
+      ],
+      "raw_shoe_floor_range_m": [
+        0.1058,
+        0.4327
+      ],
+      "fixed_ground_correction_m": -0.1231
+    }
+  },
+  "kept_clips": [
+    "idle",
+    "idle_guarded",
+    "meditate",
+    "sword_ride"
+  ],
+  "output": "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb",
+  "output_sha256": "e451087aa171e0ed15f715bd24b073163a084084a0be6d31046762140eba4ce7"
+}

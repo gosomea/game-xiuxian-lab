@@ -25,7 +25,7 @@ static func run(t) -> void:
 		return
 	var visual := actor.get_node_or_null("Visual") as Node3D
 	t.assert_true(visual != null, "骨骼视觉保持角色公开节点名 Visual")
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorHumanMotion20260927") != null,
 		"样板正式运行路径装入重做动画的人物模型")
 	t.assert_true(actor.get_node_or_null("Visual/Cultivator") == null,
 		"样板不再保留旧分件模型")
@@ -72,13 +72,17 @@ static func run(t) -> void:
 static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentation,
 		animation_player: AnimationPlayer) -> void:
 	presentation.reset_pose()
-	# 走：1.55 m/s（SwordsmanMotionComponent.move_speed）落在 walk 带。
-	presentation.advance_state(_state(Vector3(1.55, 0.0, 0.0), true, false), 0.1)
+	# 走：用现役运动组件的真实走速，避免动作标定后留下旧常数。
+	var motion_script := load("res://game/actors/swordsman/swordsman_motion_component.gd") as GDScript
+	var motion_probe := motion_script.new() as SwordsmanMotionComponent
+	var walk_speed := motion_probe.move_speed
+	motion_probe.free()
+	presentation.advance_state(_state(Vector3(walk_speed, 0.0, 0.0), true, false), 0.1)
 	var walk := presentation.pose_state()
-	t.assert_eq(str(walk.get("current_clip", "")), "walk", "1.55 m/s 着地状态映射到 walk")
+	t.assert_eq(str(walk.get("current_clip", "")), "walk", "走速着地状态映射到 walk")
 	# 播放速率 = 速度 / 现役 walk clip 实测自然速度。
 	var walk_reference := float(presentation.get("walk_reference_mps"))
-	t.assert_true(absf(animation_player.speed_scale - 1.55 / walk_reference) < EPSILON,
+	t.assert_true(absf(animation_player.speed_scale - walk_speed / walk_reference) < EPSILON,
 		"walk 切换首帧即按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
 
 	# 疾行：用组件实际导出值（当前 2.25 m/s），越过 run 阈值进入 run 带。
