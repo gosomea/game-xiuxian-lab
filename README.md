@@ -2,7 +2,7 @@
 
 独立的 **2.5D 模块实验项目**，基于 game-template 0.4.0 / Godot 4.6。
 
-当前先探索角色移动与呈现：**1 个移动模块探索中，剑法及其余 6 个模块待探索。** 移动模块现以子实验目录 `movement_lab_hub.tscn` 为入口，七个子实验（镜头、动作、地形接触、御剑飞行、状态切换、庭院、群山）逐一观察；群山宗门是其中的综合场景，用来观察平面移动、独立跳跃与御剑飞行在高低差和空中场景中的表现。剑法表现与战斗组织另行设计，不从移动场景推导战斗规则。
+当前有 **2 个模块探索中**：角色移动与二维坊市；地图、剑法及其余 5 个模块待探索。移动模块以子实验目录 `movement_lab_hub.tscn` 为入口，七个子实验（镜头、动作、地形接触、御剑飞行、状态切换、庭院、群山）逐一观察；群山宗门是其中的综合场景。剑法表现与战斗组织另行设计，不从移动场景推导战斗规则。
 
 ## 启动
 
@@ -19,16 +19,17 @@ python3 tools/verify/run_all.py --with-tests
 
 ## 目前可以看到什么
 
-- **实验目录**：八个模块的目标、范围与依赖；只有角色移动提供探索场景入口，剑法保持待设计。
+- **实验目录**：九个模块的目标、范围与依赖；角色移动和二维坊市已有探索场景，剑法保持待设计。
 - **角色移动子实验目录**：**两级卡片各一次点击直达（共 2 击）**，七项子实验逐项回答问题，**七项全部有真实场景入口（7 / 7）**：镜头实验室、人物动作工作台、地形接触训练场、御剑飞行训练场、状态切换压力场、移动庭院、群山宗门。每个子场景的 Esc 回到本目录，本目录的 Esc 回到顶层实验目录；返回后恢复上次选中项与滚动位置。各场景共享紧凑 LabHud（标题 + 核心状态 + 短提示常显，明细按 H / F1 展开）。
 - **群山宗门**：180×160 m、五峰三落脚点的 Blender 程序建模场景。WASD / 方向键移动，Space 跳跃 / 上升，Ctrl 下降，F 开关御剑，滚轮缩放，R 复位（含关闭飞行），Esc 返回；HUD 常显步行 / 空中 / 御剑与高度，明细按 H 展开。相机走共享 CameraRig（高空跟随不压回地面）。没有攻击、命中或战斗 UI。
 - **移动庭院（小场景回归）**：修士与风格化庭院的纯水平移动基线，可直接单独运行；**默认进入组合环绕 / 自由跟随**（`orbit`：WASD 移动、Q/E 连续旋转、滚轮缩放、按住右键拖动 yaw/pitch），点界面按钮可切回 `fixed_follow`，不占用数字键；R 重置、Esc 返回。
 - **镜头实验室**：四模式（`fixed_follow` / `quarter_turn` / `orbit` / `overview`）与四种跟随预设对比；**默认进入组合环绕 / 自由跟随**（`orbit`，同时支持 WASD、Q/E 连续旋转、滚轮缩放、按住右键拖动）；1–4 选模式、Tab 换预设、Z/X 或滚轮缩放、MMB 平移、Home 回中。
-- **人物动作工作台**：真实输入模式观察角色动作，另可选程序动作预览（播放 / 暂停 / 单步 / 循环 / 倍率 / A–B 过渡）；动作仍是程序近似，**尚无骨骼动画**。
+- **人物动作工作台**：真实输入模式观察现役 22 骨人物的七段动作（站立、步行、疾跑、跳跃、待命、静修、御剑），另可逐段播放 / 暂停 / 单步 / 循环 / 调速与比较过渡。现役人物源与导出见[资产台账](docs/art/cultivator_aligned_motion_20260927/asset_ledger.md)。
+- **二维坊市**：独立的东方动漫风斜角街口，可四向行走并与三位路人交谈；它验证二维画风与遮挡，不复用三维人物模型。
 - **空白 3D 工作台**：保留网格、正交相机与缩放，供其他模块独立起步。
 - **工程基础**：模板核心、词汇与能力目录生成器、分包规范、门禁和回归测试。
 
-目前群山、宗门与御剑是程序建模的美术探索；移动手感与视觉评价待使用者试玩。实验室界面沿用「纸白 · 青绿」配色。
+目前群山、宗门与御剑是程序建模的美术探索；使用者已认可基本移动动作，最终画风、连续移动手感与其它模块仍待继续验证。实验室界面沿用「纸白 · 青绿」配色。
 
 ## 模块清单
 
@@ -36,6 +37,7 @@ python3 tools/verify/run_all.py --with-tests
 
 | 模块 | 独立实验目标 |
 |---|---|
+| 二维坊市 | 东方动漫风斜角街口、四向行走、人物与环境遮挡 |
 | 地图探索 | 地形、道路、建筑、遮挡、镜头与区域边界 |
 | 角色移动 | 平面移动、跳跃、御剑飞行、碰撞与跟随镜头 |
 | 剑法战斗 | 剑法表现与战斗组织方式，待单独设计 |
@@ -52,7 +54,7 @@ python3 tools/verify/run_all.py --with-tests
 ```text
 src/levels/lab_hub.tscn        实验目录
 src/levels/empty_stage.tscn     空白 3D 工作台
-src/levels/experiments/        独立与组合实验场景（character_movement：movement_lab_hub + mountain_realm + movement_garden）
+src/levels/experiments/        独立与组合实验场景（character_movement、eastern_2d）
 src/game/                     供场景复用的模块实现
 src/core/                     从模板继承的核心设施
 src/data/content/experiments.json  模块清单
@@ -79,4 +81,4 @@ docs/playtest/                 运行验收证据
 ./run.command res://levels/experiments/character_movement/movement_garden.tscn
 ```
 
-本轮边界与试玩反馈见 [实验记录](docs/experiments/character-movement.md)；接口与装配记录见 [群山场景方案](docs/experiments/mountain-scene-plan.md)。群山与御剑源文件、复现方式与资产台账在 `docs/art/mountain_realm/`，修士角色与庭院资产在 `docs/art/movement_garden/`。
+早期移动实验边界见 [实验记录](docs/experiments/character-movement.md)；现役动作验收见[运行记录](docs/playtest/2026-09-27-aligned-motion/report.md)。群山与御剑源文件、复现方式与资产台账在 `docs/art/mountain_realm/`；现役人物源与导出见[角色资产台账](docs/art/cultivator_aligned_motion_20260927/asset_ledger.md)，庭院资产在 `docs/art/movement_garden/`。

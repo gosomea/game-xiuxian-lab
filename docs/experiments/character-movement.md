@@ -1,5 +1,7 @@
 # 实验：角色移动与庭院呈现
 
+> 以下主要是 2026-09-18 的阶段快照。当前共享人物已改为七段骨骼动作，使用者认可基本动作；现役资产与试玩证据见[角色台账](../art/cultivator_aligned_motion_20260927/asset_ledger.md)和[动作验收](../playtest/2026-09-27-aligned-motion/report.md)。下文“静态模型”“没有骨骼动画”等描述仅指当时状态。
+
 - 日期：2026-09-18。
 - 场景：`res://levels/experiments/character_movement/movement_lab_hub.tscn`（当前入口，子实验目录）；七个子实验场景 `camera_lab.tscn`（镜头实验室）、`motion_stage.tscn`（人物动作工作台）、`ground_contact_course.tscn`（地形接触训练场）、`sword_flight_course.tscn`（御剑飞行训练场）、`state_transition_lab.tscn`（状态切换压力场）、`movement_garden.tscn`（小场景回归）、`mountain_realm.tscn`（群山宗门组合验收）。
 - 观察目标（群山宗门）：三个移动能力在高低差与空中场景中的手感与可读性——屏幕相对移动、独立跳跃、御剑飞行、碰撞与镜头；走路动画与最终美术仍待试玩评价。
