@@ -30,8 +30,8 @@ func _tick_active(_delta: float) -> void:
 	# 斜向输入先归一化再乘速度，避免两键同时按下时加速。
 	if direction.length() > 1.0:
 		direction = direction.normalized()
-	# 疾行：按住加速键时改用 sprint_speed。走/跑两档速度分别对齐各自 clip 的自然速度
-	# （实测 walk 1.288、run 3.426 m/s），表现层据此选 clip 并同步播放速率。
+	# 疾行：按住加速键时改用 sprint_speed。表现层按各 clip 的实测足尖行程
+	# 同步播放速率；此处仅决定角色物理水平速度。
 	var speed := motion.sprint_speed if motion.sprint_input else motion.move_speed
 	motion.desired_horizontal = direction * speed
 

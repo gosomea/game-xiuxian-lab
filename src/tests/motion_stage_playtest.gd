@@ -21,7 +21,7 @@ const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTOR_SOURCE := "res://game/actors/swordsman/swordsman.gd"
 const PRESENTATION_SOURCE := "res://game/actors/swordsman/cultivator_skeleton_presentation.gd"
 const ACTOR_SCENE_SOURCE := "res://game/actors/swordsman/swordsman.tscn"
-const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_motion_20260927_visual.tscn"
+const SHARED_VISUAL_SOURCE := "res://game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn"
 ## 表现节点路径：v9 起共享视觉装配的是 CultivatorSkeletonPresentation（骨骼 clip 版），
 ## 旧 Visual/CultivatorPresentation（分件刚体版）已随共享链退场。
 const PRESENTATION_NODE_PATH := "Visual/CultivatorSkeletonPresentation"
@@ -256,7 +256,7 @@ func _batch_idle() -> void:
 	# 快照的 phase 必须就是真实播放位置，否则读数与画面分叉。
 	var player := _animation_player()
 	_check(player != null and player.current_animation == _idle_clip(),
-		"表现层实际播放中的 clip 是静止默认 %s（实际 %s）" % [_idle_clip(), (player.current_animation if player != null else "<无播放器>")] % (player.current_animation if player != null else "<无播放器>"))
+		"表现层实际播放中的 clip 是静止默认 %s（实际 %s）" % [_idle_clip(), (player.current_animation if player != null else "<无播放器>")])
 	_check(_actor.global_position.distance_to(anchor) < POS_TOL,
 		"待机不产生位移（%.4f m）" % _actor.global_position.distance_to(anchor))
 
@@ -281,12 +281,14 @@ func _batch_run() -> void:
 		"D 输入达到步行速度 %.2f（%.2f）" % [_motion.move_speed, _motion.actual_velocity.length()])
 	# 屏幕相对：D 必须沿相机右方产生真实位移，不是只看世界 +X。
 	var travelled := pos_b - run_start
-	_check(travelled.length() > 0.5, "跑动产生真实位移（%.3f m）" % travelled.length())
+	var expected_travel := _motion.move_speed * (20.0 / 60.0) * 0.8
+	_check(travelled.length() > expected_travel,
+		"步行产生真实位移（%.3f m，最低 %.3f m）" % [travelled.length(), expected_travel])
 	_check(travelled.normalized().dot(_motion.camera_right) > 0.9,
 		"D 位移沿相机右方（dot=%.3f）" % travelled.normalized().dot(_motion.camera_right))
 	_check(float(pose_a.get("gait", 0.0)) > 0.6, "跑动时步态增益升到高位（%.3f）" % float(pose_a.get("gait", 0.0)))
 	_check(str(pose_a.get("current_clip", "")) == "walk",
-		"步行速度 4.0 m/s 映射到 walk clip（实际 %s）" % str(pose_a.get("current_clip", "")))
+		"步行速度 %.2f m/s 映射到 walk clip（实际 %s）" % [_motion.move_speed, str(pose_a.get("current_clip", ""))])
 	var phase_delta := absf(float(pose_b.get("phase", 0.0)) - float(pose_a.get("phase", 0.0)))
 	_check(phase_delta > 0.05 or absf(phase_delta - TAU) < 0.05,
 		"两个时间点的步态相位不同（Δ=%.3f）证明动作在变化" % phase_delta)
@@ -822,7 +824,7 @@ func _batch_preview() -> void:
 
 	# 预览与正式角色共用同一模型 + 同一表现系统。
 	var visual := preview.get_node_or_null("CultivatorVisual")
-	_check(visual != null and visual.get_node_or_null("CultivatorMotion20260927") != null,
+	_check(visual != null and visual.get_node_or_null("CultivatorHumanMotion20260927") != null,
 		"预览复用共享 Visual 装配的 v9 人物模型")
 	var presentation: Node = preview.presentation()
 	_check(presentation != null and str((presentation.get_script() as Script).resource_path)

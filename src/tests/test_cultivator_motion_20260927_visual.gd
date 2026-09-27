@@ -9,8 +9,8 @@ extends RefCounted
 ## 依据 notes/implemented/art/2026-09-26-ink-cultivator-runtime.md。
 
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
-const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_motion_20260927_visual.tscn"
-const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_motion_20260927.glb"
+const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_human_motion_20260927_visual.tscn"
+const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_human_motion_20260927.glb"
 const PREVIEW_DISPLAY := "res://game/systems/motion_preview/motion_preview_display.gd"
 const SAMPLE_SCRIPT := "res://levels/experiments/character_movement/jade_paper_sample.gd"
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
@@ -52,7 +52,7 @@ static func _assert_shared_prefab(t) -> void:
 	t.assert_true(visual != null, "共享角色保留公开节点名 Visual")
 	t.assert_eq(visual.scene_file_path, ACTIVE_VISUAL_SCENE,
 		"默认 Swordsman 的 Visual 就是 全新修仙动作 视觉场景")
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorHumanMotion20260927") != null,
 		"全新修仙动作 视觉装入 全新修仙动作 模型实例")
 	t.assert_true(actor.get_node_or_null("Visual/CultivatorSkeletonPresentation") != null,
 		"全新修仙动作 视觉装入骨骼表现层")
@@ -110,7 +110,7 @@ static func _assert_visual_scene_contract(t) -> void:
 			"资产只含核心四段与登记的手作状态，未混入 %s（全部 %s）" % [clip, listed])
 
 	# 模型实例必须指向 全新修仙动作 GLB 本体，而不是旧模型。
-	var model := visual.get_node_or_null("CultivatorMotion20260927") as Node3D
+	var model := visual.get_node_or_null("CultivatorHumanMotion20260927") as Node3D
 	t.assert_true(model != null, "全新修仙动作 视觉包含模型实例节点")
 	if model != null:
 		t.assert_eq(model.scene_file_path, ACTIVE_MODEL, "模型实例就是 全新修仙动作 GLB")
@@ -166,7 +166,7 @@ static func _assert_sample_no_longer_swaps_visual(t) -> void:
 		"样板不再声明 v7 视觉常量")
 	t.assert_true(not source.contains("remove_child"),
 		"样板不再拆卸默认 Visual（v7 特例已移除）")
-	t.assert_true(source.contains("Visual/CultivatorMotion20260927"),
+	t.assert_true(source.contains("Visual/CultivatorHumanMotion20260927"),
 		"样板断言的是 全新修仙动作 模型节点")
 
 	# 真实入口：t.track() 会把样板挂进测试根（活动场景树），ActorAssembly 因此真的跑完装配。
@@ -184,7 +184,7 @@ static func _assert_sample_no_longer_swaps_visual(t) -> void:
 	t.assert_true(actor != null, "样板生成正式 Swordsman")
 	if actor == null:
 		return
-	t.assert_true(actor.get_node_or_null("Visual/CultivatorMotion20260927") != null,
+	t.assert_true(actor.get_node_or_null("Visual/CultivatorHumanMotion20260927") != null,
 		"样板运行时角色使用 全新修仙动作 模型")
 	var visual := actor.get_node_or_null("Visual") as Node3D
 	t.assert_eq(visual.scene_file_path if visual != null else "", ACTIVE_VISUAL_SCENE,

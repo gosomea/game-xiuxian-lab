@@ -594,11 +594,11 @@ static func _assert_display_pose(t) -> void:
 	t.track(display)
 	# 不 await：本套件必须同步跑完，否则 runner 会在协程挂起期间 cleanup 并释放已登记的节点。
 	display.reset_preview()
-	var shared_character := display.get_node_or_null("CultivatorVisual/CultivatorMotion20260927") as Node3D
+	var shared_character := display.get_node_or_null("CultivatorVisual/CultivatorHumanMotion20260927") as Node3D
 	t.assert_true(shared_character != null, "动作预览实例化共享 v9 角色模型")
 	if shared_character != null:
 		t.assert_eq(shared_character.scene_file_path,
-			"res://game/actors/swordsman/models/cultivator_motion_20260927.glb",
+			"res://game/actors/swordsman/models/cultivator_human_motion_20260927.glb",
 			"默认移动场景不再读取宽袖袍 cultivator_jade.glb")
 	# 预览与正式角色必须同源：同一 v9 场景，且恰好一个 Skeleton3D + 一个 AnimationPlayer。
 	var players := shared_character.find_children("*", "AnimationPlayer", true, false)

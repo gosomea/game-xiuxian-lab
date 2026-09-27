@@ -52,11 +52,11 @@ var vertical_impulse: float = 0.0
 var sprint_input: bool = false
 
 ## 参数：步行水平最大速度（米/秒）。
-## 现役 walk clip 的参考速度为 1.3424 m/s，1.55 m/s 时播放速率约为 1.15。
-@export var move_speed: float = 1.55
+## 现役完整人体 walk clip 的足尖行程参考速度约 1.02 m/s；1.25 m/s 时播放速率约 1.23。
+@export var move_speed: float = 1.25
 
-## 参数：疾行水平最大速度（米/秒）。现役 run clip 的参考速度为 2.3845 m/s，
-## 2.25 m/s 时播放速率约为 0.94。
+## 参数：疾行水平最大速度（米/秒）。现役 run clip 的参考速度约 2.10 m/s，
+## 2.25 m/s 时播放速率约为 1.07。
 @export var sprint_speed: float = 2.25
 
 ## 参数：起跳初速（米/秒）。
