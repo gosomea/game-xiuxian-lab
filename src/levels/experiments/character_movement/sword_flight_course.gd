@@ -202,7 +202,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key_event := event as InputEventKey
 		var code := MovementLabInput.key_code(key_event)
 		# 移动键 / 升降键由 helper 记按住状态；本场景决定语义边沿。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS + MovementLabInput.SPRINT_KEYS):
+		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
 			if MovementLabInput.is_key_down_edge(key_event):
 				if code == MovementLabInput.KEY_VERTICAL_UP:
 					_player.press_jump()
@@ -235,7 +235,7 @@ func _physics_process(delta: float) -> void:
 	var move := _input.move_input()
 	_player.set_move_input(move)
 	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.is_down(MovementLabInput.KEY_SPRINT) and move != Vector2.ZERO)
+	_player.set_sprint_input(_input.sprint_input())
 	_player.set_vertical_input(_input.vertical_input())
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y
@@ -457,7 +457,7 @@ func _build_hud() -> void:
 	_hud = HUD_SCRIPT.new()
 	add_child(_hud)
 	_hud.configure("SWORD FLIGHT", "角色移动 · 御剑飞行训练场", "WASD 飞行 · Space/Ctrl 升降 · F 御剑 · R 重置 · Esc 返回 · H 详情")
-	_hud.set_controls("WASD / 方向键 飞行 · Space / Ctrl 升降 · F 御剑 · 滚轮或 Z / X 缩放 · R 重置 · Esc 返回")
+	_hud.set_controls("WASD / 方向键 移动 · Shift 地面疾跑 · Space / Ctrl 升降 · F 御剑 · 滚轮或 Z / X 缩放 · R 重置 · Esc 返回")
 	_hud.set_question("起飞、升降、悬停、穿越、转向和落点选择是否可控？")
 	_hud.set_return_text("返回子实验目录")
 	_hud.return_pressed.connect(_return_to_hub)

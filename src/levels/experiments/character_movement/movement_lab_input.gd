@@ -28,10 +28,8 @@ const MOVE_KEYS := {
 	KEY_RIGHT: Vector2(1.0, 0.0),
 }
 
-## 疾行键：Shift。与升降键一样是**可选**跟踪项，只有真正提供疾行的场景才通过
-## track_key 的 extra_codes 传入，避免把不相关的键变成"已处理"。
+## 疾行键：Shift。所有共享修士场景默认跟踪，速度选择由角色共享移动能力执行。
 const KEY_SPRINT := KEY_SHIFT
-const SPRINT_KEYS: Array[Key] = [KEY_SHIFT]
 
 ## 升降键：空格 +1（跳跃 / 上升），Ctrl -1（下降）。
 ## 升降键是**可选**跟踪项：只有真正使用升降输入的场景才通过 track_key 的
@@ -40,7 +38,7 @@ const KEY_VERTICAL_UP := KEY_SPACE
 const KEY_VERTICAL_DOWN := KEY_CTRL
 const VERTICAL_KEYS: Array[Key] = [KEY_SPACE, KEY_CTRL]
 
-## 按住状态：物理键码 → bool。只记录本 helper 认得的键与场景显式声明的附加键。
+## 按住状态：物理键码 → bool。默认记录方向与 Shift，另记录场景声明的附加键。
 var _held: Dictionary = {}
 
 
@@ -59,7 +57,7 @@ static func is_key_down_edge(event: InputEventKey) -> bool:
 ## 记录一次按键事件，返回该事件是否属于本 helper 跟踪的键。
 ## 返回 true 时场景可 set_input_as_handled；返回 false 说明是场景专有键，由场景自行处理。
 ## extra_codes 声明场景要跟踪的附加键，只记状态不懂语义：
-## - 镜头实验室传 YAW_KEYS（Q / E 按住转镜头），不使用升降输入；
+## - 镜头实验室不声明升降键，Q / E 由 CameraRig 跟踪；
 ## - 人物动作工作台传 VERTICAL_KEYS（空格 / Ctrl 跳跃与升降）。
 ## 由场景声明而非 helper 写死，是为了不把场景用不到的键变成"已处理"。
 func track_key(event: InputEventKey, extra_codes: Array = []) -> bool:
@@ -70,9 +68,9 @@ func track_key(event: InputEventKey, extra_codes: Array = []) -> bool:
 	return true
 
 
-## 该物理键码是否由本 helper 跟踪（移动键 + 场景声明的附加键）。
+## 该物理键码是否由本 helper 跟踪（移动键 + Shift + 场景声明的附加键）。
 static func is_tracked(code: Key, extra_codes: Array = []) -> bool:
-	return MOVE_KEYS.has(code) or extra_codes.has(code)
+	return MOVE_KEYS.has(code) or code == KEY_SPRINT or extra_codes.has(code)
 
 
 func is_down(code: Key) -> bool:
@@ -86,6 +84,11 @@ func move_input() -> Vector2:
 		if _held.get(code, false):
 			input_vector += MOVE_KEYS[code] as Vector2
 	return (input_vector as Vector2).limit_length(1.0)
+
+
+## 疾跑意图：按住 Shift 且有移动方向；仅按 Shift 不产生移动。
+func sprint_input() -> bool:
+	return is_down(KEY_SPRINT) and move_input() != Vector2.ZERO
 
 
 ## 升降意图：+1 上升 / -1 下降 / 0 悬停（两键同按时相互抵消）。

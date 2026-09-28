@@ -34,6 +34,7 @@ const SUITES := [
 	"res://game/systems/motion_preview/test_motion_preview.gd",
 	"res://tests/test_movement_lab_hub.gd",
 	"res://tests/test_movement_lab_input.gd",
+	"res://tests/test_all_scene_sprint.gd",
 	"res://tests/test_lab_navigation.gd",
 	"res://tests/test_motion_stage_geometry.gd",
 	"res://tests/test_jade_paper_rigged_animation.gd",

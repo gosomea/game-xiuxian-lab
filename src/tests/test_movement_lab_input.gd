@@ -15,6 +15,7 @@ static func run(t) -> void:
 	_run_diagonal_limit(t)
 	_run_hold_release_and_echo(t)
 	_run_vertical(t)
+	_run_sprint(t)
 	_run_scene_specific_keys(t)
 	_run_clear(t)
 	_run_structure(t)
@@ -158,6 +159,26 @@ static func _run_vertical(t) -> void:
 	t.assert_true(HelperScript.is_tracked(MovementLabInput.KEY_VERTICAL_UP, MovementLabInput.VERTICAL_KEYS),
 		"声明后升降键被跟踪")
 	t.assert_eq(camera_like.vertical_input(), 0.0, "未声明时升降输入恒为 0")
+
+
+static func _run_sprint(t) -> void:
+	t.begin_case()
+	var input := _helper()
+	# 不传 extra_codes，证明每个使用者默认拥有 Shift。
+	t.assert_true(input.track_key(_key(KEY_SHIFT, true)), "Shift 默认被跟踪")
+	t.assert_false(input.sprint_input(), "仅按 Shift 不产生疾跑意图")
+	input.track_key(_key(KEY_UP, true))
+	t.assert_true(input.sprint_input(), "Shift + 方向键产生疾跑意图")
+	input.track_key(_key(KEY_SHIFT, false))
+	t.assert_false(input.sprint_input(), "释放 Shift 退出疾跑")
+	t.assert_eq(input.move_input(), Vector2.UP, "释放 Shift 保留移动")
+	var logical_shift := _key(KEY_SHIFT, true)
+	logical_shift.physical_keycode = KEY_NONE
+	input.track_key(logical_shift)
+	t.assert_true(input.sprint_input(), "修饰键只有逻辑键码时仍支持疾跑")
+	input.clear()
+	t.assert_false(input.sprint_input(), "清理后疾跑意图归零")
+	t.assert_false(input.is_down(KEY_SHIFT), "清理后 Shift 状态归零")
 
 
 static func _run_scene_specific_keys(t) -> void:

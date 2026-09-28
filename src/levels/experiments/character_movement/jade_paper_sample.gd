@@ -192,6 +192,7 @@ func _physics_process(_delta: float) -> void:
 	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
 	var move := _input.move_input()
 	_player.set_move_input(move)
+	_player.set_sprint_input(_input.sprint_input())
 	_player.set_vertical_input(_input.vertical_input())
 	if move != Vector2.ZERO:
 		var direction := right * move.x - forward * move.y
@@ -568,7 +569,7 @@ func _build_hud() -> void:
 	_hud = HUD_SCRIPT.new()
 	add_child(_hud)
 	_hud.configure("JADE", "青玉纸白 · 样板", "方向样板的观感与可读性是否成立？")
-	_hud.set_controls("WASD / 方向键 移动 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 复位 · Esc 返回子实验目录")
+	_hud.set_controls("WASD / 方向键 移动 · Shift 疾跑 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 复位 · Esc 返回子实验目录")
 	_hud.set_question("青玉瓦 / 暖木 / 靛青角色 / 水墨远景的组合在实机中是否成立？")
 	_hud.set_return_text("返回子实验目录")
 	_hud.return_pressed.connect(_return_to_hub)
@@ -587,4 +588,8 @@ func _update_status() -> void:
 		state = "御剑"
 	elif not _motion.on_floor:
 		state = "空中"
+	elif _motion.actual_velocity.length() < 0.01:
+		state = "站立"
+	elif _motion.sprint_input:
+		state = "疾跑"
 	_hud.set_status("状态：%s  ·  高度 %.1f m" % [state, _player.global_position.y])

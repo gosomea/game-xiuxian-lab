@@ -119,8 +119,8 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		# 先交给 helper：它只认移动键与场景声明的升降键，其余键返回 false 由本场景处理。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS + MovementLabInput.SPRINT_KEYS):
+		# 先交给 helper：它跟踪移动、Shift 与本场景声明的升降键，其余键透传。
+		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
 			# 跳跃是 key-down 边沿（echo 不算）；记一个待消费边沿，在物理帧里交给 actor。
 			if MovementLabInput.key_code(key_event) == MovementLabInput.KEY_VERTICAL_UP \
 					and MovementLabInput.is_key_down_edge(key_event):
@@ -151,7 +151,7 @@ func _physics_process(delta: float) -> void:
 	var move := _input.move_input()
 	_player.set_move_input(move)
 	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.is_down(MovementLabInput.KEY_SPRINT) and move != Vector2.ZERO)
+	_player.set_sprint_input(_input.sprint_input())
 	_player.set_vertical_input(_input.vertical_input())
 	# 跳跃边沿：事件期只记边沿，物理帧里消费一次，避免同一次按下被两帧读到。
 	if _jump_edge_pending:
@@ -649,8 +649,8 @@ func _build_hud() -> void:
 	_hud = HUD_SCRIPT.new()
 	add_child(_hud)
 	# 顺序为 configure(kicker, title, hint)：短类目标记在后（小字），中文标题在前（大字）。
-	_hud.configure("TERRAIN CONTACT", "地形接触训练场", "WASD 移动 · Space 跳跃 · Esc 返回 · H 详情")
-	_hud.set_controls("WASD / 方向键 地面移动 · Space 跳跃 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
+	_hud.configure("TERRAIN CONTACT", "地形接触训练场", "WASD 移动 · Shift 疾跑 · Space 跳跃 · Esc 返回 · H 详情")
+	_hud.set_controls("WASD / 方向键 地面移动 · Shift 疾跑 · Space 跳跃 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
 	_hud.set_question(_question_text())
 	_hud.set_return_text("返回子实验目录")
 	_hud.return_pressed.connect(_return_to_hub)

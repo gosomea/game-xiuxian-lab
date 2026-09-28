@@ -247,9 +247,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var actor_input_enabled := _mode == StageMode.REALTIME and not _ui_has_keyboard_focus()
 		# 移动键与升降键的按住状态交给 helper（升降键由本场景显式声明）；
 		# 跳跃语义仍是本场景决定并调用角色 API。
-		# 升降键与疾行键都由 helper 跟踪；两者都是可选键，显式声明以免被当成未处理。
-		if _input.track_key(key_event,
-				MovementLabInput.VERTICAL_KEYS + MovementLabInput.SPRINT_KEYS):
+		# 移动与 Shift 默认跟踪；本场景另声明跳跃 / 升降键。
+		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
 			var jump_edge := MovementLabInput.is_key_down_edge(key_event) and _player != null
 			if code == MovementLabInput.KEY_VERTICAL_UP and actor_input_enabled and jump_edge:
 				# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
@@ -345,8 +344,7 @@ func _physics_process(_delta: float) -> void:
 	_player.set_move_input(move)
 	_player.set_vertical_input(_input.vertical_input())
 	# 疾行只在真有移动输入时生效：站着按 Shift 不应让角色保持「跑步」姿态。
-	_player.set_sprint_input(_input.is_down(MovementLabInput.KEY_SPRINT)
-		and move != Vector2.ZERO)
+	_player.set_sprint_input(_input.sprint_input())
 	# 角色朝运动方向；停下时保留最后一次朝向，因此不停地在原地打转。
 	# 地面基与最终渲染一致（含混合期），因此移动方向不会与画面脱节。
 	if move != Vector2.ZERO and _rig != null:

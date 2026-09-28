@@ -38,7 +38,7 @@ const MODE_SHORT: Dictionary = {
 	"overview": "总览",
 }
 ## 组合环绕（orbit）的常显提示：四组输入必须完整写出，玩家无需查文档即可发现。
-const ORBIT_HINT := "WASD 移动 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 · 1-4 换模式 · H 详情"
+const ORBIT_HINT := "WASD 移动 · Shift 疾跑 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 · 1-4 换模式 · H 详情"
 
 var _camera: Camera3D
 var _viewport: Viewport
@@ -110,6 +110,7 @@ func _physics_process(delta: float) -> void:
 	# 本节点(0) 取输入，角色(0, 子节点) 最后物理提交——三者同帧一致。
 	var move := _input.move_input()
 	_player.set_move_input(move)
+	_player.set_sprint_input(_input.sprint_input())
 	if move != Vector2.ZERO:
 		var direction := _rig.right_axis() * move.x - _rig.forward_axis() * move.y
 		direction.y = 0.0
@@ -204,7 +205,7 @@ func _build_hud() -> void:
 	add_child(_hud)
 	# 短 kicker + 按当前模式的一句话核心操作；完整按键表进详情 tooltip（H 展开）。
 	_hud.configure("镜头实验室", "角色移动 · 镜头实验室", _mode_hint())
-	_hud.set_controls("WASD 移动 · 1-%d 切换模式（%s）· Q/E 连续旋转（3 组合环绕）或 90° 步进（2 四向）· RMB（3）按住拖动 yaw/pitch · MMB（4）平移 · Home（4）回中 · 滚轮 / Z / X 缩放 · Tab 切预设 · R 重置 · Esc 返回" % [
+	_hud.set_controls("WASD 移动 · Shift 疾跑 · 1-%d 切换模式（%s）· Q/E 连续旋转（3 组合环绕）或 90° 步进（2 四向）· RMB（3）按住拖动 yaw/pitch · MMB（4）平移 · Home（4）回中 · 滚轮 / Z / X 缩放 · Tab 切预设 · R 重置 · Esc 返回" % [
 		MODE_ORDER.size(), _mode_short_list()
 	])
 	_hud.set_question("四个镜头模式与 fixed_follow 的四种预设，怎样影响构图、旋转换向与屏幕相对移动？")
@@ -250,7 +251,7 @@ func _mode_hint() -> String:
 		"overview":
 			return "中键拖动平移 · Home 回中 · 滚轮缩放 · H 详情"
 		_:
-			return "WASD 移动 · 1-4 换模式 · 滚轮缩放 · H 详情"
+			return "WASD 移动 · Shift 疾跑 · 1-4 换模式 · 滚轮缩放 · H 详情"
 
 
 ## 模式短名的拼接文本（与 MODE_ORDER 同源，增删模式时提示自动跟上）。

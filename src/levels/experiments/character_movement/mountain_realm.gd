@@ -110,7 +110,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		# 共享 helper 管移动键与升降键的按住状态；本场景只决定语义边沿。
-		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS + InputHelper.SPRINT_KEYS):
+		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS):
 			if InputHelper.key_code(key_event) == InputHelper.KEY_VERTICAL_UP \
 					and InputHelper.is_key_down_edge(key_event) and _player != null:
 				_player.press_jump()
@@ -142,7 +142,7 @@ func _physics_process(delta: float) -> void:
 	var move := _input.move_input()
 	_player.set_move_input(move)
 	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.is_down(InputHelper.KEY_SPRINT) and move != Vector2.ZERO)
+	_player.set_sprint_input(_input.sprint_input())
 	_player.set_vertical_input(_input.vertical_input())
 	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
 	if move != Vector2.ZERO:
