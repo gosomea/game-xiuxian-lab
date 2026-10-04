@@ -16,6 +16,7 @@ static func run(t) -> void:
 	_run_hold_release_and_echo(t)
 	_run_vertical(t)
 	_run_sprint(t)
+	_run_motion_edges(t)
 	_run_scene_specific_keys(t)
 	_run_clear(t)
 	_run_structure(t)
@@ -150,15 +151,15 @@ static func _run_vertical(t) -> void:
 	t.assert_eq(separate.move_input(), Vector2.ZERO, "空格不产生水平输入")
 
 	t.begin_case()
-	# 升降键必须由场景显式声明：未声明的场景不应把它变成"已处理"（保持原有事件传播）。
+	# 所有角色场景默认接入升降，避免相同能力在不同场景无法操作。
 	var camera_like := _helper()
-	t.assert_false(camera_like.track_key(_key(MovementLabInput.KEY_VERTICAL_UP, true)),
-		"未声明升降键时不被跟踪（镜头实验室不消费空格）")
-	t.assert_false(HelperScript.is_tracked(MovementLabInput.KEY_VERTICAL_DOWN),
-		"未声明时 is_tracked 对升降键为 false")
+	t.assert_true(camera_like.track_key(_key(MovementLabInput.KEY_VERTICAL_UP, true)),
+		"Space 默认被跟踪")
+	t.assert_true(HelperScript.is_tracked(MovementLabInput.KEY_VERTICAL_DOWN),
+		"Ctrl 默认被跟踪")
 	t.assert_true(HelperScript.is_tracked(MovementLabInput.KEY_VERTICAL_UP, MovementLabInput.VERTICAL_KEYS),
 		"声明后升降键被跟踪")
-	t.assert_eq(camera_like.vertical_input(), 0.0, "未声明时升降输入恒为 0")
+	t.assert_eq(camera_like.vertical_input(), 1.0, "默认提供上升输入")
 
 
 static func _run_sprint(t) -> void:
@@ -179,6 +180,39 @@ static func _run_sprint(t) -> void:
 	input.clear()
 	t.assert_false(input.sprint_input(), "清理后疾跑意图归零")
 	t.assert_false(input.is_down(KEY_SHIFT), "清理后 Shift 状态归零")
+
+
+static func _run_motion_edges(t) -> void:
+	t.begin_case()
+	var input := _helper()
+	input.track_key(_key(KEY_W, true))
+	input.track_key(_key(KEY_SHIFT, true))
+	input.track_key(_key(KEY_SPACE, true))
+	input.track_key(_key(KEY_SPACE, false))
+	input.track_key(_key(KEY_F, true))
+	input.track_key(_key(KEY_F, false))
+	var frame := input.consume_motion_input()
+	t.assert_eq(frame["move"], Vector2.UP, "完整帧带移动输入")
+	t.assert_true(frame["sprint"], "完整帧带疾跑输入")
+	t.assert_eq(frame["vertical"], 0.0, "短按释放后无升降按住状态")
+	t.assert_true(frame["jump"], "同帧按下释放仍交付跳跃")
+	t.assert_true(frame["flight"], "同帧按下释放仍交付御剑")
+	frame = input.consume_motion_input()
+	t.assert_false(frame["jump"], "跳跃边沿只交付一次")
+	t.assert_false(frame["flight"], "御剑边沿只交付一次")
+	input.track_key(_key(KEY_F, true, true))
+	input.track_key(_key(KEY_SPACE, true, true))
+	frame = input.consume_motion_input()
+	t.assert_false(frame["jump"], "Space echo 不产生新边沿")
+	t.assert_false(frame["flight"], "F echo 不重复切换")
+	input.track_key(_key(KEY_F, true))
+	input.clear()
+	t.assert_false(input.consume_motion_input()["flight"], "失焦清尚未交付的边沿")
+	input.track_key(_key(KEY_SPACE, true), [], false)
+	input.track_key(_key(KEY_F, true), [], false)
+	frame = input.consume_motion_input()
+	t.assert_false(frame["jump"], "预览禁用跳跃边沿")
+	t.assert_false(frame["flight"], "预览禁用御剑边沿")
 
 
 static func _run_scene_specific_keys(t) -> void:

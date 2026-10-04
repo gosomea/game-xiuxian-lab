@@ -201,18 +201,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		var code := MovementLabInput.key_code(key_event)
-		# 移动键 / 升降键由 helper 记按住状态；本场景决定语义边沿。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
-			if MovementLabInput.is_key_down_edge(key_event):
-				if code == MovementLabInput.KEY_VERTICAL_UP:
-					_player.press_jump()
+		# 移动、跳跃与御剑输入由 helper 统一记录，物理帧一次性交付。
+		if _input.track_key(key_event):
 			viewport.set_input_as_handled()
 			return
 		if MovementLabInput.is_key_down_edge(key_event):
 			match code:
-				KEY_F:
-					# echo 不算新边沿：按住 F 只切换一次。
-					_player.press_flight_toggle()
 				KEY_R:
 					_reset_experiment()
 				_:
@@ -229,19 +223,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if _player == null or _motion == null:
 		return
-	# 相机地面基由 CameraRig 桥接写入角色；本场景只读它来定朝向。
-	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
-	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
-	var move := _input.move_input()
-	_player.set_move_input(move)
-	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.sprint_input())
-	_player.set_vertical_input(_input.vertical_input())
-	if move != Vector2.ZERO:
-		var direction := right * move.x - forward * move.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_player.set_aim_direction(direction.normalized())
+	# 相机地面基由 CameraRig 桥接写入角色；输入入口按它统一更新朝向。
+	_player.apply_motion_input(_input.consume_motion_input())
 	_check_fall_out()
 	_update_route(delta)
 

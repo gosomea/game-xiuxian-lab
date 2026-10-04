@@ -118,20 +118,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		var code := InputHelper.key_code(key_event)
-		if _input_helper.track_key(key_event, InputHelper.VERTICAL_KEYS):
-			# 空格既是升降输入也是跳跃边沿：按住状态进 helper，起跳语义仍由本场景调用公开 API。
-			if code == InputHelper.KEY_VERTICAL_UP and InputHelper.is_key_down_edge(key_event) and _actor != null:
-				_actor.press_jump()
-				_pending_jump = true
+		if _input_helper.track_key(key_event):
+			# 这里只记观察标记；动作由完整输入帧在物理阶段统一交付。
+			if InputHelper.is_key_down_edge(key_event):
+				_pending_jump = _pending_jump or code == InputHelper.KEY_VERTICAL_UP
+				_pending_flight = _pending_flight or code == InputHelper.KEY_FLIGHT
 			viewport.set_input_as_handled()
 			return
 		if InputHelper.is_key_down_edge(key_event):
 			match code:
-				KEY_F:
-					if _actor != null:
-						_actor.press_flight_toggle()
-						_pending_flight = true
-					viewport.set_input_as_handled()
 				KEY_R:
 					viewport.set_input_as_handled()
 					_reset_experiment("R 键")
@@ -149,18 +144,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_relative_frame += 1
 	# 场景先写输入、actor 子节点随后 tick（父节点先于子节点）。
-	_actor.set_move_input(_input_helper.move_input())
-	_actor.set_sprint_input(_input_helper.sprint_input())
-	_actor.set_vertical_input(_input_helper.vertical_input())
-	# 相机地面基由 CameraRig 桥接写入角色；本场景只读它来定朝向。
-	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
-	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
-	var move := _input_helper.move_input()
-	if move != Vector2.ZERO:
-		var direction := right * move.x - forward * move.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_actor.set_aim_direction(direction.normalized())
+	_actor.apply_motion_input(_input_helper.consume_motion_input())
 	_check_fall_out()
 	# 边沿事件延迟到本帧 actor tick 之后记录：那时读到的能力激活态与阻塞计数才是同帧事实。
 	if _pending_jump or _pending_flight:
@@ -185,6 +169,8 @@ func _process(_delta: float) -> void:
 
 func _apply_focus_out() -> void:
 	_input_helper.clear()
+	_pending_jump = false
+	_pending_flight = false
 	if _actor != null:
 		# 公开 API：只清四种输入，不改变飞行状态（御剑保留悬停）。
 		_actor.clear_input()
@@ -203,6 +189,8 @@ func _check_fall_out() -> void:
 func _reset_experiment(reason: String) -> void:
 	_reset_count += 1
 	_input_helper.clear()
+	_pending_jump = false
+	_pending_flight = false
 	# 公开 API：reset_motion() 清输入、边沿、速度、意图与 flight_active；
 	# 御剑阻塞由 SwordFlight 下一 physics tick 的失活路径清账（契约已记录）。
 	_actor.reset_motion()

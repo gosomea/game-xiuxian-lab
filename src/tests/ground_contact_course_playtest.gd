@@ -126,7 +126,7 @@ func _batch_assembly() -> void:
 	for forbidden in ["Swordsman", "Capability", "Component", "TagRegistry", "Camera3D", "move_and_slide"]:
 		_check(not _code_only(helper_source).contains(forbidden),
 			"input helper 不依赖角色 / 能力 / 相机：%s" % forbidden)
-	for api in ["set_move_input(", "set_vertical_input(", "press_jump(",
+	for api in ["apply_motion_input(",
 			"set_aim_direction(", "reset_motion(", "clear_input("]:
 		_check(stage_source.contains(api), "训练场经公开输入 API 驱动角色：%s" % api)
 	# 相机地面基不再由场景转交：场景挂共享 CameraRig，由 rig 桥接写入角色。

@@ -163,18 +163,11 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		if _input.track_key(key_event, InputHelper.VERTICAL_KEYS):
-			if InputHelper.key_code(key_event) == InputHelper.KEY_VERTICAL_UP \
-					and InputHelper.is_key_down_edge(key_event) and _player != null:
-				_player.press_jump()
+		if _input.track_key(key_event):
 			get_viewport().set_input_as_handled()
 			return
 		if InputHelper.is_key_down_edge(key_event):
 			var code := InputHelper.key_code(key_event)
-			if code == KEY_F and _player != null:
-				_player.press_flight_toggle()
-				get_viewport().set_input_as_handled()
-				return
 			if code == KEY_R:
 				get_viewport().set_input_as_handled()
 				_reset_experiment()
@@ -188,17 +181,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(_delta: float) -> void:
 	if _player == null or _motion == null:
 		return
-	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
-	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
-	var move := _input.move_input()
-	_player.set_move_input(move)
-	_player.set_sprint_input(_input.sprint_input())
-	_player.set_vertical_input(_input.vertical_input())
-	if move != Vector2.ZERO:
-		var direction := right * move.x - forward * move.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_player.set_aim_direction(direction.normalized())
+	_player.apply_motion_input(_input.consume_motion_input())
 	_check_fall_out()
 
 

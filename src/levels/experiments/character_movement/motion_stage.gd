@@ -245,15 +245,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		# 预览模式下角色输入路由被禁用：所有输入只服务预览控件与观察，不写真实 actor。
 		var actor_input_enabled := _mode == StageMode.REALTIME and not _ui_has_keyboard_focus()
-		# 移动键与升降键的按住状态交给 helper（升降键由本场景显式声明）；
-		# 跳跃语义仍是本场景决定并调用角色 API。
-		# 移动与 Shift 默认跟踪；本场景另声明跳跃 / 升降键。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
-			var jump_edge := MovementLabInput.is_key_down_edge(key_event) and _player != null
-			if code == MovementLabInput.KEY_VERTICAL_UP and actor_input_enabled and jump_edge:
-				# 跳跃是 key-down 边沿（echo 不算）；actor 在帧末自行清零。
-				_player.press_jump()
-				_jump_edges += 1
+		# 所有移动按键交给 helper；本场景只记诊断计数并控制预览隔离。
+		if _input.track_key(key_event, [], actor_input_enabled):
+			if actor_input_enabled and MovementLabInput.is_key_down_edge(key_event):
+				if code == MovementLabInput.KEY_VERTICAL_UP:
+					_jump_edges += 1
+				elif code == MovementLabInput.KEY_FLIGHT:
+					_flight_edges += 1
 			get_viewport().set_input_as_handled()
 			return
 		if key_event.pressed and not key_event.echo:
@@ -261,11 +259,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				KEY_M:
 					# 模式开关：实时运动 <-> 程序动作预览（与界面顶部按钮同源）。
 					_apply_mode(StageMode.PREVIEW if _mode == StageMode.REALTIME else StageMode.REALTIME, false)
-					get_viewport().set_input_as_handled()
-				KEY_F:
-					if actor_input_enabled and _player != null:
-						_player.press_flight_toggle()
-						_flight_edges += 1
 					get_viewport().set_input_as_handled()
 				KEY_1:
 					_apply_view(StageView.FRONT, false)
@@ -336,24 +329,10 @@ func _physics_process(_delta: float) -> void:
 	if _mode != StageMode.REALTIME:
 		# 预览模式：真实 actor 保留在场景中，但输入路由完全关闭——每帧写零，
 		# 不依赖「谁记得清干净」，因此它不可能因本场景输入产生位移。
-		_player.set_move_input(Vector2.ZERO)
-		_player.set_vertical_input(0.0)
-		_player.set_sprint_input(false)
+		_input.clear()
+		_player.clear_input()
 		return
-	var move := _input.move_input()
-	_player.set_move_input(move)
-	_player.set_vertical_input(_input.vertical_input())
-	# 疾行只在真有移动输入时生效：站着按 Shift 不应让角色保持「跑步」姿态。
-	_player.set_sprint_input(_input.sprint_input())
-	# 角色朝运动方向；停下时保留最后一次朝向，因此不停地在原地打转。
-	# 地面基与最终渲染一致（含混合期），因此移动方向不会与画面脱节。
-	if move != Vector2.ZERO and _rig != null:
-		var right := _rig.right_axis()
-		var forward := _rig.forward_axis()
-		var direction := right * move.x - forward * move.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_player.set_aim_direction(direction.normalized())
+	_player.apply_motion_input(_input.consume_motion_input())
 
 
 func _process(delta: float) -> void:

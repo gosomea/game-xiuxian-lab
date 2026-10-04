@@ -73,7 +73,6 @@ var _rig: CameraRig
 
 var _devices: Array[Dictionary] = []
 var _device_colliders: Dictionary = {}
-var _jump_edge_pending := false
 var _jump_edges := 0
 var _recoveries := 0
 var _physics_ticks := 0
@@ -119,12 +118,8 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
-		# 先交给 helper：它跟踪移动、Shift 与本场景声明的升降键，其余键透传。
-		if _input.track_key(key_event, MovementLabInput.VERTICAL_KEYS):
-			# 跳跃是 key-down 边沿（echo 不算）；记一个待消费边沿，在物理帧里交给 actor。
-			if MovementLabInput.key_code(key_event) == MovementLabInput.KEY_VERTICAL_UP \
-					and MovementLabInput.is_key_down_edge(key_event):
-				_jump_edge_pending = true
+		# 先交给 helper：它统一跟踪移动、Shift、Space、Ctrl 与 F，其余键透传。
+		if _input.track_key(key_event):
 			get_viewport().set_input_as_handled()
 			return
 		if MovementLabInput.is_key_down_edge(key_event):
@@ -146,24 +141,10 @@ func _physics_process(delta: float) -> void:
 		return
 	_physics_ticks += 1
 	# 相机地面基由 CameraRig 桥接写入角色（rig 优先级 -10，先于本帧）；本场景不转交、不复制跟随。
-	var right := _rig.right_axis() if _rig != null else Vector3.RIGHT
-	var forward := _rig.forward_axis() if _rig != null else Vector3.FORWARD
-	var move := _input.move_input()
-	_player.set_move_input(move)
-	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.sprint_input())
-	_player.set_vertical_input(_input.vertical_input())
-	# 跳跃边沿：事件期只记边沿，物理帧里消费一次，避免同一次按下被两帧读到。
-	if _jump_edge_pending:
-		_jump_edge_pending = false
+	var frame := _input.consume_motion_input()
+	if frame["jump"]:
 		_jump_edges += 1
-		_player.press_jump()
-	# 角色朝运动方向；停下保留最后朝向。
-	if move != Vector2.ZERO:
-		var direction := right * move.x - forward * move.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_player.set_aim_direction(direction.normalized())
+	_player.apply_motion_input(frame)
 	_check_fall_out()
 
 
@@ -436,11 +417,10 @@ func _build_rig() -> void:
 	config.size_max = _camera_size_max
 	config.smooth_time = 1.0 / maxf(_camera_follow_speed, 0.001)
 	config.focus_clamp_enabled = true
-	# 旧的 _follow_camera 对 y 做 max(y*0.5, 0) 的软跟随（不是压到地面）：
-	# x/z 用布局 clamp，y 用 [0, bounds_max.y] 保留高低跟随。
+	# 水平焦点使用布局约束，高度跟随角色，支持共享御剑超出地面训练高度。
 	config.focus_clamp_min = Vector3(_camera_clamp_min.x, 0.0, _camera_clamp_min.y)
 	config.focus_clamp_max = Vector3(_camera_clamp_max.x, _bounds_max.y, _camera_clamp_max.y)
-	config.focus_clamp_y_enabled = true
+	config.focus_clamp_y_enabled = false
 	config.near = 0.1
 	config.far = 220.0
 	# 未归属 RMB：fixed_follow 下消费世界区域右键但不捕获，避免右键泄漏到宿主视图。
@@ -459,7 +439,6 @@ func _reset_experiment() -> void:
 	_player.global_position = _spawn_position
 	_player.reset_motion()
 	_player.set_aim_direction(SPAWN_AIM)
-	_jump_edge_pending = false
 	_jump_edges = 0
 	_physics_ticks = 0
 	if _rig != null:
@@ -649,8 +628,8 @@ func _build_hud() -> void:
 	_hud = HUD_SCRIPT.new()
 	add_child(_hud)
 	# 顺序为 configure(kicker, title, hint)：短类目标记在后（小字），中文标题在前（大字）。
-	_hud.configure("TERRAIN CONTACT", "地形接触训练场", "WASD 移动 · Shift 疾跑 · Space 跳跃 · Esc 返回 · H 详情")
-	_hud.set_controls("WASD / 方向键 地面移动 · Shift 疾跑 · Space 跳跃 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
+	_hud.configure("TERRAIN CONTACT", "地形接触训练场", "WASD 移动 · Shift 疾跑 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · Esc 返回 · H 详情")
+	_hud.set_controls("WASD / 方向键 移动 · Shift 疾跑 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · 滚轮缩放 · R 重置 · Esc 返回子实验目录")
 	_hud.set_question(_question_text())
 	_hud.set_return_text("返回子实验目录")
 	_hud.return_pressed.connect(_return_to_hub)

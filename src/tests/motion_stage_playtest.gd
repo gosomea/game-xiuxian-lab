@@ -199,7 +199,7 @@ func _batch_assembly() -> void:
 	_check(not stage_source.contains("CapabilityManager"), "工作台不直接访问 CapabilityManager")
 	# set_camera_ground_basis 已移交 CameraRig 桥接层（_publish_ground_basis），场景不再自行发布，
 	# 因此这里只要求镜头外的输入 API；镜头所有权另有专门断言。
-	for api in ["set_move_input(", "set_vertical_input(", "press_jump(", "press_flight_toggle(",
+	for api in ["apply_motion_input(",
 			"set_aim_direction(", "reset_motion(", "clear_input("]:
 		_check(stage_source.contains(api), "工作台经公开输入 API 驱动角色：%s" % api)
 	# 镜头唯一 executor：场景必须绑定 camera_rig sheet，而不得自己写 Camera3D 的变换。

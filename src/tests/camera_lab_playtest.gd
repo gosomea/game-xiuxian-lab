@@ -200,14 +200,14 @@ func _read_source(path: String) -> String:
 	return file.get_as_text()
 
 
-## 本场景不使用跳跃 / 升降，因此空格与 Ctrl 必须原样透传，不得被输入 helper 吞掉。
-## 回归防线：共享 helper 一旦把升降键默认纳入跟踪（而非由场景显式声明），这里会立刻失败。
+## 镜头实验室与其余移动场景使用相同的 Space / Ctrl / F 操作。
+## 无关实验键仍须透传，角色按键的完整行为由 test_all_scene_traversal 覆盖。
 ## 注意判据选择：is_input_handled() 不可用作本检查——实测它对未跟踪键（Y/P）也返回 true
 ## 且读后保持粘滞（见报告「验收方法的坑」），因此改为直接读回 helper 的登记状态。
 func _check_unrelated_keys_not_swallowed() -> void:
 	# 事件经 Input.parse_input_event 入队后要等一帧才派发到 _unhandled_input：
 	# 每次推送后 await 一帧再读，否则所有"未登记"断言都会vacuous成立。
-	for code in [KEY_SPACE, KEY_CTRL, KEY_P, KEY_Y]:
+	for code in [KEY_P, KEY_Y]:
 		var name := OS.get_keycode_string(code)
 		_push_key(code, true)
 		await process_frame
@@ -228,14 +228,16 @@ func _check_unrelated_keys_not_swallowed() -> void:
 	_check(not _input_held(KEY_Q), "Q 释放后登记清除")
 	_rig.request_mode("fixed_follow")
 	await _frames(3)
-	# 未登记跳 / 升降，角色不应因此起跳或产生升降意图。
-	_check(absf(_motion.vertical_input) < 0.001, "空格 / Ctrl 不产生升降意图（%.3f）" % _motion.vertical_input)
-	await _frames(30)
-	_check(_motion.on_floor and absf(_motion.actual_velocity.y) < 0.01,
-		"空格未触发跳跃：等待 30 帧后角色仍着地（vy=%.3f）" % _motion.actual_velocity.y)
+	_push_key(KEY_CTRL, true)
+	await _frames(2)
+	_check(_input_held(KEY_CTRL), "Ctrl 默认进入完整移动输入状态")
+	_check(is_equal_approx(_motion.vertical_input, -1.0), "Ctrl 提交下降输入")
+	_push_key(KEY_CTRL, false)
+	await _frames(2)
+	_check(is_zero_approx(_motion.vertical_input), "释放 Ctrl 清升降意图")
 
 
-## 读回场景 helper 的按键登记状态（场景只读 API；镜头实验室不消费跳 / 升降键）。
+## 读回场景 helper 的按键登记状态（场景只读 API；移动与镜头分别记录按住状态）。
 func _input_held(code: Key) -> bool:
 	return bool(_lab.call("input_held", code))
 
@@ -445,7 +447,10 @@ func _run_mode_comparison() -> void:
 	_key(KEY_D, false)
 	await _frames(SETTLE_FRAMES)
 	var smooth_settled := _focus_lag()
-	_check(smooth_lag > 0.4, "平滑跟随：移动中焦点落后 %.3f m（存在缓动）" % smooth_lag)
+	# 缓动的落后距离随走速缩放；要求至少 0.1 秒的移动距离，区别于硬跟随的一帧差。
+	var smooth_lag_floor := _motion.move_speed * 0.1
+	_check(smooth_lag > smooth_lag_floor,
+		"平滑跟随：移动中焦点落后 %.3f m（下限 %.3f m）" % [smooth_lag, smooth_lag_floor])
 	_check(smooth_settled < 0.15, "平滑跟随：停 %.2fs 后收敛到 %.3f m" % [SETTLE_FRAMES / 60.0, smooth_settled])
 
 	# 死区：目标未越界时焦点不动；越界后按死区边界拖动，且不产生前视。

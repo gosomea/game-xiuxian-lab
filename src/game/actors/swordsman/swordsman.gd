@@ -68,6 +68,23 @@ func _physics_process(delta: float) -> void:
 		_flight_visual.visible = motion.flight_active
 
 
+## 完整移动输入的统一场景入口。数据已由输入层解码，不包含设备按键。
+## 契约字段：move(Vector2)、sprint(bool)、vertical(float)、jump(bool)、flight(bool)。
+## 场景每个物理帧调用一次；动作边沿由输入层消费一次，能力仍只读取共享组件。
+func apply_motion_input(input: Dictionary) -> void:
+	set_move_input(input["move"])
+	set_sprint_input(input["sprint"])
+	set_vertical_input(input["vertical"])
+	if input["jump"]:
+		press_jump()
+	if input["flight"]:
+		press_flight_toggle()
+	if _motion.move_input != Vector2.ZERO:
+		var direction := _motion.camera_right * _motion.move_input.x \
+			- _motion.camera_forward * _motion.move_input.y
+		set_aim_direction(direction)
+
+
 ## 场景装配 API：屏幕相对移动输入（x = 右，y = 下），长度收敛到 1。
 func set_move_input(input: Vector2) -> void:
 	_motion.move_input = input.limit_length(1.0)

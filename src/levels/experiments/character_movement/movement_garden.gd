@@ -109,16 +109,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(_delta: float) -> void:
 	# 相机地面基由 CameraRig 桥接写入角色（同帧一致）；本场景只做屏幕相对输入与朝向。
-	var move := _input.move_input()
-	_player.set_move_input(move)
-	# 疾行：按住 Shift 且确有移动输入时提速（站着按 Shift 不保持跑步姿态）。
-	_player.set_sprint_input(_input.sprint_input())
-	# 角色朝运动方向；停下时不写朝向，由角色保留最后一次朝向。
-	if _motion.move_input != Vector2.ZERO:
-		var direction := _motion.camera_right * _motion.move_input.x - _motion.camera_forward * _motion.move_input.y
-		direction.y = 0.0
-		if direction.length_squared() > 0.0001:
-			_player.set_aim_direction(direction.normalized())
+	_player.apply_motion_input(_input.consume_motion_input())
 
 
 func _process(_delta: float) -> void:
@@ -128,7 +119,7 @@ func _process(_delta: float) -> void:
 func _clear_pressed() -> void:
 	_input.clear()
 	if _player != null:
-		# 只清输入：本场景不装配御剑操作，行为与旧版一致。
+		# 只清输入：已经开启的御剑保留悬停。
 		_player.clear_input()
 
 
@@ -243,9 +234,9 @@ func _build_rig() -> void:
 	config.smooth_time = FOLLOW_SMOOTH_TIME
 	config.near = 0.1
 	config.far = CAMERA_FAR
-	# 庭院是地面小场景：显式打开 y 夹取并把 min/max y 设为 0，保持旧地平构图。
+	# 水平焦点保留庭院约束，高度跟随角色，支持共享御剑上升。
 	config.focus_clamp_enabled = true
-	config.focus_clamp_y_enabled = true
+	config.focus_clamp_y_enabled = false
 	config.focus_clamp_min = Vector3(-ARENA_HALF_X + FOLLOW_MARGIN.x, 0.0, -ARENA_HALF_Z + FOLLOW_MARGIN.z)
 	config.focus_clamp_max = Vector3(ARENA_HALF_X - FOLLOW_MARGIN.x, 0.0, ARENA_HALF_Z - FOLLOW_MARGIN.z)
 	# 两个模式都可切：默认组合环绕，fixed_follow（smooth）作为旧构图对照；
@@ -278,7 +269,7 @@ func _build_hud() -> void:
 	_hud = LabHud.new()
 	add_child(_hud)
 	_hud.configure("移动庭院", "角色移动 · 庭院", "组合环绕 · WASD 移动 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 · H 详情")
-	_hud.set_controls("组合环绕（默认）：WASD / 方向键 屏幕相对移动（角色朝移动方向）· Shift 疾行 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 yaw/pitch · 镜头按钮切到固定跟随 · R 重置 · Esc 返回子实验目录")
+	_hud.set_controls("组合环绕（默认）：WASD / 方向键 移动 · Shift 疾跑 · Space 跳跃 / 上升 · Ctrl 下降 · F 御剑 · Q/E 连续旋转 · 滚轮缩放 · 按住右键拖动 yaw/pitch · 镜头按钮切到固定跟随 · R 重置 · Esc 返回子实验目录")
 	_hud.set_question("小范围地面移动和既有庭院美术与构图是否仍然成立？")
 	_hud.return_pressed.connect(_return_to_hub)
 	_hud.set_return_text("返回子实验目录")

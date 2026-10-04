@@ -183,9 +183,9 @@ func _check_ownership_boundaries() -> void:
 		_check(_regex_hits(code, pattern) == 0, "场景脚本不匹配 %s" % pattern)
 	# 必须使用 MovementLabInput（WASD/方向键 / Space/Ctrl / F）。
 	_check(source.contains("MovementLabInput.new()"), "场景使用 MovementLabInput")
-	_check(source.contains("VERTICAL_KEYS"), "场景显式声明升降键")
+	_check(source.contains("consume_motion_input"), "场景消费完整移动输入帧")
 	# 只调用公开输入 API。
-	for api in ["set_move_input", "set_vertical_input", "press_jump", "press_flight_toggle",
+	for api in ["apply_motion_input",
 			"reset_motion", "clear_input"]:
 		_check(source.contains(api), "场景调用公开 API %s" % api)
 	# 相机地面基不再由场景转交：场景挂共享 CameraRig，由 rig 桥接写入角色。
