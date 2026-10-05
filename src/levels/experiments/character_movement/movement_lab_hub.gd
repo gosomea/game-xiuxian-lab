@@ -24,6 +24,7 @@ const REQUIRED_IDS := [
 	"movement_garden",
 	"mountain_realm",
 	"jade_paper_sample",
+	"ink_lakeside_sample",
 ]
 const Catalog := preload("res://game/systems/lab_catalog/lab_catalog.gd")
 

@@ -1,0 +1,20 @@
+{
+  "generator": "tools/art/build_ink_lakeside_sample.py",
+  "seed": 105,
+  "triangles": 32357,
+  "groups": [
+    "Banks",
+    "Blossoms",
+    "Bridge",
+    "FarRidge",
+    "Island",
+    "MiddleRidge",
+    "NearRidge",
+    "Pagoda",
+    "Shore",
+    "Steps",
+    "Village",
+    "Willows"
+  ],
+  "collision_boxes": 28
+}

@@ -1,0 +1,177 @@
+=== default ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:13.573 Godot[50898:6783645] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:14.470 Godot[50898:6783645] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/default.png 1280x800
+RENDER draw_calls=37 primitives=183629
+VIEW size=48.0 actor=(0.0, 0.000137, 10.0)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== close ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:16.375 Godot[50955:6783985] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:17.209 Godot[50955:6783985] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/close.png 1280x800
+RENDER draw_calls=35 primitives=183507
+VIEW size=16.0 actor=(0.0, 0.000137, 10.0)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== walk ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:19.365 Godot[50969:6784111] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:20.202 Godot[50969:6784111] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 真实输入疾跑
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/walk.png 1280x800
+RENDER draw_calls=37 primitives=183629
+VIEW size=48.0 actor=(2.228102, 0.000137, 9.686832)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== jump ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:22.617 Godot[50987:6784266] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:23.453 Godot[50987:6784266] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 真实输入起跳
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/jump.png 1280x800
+RENDER draw_calls=37 primitives=183629
+VIEW size=48.0 actor=(0.0, 0.595844, 10.0)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== flight ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:25.401 Godot[51007:6784396] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:26.253 Godot[51007:6784396] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 真实输入御剑升空
+PASS 御剑飞剑显示
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/flight.png 1280x800
+RENDER draw_calls=47 primitives=184087
+VIEW size=48.0 actor=(0.0, 5.417515, 10.0)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== small ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:41:29.460 Godot[51048:6784584] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 从真实目录进入水墨湖岸
+2026-10-05 11:41:30.301 Godot[51048:6784584] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生点着地
+PASS 取景完整保留人物脚底
+PASS 取景完整保留人物头部
+PASS 实际视口有渲染像素
+PASS 保存截图
+CAPTURE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-05-ink-lakeside/small.png 960x600
+RENDER draw_calls=37 primitives=183629
+VIEW size=48.0 actor=(0.0, 0.000137, 10.0)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+=== DIRECT NEW SCENE CONTROL ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:39:27.433 Godot[49988:6780316] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-05 11:39:27.803 Godot[49988:6780316] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+
+=== EXISTING JADE RETURN CONTROL ===
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-05 11:40:55.951 Godot[50749:6782945] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-05 11:40:56.662 Godot[50749:6782945] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 49: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
