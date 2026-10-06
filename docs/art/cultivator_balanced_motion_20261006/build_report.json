@@ -1,0 +1,52 @@
+{
+  "source": "docs/art/cultivator_aligned_motion_20260927/cultivator_aligned_motion_20260927.blend",
+  "correction_world_x_deg": 9.09087589960799,
+  "walk_before_pelvis_to_ankles_y_mean_m": 0.12546850740909576,
+  "walk_after_pelvis_to_ankles_y_mean_m": 0.007272213326629113,
+  "floor_shift_min_max_m": [
+    -0.09595166146755219,
+    -0.051358845084905624
+  ],
+  "completed_contact_before_min_max_m": [
+    -2.9849636007384106e-07,
+    4.621542615268481e-08
+  ],
+  "original_fps": 24,
+  "clips": {
+    "idle": {
+      "duration_s": 1.9166666666666667,
+      "stance_backward_speed_mean_mps": 0,
+      "stance_backward_speed_median_mps": 0
+    },
+    "idle_guarded": {
+      "duration_s": 1.9166666666666667,
+      "stance_backward_speed_mean_mps": 0,
+      "stance_backward_speed_median_mps": 0
+    },
+    "jump": {
+      "duration_s": 1.0,
+      "stance_backward_speed_mean_mps": 0.039771462231874465,
+      "stance_backward_speed_median_mps": 0.005973681807518005
+    },
+    "meditate": {
+      "duration_s": 2.4166666666666665,
+      "stance_backward_speed_mean_mps": 0,
+      "stance_backward_speed_median_mps": 0
+    },
+    "run": {
+      "duration_s": 0.625,
+      "stance_backward_speed_mean_mps": 4.2240883111953735,
+      "stance_backward_speed_median_mps": 5.117244243621826
+    },
+    "sword_ride": {
+      "duration_s": 1.9166666666666667,
+      "stance_backward_speed_mean_mps": 0.0001018461973770805,
+      "stance_backward_speed_median_mps": 0.00011086463928222656
+    },
+    "walk": {
+      "duration_s": 1.0833333333333333,
+      "stance_backward_speed_mean_mps": 1.5518476068973541,
+      "stance_backward_speed_median_mps": 1.6590847671031952
+    }
+  }
+}

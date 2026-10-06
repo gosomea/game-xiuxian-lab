@@ -57,7 +57,8 @@ func _run() -> void:
 		_key(KEY_F,true); _key(KEY_F,false)
 		await _frames(20)
 		_key(KEY_SPACE,true)
-		await _frames(325 if _shot == "cloud" else 520)
+		var target_altitude := 39.0 if _shot == "cloud" else 61.0
+		await _frames(int(ceil((target_altitude-actor.global_position.y)/actor.motion().flight_lift_speed*60.0)))
 		_key(KEY_SPACE,false)
 		_check(actor.motion().flight_active and actor.flight_visual_node().visible,"共享御剑实际直飞")
 		_check(actor.global_position.y>48 if _shot=="above" else current_scene.cloud_density(actor.global_position.y)>.8,"越云顶" if _shot=="above" else "进入云中")

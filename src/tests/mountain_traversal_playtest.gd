@@ -656,7 +656,7 @@ func _batch_mutex() -> void:
 	_check(not _motion.on_floor and _actor.velocity.y > 0.0, "起跳后处于上升段（vy=%.2f）" % _actor.velocity.y)
 	await _open_flight()
 	_check(_motion.flight_active, "空中按 F 开启御剑")
-	_check(_actor.velocity.y <= 7.001, "起飞首帧竖直速度被限幅在 flight_lift_speed 内（%.2f）" % _actor.velocity.y)
+	_check(_actor.velocity.y <= _motion.flight_lift_speed + 0.001, "起飞首帧竖直速度被限幅在 flight_lift_speed 内（%.2f）" % _actor.velocity.y)
 	_key(KEY_SPACE, true)
 	await _frames(10)
 	_check(absf(_actor.velocity.y - 7.0) < 0.01, "空中转御剑后受升降输入控制（vy=%.2f）" % _actor.velocity.y)

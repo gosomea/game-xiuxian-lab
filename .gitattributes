@@ -303,3 +303,8 @@
 /src/game/actors/swordsman/models/cultivator_aligned_motion_20260927_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png filter=lfs diff=lfs merge=lfs -text
 /src/game/actors/swordsman/models/cultivator_aligned_motion_20260927_texture_pbr_20250901_normal.png filter=lfs diff=lfs merge=lfs -text
 /src/levels/experiments/character_movement/west_lake_sunset_world.glb filter=lfs diff=lfs merge=lfs -text
+/docs/art/cultivator_balanced_motion_20261006/cultivator_balanced_motion_20261006.blend filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_balanced_motion_20261006.glb filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_balanced_motion_20261006_texture_pbr_20250901.png filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_balanced_motion_20261006_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png filter=lfs diff=lfs merge=lfs -text
+/src/game/actors/swordsman/models/cultivator_balanced_motion_20261006_texture_pbr_20250901_normal.png filter=lfs diff=lfs merge=lfs -text

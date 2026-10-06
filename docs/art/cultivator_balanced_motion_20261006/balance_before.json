@@ -1,0 +1,16 @@
+{
+  "glb": "src/game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb",
+  "samples": 121,
+  "feet_ahead_of_pelvis_mean_m": 0.12687005550580677,
+  "feet_ahead_range_m": [
+    0.042212151776766405,
+    0.21359475451754406
+  ],
+  "walk_subframe_sole_min_max_m": [
+    4.34595494880341e-05,
+    0.10628420859575272
+  ],
+  "loop_seam_max_angle_deg": 0.0,
+  "loop_seam_max_translation_m": 1.3527267237647014e-06,
+  "problems": []
+}

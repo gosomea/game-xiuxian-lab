@@ -23,7 +23,7 @@
 | 意图 | `desired_horizontal: Vector3 = ZERO`（y=0） | Movement 或 Flight | actor 帧初清零 |
 | 意图 | `desired_vertical: float = 0.0` | 仅 Flight | 正上 m/s |
 | 意图 | `vertical_impulse: float = 0.0` | 仅 Jump | actor 覆盖 velocity.y，不累加 |
-| 参数 | `move_speed=1.25`、`sprint_speed=2.25`、`jump_speed=6.0`、`gravity=18.0`、`flight_speed=12.0`、`flight_lift_speed=7.0`、`flight_sink_speed=7.0`、`flight_launch_speed=3.0`、`flight_launch_time=0.25` | 导出 | 单点调参 |
+| 参数 | `move_speed=2.0`、`sprint_speed=4.2`、`jump_speed=6.0`、`gravity=18.0`、`flight_speed=22.0`、`flight_lift_speed=12.0`、`flight_sink_speed=12.0`、`flight_launch_speed=3.0`、`flight_launch_time=0.25` | 导出 | 单点调参 |
 
 边沿/悬停语义：按住空格不重复触发；能力失活不清意图（由 actor 清，避免踩掉高优先级同帧写入）；松键悬停，`vertical_input=0` 时御剑竖直速度为 0。
 

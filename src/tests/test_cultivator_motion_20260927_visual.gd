@@ -10,7 +10,7 @@ extends RefCounted
 
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn"
-const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_aligned_motion_20260927.glb"
+const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_balanced_motion_20261006.glb"
 const PREVIEW_DISPLAY := "res://game/systems/motion_preview/motion_preview_display.gd"
 const SAMPLE_SCRIPT := "res://levels/experiments/character_movement/jade_paper_sample.gd"
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
@@ -123,10 +123,10 @@ static func _assert_visual_scene_contract(t) -> void:
 	if presentation != null:
 		presentation.call("reset_pose")
 		presentation.call("advance_state",
-			{"velocity": Vector3(2.25, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+			{"velocity": Vector3(_shared_sprint_speed(), 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
 		var pose: Dictionary = presentation.call("pose_state")
 		t.assert_eq(str(pose.get("current_clip", "")), "run",
-			"2.25 m/s（疾行速度）着地映射到 run：run 现已真实可达")
+			"共享疾行速度着地映射到 run：run 现已真实可达")
 		t.assert_true(absf(float(pose.get("phase", -1.0))
 			- player.current_animation_position) < 0.0001,
 			"快照 phase 就是 AnimationPlayer 播放位置（%.4f vs %.4f）"
@@ -298,10 +298,10 @@ static func _assert_optional_states(t) -> void:
 		# 解除覆盖后必须回到速度驱动。
 		presentation.call("release_state")
 		presentation.call("advance_state",
-			{"velocity": Vector3(2.25, 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
+			{"velocity": Vector3(_shared_sprint_speed(), 0.0, 0.0), "grounded": true, "flying": false}, 0.1)
 		var released: Dictionary = presentation.call("pose_state")
 		t.assert_eq(str(released.get("current_clip", "")), "run",
-			"release_state 后回到速度驱动（2.25 m/s -> run）")
+			"release_state 后回到速度驱动（共享疾行速度 -> run）")
 		t.assert_true(not bool(released.get("overridden", false)),
 			"释放后 overridden 归假")
 	# 未知状态必须被拒绝，不能静默成功。
@@ -336,3 +336,10 @@ static func _assert_facing_contract(t) -> void:
 	if visual != null:
 		t.assert_true(absf(visual.rotation.y) < 0.0001 or is_finite(visual.rotation.y),
 			"Visual 朝向初始为有限值（%.4f）" % visual.rotation.y)
+
+
+static func _shared_sprint_speed() -> float:
+	var motion := SwordsmanMotionComponent.new()
+	var speed := motion.sprint_speed
+	motion.free()
+	return speed

@@ -52,12 +52,12 @@ var vertical_impulse: float = 0.0
 var sprint_input: bool = false
 
 ## 参数：步行水平最大速度（米/秒）。
-## 现役完整人体 walk clip 的足尖行程参考速度约 1.02 m/s；1.25 m/s 时播放速率约 1.23。
-@export var move_speed: float = 1.25
+## 校正后 walk 支撑脚后移参考约 1.66 m/s；2.0 m/s 为快步，播放器约 1.21 倍。
+@export var move_speed: float = 2.0
 
-## 参数：疾行水平最大速度（米/秒）。现役 run clip 的参考速度约 2.10 m/s，
-## 2.25 m/s 时播放速率约为 1.07。
-@export var sprint_speed: float = 2.25
+## 参数：疾行水平最大速度（米/秒）。run 支撑脚后移参考约 4.22 m/s，
+## 4.2 m/s 接近原动作节奏，无需高频快放。
+@export var sprint_speed: float = 4.2
 
 ## 参数：起跳初速（米/秒）。
 @export var jump_speed: float = 6.0
@@ -66,13 +66,13 @@ var sprint_input: bool = false
 @export var gravity: float = 18.0
 
 ## 参数：御剑水平最大速度（米/秒）。
-@export var flight_speed: float = 12.0
+@export var flight_speed: float = 22.0
 
 ## 参数：御剑上升速度（米/秒）。
-@export var flight_lift_speed: float = 7.0
+@export var flight_lift_speed: float = 12.0
 
 ## 参数：御剑下降速度（米/秒）。
-@export var flight_sink_speed: float = 7.0
+@export var flight_sink_speed: float = 12.0
 
 ## 参数：地面启动御剑的短促升起速度（米/秒）。
 @export var flight_launch_speed: float = 3.0

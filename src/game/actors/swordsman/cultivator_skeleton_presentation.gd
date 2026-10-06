@@ -37,10 +37,10 @@ extends Node3D
 @export var flight_lean: float = 0.21
 
 ## 动作切换阈值（米/秒）：取在两档实际速度之间，使按住/松开加速键时真的切换 clip。
-## 走 1.25 m/s、疾行 2.25 m/s（见 SwordsmanMotionComponent）。1.9 落在两档之间，避免
+## 走 2.0 m/s、疾行 4.2 m/s（见 SwordsmanMotionComponent）。3.0 落在两档之间，避免
 ## 因一点点速度偏差就跳档。
 const WALK_SPEED_MPS := 0.3
-const RUN_SPEED_MPS := 1.9
+const RUN_SPEED_MPS := 3.0
 const BLEND := 0.15
 const IDLE_FLIGHT_RATE := 0.6
 

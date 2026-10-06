@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the current seven-clip character from its self-contained Blender source.
+"""Export a seven-clip character from its self-contained Blender source.
 
 Run with Blender --background --factory-startup --python this_file.py.
 An optional ``-- --output /tmp/probe.glb`` validates an export without replacing
@@ -37,10 +37,11 @@ def glb_animation_names(path: Path) -> set[str]:
 def main() -> None:
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     parser = argparse.ArgumentParser()
+    parser.add_argument("--source", type=Path, default=SOURCE)
     parser.add_argument("--output", type=Path, default=RUNTIME)
     args = parser.parse_args(argv)
 
-    bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
+    bpy.ops.wm.open_mainfile(filepath=str(args.source))
     actions = {action.name for action in bpy.data.actions}
     assert actions == CLIPS, f"Expected seven clips, got {sorted(actions)}"
     rigs = [obj for obj in bpy.data.objects if obj.type == "ARMATURE"]

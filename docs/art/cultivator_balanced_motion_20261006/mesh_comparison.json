@@ -1,0 +1,64 @@
+{
+  "before": {
+    "POSITION": {
+      "count": 432708,
+      "sha256": "9813f120728eca056529e1b18859cd8b88278d91ff45545e4be1151fa5e55614"
+    },
+    "NORMAL": {
+      "count": 432708,
+      "sha256": "b75f33ccaee49c3e228c255aeac4803ae50a1394bfcd5ba276ab64dab30e92cd"
+    },
+    "TEXCOORD_0": {
+      "count": 432708,
+      "sha256": "f7a9f8654dce19b8a4814159bd6ecf40766daef753587b9cb76d9c41b4407f75"
+    },
+    "JOINTS_0": {
+      "count": 432708,
+      "sha256": "337d7b8e0e1363194735324889a80141b92ab16d35f57f8cbfed73e0a9d72ca6"
+    },
+    "WEIGHTS_0": {
+      "count": 432708,
+      "sha256": "cc82a35d0e72cf93fc02d8aaf1f6b58698875dfe53b43186d1e7725a2619c720"
+    }
+  },
+  "after": {
+    "POSITION": {
+      "count": 432724,
+      "sha256": "d3c9e0816c68de9d8d9bfe4e2b2156b7530b8daed0e79cb5d1d736009ee83e3b"
+    },
+    "NORMAL": {
+      "count": 432724,
+      "sha256": "bdaacf8a0528703851e33c8104eca5918a83bcaa961508cf81d6bf48622ebed9"
+    },
+    "TEXCOORD_0": {
+      "count": 432724,
+      "sha256": "b40ee0d7b946fd39ff4f59cd856c1397e74d8ca70cc1ca87e41e8f8386482fe5"
+    },
+    "JOINTS_0": {
+      "count": 432724,
+      "sha256": "2925f023cba68716d18d5a8104c0a9f7a00403a0d83ab5575e21a007121fb22c"
+    },
+    "WEIGHTS_0": {
+      "count": 432724,
+      "sha256": "d5941eb10c2df453ec17a492ad81c95f76f8434eda977b31cf1f420e67202eab"
+    }
+  },
+  "all_attribute_counts_equal": false,
+  "all_attribute_bytes_equal": false,
+  "source_comparison": {
+    "cultivator_aligned_motion_20260927": {
+      "vertices": 432708,
+      "polygons": 599417,
+      "mesh_topology_weights_uv_sha256": "4406463d75ebafea9dec41cae7c58565c4cba9b4b8a8ecddb58d8222c5b5935f",
+      "rest_bones_sha256": "17242fc6a676442486cfc53ce2a6f9bc69ebe4bdf8cc507fc6a88b8a0beb587c"
+    },
+    "cultivator_balanced_motion_20261006": {
+      "vertices": 432708,
+      "polygons": 599417,
+      "mesh_topology_weights_uv_sha256": "4406463d75ebafea9dec41cae7c58565c4cba9b4b8a8ecddb58d8222c5b5935f",
+      "rest_bones_sha256": "17242fc6a676442486cfc53ce2a6f9bc69ebe4bdf8cc507fc6a88b8a0beb587c"
+    }
+  },
+  "source_mesh_and_rest_equal": true,
+  "export_observation": "GLB contains 16 additional split vertices after Blender re-export (432708 -> 432724); the editable source mesh, UVs, weights and rest skeleton are unchanged."
+}

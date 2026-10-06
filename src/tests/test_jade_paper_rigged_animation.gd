@@ -85,7 +85,7 @@ static func _assert_action_mapping(t, presentation: CultivatorSkeletonPresentati
 	t.assert_true(absf(animation_player.speed_scale - walk_speed / walk_reference) < EPSILON,
 		"walk 切换首帧即按实际速度同步播放率（%.3f）" % animation_player.speed_scale)
 
-	# 疾行：用组件实际导出值（当前 2.25 m/s），越过 run 阈值进入 run 带。
+	# 疾行：用组件实际导出值（当前 4.2 m/s），越过 run 阈值进入 run 带。
 	# 不写死数字：写死会在每次标定后变成假失败（本用例已如此失败过一次）。
 	var script := load("res://game/actors/swordsman/swordsman_motion_component.gd") as GDScript
 	var probe_motion := script.new() as SwordsmanMotionComponent

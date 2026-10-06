@@ -69,7 +69,7 @@ static func _test_launch_window_ends(t) -> void:
 
 	motion.vertical_input = 1.0
 	manager.tick(0.016)
-	t.assert_eq(motion.desired_vertical, 7.0, "按住空格应上升")
+	t.assert_eq(motion.desired_vertical, motion.flight_lift_speed, "按住空格应上升")
 	t.assert_true(motion.flight_active, "升降输入不影响御剑状态")
 
 
@@ -102,7 +102,7 @@ static func _test_airborne_first_tick_keeps_momentum(t) -> void:
 	motion.flight_toggle_pressed = true
 	manager.tick(0.016)
 	t.assert_true(flight.active, "下一 tick 可重新开启御剑")
-	t.assert_eq(motion.desired_vertical, -7.0, "极端下坠动量限幅到 flight_sink_speed")
+	t.assert_eq(motion.desired_vertical, -motion.flight_sink_speed, "极端下坠动量限幅到 flight_sink_speed")
 
 
 static func _test_lift_sink_hover(t) -> void:
@@ -118,11 +118,11 @@ static func _test_lift_sink_hover(t) -> void:
 
 	motion.vertical_input = 1.0
 	manager.tick(0.016)
-	t.assert_eq(motion.desired_vertical, 7.0, "vertical_input=+1 应上升")
+	t.assert_eq(motion.desired_vertical, motion.flight_lift_speed, "vertical_input=+1 应上升")
 
 	motion.vertical_input = -1.0
 	manager.tick(0.016)
-	t.assert_eq(motion.desired_vertical, -7.0, "vertical_input=-1 应下降")
+	t.assert_eq(motion.desired_vertical, -motion.flight_sink_speed, "vertical_input=-1 应下降")
 
 	motion.vertical_input = 0.0
 	manager.tick(0.016)
@@ -143,7 +143,7 @@ static func _test_horizontal_uses_flight_speed(t) -> void:
 	motion.camera_forward = Vector3.FORWARD
 	motion.move_input = Vector2(1.0, 0.0)
 	manager.tick(0.016)
-	t.assert_eq(motion.desired_horizontal, Vector3(12.0, 0.0, 0.0), "御剑水平速度应为 flight_speed 且沿相机基")
+	t.assert_eq(motion.desired_horizontal, Vector3(motion.flight_speed, 0.0, 0.0), "御剑水平速度应为 flight_speed 且沿相机基")
 
 
 static func _test_toggle_off_clears_block(t) -> void:
