@@ -1,0 +1,34 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-06 17:58:12.162 Godot[83510:11730032] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 目录最后一项真实进入西湖
+2026-10-06 17:58:13.173 Godot[83510:11730032] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生实际落地
+PASS 共享御剑实际直飞
+FAIL 进入云中
+FAIL 镜头跟随穿云高度
+PASS 人物脚底在取景内
+PASS 人物头部在取景内
+PASS 实际窗口像素
+PASS 保存截图
+VIEW shot=cloud actor=(82.0, 1.100804, 20.0) cloud=0.00 camera=(96.28062, 9.062696, 22.51806) mode=orbit
+RENDER draw_calls=88 primitives=244322
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2546)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2533)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2572)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2584)
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)

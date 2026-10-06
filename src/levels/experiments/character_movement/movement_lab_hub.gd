@@ -25,6 +25,7 @@ const REQUIRED_IDS := [
 	"mountain_realm",
 	"jade_paper_sample",
 	"ink_lakeside_sample",
+	"west_lake_sunset",
 ]
 const Catalog := preload("res://game/systems/lab_catalog/lab_catalog.gd")
 

@@ -1,0 +1,53 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-06 17:54:34.277 Godot[79889:11714659] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+2026-10-06 17:54:34.878 Godot[79889:11714659] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 目录最后一项真实进入西湖
+PASS 出生实际落地
+PASS 共享御剑实际直飞
+PASS 进入云中
+PASS 镜头跟随穿云高度
+PASS 人物脚底在取景内
+PASS 人物头部在取景内
+PASS 实际窗口像素
+PASS 保存截图
+VIEW shot=cloud actor=(82.0, 38.6674, 20.0) cloud=1.00 camera=(96.28062, 46.6293, 22.51806) mode=orbit
+RENDER draw_calls=83 primitives=235192
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-06 17:54:42.853 Godot[80041:11715459] +[IMKClient subclass]: chose IMKClient_Modern
+PASS 加载移动目录
+PASS 目录最后一项真实进入西湖
+2026-10-06 17:54:43.763 Godot[80041:11715459] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 出生实际落地
+PASS 共享御剑实际直飞
+PASS 越云顶
+PASS 镜头跟随穿云高度
+PASS 人物脚底在取景内
+PASS 人物头部在取景内
+PASS 实际窗口像素
+PASS 保存截图
+VIEW shot=above actor=(82.0, 61.41705, 20.0) cloud=0.00 camera=(96.28062, 69.37894, 22.51806) mode=orbit
+RENDER draw_calls=83 primitives=235198
+PASS Esc 返回移动目录
+ERROR: Texture with GL ID of 46: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 47: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 48: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)
+ERROR: Texture with GL ID of 50: leaked 349524 bytes.
+   at: ~Utilities (drivers/gles3/storage/utilities.cpp:77)

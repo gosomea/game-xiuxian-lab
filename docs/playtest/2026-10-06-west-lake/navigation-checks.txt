@@ -1,0 +1,114 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+PASS 顶层实验目录已进入：LabHub
+PASS 顶层角色移动入口指向子实验目录
+PASS 顶层入口场景真实可加载
+PASS 顶层目录详情默认折叠
+PASS 顶层已移除旧「进入实验场景」按钮
+PASS 点击模块卡一次直达子实验目录：MovementLabHub
+PASS 子实验目录显示 10 项（实际 10）
+PASS 子实验顺序与清单一致：["camera_lab", "motion_stage", "ground_contact_course", "sword_flight_course", "state_transition_lab", "movement_garden", "mountain_realm", "jade_paper_sample", "ink_lakeside_sample", "west_lake_sunset"]
+PASS 计数如实显示已落地 10 / 10：10 / 10
+PASS 子实验条目存在：camera_lab
+PASS 子实验条目存在：motion_stage
+PASS 子实验条目存在：ground_contact_course
+PASS 子实验条目存在：sword_flight_course
+PASS 子实验条目存在：state_transition_lab
+PASS 子实验条目存在：movement_garden
+PASS 子实验条目存在：mountain_realm
+PASS 子实验条目存在：jade_paper_sample
+PASS 子实验条目存在：ink_lakeside_sample
+PASS 子实验条目存在：west_lake_sunset
+PASS 子目录详情默认折叠
+PASS 初始键盘焦点在第一个条目卡上
+PASS 焦点所在条目详情已更新（无需回车）
+PASS I 键展开详情
+PASS 展开详情不切换场景
+PASS Esc 先关闭详情
+PASS 关详情后仍停留在子实验目录
+PASS 方向键后焦点仍在条目卡上：Entry_ground_contact_course
+PASS 目录在小窗尺寸下十项仍存在并可滚动查看
+PASS 计数在目录中始终如实显示
+PASS 清单登记场景路径：camera_lab
+PASS 子场景真实可加载：camera_lab
+PASS 点击 camera_lab 精确进入清单登记场景：res://levels/experiments/character_movement/camera_lab.tscn（实际 res://levels/experiments/character_movement/camera_lab.tscn）
+PASS 子场景声明返回本目录常量：camera_lab
+PASS Esc 从 camera_lab 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：camera_lab
+PASS 清单登记场景路径：motion_stage
+PASS 子场景真实可加载：motion_stage
+PASS 点击 motion_stage 精确进入清单登记场景：res://levels/experiments/character_movement/motion_stage.tscn（实际 res://levels/experiments/character_movement/motion_stage.tscn）
+PASS 子场景声明返回本目录常量：motion_stage
+PASS Esc 从 motion_stage 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：motion_stage
+PASS 清单登记场景路径：ground_contact_course
+PASS 子场景真实可加载：ground_contact_course
+PASS 点击 ground_contact_course 精确进入清单登记场景：res://levels/experiments/character_movement/ground_contact_course.tscn（实际 res://levels/experiments/character_movement/ground_contact_course.tscn）
+PASS 子场景声明返回本目录常量：ground_contact_course
+PASS Esc 从 ground_contact_course 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：ground_contact_course
+PASS 清单登记场景路径：sword_flight_course
+PASS 子场景真实可加载：sword_flight_course
+PASS 点击 sword_flight_course 精确进入清单登记场景：res://levels/experiments/character_movement/sword_flight_course.tscn（实际 res://levels/experiments/character_movement/sword_flight_course.tscn）
+PASS 子场景声明返回本目录常量：sword_flight_course
+PASS Esc 从 sword_flight_course 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：sword_flight_course
+PASS 清单登记场景路径：state_transition_lab
+PASS 子场景真实可加载：state_transition_lab
+PASS 点击 state_transition_lab 精确进入清单登记场景：res://levels/experiments/character_movement/state_transition_lab.tscn（实际 res://levels/experiments/character_movement/state_transition_lab.tscn）
+PASS 子场景声明返回本目录常量：state_transition_lab
+PASS Esc 从 state_transition_lab 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：state_transition_lab
+PASS 清单登记场景路径：movement_garden
+PASS 子场景真实可加载：movement_garden
+PASS 点击 movement_garden 精确进入清单登记场景：res://levels/experiments/character_movement/movement_garden.tscn（实际 res://levels/experiments/character_movement/movement_garden.tscn）
+PASS 子场景声明返回本目录常量：movement_garden
+PASS Esc 从 movement_garden 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：movement_garden
+PASS 清单登记场景路径：mountain_realm
+PASS 子场景真实可加载：mountain_realm
+PASS 点击 mountain_realm 精确进入清单登记场景：res://levels/experiments/character_movement/mountain_realm.tscn（实际 res://levels/experiments/character_movement/mountain_realm.tscn）
+PASS 子场景声明返回本目录常量：mountain_realm
+PASS Esc 从 mountain_realm 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：mountain_realm
+PASS 清单登记场景路径：jade_paper_sample
+PASS 子场景真实可加载：jade_paper_sample
+PASS 点击 jade_paper_sample 精确进入清单登记场景：res://levels/experiments/character_movement/jade_paper_sample.tscn（实际 res://levels/experiments/character_movement/jade_paper_sample.tscn）
+PASS 子场景声明返回本目录常量：jade_paper_sample
+PASS Esc 从 jade_paper_sample 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：jade_paper_sample
+PASS 清单登记场景路径：ink_lakeside_sample
+PASS 子场景真实可加载：ink_lakeside_sample
+PASS 点击 ink_lakeside_sample 精确进入清单登记场景：res://levels/experiments/character_movement/ink_lakeside_sample.tscn（实际 res://levels/experiments/character_movement/ink_lakeside_sample.tscn）
+PASS 子场景声明返回本目录常量：ink_lakeside_sample
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:265)
+PASS Esc 从 ink_lakeside_sample 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：ink_lakeside_sample
+PASS 清单登记场景路径：west_lake_sunset
+PASS 子场景真实可加载：west_lake_sunset
+PASS 点击 west_lake_sunset 精确进入清单登记场景：res://levels/experiments/character_movement/west_lake_sunset.tscn（实际 res://levels/experiments/character_movement/west_lake_sunset.tscn）
+PASS 子场景声明返回本目录常量：west_lake_sunset
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:265)
+PASS Esc 从 west_lake_sunset 返回子实验目录 MovementLabHub：MovementLabHub
+PASS 返回后仍选中离开前的条目：west_lake_sunset
+PASS 滚动记忆用例从子实验目录开始
+PASS 键盘焦点移到末项时列表真实滚动（scroll=162）
+PASS 滚动用例精确进入群山宗门
+PASS 滚动用例返回子实验目录
+PASS 返回后恢复离开前真实滚动位置（离开 162，恢复 162）
+PASS 回到子实验目录继续返回路径验收
+PASS 先回到顶层实验目录做 planned 卡片验收
+PASS 顶层存在 planned 模块卡：剑法战斗
+PASS 顶层点击 planned 卡不跳转
+PASS 顶层 planned 卡点击只展开说明
+PASS 顶层 planned 详情标题正确
+PASS 顶层 planned 详情含真实问题说明
+PASS 顶层 planned 详情可关闭
+PASS planned 卡验收后仍能回到子实验目录
+PASS Esc 从子实验目录返回顶层实验目录：LabHub
+PASS 再次从顶层进入子实验目录
+PASS hub 返回按钮文本指向顶层实验目录：返回实验目录
+PASS 返回按钮回到顶层实验目录：LabHub
+PLAYTEST 完成：失败 0

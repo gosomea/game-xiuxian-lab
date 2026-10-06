@@ -74,6 +74,14 @@
       "question": "纸色、墨瓦、淡粉树与现役修士，在步行和御剑时是否协调？",
       "status": "exploring",
       "scene": "res://levels/experiments/character_movement/ink_lakeside_sample.tscn"
+    },
+    {
+      "id": "west_lake_sunset",
+      "title": "西湖夕照 · 穿云",
+      "stage": "最终综合场景",
+      "question": "完整移动与视角在杭州西湖、夕阳和御剑穿云中是否协调？",
+      "status": "exploring",
+      "scene": "res://levels/experiments/character_movement/west_lake_sunset.tscn"
     }
   ]
 }

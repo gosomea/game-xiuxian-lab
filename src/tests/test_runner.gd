@@ -37,6 +37,7 @@ const SUITES := [
 	"res://tests/test_all_scene_sprint.gd",
 	"res://tests/test_all_scene_traversal.gd",
 	"res://tests/test_ink_lakeside_sample.gd",
+	"res://tests/test_west_lake_sunset.gd",
 	"res://tests/test_lab_navigation.gd",
 	"res://tests/test_motion_stage_geometry.gd",
 	"res://tests/test_jade_paper_rigged_animation.gd",

@@ -1,0 +1,14 @@
+NEW SCENE
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:265)
+
+EXISTING INK LAKESIDE
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (servers/rendering/dummy/storage/material_storage.cpp:265)
+
+EXISTING MOVEMENT GARDEN
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org

@@ -96,7 +96,7 @@ game-xiuxian-lab/
 - 本文件超过 150 行时：relocating（下沉子树文件）→ condense → 显式 raise，按此顺序。
 - 不用比喻，不写无法机械或人工核验的句子。
 
-## 当前状态（2026-10-05）
+## 当前状态（2026-10-06）
 
 角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`；
 普通站立、待命、御剑和静修沿用新制动作；步行、疾跑来自早期人体动作重定向并收窄摆臂，
@@ -116,6 +116,8 @@ game-xiuxian-lab/
 重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
 见 [贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)，当前动作数据以新台账为准。
 
-顶层移动入口为 `src/levels/experiments/character_movement/movement_lab_hub.tscn`，九项子实验均可运行：镜头、动作工作台、地形接触、御剑飞行、状态切换、移动庭院、群山宗门、青玉纸白样板和水墨湖岸样板。每项均可返回移动目录；默认人物与动作预览共用现役视觉场景。移动仍由平面移动、跳跃、御剑三能力和共享 CameraRig 组合，场景不定义战斗规则。`orbit` 的右键捕获与释放有自动验收，编辑器嵌入 Game 视图的人工验收仍未做；依据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)。剑法与其它六个模块仍为 planned；以 `src/data/content/experiments.json` 为状态真相源。全局启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。运行方式见 README。
+顶层移动入口为 `src/levels/experiments/character_movement/movement_lab_hub.tscn`，十项子实验均可运行：镜头、动作工作台、地形接触、御剑飞行、状态切换、移动庭院、群山宗门、青玉纸白样板、水墨湖岸样板和西湖夕照综合场景。每项均可返回移动目录；默认人物与动作预览共用现役视觉场景。移动仍由平面移动、跳跃、御剑三能力和共享 CameraRig 组合，场景不定义战斗规则。`orbit` 的右键捕获与释放有自动验收，编辑器嵌入 Game 视图的人工验收仍未做；依据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)。剑法与其它六个模块仍为 planned；以 `src/data/content/experiments.json` 为状态真相源。全局启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。运行方式见 README。
 
-九个三维修士场景共用完整输入入口：WASD / 方向键移动、Shift 疾跑、Space 跳跃 / 御剑上升、Ctrl 下降、F 起飞 / 收剑；镜头跟随御剑高度。水墨湖岸为独立探索样板，复用现役人物与三能力，含过桥、小岛与塔前平台降落；水面无碰撞，落水回收。状态与验收分别见[水墨湖岸决策](notes/implemented/art/2026-10-05-ink-lakeside-sample.md)、[运行记录](docs/playtest/2026-10-05-ink-lakeside/report.md)。
+十个三维修士场景共用完整输入入口：WASD / 方向键移动、Shift 疾跑、Space 跳跃 / 御剑上升、Ctrl 下降、F 起飞 / 收剑；镜头跟随御剑高度。水墨湖岸为独立探索样板，复用现役人物与三能力，含过桥、小岛与塔前平台降落；水面无碰撞，落水回收。状态与验收分别见[水墨湖岸决策](notes/implemented/art/2026-10-05-ink-lakeside-sample.md)、[运行记录](docs/playtest/2026-10-05-ink-lakeside/report.md)。
+
+移动目录最后一项「西湖夕照 · 穿云」为压缩杭州西湖综合场景，包含环岸、白堤断桥、苏堤六桥、三岛、雷峰塔与湖滨街区；复用人物和共享移动/CameraRig，支持四镜头、V 切正交/透视、M 全景，云层 32–48 米，空域顶部 180 米。依据见 [西湖夕照决策](notes/implemented/art/2026-10-06-west-lake-sunset.md)、[运行记录](docs/playtest/2026-10-06-west-lake/report.md)。

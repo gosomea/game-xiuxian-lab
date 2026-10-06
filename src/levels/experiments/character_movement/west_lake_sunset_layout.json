@@ -1,0 +1,710 @@
+{
+  "schema": "west_lake_sunset/1",
+  "spawn": [
+    82,
+    0.12,
+    20
+  ],
+  "palette": {
+    "Paper": "#ead9bb",
+    "Wall": "#eadfc8",
+    "Ink": "#384346",
+    "Roof": "#546568",
+    "Stone": "#c3c6b5",
+    "Shore": "#a6b6a0",
+    "Wood": "#7e6654",
+    "Pink": "#d4a5a0",
+    "Leaf": "#7f9d8c",
+    "Far": "#c7c5bb",
+    "Middle": "#a3b4a8",
+    "Near": "#839c90",
+    "Path": "#d9ceb7",
+    "Gold": "#b89770",
+    "Bird": "#4c5755",
+    "Cloud": "#eadeca"
+  },
+  "walk_meshes": [
+    "WalkShore",
+    "WalkGushan",
+    "WalkBai",
+    "WalkBrokenBridge",
+    "WalkBaiEast",
+    "WalkGushanWest",
+    "WalkSuBerm",
+    "WalkSuBridge1",
+    "WalkSuBridge2",
+    "WalkSuBridge3",
+    "WalkSuBridge4",
+    "WalkSuBridge5",
+    "WalkSuBridge6",
+    "WalkXiaoying",
+    "WalkHuxinting",
+    "WalkRuangong"
+  ],
+  "boxes": [
+    {
+      "name": "Village0",
+      "position": [
+        94,
+        2.0,
+        -38
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village1",
+      "position": [
+        94,
+        2.0,
+        -26
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village2",
+      "position": [
+        94,
+        2.0,
+        -14
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village3",
+      "position": [
+        94,
+        2.0,
+        -2
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village4",
+      "position": [
+        94,
+        2.0,
+        34
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village5",
+      "position": [
+        94,
+        2.0,
+        46
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village6",
+      "position": [
+        107,
+        2.0,
+        -38
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village7",
+      "position": [
+        107,
+        2.0,
+        -26
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village8",
+      "position": [
+        107,
+        2.0,
+        -14
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village9",
+      "position": [
+        107,
+        2.0,
+        -2
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village10",
+      "position": [
+        107,
+        2.0,
+        10
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village11",
+      "position": [
+        107,
+        2.0,
+        22
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village12",
+      "position": [
+        107,
+        2.0,
+        34
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village13",
+      "position": [
+        107,
+        2.0,
+        46
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village14",
+      "position": [
+        123,
+        2.0,
+        -38
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village15",
+      "position": [
+        123,
+        2.0,
+        -26
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village16",
+      "position": [
+        123,
+        2.0,
+        -14
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village17",
+      "position": [
+        123,
+        2.0,
+        -2
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village18",
+      "position": [
+        123,
+        2.0,
+        10
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village19",
+      "position": [
+        123,
+        2.0,
+        22
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village20",
+      "position": [
+        123,
+        2.0,
+        34
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Village21",
+      "position": [
+        123,
+        2.0,
+        46
+      ],
+      "size": [
+        6.5,
+        4.0,
+        6
+      ]
+    },
+    {
+      "name": "Pier22",
+      "position": [
+        74,
+        0.05,
+        20
+      ],
+      "size": [
+        12,
+        0.1,
+        5
+      ]
+    },
+    {
+      "name": "Benches23",
+      "position": [
+        83,
+        0.5,
+        6
+      ],
+      "size": [
+        0.8,
+        0.18,
+        2.4
+      ]
+    },
+    {
+      "name": "Benches24",
+      "position": [
+        83,
+        0.5,
+        32
+      ],
+      "size": [
+        0.8,
+        0.18,
+        2.4
+      ]
+    },
+    {
+      "name": "PavilionBases25",
+      "position": [
+        -22,
+        0.12,
+        -45
+      ],
+      "size": [
+        3.9199999999999995,
+        0.24,
+        3.9199999999999995
+      ]
+    },
+    {
+      "name": "PavilionBases26",
+      "position": [
+        -11,
+        0.12,
+        24
+      ],
+      "size": [
+        3.2199999999999998,
+        0.24,
+        3.2199999999999998
+      ]
+    },
+    {
+      "name": "PavilionBases27",
+      "position": [
+        4,
+        0.12,
+        -7
+      ],
+      "size": [
+        2.52,
+        0.24,
+        2.52
+      ]
+    },
+    {
+      "name": "PagodaApron28",
+      "position": [
+        15,
+        0.2,
+        75.7
+      ],
+      "size": [
+        12,
+        0.4,
+        7
+      ]
+    },
+    {
+      "name": "PagodaBody29",
+      "position": [
+        15,
+        5.9,
+        72
+      ],
+      "size": [
+        6.09,
+        11.0,
+        6.09
+      ]
+    },
+    {
+      "name": "PagodaApron30",
+      "position": [
+        36,
+        0.2,
+        -69.3
+      ],
+      "size": [
+        12,
+        0.4,
+        7
+      ]
+    },
+    {
+      "name": "PagodaBody31",
+      "position": [
+        36,
+        5.3,
+        -73
+      ],
+      "size": [
+        1.8125,
+        9.799999999999999,
+        1.8125
+      ]
+    },
+    {
+      "name": "PavilionBases32",
+      "position": [
+        4,
+        0.12,
+        70
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases33",
+      "position": [
+        31,
+        0.12,
+        71
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases34",
+      "position": [
+        -50,
+        0.12,
+        64
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases35",
+      "position": [
+        -64,
+        0.12,
+        -49
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases36",
+      "position": [
+        -75,
+        0.12,
+        18
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases37",
+      "position": [
+        -73,
+        0.12,
+        -27
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    },
+    {
+      "name": "PavilionBases38",
+      "position": [
+        53,
+        0.12,
+        -62
+      ],
+      "size": [
+        2.8,
+        0.24,
+        2.8
+      ]
+    }
+  ],
+  "bounds": [
+    -180,
+    158,
+    -150,
+    150
+  ],
+  "cloud_base": 32,
+  "cloud_top": 48,
+  "ceiling": 180,
+  "landmarks": [
+    {
+      "title": "杭州 · 湖滨",
+      "position": [
+        82,
+        0,
+        20
+      ]
+    },
+    {
+      "title": "白堤 · 断桥",
+      "position": [
+        63,
+        0,
+        -42
+      ]
+    },
+    {
+      "title": "孤山 · 平湖秋月",
+      "position": [
+        -22,
+        0,
+        -42
+      ]
+    },
+    {
+      "title": "苏堤 · 六桥",
+      "position": [
+        -45,
+        0,
+        0
+      ]
+    },
+    {
+      "title": "三潭印月",
+      "position": [
+        -7,
+        0,
+        24
+      ]
+    },
+    {
+      "title": "湖心亭",
+      "position": [
+        4,
+        0,
+        -7
+      ]
+    },
+    {
+      "title": "阮公墩",
+      "position": [
+        -25,
+        0,
+        4
+      ]
+    },
+    {
+      "title": "雷峰夕照",
+      "position": [
+        15,
+        0,
+        72
+      ]
+    },
+    {
+      "title": "保俶塔",
+      "position": [
+        36,
+        0,
+        -73
+      ]
+    }
+  ],
+  "landings": [
+    [
+      63,
+      0.82,
+      -42
+    ],
+    [
+      -45,
+      0.82,
+      9
+    ],
+    [
+      -7,
+      0.1,
+      24
+    ],
+    [
+      15,
+      0.4,
+      77
+    ]
+  ],
+  "ray_points": [
+    [
+      82,
+      0,
+      20
+    ],
+    [
+      82,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      68
+    ],
+    [
+      0,
+      0,
+      -68
+    ],
+    [
+      -45,
+      0,
+      0
+    ],
+    [
+      -45,
+      0,
+      9
+    ],
+    [
+      63,
+      0,
+      -42
+    ],
+    [
+      -7,
+      0,
+      24
+    ],
+    [
+      4,
+      0,
+      -7
+    ],
+    [
+      -25,
+      0,
+      4
+    ]
+  ]
+}
