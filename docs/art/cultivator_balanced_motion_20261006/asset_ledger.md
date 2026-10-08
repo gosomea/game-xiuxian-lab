@@ -46,3 +46,5 @@ python3 tools/verify/run_all.py --with-tests
 建造器从保留的 aligned 源重建动作，会覆盖本版本正在编辑的源；手工编辑本版本后，使用带 `--source` 的独立导出命令即可。已将保存后的 Blender 源重新打开并独立导出，确认七段动作、22 骨和贴地测量仍通过。
 
 依据：[决策](../../../notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)、[实机记录](../../playtest/2026-10-06-motion-balance/report.md)。
+
+2026-10-08 起，现役步行改用[收臂版本](../cultivator_balanced_motion_20261008/asset_ledger.md)。本目录的源、导出和预览保留作比较。

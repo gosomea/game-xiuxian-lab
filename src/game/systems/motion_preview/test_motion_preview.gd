@@ -598,7 +598,7 @@ static func _assert_display_pose(t) -> void:
 	t.assert_true(shared_character != null, "动作预览实例化共享 v9 角色模型")
 	if shared_character != null:
 		t.assert_eq(shared_character.scene_file_path,
-			"res://game/actors/swordsman/models/cultivator_balanced_motion_20261006.glb",
+			"res://game/actors/swordsman/models/cultivator_balanced_motion_20261008.glb",
 			"动作预览读取现役角色模型")
 	# 预览与正式角色必须同源：同一 v9 场景，且恰好一个 Skeleton3D + 一个 AnimationPlayer。
 	var players := shared_character.find_children("*", "AnimationPlayer", true, false)
