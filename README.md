@@ -24,7 +24,7 @@ python3 tools/verify/run_all.py --with-tests
 - **群山宗门**：180×160 m、五峰三落脚点的 Blender 程序建模场景。WASD / 方向键移动，Space 跳跃 / 上升，Ctrl 下降，F 开关御剑，滚轮缩放，R 复位（含关闭飞行），Esc 返回；HUD 常显步行 / 空中 / 御剑与高度，明细按 H 展开。相机走共享 CameraRig（高空跟随不压回地面）。没有攻击、命中或战斗 UI。
 - **移动庭院（小场景回归）**：修士与风格化庭院的移动组合基线，可直接单独运行；**默认进入组合环绕 / 自由跟随**（`orbit`：WASD 移动、Q/E 连续旋转、滚轮缩放、按住右键拖动 yaw/pitch），点界面按钮可切回 `fixed_follow`，不占用数字键；R 重置、Esc 返回。
 - **镜头实验室**：四模式（`fixed_follow` / `quarter_turn` / `orbit` / `overview`）与四种跟随预设对比；**默认进入组合环绕 / 自由跟随**（`orbit`，同时支持 WASD、Q/E 连续旋转、滚轮缩放、按住右键拖动）；1–4 选模式、Tab 换预设、Z/X 或滚轮缩放、MMB 平移、Home 回中。
-- **人物动作工作台**：真实输入模式观察现役 22 骨人物的七段动作（站立、步行、疾跑、跳跃、待命、静修、御剑），另可逐段播放 / 暂停 / 单步 / 循环 / 调速与比较过渡。现役人物源与导出见[资产台账](docs/art/cultivator_balanced_motion_20261008/asset_ledger.md)。
+- **人物动作工作台**：真实输入模式观察现役 22 骨人物的七段动作（站立、步行、疾跑、跳跃、待命、静修、御剑），另可逐段播放 / 暂停 / 单步 / 循环 / 调速与比较过渡。现役人物源与导出见[资产台账](docs/art/cultivator_balanced_motion_20261008_swing/asset_ledger.md)。
 - **水墨湖岸样板**：暖纸、白墙墨瓦、淡粉树、五层塔与湖面远山。保留现役角色，复用三项移动能力；可步行过桥、御剑绕塔、收剑降落小岛，落水自动复位。[实验说明](docs/experiments/ink-lakeside-sample.md)。
 - **二维坊市**：独立的东方动漫风斜角街口，可四向行走并与三位路人交谈；它验证二维画风与遮挡，不复用三维人物模型。
 - **空白 3D 工作台**：保留网格、正交相机与缩放，供其他模块独立起步。
@@ -84,7 +84,7 @@ docs/playtest/                 运行验收证据
 ./run.command res://levels/experiments/character_movement/movement_garden.tscn
 ```
 
-早期移动实验边界见 [实验记录](docs/experiments/character-movement.md)；现役动作验收见[运行记录](docs/playtest/2026-10-06-motion-balance/report.md)。群山与御剑源文件、复现方式与资产台账在 `docs/art/mountain_realm/`；现役人物源与导出见[角色资产台账](docs/art/cultivator_balanced_motion_20261008/asset_ledger.md)，庭院资产在 `docs/art/movement_garden/`。
+早期移动实验边界见 [实验记录](docs/experiments/character-movement.md)；现役动作验收见[运行记录](docs/playtest/2026-10-06-motion-balance/report.md)。群山与御剑源文件、复现方式与资产台账在 `docs/art/mountain_realm/`；现役人物源与导出见[角色资产台账](docs/art/cultivator_balanced_motion_20261008_swing/asset_ledger.md)，庭院资产在 `docs/art/movement_garden/`。
 
 ### 西湖夕照综合场景
 

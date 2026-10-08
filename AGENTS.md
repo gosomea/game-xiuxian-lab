@@ -99,15 +99,15 @@ game-xiuxian-lab/
 ## 当前状态（2026-10-08）
 
 角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`；
-普通站立、待命、御剑和静修沿用新制动作；步行来自早期人体动作重定向，前臂已收到站立外展，
+普通站立、待命、御剑和静修沿用新制动作；步行来自早期人体动作重定向，前摆送到胸前且前臂保持站立外展，
 疾跑仍是收窄后的摆臂，跳跃为正向双脚跳跃加对称手臂上摆。现役资产为
-`src/game/actors/swordsman/models/cultivator_balanced_motion_20261008.glb`，
+`src/game/actors/swordsman/models/cultivator_balanced_motion_20261008_swing.glb`，
 `src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
 普通走速 2.0、Shift 疾跑 4.2 m/s，御剑 22、升降 12 m/s；`RUN_SPEED_MPS = 3.0`；七段 clip 为
-`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_balanced_motion_20261008/cultivator_balanced_motion_20261008.blend` 内嵌三张贴图和全部七段动作；
+`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_balanced_motion_20261008_swing/cultivator_balanced_motion_20261008_swing.blend` 内嵌三张贴图和全部七段动作；
 旧人物候选、动作中间件与专属场景已按使用者要求从当前树清理，不再是回退资源。
 新动作依据见 [完整人体动作 note](notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)，
-现役资产台账见 `docs/art/cultivator_balanced_motion_20261008/asset_ledger.md`；清理依据见
+现役资产台账见 `docs/art/cultivator_balanced_motion_20261008_swing/asset_ledger.md`；清理依据见
 [旧人物清理 note](notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)。
 
 骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`

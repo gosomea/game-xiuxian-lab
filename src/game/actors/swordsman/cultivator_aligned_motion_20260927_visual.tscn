@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3]
 
-; v9 人物与蒙皮：走路前臂收到站立外展，疾跑与跳跃沿用 20261006。
+; v9 人物与蒙皮：走路前摆送到胸前，外展保持站立，疾跑与跳跃沿用 20261006。
 ; 依据 notes/implemented/art/2026-09-27-human-locomotion-on-v9.md。
 
-[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_balanced_motion_20261008.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://game/actors/swordsman/models/cultivator_balanced_motion_20261008_swing.glb" id="1_model"]
 [ext_resource type="Script" path="res://game/actors/swordsman/cultivator_skeleton_presentation.gd" id="2_presentation"]
 
 [node name="CultivatorAlignedMotion20260927Visual" type="Node3D"]

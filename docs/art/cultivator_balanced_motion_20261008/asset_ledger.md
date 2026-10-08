@@ -37,3 +37,5 @@ Blender --background --factory-startup --python-exit-code 1 --python tools/art/m
 建造器从 20261006 源重建，会覆盖本版本正在编辑的源。
 
 依据：[决策](../../../notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)。
+
+同日后续：现役步行改为[前摆版本](../cultivator_balanced_motion_20261008_swing/asset_ledger.md)。本目录保留收臂、前摆仍停在胯边的比较版本。

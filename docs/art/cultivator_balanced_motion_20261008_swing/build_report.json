@@ -1,0 +1,54 @@
+{
+  "source": "docs/art/cultivator_balanced_motion_20261008/cultivator_balanced_motion_20261008.blend",
+  "peak_flexion_deg": 26.0,
+  "before_wrist_forward_m": {
+    "Left": [
+      -0.1627,
+      0.0664
+    ],
+    "Right": [
+      -0.2,
+      0.0615
+    ]
+  },
+  "after_wrist_forward_m": {
+    "Left": [
+      -0.1627,
+      0.2769
+    ],
+    "Right": [
+      -0.2,
+      0.2768
+    ]
+  },
+  "after_wrist_ahead_of_chest_m": {
+    "Left": [
+      -0.2161,
+      0.2865
+    ],
+    "Right": [
+      -0.263,
+      0.2759
+    ]
+  },
+  "after_wrist_out_m": {
+    "Left": [
+      0.0868,
+      0.0891
+    ],
+    "Right": [
+      0.0761,
+      0.0788
+    ]
+  },
+  "standing_wrist_out_m": {
+    "Left": 0.0848,
+    "Right": 0.0768
+  },
+  "max_flexion_deg": {
+    "Left": 26.0,
+    "Right": 26.0
+  },
+  "loop_seam_deg": 0.0,
+  "linear_rotation_keys": 216
+}
