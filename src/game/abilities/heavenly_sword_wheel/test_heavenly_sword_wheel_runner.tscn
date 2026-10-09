@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel_runner.gd" id="1"]
+
+[node name="HeavenlySwordWheelTestRunner" type="Node"]
+script = ExtResource("1")

@@ -30,6 +30,30 @@
     {
       "axis_implemented": [
         "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "HeavenlySwordWheel",
+      "domain": "abilities",
+      "package": "abilities/heavenly_sword_wheel",
+      "parameters": [],
+      "reads_components": [
+        "HeavenlySwordWheelComponent",
+        "SwordCastComponent",
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel.gd",
+      "signals": [],
+      "summary": "天轮：双层圆轮凝剑，松开后转剑尖，交错分组沿上拱曲线加速齐射。",
+      "test": "src/game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
         "_tick_active",
         "_should_deactivate",
         "_on_deactivated"
@@ -241,7 +265,7 @@
       "uses_tags": []
     }
   ],
-  "count": 10,
+  "count": 11,
   "domains": [
     "abilities",
     "actors",
@@ -249,6 +273,7 @@
   ],
   "packages": [
     "abilities/flying_sword_strike",
+    "abilities/heavenly_sword_wheel",
     "abilities/jump",
     "abilities/sword_array",
     "abilities/sword_flight",
