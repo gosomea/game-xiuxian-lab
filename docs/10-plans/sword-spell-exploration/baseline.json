@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-10",
+  "scope": "施法时序与剑数；无伤害/血量/经济",
+  "existing_array_max": 36,
+  "existing_spawn_interval": 0.05,
+  "existing_fire_interval": 0.03,
+  "existing_speed": 30.0,
+  "full_gather_seconds": 1.75,
+  "last_fire_nominal_seconds": 1.05,
+  "new_spells": "absent",
+  "renderer": "Compatibility",
+  "godot": "4.6.stable.official.89cea1439"
+}

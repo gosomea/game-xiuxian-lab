@@ -1,0 +1,547 @@
+{
+  "schema_version": 1,
+  "id": "sword-spell-exploration",
+  "title": "天轮剑阵、巨剑镇落、天降剑雨探索",
+  "objectives": {
+    "wheel": "双层天轮结阵与自然弧线齐射",
+    "giant": "凝剑悬停、加速镇落与单次重击",
+    "rain": "地面选区、分批天降剑雨与接地消散",
+    "quality": "完整施法、流畅自然剑运动、可读且帅气画面及旧功能回归"
+  },
+  "constraints": [
+    "不迁移旧修仙项目",
+    "先 notes 后运行时实现",
+    "独立叶子包与纯数据 Component",
+    "Compatibility 与完整共享修士/镜头",
+    "保存探索资产、LFS 与本地 Git 提交；不 push",
+    "所有确定性与视觉门禁必须真实验收"
+  ],
+  "documents": [
+    "docs/10-plans/sword-spell-exploration/plans.md",
+    "notes/implemented/gameplay/2026-10-10-sword-spell-exploration.md"
+  ],
+  "final": "acceptance",
+  "nodes": [
+    {
+      "id": "preflight",
+      "title": "核对契约与基线",
+      "kind": "gate",
+      "objectives": [
+        "wheel",
+        "giant",
+        "rain",
+        "quality"
+      ],
+      "depends_on": [],
+      "requires_gates": [],
+      "inputs": [
+        "AGENTS.md",
+        "src/game/AGENTS.md",
+        "src/data/content/experiments.json"
+      ],
+      "outputs": [
+        "docs/10-plans/sword-spell-exploration/baseline.json"
+      ],
+      "writes": [
+        "docs/10-plans/sword-spell-exploration"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "plan-contract",
+          "argv": [
+            "{python}",
+            "/Users/yuqixian/forever-skills/skills/plan-and-phase/scripts/plan.py",
+            "validate",
+            "docs/10-plans/sword-spell-exploration/plan.json"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        },
+        {
+          "id": "notes",
+          "argv": [
+            "{python}",
+            "tools/verify/verify_notes_format.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        },
+        {
+          "id": "baseline",
+          "argv": [
+            "{python}",
+            "-c",
+            "import json,pathlib; p=pathlib.Path('docs/10-plans/sword-spell-exploration/baseline.json'); d=json.loads(p.read_text()); assert d['existing_array_max']==36 and d['new_spells']=='absent'; print(json.dumps(d,ensure_ascii=False))"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "foundation",
+      "title": "共享落点、命中、取消与视觉基础",
+      "kind": "gate",
+      "objectives": [
+        "wheel",
+        "giant",
+        "rain",
+        "quality"
+      ],
+      "depends_on": [
+        "preflight"
+      ],
+      "requires_gates": [
+        "preflight"
+      ],
+      "inputs": [
+        "src/project.godot",
+        "src/core/capability.gd",
+        "src/core/capability_manager.gd",
+        "src/core/component.gd",
+        "src/tests/test_context.gd",
+        "src/game/shared/sword_cast/sword_cast_component.gd",
+        "src/game/shared/sword_cast/sword_cast_targets.gd"
+      ],
+      "outputs": [
+        "docs/10-plans/sword-spell-exploration/foundation.md",
+        "src/game/shared/sword_cast/test_sword_cast_targets.gd"
+      ],
+      "writes": [
+        "src/game/shared/sword_cast",
+        "src/data/vocabulary/sword_cast.json",
+        "src/data/vocabulary/index.json",
+        "src/game/abilities/sword_qi",
+        "src/game/abilities/sword_array",
+        "src/game/abilities/flying_sword_strike",
+        "src/tests",
+        "design/capability_catalog.json",
+        "docs/art/spirit_sword_20261010",
+        "docs/10-plans/sword-spell-exploration/foundation.md",
+        ".gitattributes"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "runtime",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "tests/test_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "static",
+          "argv": [
+            "{python}",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "wheel",
+      "title": "天轮剑阵",
+      "kind": "task",
+      "objectives": [
+        "wheel",
+        "quality"
+      ],
+      "depends_on": [
+        "foundation"
+      ],
+      "requires_gates": [
+        "preflight",
+        "foundation"
+      ],
+      "inputs": [
+        "src/project.godot",
+        "src/core/capability.gd",
+        "src/core/capability_manager.gd",
+        "src/core/component.gd",
+        "src/tests/test_context.gd",
+        "src/game/shared/sword_cast/sword_cast_component.gd",
+        "src/game/shared/sword_cast/sword_cast_targets.gd",
+        "src/game/shared/sword_cast/sword_spell_visual.gd"
+      ],
+      "outputs": [
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel.gd",
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel_component.gd",
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel_view.gd",
+        "src/game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel.gd",
+        "docs/10-plans/sword-spell-exploration/wheel.md"
+      ],
+      "writes": [
+        "src/game/abilities/heavenly_sword_wheel",
+        "src/data/vocabulary/heavenly_sword_wheel.json",
+        "src/data/vocabulary/index.json",
+        "design/capability_catalog.json",
+        "docs/10-plans/sword-spell-exploration/wheel.md",
+        ".gitattributes"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "expected_exit": 0
+        },
+        {
+          "id": "static",
+          "argv": [
+            "{python}",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "giant",
+      "title": "巨剑镇落",
+      "kind": "task",
+      "objectives": [
+        "giant",
+        "quality"
+      ],
+      "depends_on": [
+        "foundation"
+      ],
+      "requires_gates": [
+        "preflight",
+        "foundation"
+      ],
+      "inputs": [
+        "src/project.godot",
+        "src/core/capability.gd",
+        "src/core/capability_manager.gd",
+        "src/core/component.gd",
+        "src/tests/test_context.gd",
+        "src/game/shared/sword_cast/sword_cast_component.gd",
+        "src/game/shared/sword_cast/sword_cast_targets.gd",
+        "src/game/shared/sword_cast/sword_spell_visual.gd"
+      ],
+      "outputs": [
+        "src/game/abilities/giant_sword_descent/giant_sword_descent.gd",
+        "src/game/abilities/giant_sword_descent/giant_sword_descent_component.gd",
+        "src/game/abilities/giant_sword_descent/giant_sword_descent_view.gd",
+        "src/game/abilities/giant_sword_descent/test_giant_sword_descent.gd",
+        "docs/10-plans/sword-spell-exploration/giant.md"
+      ],
+      "writes": [
+        "src/game/abilities/giant_sword_descent",
+        "src/data/vocabulary/giant_sword_descent.json",
+        "src/data/vocabulary/index.json",
+        "design/capability_catalog.json",
+        "docs/10-plans/sword-spell-exploration/giant.md",
+        ".gitattributes"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/giant_sword_descent/test_giant_sword_descent_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "expected_exit": 0
+        },
+        {
+          "id": "static",
+          "argv": [
+            "{python}",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "rain",
+      "title": "天降剑雨",
+      "kind": "task",
+      "objectives": [
+        "rain",
+        "quality"
+      ],
+      "depends_on": [
+        "foundation"
+      ],
+      "requires_gates": [
+        "preflight",
+        "foundation"
+      ],
+      "inputs": [
+        "src/project.godot",
+        "src/core/capability.gd",
+        "src/core/capability_manager.gd",
+        "src/core/component.gd",
+        "src/tests/test_context.gd",
+        "src/game/shared/sword_cast/sword_cast_component.gd",
+        "src/game/shared/sword_cast/sword_cast_targets.gd",
+        "src/game/shared/sword_cast/sword_spell_visual.gd"
+      ],
+      "outputs": [
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain.gd",
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain_component.gd",
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain_view.gd",
+        "src/game/abilities/heavenly_sword_rain/test_heavenly_sword_rain.gd",
+        "docs/10-plans/sword-spell-exploration/rain.md"
+      ],
+      "writes": [
+        "src/game/abilities/heavenly_sword_rain",
+        "src/data/vocabulary/heavenly_sword_rain.json",
+        "src/data/vocabulary/index.json",
+        "design/capability_catalog.json",
+        "docs/10-plans/sword-spell-exploration/rain.md",
+        ".gitattributes"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/heavenly_sword_rain/test_heavenly_sword_rain_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "expected_exit": 0
+        },
+        {
+          "id": "static",
+          "argv": [
+            "{python}",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "integration",
+      "title": "集成三招与工作台回归",
+      "kind": "task",
+      "objectives": [
+        "wheel",
+        "giant",
+        "rain",
+        "quality"
+      ],
+      "depends_on": [
+        "wheel",
+        "giant",
+        "rain"
+      ],
+      "requires_gates": [
+        "preflight",
+        "foundation"
+      ],
+      "inputs": [
+        "src/project.godot",
+        "src/core/capability.gd",
+        "src/core/capability_manager.gd",
+        "src/core/component.gd",
+        "src/tests/test_context.gd",
+        "src/game/shared/sword_cast/sword_cast_component.gd",
+        "src/game/shared/sword_cast/sword_cast_targets.gd",
+        "src/levels/experiments/sword_combat/sword_workbench.gd"
+      ],
+      "outputs": [
+        "docs/10-plans/sword-spell-exploration/integration.md",
+        "src/tests/test_sword_spell_exploration.gd"
+      ],
+      "writes": [
+        "src",
+        "design/capability_catalog.json",
+        ".gitattributes",
+        "docs/10-plans/sword-spell-exploration",
+        "docs/playtest/2026-10-10-sword-spells",
+        "docs/art/spirit_sword_20261010"
+      ],
+      "resources": [],
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "runtime",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "tests/test_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        },
+        {
+          "id": "static",
+          "argv": [
+            "{python}",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "expected_exit": 0
+        }
+      ],
+      "review": false
+    },
+    {
+      "id": "acceptance",
+      "title": "主 Agent 真实窗口与连续运动验收",
+      "kind": "gate",
+      "objectives": [
+        "wheel",
+        "giant",
+        "rain",
+        "quality"
+      ],
+      "depends_on": [
+        "integration"
+      ],
+      "requires_gates": [
+        "preflight",
+        "foundation"
+      ],
+      "inputs": [
+        "src/tests/sword_spell_exploration_playtest.gd",
+        "src/tests/test_sword_spell_exploration.gd",
+        "src/levels/experiments/sword_combat/sword_workbench.gd"
+      ],
+      "outputs": [
+        "docs/playtest/2026-10-10-sword-spells/acceptance.json",
+        "docs/playtest/2026-10-10-sword-spells/report.md"
+      ],
+      "writes": [
+        "docs/playtest/2026-10-10-sword-spells",
+        "docs/10-plans/sword-spell-exploration"
+      ],
+      "resources": [
+        "godot-visible-window"
+      ],
+      "checks": [
+        {
+          "id": "window",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--path",
+            "src",
+            "--script",
+            "res://tests/sword_spell_exploration_playtest.gd",
+            "--",
+            "--evidence-dir=docs/playtest/2026-10-10-sword-spells"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "expected_exit": 0
+        }
+      ],
+      "review": true
+    }
+  ]
+}
