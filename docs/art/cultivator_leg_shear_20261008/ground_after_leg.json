@@ -1,0 +1,86 @@
+{
+  "glb": "tmp_probe/leg_fixed.glb",
+  "clips": {
+    "idle": {
+      "min_z": -0.0038,
+      "max_z_min_vertex": 0.0165,
+      "min_z_frame": 222,
+      "frames": [
+        0,
+        239
+      ],
+      "lift_needed_m": 0.0038,
+      "problem": null
+    },
+    "idle_guarded": {
+      "min_z": -0.0105,
+      "max_z_min_vertex": -0.0,
+      "min_z_frame": 2,
+      "frames": [
+        1,
+        73
+      ],
+      "lift_needed_m": 0.0105,
+      "problem": null
+    },
+    "jump": {
+      "min_z": 0.0728,
+      "max_z_min_vertex": 0.7799,
+      "min_z_frame": 4,
+      "frames": [
+        0,
+        53
+      ],
+      "lift_needed_m": -0.0728,
+      "problem": null
+    },
+    "meditate": {
+      "min_z": -0.003,
+      "max_z_min_vertex": 0.0,
+      "min_z_frame": 2,
+      "frames": [
+        1,
+        73
+      ],
+      "lift_needed_m": 0.003,
+      "problem": null
+    },
+    "run": {
+      "min_z": 0.0233,
+      "max_z_min_vertex": 0.2179,
+      "min_z_frame": 8,
+      "frames": [
+        0,
+        14
+      ],
+      "lift_needed_m": -0.0233,
+      "problem": "lowest vertex rests +0.0233 m off the ground (lift_needed_m -0.0233)"
+    },
+    "sword_ride": {
+      "min_z": -0.0155,
+      "max_z_min_vertex": -0.0,
+      "min_z_frame": 13,
+      "frames": [
+        1,
+        73
+      ],
+      "lift_needed_m": 0.0155,
+      "problem": null
+    },
+    "walk": {
+      "min_z": 0.0457,
+      "max_z_min_vertex": 0.0895,
+      "min_z_frame": 20,
+      "frames": [
+        0,
+        34
+      ],
+      "lift_needed_m": -0.0457,
+      "problem": "lowest vertex rests +0.0457 m off the ground (lift_needed_m -0.0457)"
+    }
+  },
+  "problems": [
+    "run: lowest vertex rests +0.0233 m off the ground (lift_needed_m -0.0233)",
+    "walk: lowest vertex rests +0.0457 m off the ground (lift_needed_m -0.0457)"
+  ]
+}

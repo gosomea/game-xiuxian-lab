@@ -1,0 +1,482 @@
+{
+  "glb": "tmp_probe/work.glb",
+  "out": "tmp_probe/leg_fixed.glb",
+  "leg_shear": {
+    "forward_axis": [
+      0.2822,
+      -0.9593
+    ],
+    "clips": [
+      {
+        "clip": "idle",
+        "offset_before_m": -0.15,
+        "offset_after_m": -0.0,
+        "pitch_before_deg": 31.172,
+        "pitch_after_deg": -0.018,
+        "swing_deg": -7.314,
+        "foot_deg": 45.724,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -15.973,
+            "foot_deg": 12.0,
+            "offset_m": 0.1688,
+            "pitch_deg": 49.027,
+            "accepted": false
+          },
+          {
+            "pass": 1,
+            "halved": true,
+            "swing_deg": -12.973,
+            "foot_deg": 6.0,
+            "offset_m": 0.1121,
+            "pitch_deg": 49.354,
+            "accepted": false
+          },
+          {
+            "pass": 2,
+            "swing_deg": -7.298,
+            "foot_deg": 12.0,
+            "offset_m": -0.0003,
+            "pitch_deg": 32.977,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": -7.314,
+            "foot_deg": 24.0,
+            "offset_m": -0.0,
+            "pitch_deg": 21.276,
+            "accepted": true
+          },
+          {
+            "pass": 4,
+            "swing_deg": -7.314,
+            "foot_deg": 36.0,
+            "offset_m": -0.0,
+            "pitch_deg": 9.535,
+            "accepted": true
+          },
+          {
+            "pass": 5,
+            "swing_deg": -7.314,
+            "foot_deg": 45.724,
+            "offset_m": -0.0,
+            "pitch_deg": -0.018,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "clip": "idle_guarded",
+        "offset_before_m": -0.1609,
+        "offset_after_m": 0.0,
+        "pitch_before_deg": 20.281,
+        "pitch_after_deg": -0.103,
+        "swing_deg": -7.651,
+        "foot_deg": 35.07,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -16.702,
+            "foot_deg": 12.0,
+            "offset_m": 0.1858,
+            "pitch_deg": 40.314,
+            "accepted": false
+          },
+          {
+            "pass": 1,
+            "halved": true,
+            "swing_deg": -13.702,
+            "foot_deg": 6.0,
+            "offset_m": 0.1255,
+            "pitch_deg": 40.435,
+            "accepted": false
+          },
+          {
+            "pass": 2,
+            "swing_deg": -7.638,
+            "foot_deg": 12.0,
+            "offset_m": -0.0003,
+            "pitch_deg": 23.203,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": -7.651,
+            "foot_deg": 24.0,
+            "offset_m": -0.0,
+            "pitch_deg": 11.231,
+            "accepted": true
+          },
+          {
+            "pass": 4,
+            "swing_deg": -7.651,
+            "foot_deg": 35.07,
+            "offset_m": 0.0,
+            "pitch_deg": -0.103,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "clip": "jump",
+        "offset_before_m": -0.2032,
+        "offset_after_m": -0.0,
+        "pitch_before_deg": 38.052,
+        "pitch_after_deg": 1.212,
+        "swing_deg": -11.506,
+        "foot_deg": 60.0,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -19.569,
+            "foot_deg": 12.0,
+            "offset_m": 0.1293,
+            "pitch_deg": 63.509,
+            "accepted": false
+          },
+          {
+            "pass": 1,
+            "halved": true,
+            "swing_deg": -16.569,
+            "foot_deg": 6.0,
+            "offset_m": 0.0831,
+            "pitch_deg": 63.628,
+            "accepted": false
+          },
+          {
+            "pass": 2,
+            "swing_deg": -11.492,
+            "foot_deg": 12.0,
+            "offset_m": -0.0002,
+            "pitch_deg": 48.221,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": -11.506,
+            "foot_deg": 24.0,
+            "offset_m": -0.0,
+            "pitch_deg": 36.596,
+            "accepted": true
+          },
+          {
+            "pass": 4,
+            "swing_deg": -11.506,
+            "foot_deg": 36.0,
+            "offset_m": -0.0,
+            "pitch_deg": 24.906,
+            "accepted": true
+          },
+          {
+            "pass": 5,
+            "swing_deg": -11.506,
+            "foot_deg": 48.0,
+            "offset_m": -0.0,
+            "pitch_deg": 13.124,
+            "accepted": true
+          },
+          {
+            "pass": 6,
+            "swing_deg": -11.506,
+            "foot_deg": 60.0,
+            "offset_m": -0.0,
+            "pitch_deg": 1.212,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "clip": "meditate",
+        "offset_before_m": -0.1489,
+        "offset_after_m": -0.0992,
+        "pitch_before_deg": 57.981,
+        "pitch_after_deg": 63.181,
+        "swing_deg": -9.0,
+        "foot_deg": 18.0,
+        "hips_shift_m": 0.0,
+        "converged": false,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -6.0,
+            "foot_deg": 12.0,
+            "offset_m": -0.1133,
+            "pitch_deg": 61.478,
+            "accepted": true
+          },
+          {
+            "pass": 2,
+            "swing_deg": -12.0,
+            "foot_deg": 24.0,
+            "offset_m": -0.0878,
+            "pitch_deg": 64.838,
+            "accepted": false
+          },
+          {
+            "pass": 2,
+            "halved": true,
+            "swing_deg": -9.0,
+            "foot_deg": 18.0,
+            "offset_m": -0.0992,
+            "pitch_deg": 63.181,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": -15.0,
+            "foot_deg": 30.0,
+            "offset_m": -0.0792,
+            "pitch_deg": 66.434,
+            "accepted": false
+          },
+          {
+            "pass": 3,
+            "halved": true,
+            "swing_deg": -12.0,
+            "foot_deg": 24.0,
+            "offset_m": -0.0878,
+            "pitch_deg": 64.838,
+            "accepted": false
+          },
+          {
+            "pass": 4,
+            "swing_deg": -15.0,
+            "foot_deg": 30.0,
+            "offset_m": -0.0792,
+            "pitch_deg": 66.434,
+            "accepted": false
+          },
+          {
+            "pass": 4,
+            "halved": true,
+            "swing_deg": -12.0,
+            "foot_deg": 24.0,
+            "offset_m": -0.0878,
+            "pitch_deg": 64.838,
+            "accepted": false
+          },
+          {
+            "pass": 5,
+            "swing_deg": -15.0,
+            "foot_deg": 30.0,
+            "offset_m": -0.0792,
+            "pitch_deg": 66.434,
+            "accepted": false
+          },
+          {
+            "pass": 5,
+            "halved": true,
+            "swing_deg": -12.0,
+            "foot_deg": 24.0,
+            "offset_m": -0.0878,
+            "pitch_deg": 64.838,
+            "accepted": false
+          }
+        ]
+      },
+      {
+        "clip": "run",
+        "offset_before_m": 0.0297,
+        "offset_after_m": 0.0,
+        "pitch_before_deg": 63.518,
+        "pitch_after_deg": 0.001,
+        "swing_deg": 2.06,
+        "foot_deg": 68.788,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -4.038,
+            "foot_deg": 12.0,
+            "offset_m": 0.0853,
+            "pitch_deg": 60.897,
+            "accepted": false
+          },
+          {
+            "pass": 1,
+            "halved": true,
+            "swing_deg": -1.038,
+            "foot_deg": 6.0,
+            "offset_m": 0.0443,
+            "pitch_deg": 60.858,
+            "accepted": true
+          },
+          {
+            "pass": 2,
+            "swing_deg": 2.083,
+            "foot_deg": 18.0,
+            "offset_m": -0.0003,
+            "pitch_deg": 47.625,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": 2.06,
+            "foot_deg": 30.0,
+            "offset_m": -0.0,
+            "pitch_deg": 37.912,
+            "accepted": true
+          },
+          {
+            "pass": 4,
+            "swing_deg": 2.06,
+            "foot_deg": 42.0,
+            "offset_m": 0.0,
+            "pitch_deg": 26.284,
+            "accepted": true
+          },
+          {
+            "pass": 5,
+            "swing_deg": 2.06,
+            "foot_deg": 54.0,
+            "offset_m": 0.0,
+            "pitch_deg": 14.578,
+            "accepted": true
+          },
+          {
+            "pass": 6,
+            "swing_deg": 2.06,
+            "foot_deg": 66.0,
+            "offset_m": 0.0,
+            "pitch_deg": 2.764,
+            "accepted": true
+          },
+          {
+            "pass": 7,
+            "swing_deg": 2.06,
+            "foot_deg": 68.788,
+            "offset_m": 0.0,
+            "pitch_deg": 0.001,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "clip": "sword_ride",
+        "offset_before_m": 0.1725,
+        "offset_after_m": -0.0,
+        "pitch_before_deg": 50.354,
+        "pitch_after_deg": -0.105,
+        "swing_deg": 8.339,
+        "foot_deg": 34.522,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": 6.0,
+            "foot_deg": 12.0,
+            "offset_m": 0.0491,
+            "pitch_deg": 27.755,
+            "accepted": true
+          },
+          {
+            "pass": 2,
+            "swing_deg": 8.339,
+            "foot_deg": 24.0,
+            "offset_m": -0.0,
+            "pitch_deg": 10.935,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": 8.339,
+            "foot_deg": 34.522,
+            "offset_m": -0.0,
+            "pitch_deg": -0.105,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "clip": "walk",
+        "offset_before_m": -0.1511,
+        "offset_after_m": -0.0,
+        "pitch_before_deg": 41.676,
+        "pitch_after_deg": -0.12,
+        "swing_deg": -8.358,
+        "foot_deg": 59.31,
+        "hips_shift_m": 0.0,
+        "converged": true,
+        "passes": [
+          {
+            "pass": 1,
+            "swing_deg": -16.047,
+            "foot_deg": 12.0,
+            "offset_m": 0.1313,
+            "pitch_deg": 56.578,
+            "accepted": false
+          },
+          {
+            "pass": 1,
+            "halved": true,
+            "swing_deg": -13.047,
+            "foot_deg": 6.0,
+            "offset_m": 0.0814,
+            "pitch_deg": 56.761,
+            "accepted": false
+          },
+          {
+            "pass": 2,
+            "swing_deg": -8.353,
+            "foot_deg": 12.0,
+            "offset_m": -0.0001,
+            "pitch_deg": 44.984,
+            "accepted": true
+          },
+          {
+            "pass": 3,
+            "swing_deg": -8.358,
+            "foot_deg": 24.0,
+            "offset_m": -0.0,
+            "pitch_deg": 34.665,
+            "accepted": true
+          },
+          {
+            "pass": 4,
+            "swing_deg": -8.358,
+            "foot_deg": 36.0,
+            "offset_m": -0.0,
+            "pitch_deg": 23.188,
+            "accepted": true
+          },
+          {
+            "pass": 5,
+            "swing_deg": -8.358,
+            "foot_deg": 48.0,
+            "offset_m": 0.0,
+            "pitch_deg": 11.342,
+            "accepted": true
+          },
+          {
+            "pass": 6,
+            "swing_deg": -8.358,
+            "foot_deg": 59.31,
+            "offset_m": -0.0,
+            "pitch_deg": -0.12,
+            "accepted": true
+          }
+        ]
+      }
+    ],
+    "failed_clips": [
+      "meditate"
+    ],
+    "targets": {
+      "offset_m": 0.0,
+      "pitch_deg": 0.0,
+      "leg_tolerance_m": 0.02,
+      "sole_tolerance_deg": 2.5
+    }
+  },
+  "exported_bytes": 62965756
+}

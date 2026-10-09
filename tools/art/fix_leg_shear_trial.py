@@ -3,7 +3,8 @@
 Run with Blender:
     blender --background --factory-startup \
         --python tools/art/fix_leg_shear_trial.py -- \
-        --glb tmp_probe/work.glb --report tmp_probe/leg_fix_report.json
+        --glb docs/art/cultivator_leg_shear_20261008/work.glb \
+        --report docs/art/cultivator_leg_shear_20261008/leg_fix_report.json
 """
 import json
 import sys
@@ -30,7 +31,7 @@ def parse_args():
 def main():
     args = parse_args()
     glb = Path(args["glb"])
-    report_path = Path(args.get("report", "tmp_probe/leg_fix_report.json"))
+    report_path = Path(args.get("report", "docs/art/cultivator_leg_shear_20261008/leg_fix_report.json"))
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))

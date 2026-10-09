@@ -4,8 +4,8 @@ Run with Blender:
     blender --background --factory-startup \
         --python tools/art/apply_leg_shear_fix.py -- \
         --glb src/game/actors/swordsman/models/cultivator_tripo_v9.glb \
-        --out tmp_probe/leg_fixed.glb \
-        --report tmp_probe/leg_fix_applied.json
+        --out docs/art/cultivator_leg_shear_20261008/leg_fixed.glb \
+        --report docs/art/cultivator_leg_shear_20261008/leg_fix_applied.json
 """
 import json
 import sys
@@ -32,7 +32,7 @@ def main():
     args = parse_args()
     glb = Path(args["glb"])
     out = Path(args.get("out", str(glb)))
-    report_path = Path(args.get("report", "tmp_probe/leg_fix_applied.json"))
+    report_path = Path(args.get("report", "docs/art/cultivator_leg_shear_20261008/leg_fix_applied.json"))
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))

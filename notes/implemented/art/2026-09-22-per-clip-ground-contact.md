@@ -137,7 +137,7 @@ Status: implemented
 使用者复核侧视图后确认：「它是这样斜的……人物立的时候肯定要立着」——即骨盆相对双脚
 前移 **必须** 修。这解除了上一节「没有对照基线就不修」的前提：使用者本人就是基线。
 
-进一步探针（`tmp_probe/shear_probe.py` 与 `leg_probe.py` 的结论已并入本节）定位了来源：
+进一步探针（`docs/art/cultivator_leg_shear_20261008/shear_probe.py` 与 `leg_probe.py` 的结论已并入本节）定位了来源：
 
 - **歪在绑骨基线，不在动画**：rest pose 里髋骨在 (0, 0, 0.98)、双脚在 y≈−0.15，即双脚
   在骨盆前方 0.146 m；七段 clip 的骨盆-脚偏差几乎恒等于该值（idle_guarded 全程 −0.1609
