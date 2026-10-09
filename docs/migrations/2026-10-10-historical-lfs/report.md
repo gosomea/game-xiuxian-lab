@@ -52,4 +52,8 @@ python3 tools/verify/run_all.py --with-tests
 
 已核实远端 `origin/main` 仍为 `81726d3b449efae116327a7289e96faa61bd012a`。账号剩余配额不能确认：账单 API 返回 404 并提示缺少 `user` scope，浏览器未登录。未扩展权限、修改预算、购买配额或上传对象。按当前历史需要存储约 9.08 GiB 的 LFS 内容。
 
-远端发布应先检查余量/预算、确认上传与强推，再执行 LFS 上传和指定旧 SHA 的 `--force-with-lease`。远端更新前不要 fetch/pull，否则会重新下载旧历史；远端更新后不要把旧历史分支合并回来。远端更新后，新使用者安装 LFS、重新克隆并 `git lfs pull` 后运行 Godot；已有未提交工作先另行保存，再切换新克隆。
+使用者随后决定只保留本地 LFS 并继续开发，当前不发布迁移后的历史。已设置本地 `remote.origin.pushurl=disabled://local-only-lfs`、`protocol.disabled.allow=never`；`git push --dry-run origin HEAD:refs/heads/main` 退出 128，报 `fatal: transport 'disabled' not allowed`，在连接远端之前被阻断。LFS 本地过滤器继续正常工作，GitHub 未修改。配置解除与完整备份/恢复见[上手说明](../../onboarding.md#仅本地开发与备份)。
+
+本地模式复核：notes 与 Agent 入口门禁、LFS 资产门禁、`git lfs fsck --objects --pointers refs/heads/main`、`git fsck --full` 均退出 0；364,315 bytes 的现役动作 Blender 源经本地 clean 生成与已提交指针相同的内容，再经 smudge 还原，SHA-256 与原文件一致。没有改动游戏或资产内容。
+
+若后续决定远端发布，应先检查余量/预算、确认上传与强推，再执行 LFS 上传和指定旧 SHA 的 `--force-with-lease`。远端更新前不要 fetch/pull，否则会重新下载旧历史；远端更新后不要把旧历史分支合并回来。远端更新后，新使用者安装 LFS、重新克隆并 `git lfs pull` 后运行 Godot；已有未提交工作先另行保存，再切换新克隆。

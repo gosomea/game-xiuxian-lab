@@ -17,7 +17,9 @@ python3 tools/verify/run_all.py --with-tests
 
 跨平台：设置 `GODOT` 指向 Godot 4.6 可执行文件，或将 `godot` / `godot4` 放入 PATH，然后执行 `./run.command`。若直接使用 CLI，首次运行先执行 `godot --headless --path src --import`，再 `godot --path src`。
 
-新克隆先安装 Git LFS（macOS：`brew install git-lfs`），在仓库执行 `git lfs install --local` 与 `git lfs pull`，然后导入 Godot。新 `.blend/.glb/.obj` 与任何大于 5 MB 的文件使用 LFS；历史大文件已迁入 LFS，未修改的小旧资产仍为普通 Git blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`；历史提交映射、恢复与发布步骤见[迁移记录](docs/migrations/2026-10-10-historical-lfs/report.md)。人物动作新版本使用[轻量动作源与导出流程](docs/art/cultivator_motion_library_20261010/asset_ledger.md)。
+当前按使用者选择 **仅本地开发**：迁移后的 Git/LFS 内容已在本机，正常提交和运行；暂不上传 LFS 或推送迁移分支。GitHub 仍是旧版本，不能从它恢复当前进度。备份须包含工作树和完整 `.git`（尤其 `.git/lfs/objects`）；完整副本恢复后执行 `git lfs install --local` 与 `git lfs checkout`，然后导入 Godot。[配置与备份步骤](docs/onboarding.md#仅本地开发与备份)。
+
+新 `.blend/.glb/.obj` 与任何大于 5 MB 的文件使用 LFS；历史大文件已迁入 LFS，未修改的小旧资产仍为普通 Git blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`；历史提交映射、恢复与后续发布步骤见[迁移记录](docs/migrations/2026-10-10-historical-lfs/report.md)。人物动作新版本使用[轻量动作源与导出流程](docs/art/cultivator_motion_library_20261010/asset_ledger.md)。
 
 ## 目前可以看到什么
 

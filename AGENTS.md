@@ -81,7 +81,7 @@ game-xiuxian-lab/
 
 **所有项目资产必须进入 Git。** 所有探索版本的模型、材质、贴图、动画、音频、字体、场景、预览图及其源文件和导出文件，均须放在本仓库并提交跟踪，包括停用和归档版本；不得只保存在本机外部目录、只登记路径或只提交生成脚本。禁止用忽略规则排除项目资产，提交前须核对未跟踪与被忽略文件；文件较大也不能直接漏交。可再生的引擎导入缓存、系统缓存和临时运行日志不属于源资产或交付资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
 
-**大资产使用 LFS，动作版本共享几何。** 新 `.blend` / `.glb` / `.obj` 和任何大于 5,000,000 bytes 的文件走 LFS，`git add` 前先运行属性同步命令并暂存 `.gitattributes`；历史大文件已按使用者授权迁移，未修改的小旧资产保留普通 blob。纯动作版本用相对链接的 Blender 源与独立 AnimationLibrary GLB，共享现役人物网格、贴图与 rest。`.blend1` 归临时自动备份，新的不提交，已有跟踪文件保留。依据：[资产增长方案](notes/implemented/process/2026-10-09-repository-binary-growth.md)、[历史 LFS 迁移](notes/implemented/process/2026-10-10-historical-lfs-migration.md)。
+**大资产使用 LFS，动作版本共享几何。** 新 `.blend` / `.glb` / `.obj` 和任何大于 5,000,000 bytes 的文件走 LFS，`git add` 前先运行属性同步命令并暂存 `.gitattributes`；历史大文件已按使用者授权迁移，未修改的小旧资产保留普通 blob。当前按使用者选择仅本地开发：不上传 LFS、不推送迁移分支、不 fetch/pull 旧远端；不删除 `.git/lfs/objects` 或运行 `git lfs prune`，备份包含完整 `.git` 与工作树。纯动作版本用相对链接的 Blender 源与独立 AnimationLibrary GLB，共享现役人物网格、贴图与 rest。`.blend1` 归临时自动备份，新的不提交，已有跟踪文件保留。依据：[资产增长方案](notes/implemented/process/2026-10-09-repository-binary-growth.md)、[历史 LFS 迁移](notes/implemented/process/2026-10-10-historical-lfs-migration.md)。
 
 ### 约定（工程层）
 
