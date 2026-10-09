@@ -422,6 +422,7 @@ def case_lfs_staged_raw_blob(root: Path) -> tuple[str, Path]:
     subprocess.run(["git", "-C", str(root), "add", "new.glb"], check=True)
     subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
                    cwd=REPO_ROOT, check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "add", ".gitattributes"], check=True)
     return "已登记但暂存的 GLB 仍是普通 blob", root
 
 
@@ -444,10 +445,33 @@ def case_lfs_new_backup(root: Path) -> tuple[str, Path]:
     subprocess.run(["git", "-C", str(root), "add", "new.blend1"], check=True)
     subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
                    cwd=REPO_ROOT, check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "add", ".gitattributes"], check=True)
     return "新增 Blender 自动备份被暂存", root
 
 
+def case_lfs_unregistered_other_file(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    (root / "large.fbx").write_bytes(b"f" * 5_000_001)
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    attrs = root / ".gitattributes"
+    attrs.write_text("\n".join(line for line in attrs.read_text().splitlines()
+                               if "large.fbx" not in line) + "\n")
+    return "大于 5 MB 的其他后缀文件未登记 LFS", root
+
+
+def case_lfs_staged_attributes_stale(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    (root / ".gitattributes").write_text("# stale rules\n")
+    subprocess.run(["git", "-C", str(root), "add", ".gitattributes"], check=True)
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    return "工作树规则已同步但暂存的属性仍旧", root
+
+
 CASES = [
+    ("verify_lfs_assets.py", case_lfs_unregistered_other_file),
+    ("verify_lfs_assets.py", case_lfs_staged_attributes_stale),
     ("verify_lfs_assets.py", case_lfs_unregistered_png),
     ("verify_lfs_assets.py", case_lfs_staged_raw_blob),
     ("verify_lfs_assets.py", case_lfs_modified_legacy),

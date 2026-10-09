@@ -17,7 +17,7 @@ python3 tools/verify/run_all.py --with-tests
 
 跨平台：设置 `GODOT` 指向 Godot 4.6 可执行文件，或将 `godot` / `godot4` 放入 PATH，然后执行 `./run.command`。若直接使用 CLI，首次运行先执行 `godot --headless --path src --import`，再 `godot --path src`。
 
-新克隆先安装 Git LFS（macOS：`brew install git-lfs`），在仓库执行 `git lfs install --local` 与 `git lfs pull`，然后导入 Godot。新二进制资产使用 LFS，未修改的旧资产仍为普通 Git blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`；人物动作新版本使用[轻量动作源与导出流程](docs/art/cultivator_motion_library_20261010/asset_ledger.md)。
+新克隆先安装 Git LFS（macOS：`brew install git-lfs`），在仓库执行 `git lfs install --local` 与 `git lfs pull`，然后导入 Godot。新 `.blend/.glb/.obj` 与任何大于 5 MB 的文件使用 LFS；历史大文件已迁入 LFS，未修改的小旧资产仍为普通 Git blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`；历史提交映射、恢复与发布步骤见[迁移记录](docs/migrations/2026-10-10-historical-lfs/report.md)。人物动作新版本使用[轻量动作源与导出流程](docs/art/cultivator_motion_library_20261010/asset_ledger.md)。
 
 ## 目前可以看到什么
 

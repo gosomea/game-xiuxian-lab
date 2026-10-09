@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run before git add: register large PNGs and promote modified legacy assets to LFS."""
+"""Run before git add: register all files above 5 MB and promote modified legacy assets to LFS."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ def main() -> int:
             return 1
     else:
         output.write_text(expected, encoding="utf-8")
-    print(f"OK LFS attributes: {len(required)} new or modified assets require pointers")
+    print(f"OK LFS attributes: {len(required)} assets require pointers")
     return 0
 
 

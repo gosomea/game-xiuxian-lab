@@ -47,7 +47,7 @@ game-xiuxian-lab/
 | `godot --headless --path src tests/test_runner.tscn` | 只跑运行时测试 |
 | `python3 tools/gen/gen_vocabulary_index.py` | 重生成词汇索引（改了 `src/data/vocabulary/` 后必跑） |
 | `python3 tools/gen/gen_capability_catalog.py` | 重生成能力目录（改了能力源码后必跑） |
-| `python3 tools/assets/sync_lfs_attributes.py` | 资产暂存前同步 LFS 属性；新大 PNG 登记、改动旧资产撤销普通 blob 例外 |
+| `python3 tools/assets/sync_lfs_attributes.py` | 资产暂存前同步 LFS 属性；登记所有 >5 MB 文件、改动小旧资产撤销普通 blob 例外 |
 | `godot --headless --path src --import` | 生成全局类缓存（首次 clone 后必跑） |
 
 ## Agent 上手顺序
@@ -81,7 +81,7 @@ game-xiuxian-lab/
 
 **所有项目资产必须进入 Git。** 所有探索版本的模型、材质、贴图、动画、音频、字体、场景、预览图及其源文件和导出文件，均须放在本仓库并提交跟踪，包括停用和归档版本；不得只保存在本机外部目录、只登记路径或只提交生成脚本。禁止用忽略规则排除项目资产，提交前须核对未跟踪与被忽略文件；文件较大也不能直接漏交。可再生的引擎导入缓存、系统缓存和临时运行日志不属于源资产或交付资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
 
-**后续大资产使用 LFS，动作版本共享几何。** 新 `.blend` / `.glb` / `.obj` 与大于 5 MB 的 PNG 走 LFS，`git add` 前先运行属性同步命令；未修改的旧文件保留普通 blob，不迁移历史。纯动作版本用相对链接的 Blender 源与独立 AnimationLibrary GLB，共享现役人物网格、贴图与 rest。`.blend1` 归临时自动备份，新的不提交，已有跟踪文件保留。依据：[资产增长方案](notes/implemented/process/2026-10-09-repository-binary-growth.md)。
+**大资产使用 LFS，动作版本共享几何。** 新 `.blend` / `.glb` / `.obj` 和任何大于 5,000,000 bytes 的文件走 LFS，`git add` 前先运行属性同步命令并暂存 `.gitattributes`；历史大文件已按使用者授权迁移，未修改的小旧资产保留普通 blob。纯动作版本用相对链接的 Blender 源与独立 AnimationLibrary GLB，共享现役人物网格、贴图与 rest。`.blend1` 归临时自动备份，新的不提交，已有跟踪文件保留。依据：[资产增长方案](notes/implemented/process/2026-10-09-repository-binary-growth.md)、[历史 LFS 迁移](notes/implemented/process/2026-10-10-historical-lfs-migration.md)。
 
 ### 约定（工程层）
 

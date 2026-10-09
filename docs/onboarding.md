@@ -31,6 +31,6 @@ X/Z 是地面，Y 是高度。正交相机与场景环境可在编辑器中直�
 
 原始素材、派生资源、脚本、场景及 Godot `.import` 描述都应入本项目独立 Git 仓库；`.godot/`、系统文件和运行日志可重建。保留 Agent 入口的相对符号链接。Blender 的新 `.blend1` 自动备份不提交，已有跟踪备份保留。
 
-安装 Git LFS 后在本仓执行 `git lfs install --local` 与 `git lfs pull`，再导入 Godot。新 GLB/Blender/OBJ 与大于 5 MB 的 PNG 使用 LFS；未修改的旧文件保留普通 blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`，随后将 `.gitattributes` 与资产一起 `git add`。检查入口包含 LFS 属性与指针门禁；不要用全仓 `git add --renormalize .` 转换历史资产。
+安装 Git LFS 后在本仓执行 `git lfs install --local` 与 `git lfs pull`，再导入 Godot。新 GLB/Blender/OBJ 与任何大于 5 MB 的文件使用 LFS；历史大文件已迁入 LFS，未修改的小旧文件保留普通 blob。资产暂存前运行 `python3 tools/assets/sync_lfs_attributes.py`，随后将 `.gitattributes` 与资产一起 `git add`。检查入口包含 LFS 属性与指针门禁；历史迁移已保留原内容并改写提交号；已有克隆的切换与恢复见[迁移记录](migrations/2026-10-10-historical-lfs/report.md)，不要把旧分支合回新历史。
 
 纯动作版本使用[轻量源与独立动作库](art/cultivator_motion_library_20261010/asset_ledger.md)，共享网格、贴图和 rest。改网格或骨架才建立新的共享模型版本。

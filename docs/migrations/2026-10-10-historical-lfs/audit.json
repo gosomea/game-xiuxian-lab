@@ -1,0 +1,16 @@
+{
+  "old_head": "c3d73280832650c24910be4eca52fc261c318f03",
+  "rewritten_head": "2c77f5d813c9c14e32bae0f7442cf27902b8d598",
+  "commits_checked": 86,
+  "path_mode_content_entries_checked": 111470,
+  "unchanged_entries": 104362,
+  "converted_entries": 7108,
+  "unique_converted_blobs": 247,
+  "unique_converted_bytes": 9747682956,
+  "lfs_objects_hashed": 250,
+  "threshold_bytes": 5000000,
+  "commit_metadata_messages_and_graph_preserved": true,
+  "paths_modes_and_content_preserved": true,
+  "sha256_and_original_git_blob_identity_verified": true,
+  "object_map_sha256": "98c1a89eaeb9f1141bf61e508e8f31a678b0d9fce56795fcd0b8b5994d28014c"
+}

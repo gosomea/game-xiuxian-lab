@@ -1,0 +1,4 @@
+Sorting commits: ..., done.
+Rewriting commits: 100% (86/86), done.
+Updating refs: ..., done.
+Checkout: ..., done.
