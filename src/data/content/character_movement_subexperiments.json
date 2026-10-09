@@ -8,7 +8,7 @@
       "title": "镜头实验室",
       "stage": "灰盒对比场",
       "question": "跟随、缓动、死区、前视、缩放、旋转与遮挡怎样配合移动？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/camera_lab.tscn"
     },
     {
@@ -16,7 +16,7 @@
       "title": "人物动作工作台",
       "stage": "空白动作棚",
       "question": "待机、起步、跑动、转身、跳跃、御剑、降落及其过渡是否清楚？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/motion_stage.tscn"
     },
     {
@@ -24,7 +24,7 @@
       "title": "地形接触训练场",
       "stage": "物理训练场",
       "question": "斜坡、台阶、墙角、窄路和边缘上的移动与碰撞是否稳定？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/ground_contact_course.tscn"
     },
     {
@@ -32,7 +32,7 @@
       "title": "御剑飞行训练场",
       "stage": "立体路线场",
       "question": "起飞、升降、悬停、穿越、转向和落点选择是否可控？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/sword_flight_course.tscn"
     },
     {
@@ -40,7 +40,7 @@
       "title": "状态切换压力场",
       "stage": "可视化压力场",
       "question": "能力切换、失焦、重置、碰撞和边缘时机是否正确清账？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/state_transition_lab.tscn"
     },
     {
@@ -48,7 +48,7 @@
       "title": "移动庭院",
       "stage": "已有基线",
       "question": "小范围地面移动和旧资产呈现是否仍然成立？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/movement_garden.tscn"
     },
     {
@@ -56,7 +56,7 @@
       "title": "群山宗门",
       "stage": "已有综合场景",
       "question": "三项移动能力在完整空间与美术中的组合体验是否成立？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/mountain_realm.tscn"
     },
     {
@@ -64,7 +64,7 @@
       "title": "青玉纸白样板",
       "stage": "美术方向样板",
       "question": "青玉瓦 / 暖木 / 靛青角色 / 水墨远景的组合在实机中的观感与可读性是否成立？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/jade_paper_sample.tscn"
     },
     {
@@ -72,7 +72,7 @@
       "title": "水墨湖岸样板",
       "stage": "美术方向样板",
       "question": "纸色、墨瓦、淡粉树与现役修士，在步行和御剑时是否协调？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/ink_lakeside_sample.tscn"
     },
     {
@@ -80,7 +80,7 @@
       "title": "西湖夕照 · 穿云",
       "stage": "最终综合场景",
       "question": "完整移动与视角在杭州西湖、夕阳和御剑穿云中是否协调？",
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/west_lake_sunset.tscn"
     }
   ]

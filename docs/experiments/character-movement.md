@@ -1,6 +1,16 @@
 # 实验：角色移动与庭院呈现
 
-> 以下主要是 2026-09-18 的阶段快照。当前共享人物已改为七段骨骼动作，使用者认可基本动作；现役资产与试玩证据见[角色台账](../art/cultivator_aligned_motion_20260927/asset_ledger.md)和[动作验收](../playtest/2026-09-27-aligned-motion/report.md)。下文“静态模型”“没有骨骼动画”等描述仅指当时状态。
+## 当前结论（2026-10-10）
+
+使用者确认移动探索完成。顶层模块与十项子实验均为 `ready`，当前可供剑法等组合实验复用；保留全部场景与源资产，后续仍可调整。范围为平面移动、疾跑、跳跃、御剑、四模式镜头、七段人物动作，以及十项局部与综合场景。现役资产与证据见[角色台账](../art/cultivator_upright_motion_20261009/asset_ledger.md)和[动作验收](../playtest/2026-10-09-upright-motion/report.md)。
+
+装配符合 Component 共享数据、Capability 行为、宿主唯一提交的方案。跳跃与御剑是独立能力；疾跑是平面移动内部的速度选择。`ActorAssembly` 支持移动/跳跃/御剑子集的整组安装与卸载，改配置须先卸载再安装；当前没有逐项热切换的统一接口，整组重装会结束御剑。跳跃节点可单独移除，角色随后不能发起跳跃；已经腾空的角色仍按基础重力落地。镜头独立于角色，可运行中切已装配模式或通过 active 交接 rig。完整边界见[收口决策](../../notes/implemented/gameplay/2026-09-18-character-movement-subexperiments.md)。
+
+嵌入 Game 视图的人工验收、最终动作与美术质量、连续手感仍按原报告保留未验证边界；本次完成状态不新增这些证据。
+
+## 2026-09-18 阶段记录
+
+以下保留原阶段快照。“静态模型”“没有骨骼动画”、七项子实验与 exploring 等描述仅指当时状态。
 
 - 日期：2026-09-18。
 - 场景：`res://levels/experiments/character_movement/movement_lab_hub.tscn`（当前入口，子实验目录）；七个子实验场景 `camera_lab.tscn`（镜头实验室）、`motion_stage.tscn`（人物动作工作台）、`ground_contact_course.tscn`（地形接触训练场）、`sword_flight_course.tscn`（御剑飞行训练场）、`state_transition_lab.tscn`（状态切换压力场）、`movement_garden.tscn`（小场景回归）、`mountain_realm.tscn`（群山宗门组合验收）。
@@ -12,7 +22,7 @@
 - 边界（群山场景）：没有攻击、木桩、命中结算或战斗 UI；角色仍是静态模型随方向转身，没有走路或骨骼动画。碰撞覆盖五峰碰撞壳（0→台顶侧壁）、75 个布局盒（地形 / 台阶 / 建筑 / 屋顶 / 近地道具）与 bounds 四墙 + 天花；远山与云为装饰无碰撞。剑法与战斗组织需要单独讨论。
 - 小场景回归边界（movement_garden）：只覆盖场地边界、两个障碍代理与庭院视觉；灯、竹与亭仍是装饰。
 
-角色移动保持 exploring，剑法恢复 planned。此前近身范围练剑场已被否决并撤回，不能作为后续设计的默认基线。
+该阶段角色移动为 exploring，剑法恢复 planned。此前近身范围练剑场已被否决并撤回，不能作为后续设计的默认基线。
 
 ## 本轮结论（2026-09-18）
 

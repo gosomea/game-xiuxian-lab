@@ -45,7 +45,7 @@
         "移动子实验目录与返回路径"
       ],
       "depends_on": [],
-      "status": "exploring",
+      "status": "ready",
       "scene": "res://levels/experiments/character_movement/movement_lab_hub.tscn"
     },
     {
