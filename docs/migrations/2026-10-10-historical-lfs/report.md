@@ -1,6 +1,6 @@
 # 历史大文件 LFS 迁移 · 2026-10-10
 
-依据：[迁移决策](../../../notes/implemented/process/2026-10-10-historical-lfs-migration.md)。使用者授权本地历史迁移；远端上传与强推尚未执行。
+依据：[迁移决策](../../../notes/implemented/process/2026-10-10-historical-lfs-migration.md)。使用者授权本地历史迁移；远端上传与强推尚未执行。主工作区切换会采用已验收的新 Git 元数据，源资产保持真实文件。
 
 ## 迁移与完整性
 
@@ -39,7 +39,11 @@ git add .gitattributes tools/assets/lfs_legacy_blobs.json
 python3 tools/verify/run_all.py --with-tests
 ```
 
-独立副本清理旧引用/reflog、重新打包后的空间统计将在最终本地接管前记录。原数据库始终保留。
+独立副本清理旧引用/reflog 后重新打包：原 pack+索引 4,169,773,597 bytes（3.883 GiB），新 pack+索引 718,522,862 bytes（685.24 MiB），减少 82.77%。LFS 对象共 251 个、9,748,713,045 bytes（9.079 GiB）。迁移后历史内普通 blob 大于阈值的数量为 0。[空间统计](storage.json)
+
+迁移副本移除了旧本地引用与 reflog，记录见[引用清单](removed-local-refs.json)；原数据库完整保留在独立备份，没有作为当前仓库的分支留存。实际本地接管时还保留 `live-before-adoption.git`，包含切换前主工作区的最新元数据。
+
+真实资产恢复后运行 Godot 导入，再跑原始运行时测试：2172/0，日志无 SCRIPT ERROR/ERROR/FAIL；见[导入输出](import.txt)、[运行输出](runtime.txt)。重新打包后的 `git fsck --full` 退出码为 0，见[完整性输出](git-fsck.txt)。
 
 ## 发布边界
 

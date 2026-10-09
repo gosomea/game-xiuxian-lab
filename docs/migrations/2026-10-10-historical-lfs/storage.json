@@ -1,0 +1,10 @@
+{
+  "before_pack_bytes": 4169773597,
+  "after_pack_bytes": 718522862,
+  "pack_reduction_percent": 82.77,
+  "lfs_object_count": 251,
+  "lfs_content_bytes": 9748713045,
+  "ordinary_history_blobs_above_threshold": 0,
+  "local_main_only": true,
+  "remote_main_expected": "81726d3b449efae116327a7289e96faa61bd012a"
+}

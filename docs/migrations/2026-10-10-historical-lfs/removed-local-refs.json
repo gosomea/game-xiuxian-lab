@@ -1,0 +1,30 @@
+[
+  {
+    "ref": "refs/codex/snapshots/6c62bfc883bd2de676ca2725d8891ffc18cbc419",
+    "oid": "720453a8f313b543bc1617a5f9e2d0953214753c"
+  },
+  {
+    "ref": "refs/codex/turn-diffs/captures/1791565578040/206dfcbd-157a-4cd7-afec-9d529ee82ad5/base",
+    "oid": "1292f92ec610b83c523832a2ea64e2ddea008827"
+  },
+  {
+    "ref": "refs/codex/turn-diffs/checkpoints/817cac07c0de90ebdde0ced24186d5d5/ed0c1a63c4abbc5084a73d2799d7fb13/1791565021420/55ab8f0c-15d2-435f-84e1-7cbf328fb34e",
+    "oid": "1292f92ec610b83c523832a2ea64e2ddea008827"
+  },
+  {
+    "ref": "refs/codex/turn-diffs/checkpoints/b8897e36aeaee7f85a24c837848c6a3d/e72dbad3dd1c37dfba3b5d3480c08233/1791565128669/492c7f5d-2a4a-4ddf-a410-6a5bf7ac7d6c",
+    "oid": "1292f92ec610b83c523832a2ea64e2ddea008827"
+  },
+  {
+    "ref": "refs/codex/turn-diffs/checkpoints/c7448a9fa54b658439eeaa0bf1b811e1/99ce3e7b29a562282703652bd39b7514/1791299507048/132137ef-34ea-48f5-b4e9-5261c7d51501",
+    "oid": "656e71179a0bf98df877ce975a1177d873b01481"
+  },
+  {
+    "ref": "refs/remotes/origin/HEAD",
+    "oid": "81726d3b449efae116327a7289e96faa61bd012a"
+  },
+  {
+    "ref": "refs/remotes/origin/main",
+    "oid": "81726d3b449efae116327a7289e96faa61bd012a"
+  }
+]
