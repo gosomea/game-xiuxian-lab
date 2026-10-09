@@ -10,7 +10,13 @@ extends RefCounted
 
 const SWORDSMAN_SCENE := "res://game/actors/swordsman/swordsman.tscn"
 const ACTIVE_VISUAL_SCENE := "res://game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn"
-const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_balanced_motion_20261008_swing.glb"
+const ACTIVE_MODEL := "res://game/actors/swordsman/models/cultivator_upright_motion_20261009.glb"
+## 上身后仰、双手垂在身后的旧版本；矢状面判据必须拒绝它。
+const LEANING_MODEL := "res://game/actors/swordsman/models/cultivator_balanced_motion_20261008_swing.glb"
+## idle 中立位判据（米 / 度）：颈与肩线在骨盆正上方，手腕落在大腿侧。
+const UPRIGHT_OFFSET_LIMIT := 0.03
+const UPRIGHT_PITCH_LIMIT := 2.5
+const WRIST_AHEAD_RANGE := Vector2(-0.03, 0.06)
 const PREVIEW_DISPLAY := "res://game/systems/motion_preview/motion_preview_display.gd"
 const SAMPLE_SCRIPT := "res://levels/experiments/character_movement/jade_paper_sample.gd"
 const SAMPLE_SCENE := "res://levels/experiments/character_movement/jade_paper_sample.tscn"
@@ -30,6 +36,7 @@ static func run(t) -> void:
 	_assert_sprint_ladder(t)
 	_assert_optional_states(t)
 	_assert_facing_contract(t)
+	_assert_upright_neutral(t)
 
 
 ## 默认 prefab 必须直达 全新修仙动作，且保持 Visual 这个公开节点名（FlightBundle 与 Swordsman 都依赖它）。
@@ -336,6 +343,87 @@ static func _assert_facing_contract(t) -> void:
 	if visual != null:
 		t.assert_true(absf(visual.rotation.y) < 0.0001 or is_finite(visual.rotation.y),
 			"Visual 朝向初始为有限值（%.4f）" % visual.rotation.y)
+
+
+## 站立中立位：头前探会抵消胸背后仰，所以量颈与肩线而不是头；摆臂外展量具不看前后，
+## 手垂在身后要单独判。
+static func _assert_upright_neutral(t) -> void:
+	var active := _idle_sagittal(t, ACTIVE_MODEL)
+	if active.is_empty():
+		return
+	for key in ["neck", "shoulder"]:
+		t.assert_true(absf(float(active[key])) <= UPRIGHT_OFFSET_LIMIT,
+			"idle %s 在骨盆正上方（%.3f m）" % [key, float(active[key])])
+	t.assert_true(absf(float(active["trunk_pitch"])) <= UPRIGHT_PITCH_LIMIT,
+		"idle 骨盆到颈不后仰也不前栽（%.2f°）" % float(active["trunk_pitch"]))
+	for key in ["left_wrist", "right_wrist"]:
+		var ahead := float(active[key])
+		t.assert_true(ahead >= WRIST_AHEAD_RANGE.x and ahead <= WRIST_AHEAD_RANGE.y,
+			"idle %s 落在大腿侧（骨盆前 %.3f m）" % [key, ahead])
+
+	var leaning := _idle_sagittal(t, LEANING_MODEL)
+	if leaning.is_empty():
+		return
+	t.assert_true(not _upright(leaning),
+		"负向控制：判据拒绝上身后仰、手在身后的 20261008_swing（颈 %.3f m，手腕 %.3f / %.3f m）"
+		% [float(leaning["neck"]), float(leaning["left_wrist"]), float(leaning["right_wrist"])])
+
+
+static func _upright(sample: Dictionary) -> bool:
+	if absf(float(sample["neck"])) > UPRIGHT_OFFSET_LIMIT:
+		return false
+	if absf(float(sample["shoulder"])) > UPRIGHT_OFFSET_LIMIT:
+		return false
+	if absf(float(sample["trunk_pitch"])) > UPRIGHT_PITCH_LIMIT:
+		return false
+	for key in ["left_wrist", "right_wrist"]:
+		var ahead := float(sample[key])
+		if ahead < WRIST_AHEAD_RANGE.x or ahead > WRIST_AHEAD_RANGE.y:
+			return false
+	return true
+
+
+## idle 首帧以骨盆为原点、沿脚尖方向的前后距离（米）与骨盆到颈的前倾角（度）。
+static func _idle_sagittal(t, model_path: String) -> Dictionary:
+	var packed := load(model_path) as PackedScene
+	t.assert_true(packed != null, "%s 可加载" % model_path)
+	if packed == null:
+		return {}
+	var model := packed.instantiate() as Node3D
+	t.track(model)
+	var skeletons := model.find_children("*", "Skeleton3D", true, false)
+	var players := model.find_children("*", "AnimationPlayer", true, false)
+	if skeletons.size() != 1 or players.size() != 1:
+		t.assert_true(false, "%s 需要唯一骨架与播放器" % model_path)
+		return {}
+	var skeleton := skeletons[0] as Skeleton3D
+	var player := players[0] as AnimationPlayer
+	player.play("idle")
+	player.seek(0.0, true)
+	var names := ["Hips", "Neck", "LeftArm", "RightArm", "LeftHand", "RightHand",
+		"LeftFoot", "RightFoot", "LeftToeBase", "RightToeBase"]
+	var at := {}
+	for bone_name in names:
+		# Godot 的 glTF 导入把骨名里的冒号规范成下划线。
+		var index := skeleton.find_bone("mixamorig_" + bone_name)
+		t.assert_true(index >= 0, "%s 有骨骼 mixamorig_%s" % [model_path, bone_name])
+		if index < 0:
+			return {}
+		# 骨骼全局姿态是 Skeleton3D 局部坐标；骨架节点带缩放与偏移，必须乘节点变换。
+		at[bone_name] = skeleton.global_transform * skeleton.get_bone_global_pose(index).origin
+	var forward: Vector3 = (at["LeftToeBase"] + at["RightToeBase"]
+		- at["LeftFoot"] - at["RightFoot"]) * 0.5
+	forward.y = 0.0
+	forward = forward.normalized()
+	var hips: Vector3 = at["Hips"]
+	var neck: Vector3 = at["Neck"] - hips
+	return {
+		"neck": neck.dot(forward),
+		"shoulder": ((at["LeftArm"] + at["RightArm"]) * 0.5 - hips).dot(forward),
+		"trunk_pitch": rad_to_deg(atan2(neck.dot(forward), neck.y)),
+		"left_wrist": (at["LeftHand"] - hips).dot(forward),
+		"right_wrist": (at["RightHand"] - hips).dot(forward),
+	}
 
 
 static func _shared_sprint_speed() -> float:

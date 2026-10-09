@@ -96,24 +96,24 @@ game-xiuxian-lab/
 - 本文件超过 150 行时：relocating（下沉子树文件）→ condense → 显式 raise，按此顺序。
 - 不用比喻，不写无法机械或人工核验的句子。
 
-## 当前状态（2026-10-08）
+## 当前状态（2026-10-09）
 
 角色移动模块为 exploring。现役人物网格、材质与 22 骨蒙皮来自 `cultivator_tripo_v9`；
-普通站立、待命、御剑和静修沿用新制动作；步行来自早期人体动作重定向，前摆送到胸前且前臂保持站立外展，
-疾跑仍是收窄后的摆臂，跳跃为正向双脚跳跃加对称手臂上摆。现役资产为
-`src/game/actors/swordsman/models/cultivator_balanced_motion_20261008_swing.glb`，
+除疾跑外，各段上身已扶正到骨盆正上方；站立、待命、御剑手腕落在大腿侧；步行来自早期人体动作重定向，
+围绕新中立位前后摆臂且外展保持站立，疾跑仍是收窄后的摆臂，跳跃为正向双脚跳跃加对称手臂上摆。现役资产为
+`src/game/actors/swordsman/models/cultivator_upright_motion_20261009.glb`，
 `src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
 普通走速 2.0、Shift 疾跑 4.2 m/s，御剑 22、升降 12 m/s；`RUN_SPEED_MPS = 3.0`；七段 clip 为
-`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_balanced_motion_20261008_swing/cultivator_balanced_motion_20261008_swing.blend` 内嵌三张贴图和全部七段动作；
+`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_upright_motion_20261009/cultivator_upright_motion_20261009.blend` 内嵌三张贴图和全部七段动作；
 旧人物候选、动作中间件与专属场景已按使用者要求从当前树清理，不再是回退资源。
 新动作依据见 [完整人体动作 note](notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)，
-现役资产台账见 `docs/art/cultivator_balanced_motion_20261008_swing/asset_ledger.md`；清理依据见
+现役资产台账见 `docs/art/cultivator_upright_motion_20261009/asset_ledger.md`；清理依据见
 [旧人物清理 note](notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)。
 
 骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`
 逐 clip 逐帧量蒙皮鞋底，用 `tools/art/measure_aligned_motion_geometry.py` 查朝向与摆臂，用
-`measure_human_motion_posture.py` 查上身倾斜；
-重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
+`measure_human_motion_posture.py` 查上身倾斜（它量头，头前探会掩盖胸背后仰；颈、肩线与站立手腕的前后位置由
+`src/tests/test_cultivator_motion_20260927_visual.gd` 的矢状面判据把关）；重导出后先运行 `godot --headless --path src --import`，再执行运行时测试。原 v9 阶段测量结果与修法
 见 [贴地 note](notes/implemented/art/2026-09-22-per-clip-ground-contact.md)，当前动作数据以新台账为准。
 
 顶层移动入口为 `src/levels/experiments/character_movement/movement_lab_hub.tscn`，十项子实验均可运行：镜头、动作工作台、地形接触、御剑飞行、状态切换、移动庭院、群山宗门、青玉纸白样板、水墨湖岸样板和西湖夕照综合场景。每项均可返回移动目录；默认人物与动作预览共用现役视觉场景。移动仍由平面移动、跳跃、御剑三能力和共享 CameraRig 组合，场景不定义战斗规则。`orbit` 的右键捕获与释放有自动验收，编辑器嵌入 Game 视图的人工验收仍未做；依据见 [镜头组合与 RMB 归属验收](docs/playtest/2026-09-18-camera-combo-rmb.md)。剑法与其它六个模块仍为 planned；以 `src/data/content/experiments.json` 为状态真相源。全局启动入口仍为 `src/levels/lab_hub.tscn`，空白基底为 `src/levels/empty_stage.tscn`。运行方式见 README。
