@@ -1,0 +1,42 @@
+{
+  "domain": "heavenly_sword_rain",
+  "description": "天降剑雨独立叶子包的纯数据与表现契约。依据 notes/implemented/gameplay/2026-10-10-sword-spell-exploration.md。",
+  "components": {
+    "HeavenlySwordRainComponent": {
+      "description": "选区、上空法阵、分批降剑、剑尖接地与散阵的数据；由 HeavenlySwordRain 推进，View 只读。",
+      "script": "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain_component.gd",
+      "fields": {
+        "sword_count": "参数：每次剑雨的剑数，默认 24",
+        "batch_count": "参数：落剑批数，默认 3，能力至少使用三批",
+        "region_radius": "参数：地面选区半径，米",
+        "ceiling_height": "参数：上空法阵离阵心地面的高度，米",
+        "gather_time": "参数：最短聚剑时间，秒；快速松手仍成阵",
+        "hover_time": "参数：成阵完成后的悬停时间，秒",
+        "batch_interval": "参数：相邻落剑批次的间隔，秒",
+        "sword_stagger": "参数：同批各剑的小错峰间隔，秒",
+        "fall_time": "参数：单剑加速下降所用时间，秒",
+        "linger_time": "参数：剑尖接地后的停留时间，秒",
+        "fade_time": "参数：落剑与法环收束消散时间，秒",
+        "cooldown": "参数：散阵后的再次施法等待时间，秒",
+        "sword_scale": "参数：灵剑整体尺寸；尖端偏移随尺寸同步",
+        "hit_radius": "参数：单剑连续扫掠的半宽，米",
+        "follow_rate": "参数：选区跟随鼠标地面的平滑速率，每秒",
+        "bend_distance": "参数：单剑落下时轻微收拢侧弧的幅度，米",
+        "phase": "状态：idle / gather / hover / rain / dissipate",
+        "progress": "状态：当前阶段进度 0..1",
+        "ground_center": "状态：世界地面选区中心，释放后固定",
+        "ground_normal": "状态：选区中心地面法线",
+        "ceiling_center": "状态：世界上空法阵中心",
+        "ring_alpha": "表现：地面与空中法环的透明度 0..1",
+        "ring_angle": "表现：空中法环转角，弧度",
+        "released": "状态：选区是否已经锁定；松手立即为 true",
+        "swords": "表现数组：slot / batch / tip / forward / scale / alpha / state / trail / target；tip 为真实剑尖",
+        "impacts": "表现数组：position / normal / progress / alpha；接地小冲击环，不承担规则",
+        "batches_launched": "统计：本次已经开始落剑的批数，结束后保留供观察",
+        "swords_landed": "统计：本次实际接地的剑数，结束后保留供观察"
+      },
+      "signals": {},
+      "added": "2026-10-10"
+    }
+  }
+}

@@ -59,6 +59,29 @@
         "_should_deactivate",
         "_on_deactivated"
       ],
+      "class": "HeavenlySwordRain",
+      "domain": "abilities",
+      "package": "abilities/heavenly_sword_rain",
+      "parameters": [],
+      "reads_components": [
+        "HeavenlySwordRainComponent",
+        "SwordCastComponent"
+      ],
+      "script": "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain.gd",
+      "signals": [],
+      "summary": "选区→上空聚剑→停悬→三批加速落剑→尖端接地→散阵。",
+      "test": "src/game/abilities/heavenly_sword_rain/test_heavenly_sword_rain.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
       "class": "HeavenlySwordWheel",
       "domain": "abilities",
       "package": "abilities/heavenly_sword_wheel",
@@ -289,7 +312,7 @@
       "uses_tags": []
     }
   ],
-  "count": 12,
+  "count": 13,
   "domains": [
     "abilities",
     "actors",
@@ -298,6 +321,7 @@
   "packages": [
     "abilities/flying_sword_strike",
     "abilities/giant_sword_descent",
+    "abilities/heavenly_sword_rain",
     "abilities/heavenly_sword_wheel",
     "abilities/jump",
     "abilities/sword_array",
