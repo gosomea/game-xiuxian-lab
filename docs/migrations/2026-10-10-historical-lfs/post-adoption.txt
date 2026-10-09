@@ -1,0 +1,35 @@
+2026-10-10 主工作区接管复核
+workspace: /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab
+verified_head: a9855aec1a58b8f1eb3e9f6726eca81593b85df2
+original_live_git_backup: /Users/yuqixian/.codex/backups/game-xiuxian-lab/20261010-lfs-migration-dbbcfb5-33174bf8/live-before-adoption.git
+
+$ git status --short
+(no output; exit 0)
+
+$ git count-objects -vH
+count: 21
+size: 84.00 KiB
+in-pack: 4862
+packs: 1
+size-pack: 685.24 MiB
+prune-packable: 0
+garbage: 0
+size-garbage: 0 bytes
+(exit 0)
+
+$ git for-each-ref --format='%(refname) %(objectname)'
+refs/heads/main a9855aec1a58b8f1eb3e9f6726eca81593b85df2
+(exit 0)
+
+$ python3 tools/verify/verify_lfs_assets.py
+OK   verify-lfs-assets — 1583 assets, 47 use LFS; small legacy blobs preserved
+(exit 0)
+
+$ git lfs fsck --objects --pointers refs/heads/main
+Git LFS fsck OK
+(exit 0)
+
+$ git fsck --full
+(no output; exit 0)
+
+本记录之后的文档提交不改变资产内容与迁移结果。

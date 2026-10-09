@@ -1,6 +1,6 @@
 # 历史大文件 LFS 迁移 · 2026-10-10
 
-依据：[迁移决策](../../../notes/implemented/process/2026-10-10-historical-lfs-migration.md)。使用者授权本地历史迁移；远端上传与强推尚未执行。主工作区切换会采用已验收的新 Git 元数据，源资产保持真实文件。
+依据：[迁移决策](../../../notes/implemented/process/2026-10-10-historical-lfs-migration.md)。使用者授权本地历史迁移；远端上传与强推尚未执行。主工作区已采用验收通过的新 Git 元数据，源资产保持真实文件。
 
 ## 迁移与完整性
 
@@ -22,6 +22,7 @@
 - `original.git`：迁移前 `dbbcfb5` 的完整 Git 元数据，包括引用、reflog、不可达对象与已有 LFS 内容。
 - `before-migration.git`：加入迁移决策检查点后的完整旧 Git 元数据，是逐提交审计输入。
 - `migration/`：独立迁移与验收工作副本。
+- `live-before-adoption.git`：主工作区切换前的完整 Git 元数据，包含初次备份后产生的本地元数据。
 
 备份采用 APFS 写时复制，旧 pack/LFS 对象仍可独立恢复。它不作为日常仓库引用存在，以免继续保留旧 pack。
 
@@ -44,6 +45,8 @@ python3 tools/verify/run_all.py --with-tests
 迁移副本移除了旧本地引用与 reflog，记录见[引用清单](removed-local-refs.json)；原数据库完整保留在独立备份，没有作为当前仓库的分支留存。实际本地接管时还保留 `live-before-adoption.git`，包含切换前主工作区的最新元数据。
 
 真实资产恢复后运行 Godot 导入，再跑原始运行时测试：2172/0，日志无 SCRIPT ERROR/ERROR/FAIL；见[导入输出](import.txt)、[运行输出](runtime.txt)。重新打包后的 `git fsck --full` 退出码为 0，见[完整性输出](git-fsck.txt)。
+
+主工作区在原 `dbbcfb5` 上确认干净后完成接管：只同步本次 25 个策略、工具与文档文件，再切换 Git 元数据；现存模型、贴图、源文件均未改写。接管后工作树干净，LFS 资产门禁、LFS 对象/指针检查与 Git 完整性检查均退出 0。活动引用只有迁移后的 `main`，pack 为 685.24 MiB；见[接管复核](post-adoption.txt)。
 
 ## 发布边界
 
