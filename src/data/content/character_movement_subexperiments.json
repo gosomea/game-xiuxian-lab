@@ -4,6 +4,14 @@
   "parent_scene": "res://levels/lab_hub.tscn",
   "subexperiments": [
     {
+      "id": "movement_workbench",
+      "title": "移动综合工作台",
+      "stage": "全局参数与装配",
+      "question": "运行中调整参数和装卸行为后，能否立即观察，并作为全实验室默认保存？",
+      "status": "ready",
+      "scene": "res://levels/experiments/character_movement/movement_workbench.tscn"
+    },
+    {
       "id": "camera_lab",
       "title": "镜头实验室",
       "stage": "灰盒对比场",

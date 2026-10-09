@@ -16,6 +16,7 @@ extends CharacterBody3D
 ## 御剑视觉由场景实例化后经 bind_flight_visual() 注入；
 ## actor 不引用能力包的资源路径，也不硬依赖模型是否已落盘。
 var _flight_visual: Node3D = null
+var _lab_assembly_defaults: Dictionary = {}
 
 
 func _ready() -> void:
@@ -29,6 +30,26 @@ func _ready() -> void:
 		return
 	var assembly_error := assembly.install_configured()
 	assert(assembly_error == "", "Swordsman: 角色装配失败：%s" % assembly_error)
+	var initial := assembly.installed_config()
+	_lab_assembly_defaults = {"move": initial.move_enabled, "jump": initial.jump_enabled,
+		"flight": initial.flight_enabled}
+	LabDefaults.subscribe(self)
+	var settings_error := apply_lab_defaults()
+	assert(settings_error.is_empty(), "Swordsman: 全局默认应用失败：%s" % settings_error)
+
+
+## 参数由设置设施提供；生命周期操作由装配所有者执行。
+func apply_lab_defaults() -> String:
+	LabDefaults.apply_component(_motion)
+	var assembly := get_node_or_null("ActorAssembly") as ActorAssembly
+	if assembly == null or not assembly.is_installed():
+		return ""
+	for kind in _lab_assembly_defaults:
+		var error := assembly.set_capability_enabled(kind,
+			LabDefaults.ability_enabled(kind, _lab_assembly_defaults[kind]))
+		if not error.is_empty():
+			return error
+	return ""
 
 
 func _physics_process(delta: float) -> void:

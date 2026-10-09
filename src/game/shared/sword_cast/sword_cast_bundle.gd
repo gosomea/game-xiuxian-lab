@@ -40,6 +40,7 @@ func install(host: Swordsman, capability_scripts: Array[Script]) -> String:
 	_component = SwordCastComponent.new()
 	_component.name = COMPONENT_NAME
 	_own(host, _component)
+	LabDefaults.apply_component(_component)
 	for index in range(capability_scripts.size()):
 		var capability := capability_scripts[index].new() as Capability
 		if capability == null:

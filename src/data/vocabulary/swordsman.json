@@ -28,7 +28,9 @@
         "flight_lift_speed": "御剑上升速度（米/秒）",
         "flight_sink_speed": "御剑下降速度（米/秒）",
         "flight_launch_speed": "地面启动御剑的短促升起速度（米/秒）",
-        "flight_launch_time": "地面启动御剑的升起窗口（秒）"
+        "flight_launch_time": "地面启动御剑的升起窗口（秒）",
+        "sprint_enabled": "参数：是否允许疾跑速度选择；关闭时 Shift 仍沿用步行速度",
+        "air_move_speed": "参数：非御剑空中水平速度（米/秒）；0 表示沿用地面步行/疾跑速度"
       },
       "signals": {},
       "added": "2026-09-17"

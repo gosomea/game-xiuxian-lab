@@ -16,6 +16,7 @@ extends Node
 const TestContext := preload("res://tests/test_context.gd")
 
 const SUITES := [
+	"res://game/systems/lab_settings/test_lab_defaults.gd",
 	"res://tests/test_core.gd",
 	"res://game/actors/swordsman/test_swordsman_movement.gd",
 	"res://game/actors/swordsman/test_actor_assembly.gd",

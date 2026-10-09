@@ -46,6 +46,12 @@ var _camera: Camera3D = null
 var _target: Node3D = null
 var _rig: CameraRigComponent = null
 var _manager: CapabilityManager = null
+var _scene_config: CameraRigConfig = null
+var _lab_camera_profile: Dictionary = {}
+var _lab_initial_active := true
+var _suspended_modes: Array[Capability] = []
+var _modes_enabled := true
+var _resume_active := true
 var _held: Dictionary = {}
 var _target_last_position: Vector3 = Vector3.ZERO
 var _target_has_previous := false
@@ -81,6 +87,8 @@ var _blend_from_fov := 60.0
 
 
 func _ready() -> void:
+	_lab_initial_active = active
+	_resume_active = active
 	process_physics_priority = PHYSICS_PRIORITY_BEFORE_ACTOR
 	for child in get_children():
 		if child is CameraRigComponent:
@@ -101,6 +109,10 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	release_capture()
+	for mode in _suspended_modes:
+		if is_instance_valid(mode):
+			mode.queue_free()
+	_suspended_modes.clear()
 
 
 func _notification(what: int) -> void:
@@ -128,7 +140,10 @@ func bind(camera: Camera3D, target: Node3D, rig_config: CameraRigConfig = null) 
 		_rig.target_position = target.global_position
 		_rig.focus = target.global_position
 		_rig.mode_id = _default_mode()
-	var resolved := rig_config if rig_config != null else config
+	var local := rig_config if rig_config != null else config
+	_scene_config = local.duplicate() as CameraRigConfig if local != null else CameraRigConfig.new()
+	var resolved := LabDefaults.camera_config(_scene_config)
+	_lab_camera_profile = LabDefaults.snapshot()["camera"].duplicate(true)
 	if resolved != null:
 		_seed_config = resolved
 		_apply_config(resolved)
@@ -140,6 +155,52 @@ func bind(camera: Camera3D, target: Node3D, rig_config: CameraRigConfig = null) 
 	_applied_distance = _rig.effective_distance(_rig.distance)
 	if resolved != null:
 		begin_blend()
+	LabDefaults.subscribe(self)
+	set_modes_enabled(LabDefaults.ability_enabled("camera", _lab_initial_active))
+
+
+## 全局覆盖只在用户修改镜头参数时重播种；改移动速度不重置当前镜头。
+func apply_lab_defaults() -> String:
+	if _scene_config == null:
+		return ""
+	var current_profile: Dictionary = LabDefaults.snapshot()["camera"]
+	if current_profile != _lab_camera_profile:
+		var resolved := LabDefaults.camera_config(_scene_config)
+		_seed_config = resolved
+		_apply_config(resolved)
+		_blend_duration = resolved.transition_time
+		if current_profile.get("start_mode") != _lab_camera_profile.get("start_mode"):
+			_rig.mode_request = resolved.start_mode
+		_lab_camera_profile = current_profile.duplicate(true)
+		begin_blend()
+	set_modes_enabled(LabDefaults.ability_enabled("camera", _lab_initial_active))
+	return ""
+
+
+## 卸载的是本 rig 的模式行为；保留相机最后画面与共享数据，恢复可重新接管。
+func set_modes_enabled(enabled: bool) -> void:
+	if _manager == null:
+		return
+	if enabled == _modes_enabled:
+		return
+	_modes_enabled = enabled
+	if enabled:
+		for mode in _suspended_modes:
+			if is_instance_valid(mode):
+				_manager.add_child(mode)
+		_suspended_modes.clear()
+		set_active(_resume_active)
+	else:
+		_resume_active = active
+		set_active(false)
+		for mode in _manager.get_children():
+			if not mode is Capability:
+				continue
+			if mode.active:
+				mode.active = false
+				mode._on_deactivated()
+			_manager.remove_child(mode)
+			_suspended_modes.append(mode)
 
 
 func _apply_config(rig_config: CameraRigConfig) -> void:
@@ -230,6 +291,10 @@ func camera() -> Camera3D:
 
 func target() -> Node3D:
 	return _target
+
+
+func configuration() -> CameraRigConfig:
+	return _seed_config.duplicate() as CameraRigConfig if _seed_config != null else CameraRigConfig.new()
 
 
 func is_active() -> bool:
@@ -704,6 +769,10 @@ func _physics_process(delta: float) -> void:
 ## 推进一个 executor 帧：采样输入与目标 snapshot → 调度模式 → 写相机 → 发布地面基。
 ## 由 _physics_process 每物理帧调用；无头验收也可直接调用它做确定性推进。
 func advance(delta: float) -> void:
+	if _lab_camera_profile.has("mode_choices"):
+		mode_cycle = PackedStringArray(_lab_camera_profile["mode_choices"])
+	elif _lab_camera_profile.has("start_mode"):
+		mode_cycle = PackedStringArray(LabParameterSchema.MODE_CHOICES)
 	if not active or _rig == null or _manager == null or _camera == null:
 		return
 	_begin_frame(delta)

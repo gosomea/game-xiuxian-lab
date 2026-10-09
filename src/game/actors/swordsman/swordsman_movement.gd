@@ -5,7 +5,7 @@ extends Capability
 ##
 ## 输入来自 SwordsmanMotionComponent，本能力不读取键鼠、不认识实验场景，
 ## 也不执行物理——唯一 move_and_slide() 在 Swordsman 根节点。
-## 御剑期间被 sword_flight_block 阻塞；地面与非御剑空中同一套规则。
+## 御剑期间被 sword_flight_block 阻塞；空中默认沿用地面速度，可由 air_move_speed 单独覆盖。
 ## 无输入时失活；意图字段由 actor 每帧清理，本能力不回写宿主速度。
 
 func _init() -> void:
@@ -32,7 +32,9 @@ func _tick_active(_delta: float) -> void:
 		direction = direction.normalized()
 	# 疾行：按住加速键时改用 sprint_speed。表现层按各 clip 的实测足尖行程
 	# 同步播放速率；此处仅决定角色物理水平速度。
-	var speed := motion.sprint_speed if motion.sprint_input else motion.move_speed
+	var speed := motion.sprint_speed if motion.sprint_input and motion.sprint_enabled else motion.move_speed
+	if not motion.on_floor and motion.air_move_speed > 0.0:
+		speed = motion.air_move_speed
 	motion.desired_horizontal = direction * speed
 
 

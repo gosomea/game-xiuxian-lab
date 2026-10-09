@@ -30,6 +30,7 @@ func _ready() -> void:
 	add_to_group(&"sword_target")
 	_target = get_node("SwordTargetComponent") as SwordTargetComponent
 	assert(_target != null, "TrainingDummy: 缺少 SwordTargetComponent")
+	LabDefaults.apply_component(_target)
 	_build_visual()
 
 

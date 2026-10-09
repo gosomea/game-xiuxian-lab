@@ -20,6 +20,7 @@ const REALM_SCENE := "res://levels/experiments/character_movement/mountain_realm
 const TOP_HUB_NODE_NAME := "LabHub"
 const DATA_PATH := "res://data/content/character_movement_subexperiments.json"
 const EXPECTED_IDS := [
+	"movement_workbench",
 	"camera_lab",
 	"motion_stage",
 	"ground_contact_course",
@@ -48,6 +49,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	LabDefaults.reset_test_state()
 	root.size = Vector2i(1280, 800)
 
 	# 1. 顶层实验目录：点击「角色移动」模块卡一次即进入子实验目录（第 1 击）。
@@ -66,19 +68,19 @@ func _run() -> void:
 	await _settle()
 	_check(current_scene.name == HUB_NODE_NAME, "点击模块卡一次直达子实验目录：%s" % current_scene.name)
 
-	# 2. 十项可见、顺序与清单一致、详情默认折叠、焦点落在条目卡。
+	# 2. 十一项可见、顺序与清单一致、详情默认折叠、焦点落在条目卡。
 	var grid := current_scene.get_node("%EntryGrid") as GridContainer
-	_check(grid.get_child_count() == EXPECTED_IDS.size(), "子实验目录显示 10 项（实际 %d）" % grid.get_child_count())
+	_check(grid.get_child_count() == EXPECTED_IDS.size(), "子实验目录显示 11 项（实际 %d）" % grid.get_child_count())
 	var ids: Array[String] = []
 	for child in grid.get_children():
 		ids.append(str(child.name).trim_prefix("Entry_"))
 	_check(ids == EXPECTED_IDS, "子实验顺序与清单一致：%s" % str(ids))
-	_check(current_scene.get_node("%Count").text == "10 / 10", "计数如实显示已落地 10 / 10：%s" % current_scene.get_node("%Count").text)
+	_check(current_scene.get_node("%Count").text == "11 / 11", "计数如实显示已落地 11 / 11：%s" % current_scene.get_node("%Count").text)
 	for id in EXPECTED_IDS:
 		_check(grid.get_node_or_null("Entry_" + id) != null, "子实验条目存在：%s" % id)
 	_check(not (current_scene.get_node("%Details") as Control).visible, "子目录详情默认折叠")
-	_check(grid.get_node("Entry_camera_lab").has_focus(), "初始键盘焦点在第一个条目卡上")
-	_check(current_scene.get_node("%DetailTitle").text == "镜头实验室", "焦点所在条目详情已更新（无需回车）")
+	_check(grid.get_node("Entry_movement_workbench").has_focus(), "初始键盘焦点在第一个条目卡上")
+	_check(current_scene.get_node("%DetailTitle").text == "移动综合工作台", "焦点所在条目详情已更新（无需回车）")
 	await _capture("movement-hub-1280x800")
 
 	# 3. 详情开关：I 键展开 / 再按折叠；Esc 在详情展开时先关详情。
@@ -96,11 +98,11 @@ func _run() -> void:
 		"方向键后焦点仍在条目卡上：%s" % (str(focus_owner.name) if focus_owner != null else "<无>"))
 
 	# 5. 小窗布局证据：固定 960x640 离屏视口真实渲染。
-	_check(grid.get_child_count() == EXPECTED_IDS.size() and grid.is_visible_in_tree(), "目录在小窗尺寸下十项仍存在并可滚动查看")
-	_check(current_scene.get_node("%Count").text == "10 / 10", "计数在目录中始终如实显示")
+	_check(grid.get_child_count() == EXPECTED_IDS.size() and grid.is_visible_in_tree(), "目录在小窗尺寸下十一项仍存在并可滚动查看")
+	_check(current_scene.get_node("%Count").text == "11 / 11", "计数在目录中始终如实显示")
 	await _capture_exact("movement-hub-960x640", Vector2i(960, 640))
 
-	# 6. 十项入口与返回路径：逐项一次点击真实进入，Esc 回到本目录。
+	# 6. 十一项入口与返回路径：逐项一次点击真实进入，Esc 回到本目录。
 	for id in EXPECTED_IDS:
 		if current_scene.name == TOP_HUB_NODE_NAME:
 			await _enter_hub_from_top()
@@ -161,11 +163,11 @@ func _run() -> void:
 	await _press_key(KEY_ESCAPE)
 	await _settle()
 	_check(current_scene.name == TOP_HUB_NODE_NAME, "先回到顶层实验目录做 planned 卡片验收")
-	_check(current_scene.get_node_or_null("%ModuleGrid/Module_sword_combat") != null, "顶层存在 planned 模块卡：剑法战斗")
-	await _activate(current_scene.get_node("%ModuleGrid/Module_sword_combat"))
+	_check(current_scene.get_node_or_null("%ModuleGrid/Module_world_map") != null, "顶层存在 planned 模块卡：地图探索")
+	await _activate(current_scene.get_node("%ModuleGrid/Module_world_map"))
 	_check(current_scene.name == TOP_HUB_NODE_NAME, "顶层点击 planned 卡不跳转")
 	_check((current_scene.get_node("%Details") as Control).visible, "顶层 planned 卡点击只展开说明")
-	_check(current_scene.get_node("%DetailTitle").text == "剑法战斗", "顶层 planned 详情标题正确")
+	_check(current_scene.get_node("%DetailTitle").text == "地图探索", "顶层 planned 详情标题正确")
 	_check(not current_scene.get_node("%DetailQuestion").text.strip_edges().is_empty(), "顶层 planned 详情含真实问题说明")
 	await _press_key(KEY_ESCAPE)
 	_check(not (current_scene.get_node("%Details") as Control).visible, "顶层 planned 详情可关闭")

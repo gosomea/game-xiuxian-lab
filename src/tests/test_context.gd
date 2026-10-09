@@ -28,6 +28,7 @@ func begin_case() -> void:
 		child.queue_free()
 	TagRegistry.clear_all()
 	TimeKeeper.clear_all()
+	LabDefaults.reset_test_state()
 
 
 ## 登记节点：未挂载的自动挂到测试根。

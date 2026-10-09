@@ -59,6 +59,12 @@ var sprint_input: bool = false
 ## 4.2 m/s 接近原动作节奏，无需高频快放。
 @export var sprint_speed: float = 4.2
 
+## 参数：是否允许 Shift 选择疾跑速度；输入字段仍由场景写入。
+@export var sprint_enabled: bool = true
+
+## 参数：非御剑空中的水平速度；0 沿用地面步行/疾跑速度。
+@export var air_move_speed: float = 0.0
+
 ## 参数：起跳初速（米/秒）。
 @export var jump_speed: float = 6.0
 

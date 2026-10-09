@@ -36,6 +36,7 @@ var _flight_bundle: FlightBundle = null
 var _installed: ActorAssemblyConfig = null
 ## 安装时的宿主句柄。用于本节点被移出树后仍能清理（此时 get_parent() 可能已不可靠）。
 var _host_cache: Swordsman = null
+var _flight_visual_preference := true
 
 ## 装配可纳入配置的三项行为脚本。
 const MOVE_SCRIPT := preload("res://game/actors/swordsman/swordsman_movement.gd")
@@ -90,6 +91,7 @@ func install(requested: ActorAssemblyConfig) -> String:
 		return error
 	_host_cache = host
 	_installed = requested.duplicate() as ActorAssemblyConfig
+	_flight_visual_preference = requested.flight_visual
 	return ""
 
 
@@ -127,6 +129,53 @@ func installed_config() -> ActorAssemblyConfig:
 	if _installed == null:
 		return null
 	return _installed.duplicate() as ActorAssemblyConfig
+
+
+## 运行中只改变本装配拥有的一项行为，保留无关能力实例、输入与速度。
+## 空装配在此路径合法；启动安装仍按 ActorAssemblyConfig.validate() 校验。
+func set_capability_enabled(kind: String, enabled: bool) -> String:
+	if _installed == null or _host_node() == null:
+		return "ActorAssembly: 尚未安装"
+	if kind not in ["move", "jump", "flight"]:
+		return "ActorAssembly: 未知行为 " + kind
+	if kind == "flight":
+		if enabled:
+			if _flight_bundle != null and _flight_bundle.is_installed():
+				return ""
+			var bundle := FlightBundle.new()
+			var error := bundle.install(_host_node(), _flight_visual_preference)
+			if not error.is_empty():
+				return error
+			_flight_bundle = bundle
+			_installed.flight_visual = _flight_visual_preference
+		else:
+			if _flight_bundle != null:
+				var error := _flight_bundle.uninstall()
+				if not error.is_empty():
+					return error
+				_flight_bundle = null
+			_installed.flight_visual = false
+		_installed.flight_enabled = enabled
+		return ""
+	_prune_owned()
+	var capability_class := MOVE_NAME if kind == "move" else JUMP_NAME
+	var owned: Node = null
+	for node in _owned:
+		if str(node.get_script().get_global_name()) == capability_class:
+			owned = node
+			break
+	if enabled and owned == null:
+		var conflict := _conflict(_manager(), capability_class)
+		if not conflict.is_empty():
+			return conflict
+		var error := _add_owned(_manager(), capability_class, MOVE_SCRIPT if kind == "move" else JUMP_SCRIPT)
+		if not error.is_empty():
+			return error
+	elif not enabled and owned != null:
+		_owned.erase(owned)
+		_remove_node(owned)
+	_installed.set("move_enabled" if kind == "move" else "jump_enabled", enabled)
+	return ""
 
 
 ## 当前装配的能力类名（读宿主管理器直系子），供验收脚本断言。

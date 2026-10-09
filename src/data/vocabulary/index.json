@@ -133,6 +133,7 @@
       "fields": {
         "actual_velocity": "最近一次物理 tick 后的完整速度（含竖直），供表现层读取",
         "aim_direction": "世界地面朝向单位向量，初始 FORWARD(0,0,-1)；由场景写入，只影响朝向表现",
+        "air_move_speed": "参数：非御剑空中水平速度（米/秒）；0 表示沿用地面步行/疾跑速度",
         "camera_forward": "相机前方在地面的投影（单位向量）",
         "camera_right": "相机右方向在地面的投影（单位向量）",
         "desired_horizontal": "水平速度意图（y 恒为 0）；Movement 或 SwordFlight 每 tick 写入",
@@ -150,6 +151,7 @@
         "move_input": "屏幕相对输入（x=右，y=下，长度不超过 1）；由场景写入",
         "move_speed": "步行水平最大速度（米/秒）",
         "on_floor": "上一帧物理结果的着地状态；能力在 tick 中读到的是该值",
+        "sprint_enabled": "参数：是否允许疾跑速度选择；关闭时 Shift 仍沿用步行速度",
         "sprint_input": "疾行意图（bool）：场景在按住加速键期间写入；Movement 据它在 move_speed 与 sprint_speed 间选择",
         "sprint_speed": "疾行水平最大速度（米/秒）；sprint_input 为真时替代 move_speed",
         "vertical_impulse": "竖直冲量意图（m/s，正上）；仅 Jump 写入，actor 覆盖 velocity.y 不累加",

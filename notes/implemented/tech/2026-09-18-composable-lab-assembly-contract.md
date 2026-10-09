@@ -102,3 +102,7 @@ Status: implemented
   **仍有限定**：同帧 control yaw 的实机帧序未单独验证；连续环绕下的操作舒适度属人工试玩项。
 - **已知限制**：嵌套 Sheet 的宿主边界与 `detach` 不清 `_on_deactivated` 是现状事实；本契约以「不依赖该路径」规避，不修改 core。
 - **补充实现与证据（2026-09-18 第二轮）**：§2 / §3 / §4 的补充内容已实现并覆盖测试契约（见文首补充实现状态与 [验收报告](../../../docs/playtest/2026-09-18-camera-combo-rmb.md)）。唯一未完成项是「编辑器嵌入 Game 视图」的人工验收，已在该报告「仍需主代理执行」中显式列为未验收，不视为通过。
+
+## 2026-10-10 单项装卸补充
+
+综合工作台增加 `ActorAssembly.set_capability_enabled()`，按 owner 句柄运行中改变单项 move/jump/flight，保留无关能力实例与输入；启动安装仍执行原配置校验。CameraRig 可卸下并恢复其模式节点，保留相机最后画面与写入归属。全局参数为局部设置设施的稀疏覆盖，Component 仍只存数据。该扩展的决定与验收范围归属[综合工作台 note](../gameplay/2026-10-10-movement-global-workbench.md)。

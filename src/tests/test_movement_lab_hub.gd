@@ -7,6 +7,7 @@ const Hub := preload("res://levels/experiments/character_movement/movement_lab_h
 const Catalog := preload("res://game/systems/lab_catalog/lab_catalog.gd")
 
 const EXPECTED_IDS := [
+	"movement_workbench",
 	"camera_lab",
 	"motion_stage",
 	"ground_contact_course",
@@ -20,6 +21,7 @@ const EXPECTED_IDS := [
 ]
 ## 集成收口后七项全部落地、样板轮新增美术样板：清单里没有 planned 条目。
 const EXPECTED_OPENABLE := [
+	"movement_workbench",
 	"camera_lab",
 	"motion_stage",
 	"ground_contact_course",
@@ -42,7 +44,7 @@ static func run(t) -> void:
 	t.assert_true(result["errors"].is_empty(), "真实子实验清单满足契约：%s" % str(result["errors"]))
 	t.assert_eq(str(result["parent_scene"]), "res://levels/lab_hub.tscn", "父级返回路径为顶层实验目录")
 	var entries: Array = result["subexperiments"]
-	t.assert_eq(entries.size(), EXPECTED_IDS.size(), "子实验清单恰好十项")
+	t.assert_eq(entries.size(), EXPECTED_IDS.size(), "子实验清单恰好十一项")
 	var ids: Array = []
 	var openable: Array = []
 	for value in entries:
@@ -86,7 +88,7 @@ static func run(t) -> void:
 
 	t.begin_case()
 	var base := _base_entries()
-	t.assert_true(_valid(base), "十项基线清单通过结构校验")
+	t.assert_true(_valid(base), "十一项基线清单通过结构校验")
 	var planned: Dictionary = base[2]
 	t.assert_eq(str(planned["scene"]), "", "基线地形接触训练场无场景")
 	t.assert_false(Hub.can_open(planned), "planned 不可进入")
@@ -142,7 +144,7 @@ static func run(t) -> void:
 	}).is_empty(), "空子实验清单被拒绝（缺少全部必需条目）")
 
 
-## 变异用例基线：形状与真实清单同构（十项、字段齐全），但刻意保留三条 planned 条目，
+## 变异用例基线：形状与真实清单同构（十一项、字段齐全），但刻意保留三条 planned 条目，
 ## 以便继续覆盖「planned 不得挂场景 / 不得进入」这类规则——真实清单此时已全部落地。
 static func _base_entries() -> Array:
 	return [
@@ -156,6 +158,7 @@ static func _base_entries() -> Array:
 		_entry("jade_paper_sample", "exploring", SAMPLE_SCENE),
 		_entry("ink_lakeside_sample", "exploring", "res://levels/experiments/character_movement/ink_lakeside_sample.tscn"),
 		_entry("west_lake_sunset", "exploring", "res://levels/experiments/character_movement/west_lake_sunset.tscn"),
+		_entry("movement_workbench", "exploring", "res://levels/experiments/character_movement/movement_workbench.tscn"),
 	]
 
 
