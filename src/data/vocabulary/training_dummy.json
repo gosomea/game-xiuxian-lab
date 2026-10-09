@@ -1,0 +1,19 @@
+{
+  "domain": "training_dummy",
+  "description": "剑法木桩：命中登记数据。出招能力按 sword_target 分组查询并调用 record_hit；木桩表现与场景只读。",
+  "components": {
+    "SwordTargetComponent": {
+      "description": "可被剑法命中的竖直圆柱目标与命中记录",
+      "script": "src/game/actors/training_dummy/sword_target_component.gd",
+      "fields": {
+        "radius": "目标圆柱半径（米）",
+        "height": "目标圆柱高度（米），从宿主原点向上",
+        "hit_count": "累计命中次数",
+        "last_hit_form": "最近一次命中的招式",
+        "last_hit_point": "最近一次命中的世界位置"
+      },
+      "signals": {},
+      "added": "2026-10-09"
+    }
+  }
+}

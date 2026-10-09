@@ -1,0 +1,16 @@
+{
+  "domain": "sword",
+  "description": "剑法域：出招与御剑之间的互斥词汇与目标分组。",
+  "tags": {
+    "sword_away_block": {
+      "description": "本命剑在外：飞剑出击期间禁止御剑起飞（TagRegistry 阻塞，instigator 为 FlyingSwordStrike 能力自身）",
+      "added": "2026-10-09"
+    }
+  },
+  "groups": {
+    "sword_target": {
+      "description": "可被剑法命中的目标宿主；宿主直系子节点须有 SwordTargetComponent",
+      "added": "2026-10-09"
+    }
+  }
+}

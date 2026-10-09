@@ -32,7 +32,11 @@ func _init() -> void:
 
 func _should_activate() -> bool:
 	var motion := component(&"SwordsmanMotionComponent") as SwordsmanMotionComponent
-	return motion != null and motion.flight_toggle_pressed and not motion.flight_active
+	if motion == null or not motion.flight_toggle_pressed or motion.flight_active:
+		return false
+	# 本命剑在外（飞剑出击）时没有剑可乘。
+	var host := game_object()
+	return host == null or not TagRegistry.is_blocked(host, &"sword_away_block")
 
 
 func _on_activated() -> void:

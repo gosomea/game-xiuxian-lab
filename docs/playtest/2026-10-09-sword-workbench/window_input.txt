@@ -1,0 +1,36 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-09 21:47:17.766 Godot[43473:29032177] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-09 21:47:18.626 Godot[43473:29032177] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS 本命剑可见并悬浮
+STATE idle form=sword_qi hits=0 qi=0 array=0 away=false
+PASS capture idle
+PASS 默认招式为剑气
+PASS 左键放出一道剑气
+STATE qi form=sword_qi hits=0 qi=1 array=0 away=false
+PASS capture qi
+PASS 剑气命中木桩
+PASS 出招姿势随后放下
+PASS C 切换到飞剑
+PASS 飞剑离开悬浮位
+PASS 出招时右臂前指
+STATE strike form=flying_sword hits=1 qi=0 array=0 away=true
+PASS capture strike
+PASS 飞剑在外时 F 不起飞
+PASS 飞剑飞回悬浮位
+PASS 飞剑命中远处木桩
+PASS C 切换到剑阵
+PASS 按住蓄势，身后悬停 25 把剑
+STATE array_hold form=sword_array hits=4 qi=0 array=25 away=false
+PASS capture array_hold
+STATE array_volley form=sword_array hits=4 qi=0 array=25 away=false
+PASS capture array_volley
+PASS 剑阵齐射命中木桩（10 次）
+PASS 齐射结束后剑阵消散
+PASS 飞剑在悬浮位时可以御剑
+PASS 御剑时可以放剑气
+STATE flight_qi form=sword_qi hits=14 qi=1 array=0 away=false
+PASS capture flight_qi
+PASS 顿帧请求全部释放
+SUMMARY passed=24 failed=0

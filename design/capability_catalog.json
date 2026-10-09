@@ -4,6 +4,32 @@
     {
       "axis_implemented": [
         "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "FlyingSwordStrike",
+      "domain": "abilities",
+      "package": "abilities/flying_sword_strike",
+      "parameters": [],
+      "reads_components": [
+        "SwordCastComponent",
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/flying_sword_strike/flying_sword_strike.gd",
+      "signals": [],
+      "summary": "飞剑出击：选中 flying_sword 时左键按下边沿，本命剑离开悬浮位，沿上拱的弧线飞向指向点，",
+      "test": "src/game/abilities/flying_sword_strike/test_flying_sword_strike.gd",
+      "uses_groups": [],
+      "uses_tags": [
+        "sword_away_block",
+        "sword_flight_block"
+      ]
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
         "_tick_active",
         "_should_deactivate",
         "_on_deactivated"
@@ -32,6 +58,29 @@
         "_should_deactivate",
         "_on_deactivated"
       ],
+      "class": "SwordArray",
+      "domain": "abilities",
+      "package": "abilities/sword_array",
+      "parameters": [],
+      "reads_components": [
+        "SwordCastComponent",
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/sword_array/sword_array.gd",
+      "signals": [],
+      "summary": "剑阵：选中 sword_array 时按住左键，飞剑一把把在身后排成扇面悬停（剑尖朝指向方向）；",
+      "test": "src/game/abilities/sword_array/test_sword_array.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
       "class": "SwordFlight",
       "domain": "abilities",
       "package": "abilities/sword_flight",
@@ -45,8 +94,32 @@
       "test": "src/game/abilities/sword_flight/test_sword_flight.gd",
       "uses_groups": [],
       "uses_tags": [
+        "sword_away_block",
         "sword_flight_block"
       ]
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
+      "class": "SwordQi",
+      "domain": "abilities",
+      "package": "abilities/sword_qi",
+      "parameters": [],
+      "reads_components": [
+        "SwordCastComponent",
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/sword_qi/sword_qi.gd",
+      "signals": [],
+      "summary": "剑气：选中 sword_qi 时左键按下边沿，从身前朝指向点放出一道剑气；沿地面水平飞行，",
+      "test": "src/game/abilities/sword_qi/test_sword_qi.gd",
+      "uses_groups": [],
+      "uses_tags": []
     },
     {
       "axis_implemented": [
@@ -168,15 +241,18 @@
       "uses_tags": []
     }
   ],
-  "count": 7,
+  "count": 10,
   "domains": [
     "abilities",
     "actors",
     "systems"
   ],
   "packages": [
+    "abilities/flying_sword_strike",
     "abilities/jump",
+    "abilities/sword_array",
     "abilities/sword_flight",
+    "abilities/sword_qi",
     "actors/swordsman",
     "systems/camera_rig"
   ],

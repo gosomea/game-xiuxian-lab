@@ -22,6 +22,9 @@ const SUITES := [
 	"res://game/abilities/jump/test_jump.gd",
 	"res://game/abilities/sword_flight/test_sword_flight.gd",
 	"res://game/abilities/sword_flight/test_flight_bundle.gd",
+	"res://game/abilities/sword_qi/test_sword_qi.gd",
+	"res://game/abilities/flying_sword_strike/test_flying_sword_strike.gd",
+	"res://game/abilities/sword_array/test_sword_array.gd",
 	"res://tests/test_vocabulary.gd",
 	"res://tests/fixtures/template_vitals/test_vitals_regeneration.gd",
 	"res://tests/fixtures/template_vitals/test_vitals_guard.gd",
@@ -42,6 +45,7 @@ const SUITES := [
 	"res://tests/test_motion_stage_geometry.gd",
 	"res://tests/test_jade_paper_rigged_animation.gd",
 	"res://tests/test_cultivator_motion_20260927_visual.gd",
+	"res://tests/test_sword_workbench.gd",
 ]
 
 

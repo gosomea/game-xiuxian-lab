@@ -1,0 +1,48 @@
+{
+  "domain": "sword_cast",
+  "description": "剑法出招契约：场景写入鼠标指向与左键输入，剑气 / 飞剑出击 / 剑阵三项能力读写，悬浮本命剑与投射物视图只读。依据 notes/implemented/gameplay/2026-10-09-sword-workbench.md。",
+  "components": {
+    "SwordCastComponent": {
+      "description": "三招共用的输入、出招请求、本命剑状态、投射物渲染数据与各招参数",
+      "script": "src/game/shared/sword_cast/sword_cast_component.gd",
+      "fields": {
+        "aim_point": "鼠标在地面的指向点（世界坐标）；场景每物理帧写入",
+        "cast_pressed": "左键按下边沿，仅按下那一帧为 true；场景每物理帧写入",
+        "cast_held": "左键是否按住；场景每物理帧写入",
+        "cast_released": "左键松开边沿，仅松开那一帧为 true；场景每物理帧写入",
+        "form": "当前选中的招式（sword_qi / flying_sword / sword_array）；场景写入，各能力只在匹配时激活",
+        "face_direction": "出招时请求的世界水平朝向；能力写入，场景转交角色",
+        "face_until": "面向请求的截止逻辑时刻（manager_time）",
+        "pose_weight": "出招姿势目标权重 0..1；能力写入，表现层平滑",
+        "pose_kind": "出招姿势（thrust 前指 / raise 斜上举）；能力写入",
+        "sword_away": "本命剑是否离开悬浮位；飞剑出击写入",
+        "sword_position": "本命剑离开悬浮位时的世界位置；飞剑出击写入",
+        "sword_forward": "本命剑离开悬浮位时剑尖的世界方向；飞剑出击写入",
+        "sword_rest_offset": "参数：悬浮位相对角色根的局部偏移（局部 +Z 为正面）",
+        "qi_shots": "渲染数据：飞行中的剑气，每项含 position / direction / travelled",
+        "array_swords": "渲染数据：剑阵中的剑，每项含 position / forward",
+        "casts_total": "统计：累计出招次数",
+        "last_cast_form": "统计：最近一次出招的招式",
+        "pose_time": "参数：出招后面向与姿势保持的时长（秒）",
+        "qi_speed": "参数：剑气飞行速度（米/秒）",
+        "qi_range": "参数：剑气射程（米）",
+        "qi_radius": "参数：剑气命中半宽（米）",
+        "qi_height": "参数：剑气离地高度（米）",
+        "qi_cooldown": "参数：剑气冷却（秒）",
+        "strike_speed": "参数：飞剑出击速度（米/秒）",
+        "strike_range": "参数：飞剑出击最远距离（米）",
+        "strike_return_speed": "参数：飞剑飞回速度（米/秒）",
+        "strike_radius": "参数：飞剑命中半径（米）",
+        "array_max": "参数：剑阵最多悬停的剑数",
+        "array_spawn_interval": "参数：按住时每把剑出现的间隔（秒）",
+        "array_fire_interval": "参数：松开后逐把射出的间隔（秒）",
+        "array_speed": "参数：剑阵飞剑速度（米/秒）",
+        "array_radius": "参数：剑阵单剑命中半径（米）",
+        "array_spread": "参数：剑阵落点散布半径（米）",
+        "array_cooldown": "参数：剑阵齐射结束后的冷却（秒）"
+      },
+      "signals": {},
+      "added": "2026-10-09"
+    }
+  }
+}

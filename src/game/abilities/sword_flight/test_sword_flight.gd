@@ -19,6 +19,7 @@ static func run(t) -> void:
 	_test_external_flight_active_false_clears_block(t)
 	_test_exit_tree_clears_block_and_state(t)
 	_test_instigator_isolation(t)
+	_test_blocked_while_sword_away(t)
 	_test_missing_component_is_inert(t)
 	_test_priority(t)
 
@@ -223,6 +224,27 @@ static func _test_instigator_isolation(t) -> void:
 	manager.tick(0.016)
 	t.assert_true(TagRegistry.is_blocked(host, TAG), "解除飞行时不得移除其他 instigator 的阻塞")
 	t.assert_eq(TagRegistry.block_count(host, TAG), 1, "只应剩其他 instigator 的 1 条阻塞")
+
+
+static func _test_blocked_while_sword_away(t) -> void:
+	t.begin_case()
+	var scene := _build(t)
+	var motion := scene["motion"] as SwordsmanMotionComponent
+	var host := scene["host"] as CharacterBody3D
+	var manager := scene["manager"] as CapabilityManager
+	var strike := Node.new()
+	t.track(strike)
+
+	TagRegistry.add_block(host, &"sword_away_block", strike)
+	motion.on_floor = true
+	motion.flight_toggle_pressed = true
+	manager.tick(0.016)
+	t.assert_false((scene["flight"] as SwordFlight).active, "本命剑在外时按 F 不起飞")
+	t.assert_false(motion.flight_active, "本命剑在外时不进入御剑")
+	TagRegistry.remove_block(host, &"sword_away_block", strike)
+	motion.flight_toggle_pressed = true
+	manager.tick(0.016)
+	t.assert_true(motion.flight_active, "剑飞回（阻塞撤销）后可以起飞")
 
 
 static func _test_missing_component_is_inert(t) -> void:

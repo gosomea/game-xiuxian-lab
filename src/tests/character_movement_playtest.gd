@@ -398,7 +398,7 @@ func _run_hub_gate() -> void:
 	_check(current_scene.get_node_or_null("%LaunchButton") == null, "旧「进入实验场景」按钮已移除（2 击直达）")
 	_check(ResourceLoader.exists(str(entry.get("scene", ""))), "角色移动模块卡可直接打开的入口场景存在")
 	current_scene.select_module(SWORD_MODULE)
-	_check(not LabCatalog.can_open(_module_entry(SWORD_MODULE)), "剑法保留待设计且无运行入口")
+	_check(LabCatalog.can_open(_module_entry(SWORD_MODULE)), "剑法工作台可从顶层进入")
 
 
 func _subexperiment_entry(id: String) -> Dictionary:

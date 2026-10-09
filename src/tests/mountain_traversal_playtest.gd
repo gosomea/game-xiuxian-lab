@@ -1429,7 +1429,7 @@ func _batch_hub() -> void:
 	current_scene.select_module(MOVE_MODULE)
 	_check(current_scene.get_node_or_null("%LaunchButton") == null, "旧「进入实验场景」按钮已移除（2 击直达）")
 	current_scene.select_module(SWORD_MODULE)
-	_check(not LabCatalog.can_open(_module_entry(SWORD_MODULE)), "剑法保持无运行入口")
+	_check(LabCatalog.can_open(_module_entry(SWORD_MODULE)), "剑法工作台可从顶层进入")
 
 
 # --- 截图（窗口模式；飞行画面必须由真实输入产生） -------------------------------
