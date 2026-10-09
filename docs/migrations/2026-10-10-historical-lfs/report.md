@@ -39,7 +39,7 @@ git add .gitattributes tools/assets/lfs_legacy_blobs.json
 python3 tools/verify/run_all.py --with-tests
 ```
 
-独立副本清理旧引用/reflog 后重新打包：原 pack+索引 4,169,773,597 bytes（3.883 GiB），新 pack+索引 718,522,862 bytes（685.24 MiB），减少 82.77%。LFS 对象共 251 个、9,748,713,045 bytes（9.079 GiB）。迁移后历史内普通 blob 大于阈值的数量为 0。[空间统计](storage.json)
+独立副本清理旧引用/reflog 后重新打包：原 pack+索引 4,169,773,597 bytes（3.883 GiB），新 pack+索引 718,522,862 bytes（685.24 MiB），减少 82.77%。LFS 缓存共 251 个（250 个历史引用对象，加 1 个 364,330 bytes 的遗留暂存对象）、9,748,713,045 bytes（9.079 GiB）。迁移后历史内普通 blob 大于阈值的数量为 0。[空间统计](storage.json)
 
 迁移副本移除了旧本地引用与 reflog，记录见[引用清单](removed-local-refs.json)；原数据库完整保留在独立备份，没有作为当前仓库的分支留存。实际本地接管时还保留 `live-before-adoption.git`，包含切换前主工作区的最新元数据。
 
@@ -49,4 +49,4 @@ python3 tools/verify/run_all.py --with-tests
 
 已核实远端 `origin/main` 仍为 `81726d3b449efae116327a7289e96faa61bd012a`。账号剩余配额不能确认：账单 API 返回 404 并提示缺少 `user` scope，浏览器未登录。未扩展权限、修改预算、购买配额或上传对象。按当前历史需要存储约 9.08 GiB 的 LFS 内容。
 
-远端发布应先检查余量/预算、确认上传与强推，再执行 LFS 上传和指定旧 SHA 的 `--force-with-lease`。不要直接普通 pull 或把旧历史分支合并回来。远端更新后，新使用者安装 LFS、重新克隆并 `git lfs pull` 后运行 Godot；已有未提交工作先另行保存，再切换新克隆。
+远端发布应先检查余量/预算、确认上传与强推，再执行 LFS 上传和指定旧 SHA 的 `--force-with-lease`。远端更新前不要 fetch/pull，否则会重新下载旧历史；远端更新后不要把旧历史分支合并回来。远端更新后，新使用者安装 LFS、重新克隆并 `git lfs pull` 后运行 Godot；已有未提交工作先另行保存，再切换新克隆。

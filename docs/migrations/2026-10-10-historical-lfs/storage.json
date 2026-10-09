@@ -6,5 +6,8 @@
   "lfs_content_bytes": 9748713045,
   "ordinary_history_blobs_above_threshold": 0,
   "local_main_only": true,
-  "remote_main_expected": "81726d3b449efae116327a7289e96faa61bd012a"
+  "remote_main_expected": "81726d3b449efae116327a7289e96faa61bd012a",
+  "lfs_history_referenced_object_count": 250,
+  "lfs_history_referenced_bytes": 9748348715,
+  "unreferenced_lfs_cache_object_count": 1
 }
