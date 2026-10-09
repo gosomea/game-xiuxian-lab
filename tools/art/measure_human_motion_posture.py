@@ -24,7 +24,7 @@ from mathutils import Vector
 def parse_args() -> argparse.Namespace:
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--glb", required=True)
+    parser.add_argument("--glb", "--blend", dest="glb", required=True)
     parser.add_argument("--report", default="")
     parser.add_argument("--limit-pitch", type=float, default=4.0)
     parser.add_argument("--limit-roll", type=float, default=4.0)
@@ -35,7 +35,10 @@ def main() -> int:
     args = parse_args()
     path = Path(args.glb)
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(path))
+    if path.suffix.lower() == ".blend":
+        bpy.ops.wm.open_mainfile(filepath=str(path.resolve()))
+    else:
+        bpy.ops.import_scene.gltf(filepath=str(path))
     rig = next(obj for obj in bpy.data.objects if obj.type == "ARMATURE")
     scene = bpy.context.scene
 

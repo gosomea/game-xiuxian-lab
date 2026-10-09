@@ -1,0 +1,17 @@
+{
+  "source": "docs/art/cultivator_motion_library_20261010/cultivator_upright_motion_20261010.blend",
+  "shared_model": "src/game/actors/swordsman/models/cultivator_upright_motion_20261009.glb",
+  "output": "src/game/actors/swordsman/models/motions/cultivator_upright_motion_20261010_blender_roundtrip.glb",
+  "bytes": 151448,
+  "bones": 22,
+  "clips": [
+    "idle",
+    "idle_guarded",
+    "jump",
+    "meditate",
+    "run",
+    "sword_ride",
+    "walk"
+  ],
+  "rest_contract_matches": true
+}

@@ -47,6 +47,7 @@ game-xiuxian-lab/
 | `godot --headless --path src tests/test_runner.tscn` | 只跑运行时测试 |
 | `python3 tools/gen/gen_vocabulary_index.py` | 重生成词汇索引（改了 `src/data/vocabulary/` 后必跑） |
 | `python3 tools/gen/gen_capability_catalog.py` | 重生成能力目录（改了能力源码后必跑） |
+| `python3 tools/assets/sync_lfs_attributes.py` | 资产暂存前同步 LFS 属性；新大 PNG 登记、改动旧资产撤销普通 blob 例外 |
 | `godot --headless --path src --import` | 生成全局类缓存（首次 clone 后必跑） |
 
 ## Agent 上手顺序
@@ -80,6 +81,8 @@ game-xiuxian-lab/
 
 **所有项目资产必须进入 Git。** 所有探索版本的模型、材质、贴图、动画、音频、字体、场景、预览图及其源文件和导出文件，均须放在本仓库并提交跟踪，包括停用和归档版本；不得只保存在本机外部目录、只登记路径或只提交生成脚本。禁止用忽略规则排除项目资产，提交前须核对未跟踪与被忽略文件；文件较大也不能直接漏交。可再生的引擎导入缓存、系统缓存和临时运行日志不属于源资产或交付资产。依据：[探索资产保留](notes/implemented/process/2026-09-18-exploration-asset-retention.md)。
 
+**后续大资产使用 LFS，动作版本共享几何。** 新 `.blend` / `.glb` / `.obj` 与大于 5 MB 的 PNG 走 LFS，`git add` 前先运行属性同步命令；未修改的旧文件保留普通 blob，不迁移历史。纯动作版本用相对链接的 Blender 源与独立 AnimationLibrary GLB，共享现役人物网格、贴图与 rest。`.blend1` 归临时自动备份，新的不提交，已有跟踪文件保留。依据：[资产增长方案](notes/implemented/process/2026-10-09-repository-binary-growth.md)。
+
 ### 约定（工程层）
 
 6. **门禁负向控制**：每条门禁落地时必须在 `tools/verify/negative_control.py` 增加一个「故意非法案例被真实拒绝」的用例，否则该门禁视为不存在。
@@ -104,10 +107,10 @@ game-xiuxian-lab/
 `src/game/actors/swordsman/models/cultivator_upright_motion_20261009.glb`，
 `src/game/actors/swordsman/cultivator_aligned_motion_20260927_visual.tscn` 供默认角色、动作预览和青玉纸样板共用。
 普通走速 2.0、Shift 疾跑 4.2 m/s，御剑 22、升降 12 m/s；`RUN_SPEED_MPS = 3.0`；七段 clip 为
-`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。当前可编辑源 `docs/art/cultivator_upright_motion_20261009/cultivator_upright_motion_20261009.blend` 内嵌三张贴图和全部七段动作；
+`idle/walk/run/jump/idle_guarded/meditate/sword_ride`。现役动作库为 `models/motions/cultivator_upright_motion_20261010.glb`；可编辑动作源为 `docs/art/cultivator_motion_library_20261010/cultivator_upright_motion_20261010.blend`，通过相对库链接复用 `docs/art/cultivator_upright_motion_20261009/cultivator_upright_motion_20261009.blend` 的网格和三张贴图；
 旧人物候选、动作中间件与专属场景已按使用者要求从当前树清理，不再是回退资源。
 新动作依据见 [完整人体动作 note](notes/implemented/art/2026-09-27-human-locomotion-on-v9.md)，
-现役资产台账见 `docs/art/cultivator_upright_motion_20261009/asset_ledger.md`；清理依据见
+现役动作与共享资产台账见 `docs/art/cultivator_motion_library_20261010/asset_ledger.md`；清理依据见
 [旧人物清理 note](notes/implemented/art/2026-09-27-unused-character-asset-cleanup.md)。
 
 骨架没有手指骨，无法制作可辨的掐诀或剑诀手型。改动作后用 `tools/art/measure_glb_ground_contact.py`

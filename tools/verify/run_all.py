@@ -40,6 +40,7 @@ GATES: list[tuple[str, list[str], int]] = [
     ("verify-skills", [sys.executable, "tools/verify/verify_skills.py"], 0),
     ("verify-mcp", [sys.executable, "tools/verify/verify_mcp.py"], 0),
     ("verify-agent-entries", [sys.executable, "tools/verify/verify_agent_entries.py"], 0),
+    ("verify-lfs-assets", [sys.executable, "tools/verify/verify_lfs_assets.py"], 0),
     ("verify-notes-format", [sys.executable, "tools/verify/verify_notes_format.py"], 0),
     ("negative-control", [sys.executable, "tools/verify/negative_control.py"], 0),
 ]

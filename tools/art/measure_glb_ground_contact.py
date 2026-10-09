@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     argv = sys.argv
     argv = argv[argv.index("--") + 1 :] if "--" in argv else []
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--glb", required=True)
+    parser.add_argument("--glb", "--blend", dest="glb", required=True)
     parser.add_argument("--tolerance", type=float, default=0.02,
                         help="a grounded clip may sit this far (m) above the plane")
     parser.add_argument("--report", default="")
@@ -85,7 +85,10 @@ def main() -> int:
     args = parse_args()
     path = Path(args.glb)
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(path))
+    if path.suffix.lower() == ".blend":
+        bpy.ops.wm.open_mainfile(filepath=str(path.resolve()))
+    else:
+        bpy.ops.import_scene.gltf(filepath=str(path))
 
     armature = next((o for o in bpy.data.objects if o.type == "ARMATURE"), None)
     mesh = skinned_mesh(armature)

@@ -1,0 +1,505 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started 项目初始化 (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | 正在扫描文件结构……[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | 正在加载全局类名……[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | 正在校验 GDExtension……[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | 正在创建自动加载脚本……[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | 正在初始化插件……[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | 正在启动文件扫描……[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started 正在注册全局类…… (124 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Capability[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | CapabilityManager[39m[0m
+[   1% ] [90m[1mupdate_scripts_classes[22m | Component[39m[0m
+[   2% ] [90m[1mupdate_scripts_classes[22m | SheetLoader[39m[0m
+[   3% ] [90m[1mupdate_scripts_classes[22m | TagRegistry[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | TimeKeeper[39m[0m
+[   4% ] [90m[1mupdate_scripts_classes[22m | Vocabulary[39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | FlyingSwordStrike[39m[0m
+[   6% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   7% ] [90m[1mupdate_scripts_classes[22m | Jump[39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   8% ] [90m[1mupdate_scripts_classes[22m | SwordArray[39m[0m
+[   9% ] [90m[1mupdate_scripts_classes[22m | SwordArrayView[39m[0m
+[  10% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | FlightBundle[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | SwordFlight[39m[0m
+[  12% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  13% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | SwordQi[39m[0m
+[  15% ] [90m[1mupdate_scripts_classes[22m | SwordQiView[39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | ActorAssembly[39m[0m
+[  17% ] [90m[1mupdate_scripts_classes[22m | ActorAssemblyConfig[39m[0m
+[  18% ] [90m[1mupdate_scripts_classes[22m | CultivatorSkeletonPresentation[39m[0m
+[  19% ] [90m[1mupdate_scripts_classes[22m | Swordsman[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | SwordsmanMotionComponent[39m[0m
+[  20% ] [90m[1mupdate_scripts_classes[22m | SwordsmanMovement[39m[0m
+[  21% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  23% ] [90m[1mupdate_scripts_classes[22m | SwordTargetComponent[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | TrainingDummy[39m[0m
+[  24% ] [90m[1mupdate_scripts_classes[22m | SwordCastBundle[39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | SwordCastComponent[39m[0m
+[  26% ] [90m[1mupdate_scripts_classes[22m | SwordCastPoseModifier[39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | SwordCastPresentation[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | SwordCastTargets[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | CameraRig[39m[0m
+[  29% ] [90m[1mupdate_scripts_classes[22m | CameraRigComponent[39m[0m
+[  30% ] [90m[1mupdate_scripts_classes[22m | CameraRigConfig[39m[0m
+[  31% ] [90m[1mupdate_scripts_classes[22m | FixedFollow[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | Orbit[39m[0m
+[  32% ] [90m[1mupdate_scripts_classes[22m | Overview[39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | QuarterTurn[39m[0m
+[  34% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  35% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  36% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  37% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  39% ] [90m[1mupdate_scripts_classes[22m | LabCatalog[39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  40% ] [90m[1mupdate_scripts_classes[22m | MotionPreviewAction[39m[0m
+[  41% ] [90m[1mupdate_scripts_classes[22m | MotionPreviewDisplay[39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | MotionPreviewPanel[39m[0m
+[  43% ] [90m[1mupdate_scripts_classes[22m | MotionPreviewParams[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | MotionPreviewState[39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  45% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  46% ] [90m[1mupdate_scripts_classes[22m | CameraLabGraybox[39m[0m
+[  47% ] [90m[1mupdate_scripts_classes[22m | CameraLabRig[39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  48% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  49% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  51% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  52% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  53% ] [90m[1mupdate_scripts_classes[22m | MovementLabInput[39m[0m
+[  54% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | StateTransitionLedger[39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  56% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  58% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  59% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  60% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  62% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  63% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | VitalsComponent[39m[0m
+[  64% ] [90m[1mupdate_scripts_classes[22m | VitalsGuard[39m[0m
+[  65% ] [90m[1mupdate_scripts_classes[22m | VitalsRegeneration[39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  67% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  68% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  69% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  70% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  73% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  74% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  75% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  76% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  78% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  79% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  80% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  81% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  82% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  84% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  85% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  86% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  87% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  89% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  90% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  91% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  92% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  93% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  94% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  95% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  96% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  97% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  98% ] [90m[1mupdate_scripts_classes[22m | LabHud[39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started 正在扫描动作…… (57 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | array_sword.glb[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | flying_sword.glb[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261010.glb[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261010_blender_roundtrip.glb[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | cultivator_aligned_motion_20260927.glb[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901.png[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901_normal.png[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261006.glb[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901_normal.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008.glb[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_swing.glb[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901_normal.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901.png[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901_normal.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261009.glb[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261009_texture_pbr_20250901.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261009_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | cultivator_upright_motion_20261009_texture_pbr_20250901_normal.png[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | bound_sword.glb[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | ground_contact_course.glb[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | ink_lakeside_sample_sun.svg[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | ink_lakeside_sample_world.glb[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | jade_bamboo.glb[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | jade_bamboo_Jade_Foliage_tex.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | jade_gate.glb[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | jade_gate_Jade_Stone_tex.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | jade_grass.glb[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | jade_lantern.glb[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | jade_lantern_Jade_Stone_tex.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | jade_mountain.glb[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | jade_mountain_Jade_Stone_tex.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | jade_pavilion.glb[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | jade_pavilion_Jade_Stone_tex.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | jade_pavilion_Jade_Tile_tex.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | jade_pavilion_Jade_Wood_tex.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | jade_pine.glb[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | jade_pine_Jade_Foliage_tex.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | jade_pine_Jade_Wood_tex.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | jade_rock.glb[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | jade_rock_Jade_Stone_tex.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | jade_sample_terrain.glb[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | mountain_realm.glb[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | mountain_realm_collision.glb[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | mountain_realm_courtyards.glb[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | movement_garden.glb[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | state_transition_lab.glb[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | sword_flight_course.glb[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | west_lake_sunset_world.glb[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | market_cultivator_four_views_v1.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | market_npcs_v1.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | market_square_background_v1.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started 正在导入或重新导入资产 (57 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   1% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   3% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   5% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   6% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   8% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  10% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  12% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  13% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  15% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  17% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  18% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  20% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  22% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  24% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  25% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  27% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  29% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  31% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  32% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  34% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  36% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  37% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  39% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  41% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  43% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  44% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  46% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  48% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  50% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  51% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  53% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  55% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  56% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  58% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  60% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  62% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  63% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  65% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  67% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  68% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  70% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  72% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  74% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  75% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  77% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  79% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  81% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  82% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  84% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  86% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  87% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  89% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  91% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  93% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  94% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[  96% ] [90m[1mreimport[22m | 正在准备重新导入文件……[39m[0m
+[   0% ] [90m[1mreimport[22m | 正在执行重新导入的前置操作……[39m[0m
+[   0% ] [90m[1mpreload_reimporting_scene[22m | Started 正在准备场景重新加载 (1 steps)[39m[0m
+[   0% ] [90m[1mpreload_reimporting_scene[22m | 正在分析场景 [空][39m[0m
+[  50% ] [90m[1mpreload_reimporting_scene[22m | 准备完成。[39m[0m
+[92m[ DONE ][39m [1mpreload_reimporting_scene[22m
+[0m
+[   0% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901.png[39m[0m
+[   1% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[   3% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_texture_pbr_20250901_normal.png[39m[0m
+[   5% ] [90m[1mreimport[22m | cultivator_upright_motion_20261009_texture_pbr_20250901.png[39m[0m
+[   6% ] [90m[1mreimport[22m | cultivator_upright_motion_20261009_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[   8% ] [90m[1mreimport[22m | cultivator_upright_motion_20261009_texture_pbr_20250901_normal.png[39m[0m
+[  10% ] [90m[1mreimport[22m | ink_lakeside_sample_sun.svg[39m[0m
+[  12% ] [90m[1mreimport[22m | jade_bamboo_Jade_Foliage_tex.png[39m[0m
+[  13% ] [90m[1mreimport[22m | jade_rock_Jade_Stone_tex.png[39m[0m
+[  15% ] [90m[1mreimport[22m | jade_gate_Jade_Stone_tex.png[39m[0m
+[  17% ] [90m[1mreimport[22m | jade_pine_Jade_Wood_tex.png[39m[0m
+[  18% ] [90m[1mreimport[22m | jade_lantern_Jade_Stone_tex.png[39m[0m
+[  20% ] [90m[1mreimport[22m | jade_pine_Jade_Foliage_tex.png[39m[0m
+[  22% ] [90m[1mreimport[22m | jade_mountain_Jade_Stone_tex.png[39m[0m
+[  24% ] [90m[1mreimport[22m | jade_pavilion_Jade_Stone_tex.png[39m[0m
+[  25% ] [90m[1mreimport[22m | jade_pavilion_Jade_Tile_tex.png[39m[0m
+[  27% ] [90m[1mreimport[22m | jade_pavilion_Jade_Wood_tex.png[39m[0m
+[  29% ] [90m[1mreimport[22m | market_square_background_v1.png[39m[0m
+[  31% ] [90m[1mreimport[22m | market_npcs_v1.png[39m[0m
+[  32% ] [90m[1mreimport[22m | market_cultivator_four_views_v1.png[39m[0m
+[  34% ] [90m[1mreimport[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901.png[39m[0m
+[  36% ] [90m[1mreimport[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  37% ] [90m[1mreimport[22m | cultivator_aligned_motion_20260927_texture_pbr_20250901_normal.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  39% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901.png[39m[0m
+[  41% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  43% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006_texture_pbr_20250901_normal.png[39m[0m
+[  44% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901.png[39m[0m
+[  46% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901_metallic-texture_pbr_20250901_roughness.png[39m[0m
+[  48% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_swing_texture_pbr_20250901_normal.png[39m[0m
+[  50% ] [90m[1mreimport[22m | cultivator_upright_motion_20261010_blender_roundtrip.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  51% ] [90m[1mreimport[22m | cultivator_upright_motion_20261010.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  53% ] [90m[1mreimport[22m | mountain_realm_collision.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  55% ] [90m[1mreimport[22m | mountain_realm_courtyards.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  56% ] [90m[1mreimport[22m | mountain_realm.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  58% ] [90m[1mreimport[22m | jade_sample_terrain.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  60% ] [90m[1mreimport[22m | west_lake_sunset_world.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  62% ] [90m[1mreimport[22m | sword_flight_course.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  63% ] [90m[1mreimport[22m | jade_rock.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  65% ] [90m[1mreimport[22m | state_transition_lab.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  67% ] [90m[1mreimport[22m | movement_garden.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  68% ] [90m[1mreimport[22m | jade_pine.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  70% ] [90m[1mreimport[22m | jade_pavilion.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  72% ] [90m[1mreimport[22m | jade_mountain.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  74% ] [90m[1mreimport[22m | jade_lantern.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  75% ] [90m[1mreimport[22m | jade_grass.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  77% ] [90m[1mreimport[22m | jade_gate.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  79% ] [90m[1mreimport[22m | jade_bamboo.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  81% ] [90m[1mreimport[22m | ink_lakeside_sample_world.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  82% ] [90m[1mreimport[22m | ground_contact_course.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  84% ] [90m[1mreimport[22m | bound_sword.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  86% ] [90m[1mreimport[22m | cultivator_upright_motion_20261009.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  87% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008_swing.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  89% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261008.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  91% ] [90m[1mreimport[22m | cultivator_balanced_motion_20261006.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  93% ] [90m[1mreimport[22m | cultivator_aligned_motion_20260927.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  94% ] [90m[1mreimport[22m | flying_sword.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  96% ] [90m[1mreimport[22m | array_sword.glb[39m[0m
+[   0% ] [90m[1mimport[22m | Started 导入场景 (104 steps)[39m[0m
+[   0% ] [90m[1mimport[22m | 导入场景中...[39m[0m
+[   1% ] [90m[1mimport[22m | 执行自定义脚本...[39m[0m
+[  99% ] [90m[1mimport[22m | 保存中...[39m[0m
+[92m[ DONE ][39m [1mimport[22m
+[0m
+[  98% ] [90m[1mreimport[22m | 正在结束资产导入……[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started 正在导入或重新导入资产 (57 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | 正在执行重新导入的后置操作……[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started 正在加载编辑器 (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | 正在加载编辑器布局……[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | 正在加载停靠面板……[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m

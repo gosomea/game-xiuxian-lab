@@ -10,6 +10,9 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# Blender 自动备份不是可编辑源资产；已有跟踪备份保留。
+*.blend1
+
 # 注意：.agents/ .claude/ .codex/ .codebuddy/ .workbuddy/ 下的 skills 符号链接
 # 必须入库（Agent 自动发现入口），不要忽略这些目录。
 # 各 Agent 的运行时产物（会话历史、缓存、本地设置）按需在此追加，例如：

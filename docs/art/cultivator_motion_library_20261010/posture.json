@@ -1,0 +1,56 @@
+{
+  "glb": "docs/art/cultivator_motion_library_20261010/cultivator_upright_motion_20261010.blend",
+  "forward": [
+    -0.01722,
+    -0.99985,
+    0.0
+  ],
+  "clips": {
+    "idle": {
+      "frames": 47,
+      "pitch_mean_deg": 2.657,
+      "pitch_min_deg": 2.181,
+      "pitch_max_deg": 3.133,
+      "roll_mean_deg": -0.031,
+      "roll_min_deg": -0.032,
+      "roll_max_deg": -0.03
+    },
+    "walk": {
+      "frames": 27,
+      "pitch_mean_deg": 2.757,
+      "pitch_min_deg": 1.645,
+      "pitch_max_deg": 4.381,
+      "roll_mean_deg": 1.012,
+      "roll_min_deg": -0.504,
+      "roll_max_deg": 2.16
+    },
+    "run": {
+      "frames": 16,
+      "pitch_mean_deg": 3.318,
+      "pitch_min_deg": 1.201,
+      "pitch_max_deg": 6.057,
+      "roll_mean_deg": -0.799,
+      "roll_min_deg": -1.953,
+      "roll_max_deg": 1.059
+    },
+    "jump": {
+      "frames": 25,
+      "pitch_mean_deg": 2.348,
+      "pitch_min_deg": 1.321,
+      "pitch_max_deg": 3.366,
+      "roll_mean_deg": -0.029,
+      "roll_min_deg": -0.031,
+      "roll_max_deg": -0.026
+    },
+    "sword_ride": {
+      "frames": 47,
+      "pitch_mean_deg": 2.905,
+      "pitch_min_deg": 2.904,
+      "pitch_max_deg": 2.906,
+      "roll_mean_deg": -0.017,
+      "roll_min_deg": -0.423,
+      "roll_max_deg": 0.388
+    }
+  },
+  "problems": []
+}

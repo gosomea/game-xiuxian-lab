@@ -1,0 +1,17 @@
+{
+  "source": "src/game/actors/swordsman/models/cultivator_upright_motion_20261009.glb",
+  "output": "src/game/actors/swordsman/models/motions/cultivator_upright_motion_20261010.glb",
+  "source_bytes": 62839116,
+  "motion_bytes": 149996,
+  "clips": [
+    "idle",
+    "idle_guarded",
+    "jump",
+    "meditate",
+    "run",
+    "sword_ride",
+    "walk"
+  ],
+  "animation_data_preserved": true,
+  "sha256": "0dd4a21589441b73c7290ba93159dc75817855059adac5b8f4b65ef122ce513e"
+}

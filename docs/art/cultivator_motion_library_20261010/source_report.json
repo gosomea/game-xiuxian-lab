@@ -1,0 +1,20 @@
+{
+  "source": "docs/art/cultivator_upright_motion_20261009/cultivator_upright_motion_20261009.blend",
+  "output": "docs/art/cultivator_motion_library_20261010/cultivator_upright_motion_20261010.blend",
+  "bytes": 364315,
+  "linked_mesh": "mesh",
+  "library": "//../cultivator_upright_motion_20261009/cultivator_upright_motion_20261009.blend",
+  "clips": [
+    "idle",
+    "idle_guarded",
+    "jump",
+    "meditate",
+    "run",
+    "sword_ride",
+    "walk"
+  ],
+  "local_images": 0,
+  "bones": 22,
+  "standing_sole_m": -4.118034624411848e-08,
+  "standing_sole_matches_shared_source": true
+}

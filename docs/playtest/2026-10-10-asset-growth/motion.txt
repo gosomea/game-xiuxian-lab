@@ -1,0 +1,49 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-10 00:31:35.430 Godot[27887:29645802] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-10 00:31:36.121 Godot[27887:29645802] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+STATE idle position=(-6.0, -0.0, 0.0) pose={ "clock": 1.03333333333333, "gait": 0.0, "phase": 1.03333333333333, "current_clip": "idle", "overridden": false, "speed": 0.0, "vertical_speed": 0.0, "grounded": true, "flying": false } rate=1.000
+PASS capture idle
+PASS eight-way [87] speed 2.000
+PASS eight-way [87] model faces velocity
+PASS eight-way [87] uses walk
+PASS eight-way [83] speed 2.000
+PASS eight-way [83] model faces velocity
+PASS eight-way [83] uses walk
+PASS eight-way [65] speed 2.000
+PASS eight-way [65] model faces velocity
+PASS eight-way [65] uses walk
+PASS eight-way [68] speed 2.000
+PASS eight-way [68] model faces velocity
+PASS eight-way [68] uses walk
+PASS eight-way [87, 68] speed 2.000
+PASS eight-way [87, 68] model faces velocity
+PASS eight-way [87, 68] uses walk
+PASS eight-way [87, 65] speed 2.000
+PASS eight-way [87, 65] model faces velocity
+PASS eight-way [87, 65] uses walk
+PASS eight-way [83, 68] speed 2.000
+PASS eight-way [83, 68] model faces velocity
+PASS eight-way [83, 68] uses walk
+PASS eight-way [83, 65] speed 2.000
+PASS eight-way [83, 65] model faces velocity
+PASS eight-way [83, 65] uses walk
+PASS walk playback matches measured stance reference
+STATE walk position=(-6.0, 0.0, -1.0) pose={ "clock": 6.01167966666676, "gait": 1.0, "phase": 0.56258792082469, "current_clip": "walk", "overridden": false, "speed": 2.0, "vertical_speed": 0.0, "grounded": true, "flying": false } rate=1.206
+PASS capture walk
+PASS Shift selects run
+PASS run speed 4.200
+PASS run plays close to native cadence
+STATE run position=(-6.0, 0.0, -2.050001) pose={ "clock": 6.26055700000009, "gait": 1.0, "phase": 0.21474960520479, "current_clip": "run", "overridden": false, "speed": 4.19999980926514, "vertical_speed": 0.0, "grounded": true, "flying": false } rate=0.994
+PASS capture run
+PASS running jump uses jump clip
+STATE jump position=(-6.0, 0.525555, -2.470389) pose={ "clock": 6.36481536363646, "gait": 0.0, "phase": 0.07121212121212, "current_clip": "jump", "overridden": false, "speed": 4.19999980926514, "vertical_speed": 4.79999923706055, "grounded": false, "flying": false } rate=1.000
+PASS capture jump
+PASS flight horizontal 22m/s
+PASS flight ascent 12m/s
+PASS flight uses authored sword pose
+STATE flight position=(-10.4, 3.150827, 0.0) pose={ "clock": 8.62770900000013, "gait": 0.0, "phase": 0.49834933333333, "current_clip": "sword_ride", "overridden": false, "speed": 22.0, "vertical_speed": 12.0, "grounded": false, "flying": true } rate=1.000
+PASS capture flight
+PASS flight descent 12m/s
+MOTION_BALANCE_RESULT passed=38 failed=0

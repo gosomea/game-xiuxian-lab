@@ -8,6 +8,8 @@
 - 游戏导出：`src/game/actors/swordsman/models/cultivator_upright_motion_20261009.glb`。
 - 现役入口仍是 `cultivator_aligned_motion_20260927_visual.tscn`，模型子节点名不变。
 
+2026-10-10 起，本文件的完整 GLB/Blender 源作为共享几何、材质、贴图、rest 与蒙皮依赖保留；现役动作改为独立库，可编辑动作源使用相对链接的轻量版本，见[拆分台账](../cultivator_motion_library_20261010/asset_ledger.md)。本版本的完整七段动作继续保留作逐关键帧回归，不覆盖它们来保存新的纯动作版本。
+
 ## 问题与修法
 
 旧版站立时颈在骨盆后 4.9 cm、肩线在后 6.4 cm，骨盆到颈后仰 5.4°（胸椎到颈约 8°，头再前探约 16° 掩盖了它），上臂与前臂又各向后摆约 11°，手腕落在骨盆后约 16 cm。`idle_guarded`、`meditate` 上身相同，`sword_ride`、`jump` 相近，`run` 本来直立。

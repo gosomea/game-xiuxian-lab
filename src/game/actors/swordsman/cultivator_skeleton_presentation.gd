@@ -56,6 +56,8 @@ const OPTIONAL_GUARDED_IDLE := "idle_guarded"
 ## true = 静止时用额外待命姿态代替普通 idle；资产没有该 clip 时自动退回 idle。
 ## 默认关闭：现役人物静止与预览重置使用双臂自然放松的普通站姿。
 @export var prefer_guarded_idle: bool = false
+## 独立动作库复用共享 GLB 的网格、材质与 rest；空值保留完整旧资产的动作。
+@export var animation_library: AnimationLibrary
 const OPTIONAL_MEDITATE := "meditate"
 const OPTIONAL_SWORD_RIDE := "sword_ride"
 
@@ -84,6 +86,12 @@ func _ready() -> void:
 	assert(players.size() == 1,
 		"CultivatorSkeletonPresentation: 应恰好 1 个 AnimationPlayer，实际 %d" % players.size())
 	_player = players[0] as AnimationPlayer
+	if animation_library != null:
+		if _player.has_animation_library(""):
+			_player.remove_animation_library("")
+		var library_error := _player.add_animation_library("", animation_library)
+		assert(library_error == OK,
+			"CultivatorSkeletonPresentation: 无法挂载独立动作库")
 	for clip in ["idle", "walk", "run", "jump"]:
 		assert(_player.has_animation(clip),
 			"CultivatorSkeletonPresentation: 缺少动作 %s（GLB 导出 clips=%s）"

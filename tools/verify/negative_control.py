@@ -398,7 +398,60 @@ def case_agent_entry_plain_file(root: Path) -> tuple[str, Path]:
     return "Agent 入口是普通文件而非 symlink（Windows clone 假文件）", root
 
 
+def lfs_fixture(root: Path) -> None:
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    baseline = root / "tools/assets/lfs_legacy_blobs.json"
+    baseline.parent.mkdir(parents=True)
+    baseline.write_text(json.dumps({"schema_version": 1, "files": {}}))
+
+
+def case_lfs_unregistered_png(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    (root / "large.png").write_bytes(b"p" * 5_000_001)
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    attrs = root / ".gitattributes"
+    attrs.write_text("\n".join(line for line in attrs.read_text().splitlines()
+                               if "large.png" not in line) + "\n")
+    return "新增大 PNG 未登记 LFS", root
+
+
+def case_lfs_staged_raw_blob(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    (root / "new.glb").write_bytes(b"raw model")
+    subprocess.run(["git", "-C", str(root), "add", "new.glb"], check=True)
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    return "已登记但暂存的 GLB 仍是普通 blob", root
+
+
+def case_lfs_modified_legacy(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    asset = root / "legacy.glb"
+    asset.write_bytes(b"old model")
+    oid = subprocess.check_output(["git", "-C", str(root), "hash-object", str(asset)], text=True).strip()
+    (root / "tools/assets/lfs_legacy_blobs.json").write_text(
+        json.dumps({"schema_version": 1, "files": {"legacy.glb": oid}}))
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    asset.write_bytes(b"changed model")
+    return "旧资产变更后仍保留普通 blob 例外", root
+
+
+def case_lfs_new_backup(root: Path) -> tuple[str, Path]:
+    lfs_fixture(root)
+    (root / "new.blend1").write_bytes(b"automatic backup")
+    subprocess.run(["git", "-C", str(root), "add", "new.blend1"], check=True)
+    subprocess.run([sys.executable, "tools/assets/sync_lfs_attributes.py", "--root", str(root)],
+                   cwd=REPO_ROOT, check=True, capture_output=True)
+    return "新增 Blender 自动备份被暂存", root
+
+
 CASES = [
+    ("verify_lfs_assets.py", case_lfs_unregistered_png),
+    ("verify_lfs_assets.py", case_lfs_staged_raw_blob),
+    ("verify_lfs_assets.py", case_lfs_modified_legacy),
+    ("verify_lfs_assets.py", case_lfs_new_backup),
     ("verify_packages.py", case_package_domain_root_file),
     ("verify_packages.py", case_package_oversized_without_exception),
     ("verify_packages.py", case_package_exception_missing_note),

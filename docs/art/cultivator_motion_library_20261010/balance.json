@@ -1,0 +1,16 @@
+{
+  "glb": "docs/art/cultivator_motion_library_20261010/cultivator_upright_motion_20261010.blend",
+  "samples": 121,
+  "feet_ahead_of_pelvis_mean_m": 0.007556110767594392,
+  "feet_ahead_range_m": [
+    -0.06938844354590401,
+    0.09442113313707523
+  ],
+  "walk_subframe_sole_min_max_m": [
+    -0.003090223530307412,
+    0.003527694148942828
+  ],
+  "loop_seam_max_angle_deg": 0.0,
+  "loop_seam_max_translation_m": 0.0,
+  "problems": []
+}

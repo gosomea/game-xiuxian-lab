@@ -16,12 +16,15 @@ from measure_glb_ground_contact import evaluated_min_z, skinned_mesh
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--glb',required=True)
+    parser.add_argument('--glb','--blend',dest='glb',required=True)
     parser.add_argument('--report',required=True)
     parser.add_argument('--check',action='store_true',help='enforce corrected walking balance and seam tolerances')
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(Path(args.glb)))
+    if Path(args.glb).suffix.lower()=='.blend':
+        bpy.ops.wm.open_mainfile(filepath=str(Path(args.glb).resolve()))
+    else:
+        bpy.ops.import_scene.gltf(filepath=str(Path(args.glb)))
     rig=next(o for o in bpy.data.objects if o.type=='ARMATURE')
     scene=bpy.context.scene
     def point(n):return rig.matrix_world@rig.pose.bones['mixamorig:'+n].head

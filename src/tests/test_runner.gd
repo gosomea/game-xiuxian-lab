@@ -45,6 +45,7 @@ const SUITES := [
 	"res://tests/test_motion_stage_geometry.gd",
 	"res://tests/test_jade_paper_rigged_animation.gd",
 	"res://tests/test_cultivator_motion_20260927_visual.gd",
+	"res://tests/test_cultivator_motion_library.gd",
 	"res://tests/test_sword_workbench.gd",
 ]
 
