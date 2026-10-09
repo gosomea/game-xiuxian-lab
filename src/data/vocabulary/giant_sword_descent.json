@@ -1,0 +1,47 @@
+{
+  "domain": "giant_sword_descent",
+  "description": "巨剑镇落独立数据契约；决策 notes/implemented/gameplay/2026-10-10-sword-spell-exploration.md。",
+  "components": {
+    "GiantSwordDescentComponent": {
+      "description": "巨剑参数、确定性阶段与只读表现快照；由 GiantSwordDescent 写入，View 消费",
+      "script": "src/game/abilities/giant_sword_descent/giant_sword_descent_component.gd",
+      "fields": {
+        "min_gather_time": "参数：快速点击仍需完成的最小凝聚秒数",
+        "full_charge_time": "参数：法阵满亮所需蓄势秒数",
+        "hover_time": "参数：松开后完整剑形归正与上提秒数",
+        "descent_time": "参数：三次方加速镇落秒数",
+        "impact_hold_time": "参数：接地残剑完整保留秒数",
+        "fade_time": "参数：残影消散秒数",
+        "cooldown": "参数：一次流程结束后的冷却秒数",
+        "hover_tip_height": "参数：凝聚时剑尖距选点高度（米）",
+        "sword_length_m": "参数：含柄的完整主剑长度（米）",
+        "hover_lift": "参数：镇落前悬停上提距离（米）",
+        "preview_follow_rate": "参数：预览跟随指数平滑速率（每秒）",
+        "hit_radius": "参数：主剑贯穿半宽（米）",
+        "shock_radius": "参数：落地范围冲击半径（米）",
+        "shock_height": "参数：落地冲击向上高度（米）",
+        "rune_radius": "参数：选点法阵半径（米）",
+        "phase": "快照：idle / gather / hover / descent / impact / fade",
+        "phase_progress": "快照：当前阶段归一化进度",
+        "phase_elapsed": "快照：当前阶段已用逻辑秒数",
+        "visual_time": "快照：当前 manager_time，用于确定性悬浮和法阵转动",
+        "charge": "快照：蓄势光强权重 0..1",
+        "locked": "快照：松开后目标锁定，输入不再改变它",
+        "target_point": "快照：最终锁定的真实地面点",
+        "target_normal": "快照：锁定地面法线",
+        "rune_point": "快照：平滑预览/归位法阵中心",
+        "rune_normal": "快照：法阵平面的平滑法线",
+        "rune_alpha": "快照：法阵可见强度",
+        "sword_tip": "快照：可见剑尖世界位置，落地时等于 target_point",
+        "sword_forward": "快照：剑尖方向，镇落阶段保持世界向下",
+        "sword_length": "快照：凝形后可见剑全长（米）",
+        "sword_alpha": "快照：剑形可见强度",
+        "tip_history": "快照：镇落剑尖轨迹世界坐标，View 只读画尾迹",
+        "impact_age": "快照：自落地起的逻辑秒数；未落地为 -1",
+        "impact_serial": "统计：完成的镇落冲击序号；清理表现不清统计"
+      },
+      "signals": {},
+      "added": "2026-10-10"
+    }
+  }
+}

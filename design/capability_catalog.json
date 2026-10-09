@@ -35,6 +35,30 @@
         "_should_deactivate",
         "_on_deactivated"
       ],
+      "class": "GiantSwordDescent",
+      "domain": "abilities",
+      "package": "abilities/giant_sword_descent",
+      "parameters": [],
+      "reads_components": [
+        "GiantSwordDescentComponent",
+        "SwordCastComponent",
+        "SwordsmanMotionComponent"
+      ],
+      "script": "src/game/abilities/giant_sword_descent/giant_sword_descent.gd",
+      "signals": [],
+      "summary": "巨剑镇落：凝剑→锁点悬停/上提→加速镇落→一次冲击→残影消散。",
+      "test": "src/game/abilities/giant_sword_descent/test_giant_sword_descent.gd",
+      "uses_groups": [],
+      "uses_tags": []
+    },
+    {
+      "axis_implemented": [
+        "_should_activate",
+        "_on_activated",
+        "_tick_active",
+        "_should_deactivate",
+        "_on_deactivated"
+      ],
       "class": "HeavenlySwordWheel",
       "domain": "abilities",
       "package": "abilities/heavenly_sword_wheel",
@@ -265,7 +289,7 @@
       "uses_tags": []
     }
   ],
-  "count": 11,
+  "count": 12,
   "domains": [
     "abilities",
     "actors",
@@ -273,6 +297,7 @@
   ],
   "packages": [
     "abilities/flying_sword_strike",
+    "abilities/giant_sword_descent",
     "abilities/heavenly_sword_wheel",
     "abilities/jump",
     "abilities/sword_array",
