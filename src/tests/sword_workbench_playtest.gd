@@ -101,7 +101,7 @@ func _run() -> void:
 	_check(_cast.array_swords.is_empty(), "齐射结束后剑阵消散")
 
 	# 御剑时仍可放剑气。
-	_key(KEY_C)
+	_scene.call("select_form", SwordCastComponent.FORM_QI)
 	await _frames(2)
 	_key(KEY_F)
 	await _frames(20)

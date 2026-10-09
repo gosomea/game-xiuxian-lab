@@ -1,0 +1,64 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+OK   test_lab_defaults.gd                       通过 95 / 失败 0
+OK   test_core.gd                               通过 16 / 失败 0
+OK   test_swordsman_movement.gd                 通过 23 / 失败 0
+OK   test_actor_assembly.gd                     通过 142 / 失败 0
+OK   test_jump.gd                               通过 12 / 失败 0
+OK   test_sword_flight.gd                       通过 32 / 失败 0
+OK   test_flight_bundle.gd                      通过 86 / 失败 0
+OK   test_sword_qi.gd                           通过 20 / 失败 0
+OK   test_flying_sword_strike.gd                通过 19 / 失败 0
+OK   test_sword_array.gd                        通过 14 / 失败 0
+OK   test_vocabulary.gd                         通过 10 / 失败 0
+OK   test_vitals_regeneration.gd                通过 7 / 失败 0
+OK   test_vitals_guard.gd                       通过 14 / 失败 0
+OK   test_lab_catalog.gd                        通过 23 / 失败 0
+OK   test_fixed_follow.gd                       通过 25 / 失败 0
+OK   test_quarter_turn.gd                       通过 13 / 失败 0
+OK   test_orbit.gd                              通过 25 / 失败 0
+OK   test_overview.gd                           通过 14 / 失败 0
+OK   test_camera_rig_executor.gd                通过 83 / 失败 0
+OK   test_motion_preview.gd                     通过 132 / 失败 0
+OK   test_movement_lab_hub.gd                   通过 58 / 失败 0
+OK   test_movement_lab_input.gd                 通过 102 / 失败 0
+SPRINT_SCENE movement_workbench walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE camera_lab walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE motion_stage walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE ground_contact_course walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE sword_flight_course walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE state_transition_lab walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE movement_garden walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE mountain_realm walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE jade_paper_sample walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE ink_lakeside_sample walk=2.00 run=4.20 released=2.00 unfocused=0.00
+SPRINT_SCENE west_lake_sunset walk=2.00 run=4.20 released=2.00 unfocused=0.00
+OK   test_all_scene_sprint.gd                   通过 165 / 失败 0
+TRAVERSAL_SCENE movement_workbench flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE camera_lab flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE motion_stage flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE ground_contact_course flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE sword_flight_course flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE state_transition_lab flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE movement_garden flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE mountain_realm flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE jade_paper_sample flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE ink_lakeside_sample flight=22.00 lift=12.00 sink=-12.00
+TRAVERSAL_SCENE west_lake_sunset flight=22.00 lift=12.00 sink=-12.00
+OK   test_all_scene_traversal.gd                通过 366 / 失败 0
+OK   test_ink_lakeside_sample.gd                通过 14 / 失败 0
+OK   test_west_lake_sunset.gd                   通过 33 / 失败 0
+OK   test_lab_navigation.gd                     通过 68 / 失败 0
+OK   test_motion_stage_geometry.gd              通过 135 / 失败 0
+OK   test_jade_paper_rigged_animation.gd        通过 31 / 失败 0
+OK   test_cultivator_motion_20260927_visual.gd  通过 113 / 失败 0
+OK   test_cultivator_motion_library.gd          通过 257 / 失败 0
+OK   test_sword_workbench.gd                    通过 25 / 失败 0
+OK   test_sword_cast_targets.gd                 通过 14 / 失败 0
+OK   test_heavenly_sword_wheel.gd               通过 261 / 失败 0
+OK   test_giant_sword_descent.gd                通过 151 / 失败 0
+OK   test_heavenly_sword_rain.gd                通过 93 / 失败 0
+OK   test_sword_spell_exploration.gd            通过 117 / 失败 0
+
+
+测试合计：通过 2808，失败 0

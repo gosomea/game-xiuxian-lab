@@ -66,7 +66,7 @@ func render_snapshot() -> void:
 	global_transform = Transform3D.IDENTITY
 	var data := _data
 	var longitudinal := data.sword_length / SwordSpellVisual.TOTAL_LENGTH
-	var scale := Vector3(longitudinal * 0.76, longitudinal * 0.76, longitudinal)
+	var scale := Vector3(longitudinal * 1.9, longitudinal * 0.76, longitudinal)
 	var origin := data.sword_tip - data.sword_forward * SwordSpellVisual.TIP_LENGTH * longitudinal
 	_blade.transform = SwordSpellVisual.sword_transform(origin, data.sword_forward, scale)
 	_blade_material.set_shader_parameter("opacity", data.sword_alpha)

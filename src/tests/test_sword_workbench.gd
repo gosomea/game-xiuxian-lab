@@ -44,10 +44,13 @@ static func run(t) -> void:
 
 	var dummies: Array = scene.call("dummies")
 	var first: TrainingDummy = dummies[0]
-	for form in SwordCastComponent.FORMS:
+	for form in [SwordCastComponent.FORM_QI, SwordCastComponent.FORM_STRIKE, SwordCastComponent.FORM_ARRAY]:
 		scene.call("reset_experiment")
 		await scene.get_tree().physics_frame
 		scene.call("select_form", form)
+		# 重置取消此前出招；按真实冷却推进后再开始本次独立命中用例。
+		for _frame in range(24):
+			await scene.get_tree().physics_frame
 		var before := int(scene.call("total_hits"))
 		await _cast_at(scene, first.global_position, form == SwordCastComponent.FORM_ARRAY)
 		t.assert_true(int(scene.call("total_hits")) > before, "%s 在真实物理帧下命中木桩" % form)

@@ -71,7 +71,7 @@ func _tick_active(delta: float) -> void:
 	var data := _data_ref
 	var now := manager_time()
 	if cast.cancel_generation != _cancel_generation \
-		or (_phase == "gather" and not _release_pending and cast.form != SwordCastComponent.FORM_GIANT):
+		or (_phase == "gather" and not _release_pending and not cast.released_for(SwordCastComponent.FORM_GIANT) and cast.form != SwordCastComponent.FORM_GIANT):
 		_clear()
 		return
 	data.visual_time = now
@@ -133,7 +133,7 @@ func _gather(data: GiantSwordDescentComponent, cast: SwordCastComponent,
 	data.sword_tip = data.rune_point + Vector3.UP * (data.hover_tip_height + bob)
 	data.sword_forward = Vector3(sin(elapsed * 1.1) * 0.025, -1.0,
 		cos(elapsed * 1.3) * 0.018).normalized()
-	if not _release_pending and (cast.cast_released or not cast.cast_held):
+	if not _release_pending and (cast.released_for(SwordCastComponent.FORM_GIANT) or not cast.cast_held):
 		_release_pending = true
 		_locked_point = cast.aim_surface_point if cast.aim_surface_valid else data.target_point
 		_locked_normal = _normal(cast.aim_surface_normal) if cast.aim_surface_valid else data.target_normal

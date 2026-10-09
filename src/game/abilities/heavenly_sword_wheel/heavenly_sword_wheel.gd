@@ -76,7 +76,7 @@ func _should_deactivate() -> bool:
 	var data := component(&"HeavenlySwordWheelComponent") as HeavenlySwordWheelComponent
 	return cast == null or data == null or data.phase == "idle" \
 		or cast.cancel_generation != data.cancel_generation_seen \
-		or (data.phase == "gather" and not data.release_requested and cast.form != SwordCastComponent.FORM_WHEEL)
+		or (data.phase == "gather" and not data.release_requested and not cast.released_for(SwordCastComponent.FORM_WHEEL) and cast.form != SwordCastComponent.FORM_WHEEL)
 
 
 func _on_deactivated() -> void:
@@ -105,7 +105,7 @@ func _gather(cast: SwordCastComponent, data: HeavenlySwordWheelComponent, host: 
 		while data.swords.size() < data.max_swords and now >= data.next_spawn_at and cast.cast_held:
 			_add_sword(data, data.swords.size(), data.next_spawn_at)
 			data.next_spawn_at += data.gather_interval
-		if cast.cast_released or not cast.cast_held:
+		if cast.released_for(SwordCastComponent.FORM_WHEEL) or not cast.cast_held:
 			data.release_requested = true
 			data.locked_target = cast.aim_surface_point if cast.aim_surface_valid else cast.aim_point
 			data.locked_normal = cast.aim_surface_normal.normalized() if cast.aim_surface_valid else Vector3.UP

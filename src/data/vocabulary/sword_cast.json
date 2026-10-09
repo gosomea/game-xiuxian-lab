@@ -3,7 +3,7 @@
   "description": "剑法出招契约：场景写入鼠标指向与左键输入，剑气 / 飞剑出击 / 剑阵三项能力读写，悬浮本命剑与投射物视图只读。依据 notes/implemented/gameplay/2026-10-09-sword-workbench.md。",
   "components": {
     "SwordCastComponent": {
-      "description": "三招共用的输入、出招请求、本命剑状态、投射物渲染数据与各招参数",
+      "description": "六招共用的输入、出招请求、本命剑状态、反馈、投射物渲染数据与各招参数",
       "script": "src/game/shared/sword_cast/sword_cast_component.gd",
       "fields": {
         "aim_point": "鼠标在地面的指向点（世界坐标）；场景每物理帧写入",
@@ -48,7 +48,8 @@
         "feedback_point": "最近一次法术空间反馈位置",
         "feedback_strength": "最近一次反馈强度0..1，轻剑群不触发重顿帧",
         "pose_phase": "当前招式写入的施法姿势阶段",
-        "pose_progress": "当前施法姿势阶段进度0..1"
+        "pose_progress": "当前施法姿势阶段进度0..1",
+        "cast_released_form": "松开边沿所属招式，切招后仍交付旧招；空串为单能力旧输入兼容。场景每物理帧写入"
       },
       "signals": {},
       "added": "2026-10-09"

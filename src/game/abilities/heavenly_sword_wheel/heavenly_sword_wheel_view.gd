@@ -10,6 +10,7 @@ var _rings: Array[MeshInstance3D] = []
 var _ring_materials: Array[StandardMaterial3D] = []
 var _trail_mesh := ImmediateMesh.new()
 var _trails: MeshInstance3D
+var _orientations: Dictionary = {}
 
 
 func bind(data: HeavenlySwordWheelComponent) -> void:
@@ -73,8 +74,16 @@ func _process(_delta: float) -> void:
 	for index in range(count):
 		var sword: Dictionary = _data.swords[index]
 		var color := Color(1.0, 1.0, 1.0, float(sword["alpha"]))
-		SwordSpellVisual.set_sword(_swords.multimesh, index, sword["position"], sword["forward"], sword["scale"], color)
+		var key := str(sword["ring"]) + ":" + str(sword["angle"])
+		var unit := SwordSpellVisual.sword_transform(sword["position"], sword["forward"])
+		if _orientations.has(key):
+			unit = SwordSpellVisual.continuous_sword_transform(sword["position"], sword["forward"], Vector3.ONE, _orientations[key])
+		_orientations[key] = unit.basis
+		_swords.multimesh.set_instance_transform(index, Transform3D(unit.basis.scaled_local(sword["scale"]), unit.origin))
+		_swords.multimesh.set_instance_color(index, color)
 	_swords.multimesh.visible_instance_count = count
+	if count == 0:
+		_orientations.clear()
 	var right := _data.direction.cross(Vector3.UP).normalized()
 	var wheel_basis := Basis(right, _data.direction, Vector3.UP)
 	for index in range(_rings.size()):

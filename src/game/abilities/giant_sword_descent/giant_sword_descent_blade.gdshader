@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_disabled;
+render_mode blend_mix, depth_draw_opaque, cull_disabled, unshaded;
 
 uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 uniform float radiance : hint_range(0.0, 2.0) = 0.7;

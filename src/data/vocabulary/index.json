@@ -219,7 +219,7 @@
     "SwordCastComponent": {
       "_source": "sword_cast.json",
       "added": "2026-10-09",
-      "description": "三招共用的输入、出招请求、本命剑状态、投射物渲染数据与各招参数",
+      "description": "六招共用的输入、出招请求、本命剑状态、反馈、投射物渲染数据与各招参数",
       "fields": {
         "aim_point": "鼠标在地面的指向点（世界坐标）；场景每物理帧写入",
         "aim_surface_normal": "真实碰撞地面的法线",
@@ -237,6 +237,7 @@
         "cast_held": "左键是否按住；场景每物理帧写入",
         "cast_pressed": "左键按下边沿，仅按下那一帧为 true；场景每物理帧写入",
         "cast_released": "左键松开边沿，仅松开那一帧为 true；场景每物理帧写入",
+        "cast_released_form": "松开边沿所属招式，切招后仍交付旧招；空串为单能力旧输入兼容。场景每物理帧写入",
         "casts_total": "统计：累计出招次数",
         "face_direction": "出招时请求的世界水平朝向；能力写入，场景转交角色",
         "face_until": "面向请求的截止逻辑时刻（manager_time）",

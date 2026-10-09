@@ -79,14 +79,14 @@ func _tick_active(delta: float) -> void:
 	var now := manager_time()
 	if _phase == Phase.GATHER:
 		if not rain.released:
-			if cast.form != SwordCastComponent.FORM_RAIN:
+			if cast.form != SwordCastComponent.FORM_RAIN and not cast.released_for(SwordCastComponent.FORM_RAIN):
 				_finish()
 				return
 			if cast.aim_surface_valid:
 				var alpha := 1.0 - exp(-rain.follow_rate * delta)
 				rain.ground_center = rain.ground_center.lerp(cast.aim_surface_point, alpha)
 				rain.ground_normal = _normal(rain.ground_normal.lerp(cast.aim_surface_normal, alpha))
-			if cast.cast_released or not cast.cast_held:
+			if cast.released_for(SwordCastComponent.FORM_RAIN) or not cast.cast_held:
 				_lock_targets(host)
 		_update_hover(now)
 		if rain.released and now - _started_at >= rain.gather_time:

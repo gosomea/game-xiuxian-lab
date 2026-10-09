@@ -1,0 +1,16 @@
+flowchart TD
+  preflight{{"preflight: passed"}}
+  foundation{{"foundation: passed"}}
+  preflight --> foundation
+  wheel["wheel: passed"]
+  foundation --> wheel
+  giant["giant: passed"]
+  foundation --> giant
+  rain["rain: passed"]
+  foundation --> rain
+  integration["integration: passed"]
+  wheel --> integration
+  giant --> integration
+  rain --> integration
+  acceptance{{"acceptance: passed"}}
+  integration --> acceptance

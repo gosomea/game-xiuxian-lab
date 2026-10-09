@@ -1,0 +1,35 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+PASS heavenly_sword_wheel凝聚到消散阶段完整 ["gather", "turn", "volley", "idle"]
+PASS heavenly_sword_wheel完成并回到待命
+PASS heavenly_sword_wheel连续运动样本可观察
+PASS heavenly_sword_wheel逐帧无超过2米跳变 0.386m
+PASS heavenly_sword_wheel剑尖与实际飞行方向一致 0.999
+PASS heavenly_sword_wheel实际命中木桩
+PASS giant_sword_descent凝聚到消散阶段完整 ["gather", "hover", "descent", "impact", "fade", "idle"]
+PASS giant_sword_descent完成并回到待命
+PASS giant_sword_descent连续运动样本可观察
+PASS giant_sword_descent逐帧无超过2米跳变 0.940m
+PASS giant_sword_descent剑尖与实际飞行方向一致 1.000
+PASS giant_sword_descent实际命中木桩
+PASS heavenly_sword_rain凝聚到消散阶段完整 ["gather", "hover", "rain", "dissipate", "idle"]
+PASS heavenly_sword_rain完成并回到待命
+PASS heavenly_sword_rain连续运动样本可观察
+PASS heavenly_sword_rain逐帧无超过2米跳变 0.319m
+PASS heavenly_sword_rain剑尖与实际飞行方向一致 1.000
+PASS heavenly_sword_rain实际命中木桩
+FAIL 960窗口高台真实落点
+FAIL giant_quick_platform凝聚到消散阶段完整 ["idle"]
+PASS giant_quick_platform完成并回到待命
+FAIL giant_quick_platform连续运动样本可观察
+PASS giant_quick_platform逐帧无超过2米跳变 0.000m
+PASS giant_quick_platform剑尖与实际飞行方向一致 1.000
+PASS C切招入口有效
+PASS Space跳跃有效
+PASS F御剑有效
+PASS R取消高空聚剑
+PASS 顿帧请求释放
+PASS 两种窗口尺寸运行
+EVIDENCE /Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-10-sword-spells/window-1791570661-9039
+SUMMARY passed=27 failed=3

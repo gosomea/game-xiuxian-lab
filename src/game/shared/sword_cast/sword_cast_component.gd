@@ -16,7 +16,7 @@ const FORM_ARRAY := "sword_array"
 const FORM_WHEEL := "heavenly_sword_wheel"
 const FORM_GIANT := "giant_sword_descent"
 const FORM_RAIN := "heavenly_sword_rain"
-const FORMS: Array[String] = [FORM_QI, FORM_STRIKE, FORM_ARRAY]
+const FORMS: Array[String] = [FORM_QI, FORM_STRIKE, FORM_ARRAY, FORM_WHEEL, FORM_GIANT, FORM_RAIN]
 const POSE_THRUST := "thrust"
 const POSE_RAISE := "raise"
 const POSE_WHEEL := "wheel"
@@ -41,6 +41,8 @@ var cast_pressed: bool = false
 var cast_held: bool = false
 ## 输入：左键松开边沿（仅一帧）。
 var cast_released: bool = false
+## 输入：松开边沿属于哪一招；空字符串供单能力夹具沿用旧输入。
+var cast_released_form: String = ""
 ## 输入：当前选中的招式。
 var form: String = FORM_QI
 
@@ -120,10 +122,15 @@ func record_cast(cast_form: String, direction: Vector3, now: float, kind: String
 
 
 ## 数据存取：清空本帧输入（失焦、重置时由场景调用）。
+func released_for(cast_form: String) -> bool:
+	return cast_released and (cast_released_form.is_empty() or cast_released_form == cast_form)
+
+
 func clear_input() -> void:
 	cast_pressed = false
 	cast_held = false
 	cast_released = false
+	cast_released_form = ""
 
 
 ## 数据存取：递增取消序号并清输入；能力在其生命周期内读序号响应。

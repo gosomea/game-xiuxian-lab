@@ -1,0 +1,3 @@
+file '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-10-sword-spells/heavenly_sword_wheel.mp4'
+file '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-10-sword-spells/giant_sword_descent.mp4'
+file '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/playtest/2026-10-10-sword-spells/heavenly_sword_rain.mp4'

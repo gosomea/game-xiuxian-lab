@@ -23,6 +23,17 @@ static func sword_transform(position: Vector3, forward: Vector3, scale: Vector3 
 	return Transform3D(Basis.looking_at(direction, up).scaled_local(scale), position)
 
 
+## 延续上一帧的剑身朝向，只转动剑尖方向需要的最小角度。
+## 穿过竖直方向时不切换参考上轴，避免剑身突然滚转；不会滞后实际剑尖。
+static func continuous_sword_transform(position: Vector3, forward: Vector3,
+		scale: Vector3, previous: Basis) -> Transform3D:
+	var basis := previous.orthonormalized()
+	var old_direction := -basis.z
+	var direction := forward.normalized() if forward.length_squared() > 0.000001 else old_direction
+	basis = Basis(Quaternion(old_direction, direction)) * basis
+	return Transform3D(basis.orthonormalized().scaled_local(scale), position)
+
+
 static func glow_material(color: Color, transparent: bool = true) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED

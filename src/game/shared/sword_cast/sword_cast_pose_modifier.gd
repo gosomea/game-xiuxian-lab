@@ -19,11 +19,17 @@ var phase: String = "gather"
 var progress: float = 0.0
 
 var _bones := PackedInt32Array()
+var _right_direction := Vector3.ZERO
+var _left_direction := Vector3.ZERO
+var _left_weight := 0.0
 
 
-func _process_modification_with_delta(_delta: float) -> void:
+func _process_modification_with_delta(delta: float) -> void:
 	var skeleton := get_skeleton()
 	if skeleton == null or weight <= 0.001:
+		_right_direction = Vector3.ZERO
+		_left_direction = Vector3.ZERO
+		_left_weight = 0.0
 		return
 	if _bones.is_empty():
 		_bones = PackedInt32Array([skeleton.find_bone(ARM), skeleton.find_bone(FOREARM), skeleton.find_bone(HAND)])
@@ -38,7 +44,9 @@ func _process_modification_with_delta(_delta: float) -> void:
 		world = (flat * 0.45 + Vector3.UP * 0.9).normalized()
 	if kind in [SwordCastComponent.POSE_WHEEL, SwordCastComponent.POSE_GIANT, SwordCastComponent.POSE_RAIN]:
 		var side := Vector3.UP.cross(flat).normalized()
-		var command := smoothstep(0.0, 1.0, progress) if phase in ["release", "fall", "fire"] else 0.0
+		var command := smoothstep(0.0, 1.0, progress) if phase in ["release", "fall", "fire", "descent"] else 0.0
+		if phase in ["impact", "fade", "dissipate"]:
+			command = 1.0
 		var right := (flat * 0.22 - side * 0.68 + Vector3.UP * 0.5).normalized()
 		var left := (flat * 0.22 + side * 0.68 + Vector3.UP * 0.5).normalized()
 		if kind == SwordCastComponent.POSE_GIANT:
@@ -50,30 +58,41 @@ func _process_modification_with_delta(_delta: float) -> void:
 		var finish := (flat * 0.9 - Vector3.UP * 0.25).normalized()
 		right = right.lerp(finish, command).normalized()
 		left = left.lerp((finish + side * 0.25).normalized(), command).normalized()
-		_aim_named_chain(skeleton, "mixamorig_Right", right)
-		_aim_named_chain(skeleton, "mixamorig_Left", left)
+		var blend := 1.0 - exp(-delta * 13.0)
+		_right_direction = right if _right_direction.is_zero_approx() else _right_direction.slerp(right, blend).normalized()
+		_left_direction = left if _left_direction.is_zero_approx() else _left_direction.slerp(left, blend).normalized()
+		_left_weight = move_toward(_left_weight, weight, delta * 9.0)
+		_aim_named_chain(skeleton, "mixamorig_Right", _right_direction, weight, flat)
+		_aim_named_chain(skeleton, "mixamorig_Left", _left_direction, _left_weight, flat)
 		return
-	var desired := (skeleton.global_transform.basis.inverse() * world).normalized()
+	_right_direction = world if _right_direction.is_zero_approx() else _right_direction.slerp(world, 1.0 - exp(-delta * 13.0)).normalized()
+	_left_weight = move_toward(_left_weight, 0.0, delta * 9.0)
+	if _left_weight > 0.001:
+		_aim_named_chain(skeleton, "mixamorig_Left", _left_direction, _left_weight, flat)
+	var desired := (skeleton.global_transform.basis.inverse() * _right_direction).normalized()
 	_aim_bone(skeleton, _bones[0], _bones[1], desired)
 	_aim_bone(skeleton, _bones[1], _bones[2], desired)
 
 
 ## 绕骨骼头转动，使骨骼头→子骨骼头的方向按 weight 转向 desired（骨架空间）。
-func _aim_bone(skeleton: Skeleton3D, bone: int, child: int, desired: Vector3) -> void:
+func _aim_bone(skeleton: Skeleton3D, bone: int, child: int, desired: Vector3, influence: float = -1.0) -> void:
 	var pose := skeleton.get_bone_global_pose(bone)
 	var current := skeleton.get_bone_global_pose(child).origin - pose.origin
 	if current.length_squared() <= 0.0000001:
 		return
-	var turn := Quaternion.IDENTITY.slerp(Quaternion(current.normalized(), desired), weight)
+	var turn := Quaternion.IDENTITY.slerp(Quaternion(current.normalized(), desired), weight if influence < 0.0 else influence)
 	skeleton.set_bone_global_pose(bone, Transform3D(Basis(turn) * pose.basis, pose.origin))
 
 
-func _aim_named_chain(skeleton: Skeleton3D, prefix: String, world: Vector3) -> void:
+func _aim_named_chain(skeleton: Skeleton3D, prefix: String, world: Vector3, influence: float, flat: Vector3) -> void:
 	var arm := skeleton.find_bone(prefix + "Arm")
 	var forearm := skeleton.find_bone(prefix + "ForeArm")
 	var hand := skeleton.find_bone(prefix + "Hand")
 	if arm < 0 or forearm < 0 or hand < 0:
 		return
 	var desired := (skeleton.global_transform.basis.inverse() * world).normalized()
-	_aim_bone(skeleton, arm, forearm, desired)
-	_aim_bone(skeleton, forearm, hand, desired)
+	_aim_bone(skeleton, arm, forearm, desired, influence)
+	# 轻微屈肘，让指挥动作保留关节层次。
+	var hand_direction := (world * 0.78 + flat * 0.22).normalized()
+	var desired_hand := (skeleton.global_transform.basis.inverse() * hand_direction).normalized()
+	_aim_bone(skeleton, forearm, hand, desired_hand, influence)

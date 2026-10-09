@@ -1,0 +1,20 @@
+{
+  "node": "acceptance",
+  "attempt": "e0e6a74fa6834530a5c50ab64ca35497",
+  "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+  "subject": "6569bb88d143fc90301b959bcd717fce0d8f911db2a4a60aaef4cf152bbf627f",
+  "reviewer": "root / primary implementation and visual acceptance agent",
+  "independent": false,
+  "verdict": "pass",
+  "objectives": [
+    "wheel",
+    "giant",
+    "rain",
+    "quality"
+  ],
+  "evidence": [
+    "docs/playtest/2026-10-10-sword-spells/acceptance.json",
+    "docs/playtest/2026-10-10-sword-spells/report.md"
+  ],
+  "findings": []
+}

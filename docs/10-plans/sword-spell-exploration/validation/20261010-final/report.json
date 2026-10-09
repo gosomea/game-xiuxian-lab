@@ -1,0 +1,1097 @@
+{
+  "schema_version": 1,
+  "status": {
+    "plan": "sword-spell-exploration",
+    "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+    "nodes": {
+      "preflight": {
+        "status": "passed",
+        "reason": null,
+        "owner": "root",
+        "attempt": "310bdb3df15a4713bac069b21ddaaf6b",
+        "subject": "b30f7f7eda9554f63cd5b82f175de3064384bef3d4137a323f6ce6f3a527f8ff",
+        "root": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab"
+      },
+      "foundation": {
+        "status": "passed",
+        "reason": null,
+        "owner": "root",
+        "attempt": "8738b57eaf014824b2239b8c38ad2f1b",
+        "subject": "7d62a60b3601f939e9cff2e7cd55aec21c1fa8e5cc83f5fda622a7b77f7d3d27",
+        "root": "/Users/yuqixian/.codex/worktrees/sword-spell-foundation/game-xiuxian-lab"
+      },
+      "wheel": {
+        "status": "passed",
+        "reason": null,
+        "owner": "wheel",
+        "attempt": "ae1e674b9fa24329a3687813e337f7e8",
+        "subject": "eaac55c982f41b2f3971f7a25cf34c5c3e60992850620ddca7d349cdf4bb716a",
+        "root": "/Users/yuqixian/.codex/worktrees/sword-spell-wheel/game-xiuxian-lab"
+      },
+      "giant": {
+        "status": "passed",
+        "reason": null,
+        "owner": "giant",
+        "attempt": "0c9d92341c234486a44088b3189d12a6",
+        "subject": "a87892d191ad82372c50d5e4fdce81507f70184fa9b7230db771d65ee3e24f58",
+        "root": "/Users/yuqixian/.codex/worktrees/sword-spell-giant/game-xiuxian-lab"
+      },
+      "rain": {
+        "status": "passed",
+        "reason": null,
+        "owner": "rain",
+        "attempt": "fe42046053a74b81ae81eacc68246852",
+        "subject": "c717dccdbee898c369ecc2b6b862bccc437adebb4044061f6d5d4b3d42594594",
+        "root": "/Users/yuqixian/.codex/worktrees/sword-spell-rain/game-xiuxian-lab"
+      },
+      "integration": {
+        "status": "passed",
+        "reason": null,
+        "owner": "root",
+        "attempt": "ec2ddbe9521c45e98faed37fa7445e15",
+        "subject": "ef8c6ac9ca212e102c997af3730af3374ef818bf6616b43971bd4ad4327f4e16",
+        "root": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab"
+      },
+      "acceptance": {
+        "status": "passed",
+        "reason": null,
+        "owner": "root",
+        "attempt": "e0e6a74fa6834530a5c50ab64ca35497",
+        "subject": "6569bb88d143fc90301b959bcd717fce0d8f911db2a4a60aaef4cf152bbf627f",
+        "root": "/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab"
+      }
+    },
+    "complete": true
+  },
+  "events": [
+    {
+      "time": 1791568492.460005,
+      "action": "claim",
+      "node": "preflight",
+      "token": "310bdb3df15a4713bac069b21ddaaf6b",
+      "owner": "root",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568516.385418,
+      "action": "start",
+      "node": "preflight",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568516.5028648,
+      "action": "verify",
+      "node": "preflight",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568518.270814,
+      "action": "passed",
+      "node": "preflight",
+      "receipt_hash": "ae6bf9c67307096eaa4de7a284d74389072a7834dbd90c0e6f641453b8d54849",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568527.495507,
+      "action": "claim",
+      "node": "foundation",
+      "token": "9a3d654fd53e45c2a5feb61a2e46b2cf",
+      "owner": "root",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568719.738975,
+      "action": "start",
+      "node": "foundation",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568863.539266,
+      "action": "verify",
+      "node": "foundation",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568905.396661,
+      "action": "cancel",
+      "node": "foundation",
+      "reason": "New managed worktree had LFS pointer assets; stop invalid run before hydrated baseline retry",
+      "confirmed_stopped": true,
+      "previous_attempts": []
+    },
+    {
+      "time": 1791568905.516306,
+      "action": "retry",
+      "node": "foundation",
+      "reason": "Hydrate local LFS assets and import before fresh baseline",
+      "previous_attempts": [
+        "9a3d654fd53e45c2a5feb61a2e46b2cf"
+      ]
+    },
+    {
+      "time": 1791568976.766148,
+      "action": "claim",
+      "node": "foundation",
+      "token": "8738b57eaf014824b2239b8c38ad2f1b",
+      "owner": "root",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569004.935387,
+      "action": "start",
+      "node": "foundation",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569005.0566301,
+      "action": "verify",
+      "node": "foundation",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569096.912353,
+      "action": "passed",
+      "node": "foundation",
+      "receipt_hash": "3f0313cea71cd9d004b538399302d578c59fa3a055b6f247042d665a33ad18e7",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569223.287267,
+      "action": "claim",
+      "node": "wheel",
+      "token": "ae1e674b9fa24329a3687813e337f7e8",
+      "owner": "wheel",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569223.46501,
+      "action": "claim",
+      "node": "giant",
+      "token": "0c9d92341c234486a44088b3189d12a6",
+      "owner": "giant",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569223.6262872,
+      "action": "claim",
+      "node": "rain",
+      "token": "fe42046053a74b81ae81eacc68246852",
+      "owner": "rain",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569245.681248,
+      "action": "start",
+      "node": "wheel",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569259.7021692,
+      "action": "start",
+      "node": "giant",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569264.627996,
+      "action": "start",
+      "node": "rain",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569856.4748778,
+      "action": "heartbeat",
+      "node": "rain",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569893.716871,
+      "action": "verify",
+      "node": "giant",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569901.267616,
+      "action": "passed",
+      "node": "giant",
+      "receipt_hash": "014f66642621c01df064cf9d85e90353eb1da9a72111f9edbe151a572d4ef9f7",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569941.6601632,
+      "action": "verify",
+      "node": "rain",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791569948.815815,
+      "action": "passed",
+      "node": "rain",
+      "receipt_hash": "0d6bf5a3c6a4565667f671da3361b0c91af609e0dcc2ccca40139d23f26497d9",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791570128.836342,
+      "action": "verify",
+      "node": "wheel",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791570136.9391732,
+      "action": "passed",
+      "node": "wheel",
+      "receipt_hash": "fb515ea687a4d59b3befd175bfec69699719dde33a5a0be2f2da3342bbb8e3bf",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791570196.9563038,
+      "action": "claim",
+      "node": "integration",
+      "token": "ec2ddbe9521c45e98faed37fa7445e15",
+      "owner": "root",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791570205.3232791,
+      "action": "start",
+      "node": "integration",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571437.434192,
+      "action": "verify",
+      "node": "integration",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571550.5849721,
+      "action": "passed",
+      "node": "integration",
+      "receipt_hash": "55fe67646da4e8c5b0619c0cac0205bade2fb32f43634bf248ef3b38b0ae638e",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571571.194229,
+      "action": "claim",
+      "node": "acceptance",
+      "token": "e0e6a74fa6834530a5c50ab64ca35497",
+      "owner": "root",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571579.037636,
+      "action": "start",
+      "node": "acceptance",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571639.659698,
+      "action": "verify",
+      "node": "acceptance",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791571661.561246,
+      "action": "awaiting-review",
+      "node": "acceptance",
+      "previous_attempts": []
+    },
+    {
+      "time": 1791572028.4623098,
+      "action": "passed",
+      "node": "acceptance",
+      "receipt_hash": "95760ce49ecbe456b44482e4c54d78a1769435df20c6cd9fe82f1a053e16eb74",
+      "previous_attempts": []
+    }
+  ],
+  "receipts": {
+    "preflight": {
+      "node": "preflight",
+      "attempt": "310bdb3df15a4713bac069b21ddaaf6b",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "plan-contract",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "/Users/yuqixian/forever-skills/skills/plan-and-phase/scripts/plan.py",
+            "validate",
+            "docs/10-plans/sword-spell-exploration/plan.json"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791568516.505226,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791568516.6267579,
+          "stdout_sha256": "cc7461e9562a0d40d592b0781ffdf0957a979cc053ee1945a156404f62cb60bf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "notes",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/verify_notes_format.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791568516.627001,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791568516.663455,
+          "stdout_sha256": "76da6834734ff3750200be167535e38201c719328e38a8a4bce1ccdf7aefa1be",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "baseline",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "-c",
+            "import json,pathlib; p=pathlib.Path('docs/10-plans/sword-spell-exploration/baseline.json'); d=json.loads(p.read_text()); assert d['existing_array_max']==36 and d['new_spells']=='absent'; print(json.dumps(d,ensure_ascii=False))"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791568516.663757,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791568516.702471,
+          "stdout_sha256": "ef4b7cd9e9812465fc20b23b97d19eb5177d8506517641f0d85b8608660a616b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "AGENTS.md": {
+          "sha256": "bb010c747aa6efcb3b67236723181eee2c205c7681c685f3d748c1b12d62f1ec",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/AGENTS.md": {
+          "sha256": "25ee8fe392f6601af2287f0470cb762cc32fe2fbc4c6813e4a5f527d5f3ed4df",
+          "executable": false,
+          "symlink": null
+        },
+        "src/data/content/experiments.json": {
+          "sha256": "32ce9139b736d2d2c2a0ce3791f776ef989f9f1158a2d4ca985f161da0bb1d0f",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "docs/10-plans/sword-spell-exploration/baseline.json": {
+          "sha256": "5d6d3cc4022cd7a710974336a50d35e14b4214d956778e1d1563d6456edd8f61",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "b30f7f7eda9554f63cd5b82f175de3064384bef3d4137a323f6ce6f3a527f8ff"
+    },
+    "foundation": {
+      "node": "foundation",
+      "attempt": "8738b57eaf014824b2239b8c38ad2f1b",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791569005.0623648,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569007.769609,
+          "stdout_sha256": "e990944149b603cda1a23a986219d784932dbd38b790b346180fd9d62f4ba952",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "runtime",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "tests/test_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791569007.769925,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569092.3727129,
+          "stdout_sha256": "fe71344b64d24c44756b5dd6b82413cb0155122e8132137d13f5f7bfd86a4e3c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "static",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791569092.37324,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569095.035402,
+          "stdout_sha256": "1a6ccfd1ca49b27f268945d0f96e5d058edb27e136e7646795e2a669895f2ab4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/project.godot": {
+          "sha256": "1801611c6b26b3ee98b60ef5a83431b1a0775a52a06d7ac5c6406e93a2d0b6e9",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability.gd": {
+          "sha256": "d482538c1c811bc170174e04091a4b18c867be794055cfc38a1748068d84bb4e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability_manager.gd": {
+          "sha256": "aa43eef93fc128e72cc239436f6d9c0562800edf6991d3a97b6a8ee5bab74255",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/component.gd": {
+          "sha256": "0cb375cbaac7d258a528fc9f5b797a8bc652efa1b916c603eca5a3037fb3e201",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_context.gd": {
+          "sha256": "aa9673efd6679d97a117d87bbb46211a028e393d0fd9cb902dd3a8b51e6f2411",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_component.gd": {
+          "sha256": "9d6c46261da159606fd49b4e6d953eb7f56fee9e140da601d5124cc56dc42f35",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_targets.gd": {
+          "sha256": "0b54528fece7c27fa34adeb9593115851f917624248e9f01677cca144358e79b",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "docs/10-plans/sword-spell-exploration/foundation.md": {
+          "sha256": "6f690e7fdcfa3f75c1c5c90ba260bd2d7e349123b593c035161f6f6c3c27c885",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/test_sword_cast_targets.gd": {
+          "sha256": "21cb3ed24b3426f1b9589d7163d86d88d464743ec3d095becf3f6b2d8d685f62",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "7d62a60b3601f939e9cff2e7cd55aec21c1fa8e5cc83f5fda622a7b77f7d3d27"
+    },
+    "wheel": {
+      "node": "wheel",
+      "attempt": "ae1e674b9fa24329a3687813e337f7e8",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791570128.852288,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791570132.024391,
+          "stdout_sha256": "979f9a3c04b6d60b39d123d157a109783527f508b94dd60ee962a6a9bc7ad694",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "started": 1791570132.0248919,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791570132.451741,
+          "stdout_sha256": "33e8b5db0fb5d3464826272c0a5d6b5225bdb4a4415972a854baccaab2e3d465",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "static",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791570132.4520378,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791570134.966433,
+          "stdout_sha256": "3adf298de79f581930a290b3b6666b76fe810af75f10ab5b088e0c157f4400ee",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/project.godot": {
+          "sha256": "1801611c6b26b3ee98b60ef5a83431b1a0775a52a06d7ac5c6406e93a2d0b6e9",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability.gd": {
+          "sha256": "d482538c1c811bc170174e04091a4b18c867be794055cfc38a1748068d84bb4e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability_manager.gd": {
+          "sha256": "aa43eef93fc128e72cc239436f6d9c0562800edf6991d3a97b6a8ee5bab74255",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/component.gd": {
+          "sha256": "0cb375cbaac7d258a528fc9f5b797a8bc652efa1b916c603eca5a3037fb3e201",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_context.gd": {
+          "sha256": "aa9673efd6679d97a117d87bbb46211a028e393d0fd9cb902dd3a8b51e6f2411",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_component.gd": {
+          "sha256": "9d6c46261da159606fd49b4e6d953eb7f56fee9e140da601d5124cc56dc42f35",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_targets.gd": {
+          "sha256": "0b54528fece7c27fa34adeb9593115851f917624248e9f01677cca144358e79b",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_spell_visual.gd": {
+          "sha256": "09f19ab286ac165f57c57cb670332dc86c4e03ac72bc2a63f6295f9d0dbddc02",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel.gd": {
+          "sha256": "7abc609e69ca7fc860859db99db77a01407a634c3e5769c91b230686b31866c3",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel_component.gd": {
+          "sha256": "dac41c688898c8901136493192e851ca1823de33bf1e7ddc7bcf67fd7db271d5",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_wheel/heavenly_sword_wheel_view.gd": {
+          "sha256": "653f0db15fcaca1695efa9b19cf0d996ff8d25bac27558e8e9d7f7ddb6433aeb",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel.gd": {
+          "sha256": "4c6e1f6f57a346820854de0d4a26926a6bd1846c4718f52bcc37c4201884600a",
+          "executable": false,
+          "symlink": null
+        },
+        "docs/10-plans/sword-spell-exploration/wheel.md": {
+          "sha256": "9f8003ded400de53c0e3655ebeefb8be37a802d4ca5ad079b38244503ee5792a",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "eaac55c982f41b2f3971f7a25cf34c5c3e60992850620ddca7d349cdf4bb716a"
+    },
+    "giant": {
+      "node": "giant",
+      "attempt": "0c9d92341c234486a44088b3189d12a6",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791569893.731092,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569896.276908,
+          "stdout_sha256": "74f137ecae05c7c62f6c76f4ac025c1a329aab1126dc7833cfac2a9ce3c7e6e1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/giant_sword_descent/test_giant_sword_descent_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "started": 1791569896.277457,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569896.6309602,
+          "stdout_sha256": "393080999b1704554a7c783bd68e543ff71003e5a88284330de2f52c7d1cf0c1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "static",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791569896.631229,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569899.2739468,
+          "stdout_sha256": "bb23a65f86125e745f57c90886c5320db883359912b03069564e9237383ab022",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/project.godot": {
+          "sha256": "1801611c6b26b3ee98b60ef5a83431b1a0775a52a06d7ac5c6406e93a2d0b6e9",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability.gd": {
+          "sha256": "d482538c1c811bc170174e04091a4b18c867be794055cfc38a1748068d84bb4e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability_manager.gd": {
+          "sha256": "aa43eef93fc128e72cc239436f6d9c0562800edf6991d3a97b6a8ee5bab74255",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/component.gd": {
+          "sha256": "0cb375cbaac7d258a528fc9f5b797a8bc652efa1b916c603eca5a3037fb3e201",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_context.gd": {
+          "sha256": "aa9673efd6679d97a117d87bbb46211a028e393d0fd9cb902dd3a8b51e6f2411",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_component.gd": {
+          "sha256": "9d6c46261da159606fd49b4e6d953eb7f56fee9e140da601d5124cc56dc42f35",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_targets.gd": {
+          "sha256": "0b54528fece7c27fa34adeb9593115851f917624248e9f01677cca144358e79b",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_spell_visual.gd": {
+          "sha256": "09f19ab286ac165f57c57cb670332dc86c4e03ac72bc2a63f6295f9d0dbddc02",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "src/game/abilities/giant_sword_descent/giant_sword_descent.gd": {
+          "sha256": "df3b06caac05600aaf544d2f0543773c673bef38b6a2c305dea73a4529a2aeaf",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/giant_sword_descent/giant_sword_descent_component.gd": {
+          "sha256": "f283cf55daa4eeff58811531ae1b85a207f36fdc414da08419730f090afa40df",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/giant_sword_descent/giant_sword_descent_view.gd": {
+          "sha256": "4c33e75358c1bfbec95e76b4297fda522a0339cb24614d929e4d4c1c79fe194e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/giant_sword_descent/test_giant_sword_descent.gd": {
+          "sha256": "bde3e348e0e0149fca4abc07a75d1d93a630c0e038e2f17c78d211b44ccace66",
+          "executable": false,
+          "symlink": null
+        },
+        "docs/10-plans/sword-spell-exploration/giant.md": {
+          "sha256": "0870e416e40d603cd8cd8bd0ef55dddc6fae64edc7bdaf6643a8e599465e4546",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "a87892d191ad82372c50d5e4fdce81507f70184fa9b7230db771d65ee3e24f58"
+    },
+    "rain": {
+      "node": "rain",
+      "attempt": "fe42046053a74b81ae81eacc68246852",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791569941.67222,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569944.23222,
+          "stdout_sha256": "20e4afc0d9379d37c79cba3b7092fda09437e2593ef12532718365cb09b5b7ae",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "paired",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "game/abilities/heavenly_sword_rain/test_heavenly_sword_rain_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 120,
+          "started": 1791569944.232571,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569944.649057,
+          "stdout_sha256": "1970a19c3cc6bf120e4a3ea885e6e681ee4fdb77050c4c00e5a574de33fe0bf9",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "static",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791569944.649388,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791569946.9192488,
+          "stdout_sha256": "3adf298de79f581930a290b3b6666b76fe810af75f10ab5b088e0c157f4400ee",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/project.godot": {
+          "sha256": "1801611c6b26b3ee98b60ef5a83431b1a0775a52a06d7ac5c6406e93a2d0b6e9",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability.gd": {
+          "sha256": "d482538c1c811bc170174e04091a4b18c867be794055cfc38a1748068d84bb4e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability_manager.gd": {
+          "sha256": "aa43eef93fc128e72cc239436f6d9c0562800edf6991d3a97b6a8ee5bab74255",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/component.gd": {
+          "sha256": "0cb375cbaac7d258a528fc9f5b797a8bc652efa1b916c603eca5a3037fb3e201",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_context.gd": {
+          "sha256": "aa9673efd6679d97a117d87bbb46211a028e393d0fd9cb902dd3a8b51e6f2411",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_component.gd": {
+          "sha256": "9d6c46261da159606fd49b4e6d953eb7f56fee9e140da601d5124cc56dc42f35",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_targets.gd": {
+          "sha256": "0b54528fece7c27fa34adeb9593115851f917624248e9f01677cca144358e79b",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_spell_visual.gd": {
+          "sha256": "09f19ab286ac165f57c57cb670332dc86c4e03ac72bc2a63f6295f9d0dbddc02",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain.gd": {
+          "sha256": "0030bba8ad7eafe7ff423797afb89a7bb46ed387815e4b24deab1f24fb90249c",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain_component.gd": {
+          "sha256": "f6af965155465040e2a900dde4121acbbeeec50798325806a467211f3c5a24c2",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_rain/heavenly_sword_rain_view.gd": {
+          "sha256": "c654c050184a15d1e11e5db6aee29dcef779dd10188878ba0b1a5f6bf0d6cf5e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/abilities/heavenly_sword_rain/test_heavenly_sword_rain.gd": {
+          "sha256": "45c6b84459169f1974e75ac531ea46d3cc4eed72b70bbdbd4ba0a06a30bff11d",
+          "executable": false,
+          "symlink": null
+        },
+        "docs/10-plans/sword-spell-exploration/rain.md": {
+          "sha256": "088320a64445f39ff5bafe1dace411c4daed93f08967a1a5b7a247c11c70c80b",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "c717dccdbee898c369ecc2b6b862bccc437adebb4044061f6d5d4b3d42594594"
+    },
+    "integration": {
+      "node": "integration",
+      "attempt": "ec2ddbe9521c45e98faed37fa7445e15",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "import",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "--import"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791571437.446677,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791571440.0214,
+          "stdout_sha256": "77868b02f757c3b20877b51531723fee0d87ae5c63259c996bf3bf2de11f369b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "runtime",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--headless",
+            "--path",
+            "src",
+            "tests/test_runner.tscn"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791571440.021888,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791571545.797459,
+          "stdout_sha256": "eaa23df4d840cfce6a566b3934106c4b76a5a0854f6a0bd05acaa2adcd6d02d7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "static",
+          "argv": [
+            "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+            "tools/verify/run_all.py"
+          ],
+          "cwd": ".",
+          "timeout": 180,
+          "started": 1791571545.798018,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791571548.19203,
+          "stdout_sha256": "ac2a070cac771978030d86f9d549fc4196898d2a678c9b4dd0369d1e18c5d02c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/project.godot": {
+          "sha256": "1801611c6b26b3ee98b60ef5a83431b1a0775a52a06d7ac5c6406e93a2d0b6e9",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability.gd": {
+          "sha256": "d482538c1c811bc170174e04091a4b18c867be794055cfc38a1748068d84bb4e",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/capability_manager.gd": {
+          "sha256": "aa43eef93fc128e72cc239436f6d9c0562800edf6991d3a97b6a8ee5bab74255",
+          "executable": false,
+          "symlink": null
+        },
+        "src/core/component.gd": {
+          "sha256": "0cb375cbaac7d258a528fc9f5b797a8bc652efa1b916c603eca5a3037fb3e201",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_context.gd": {
+          "sha256": "aa9673efd6679d97a117d87bbb46211a028e393d0fd9cb902dd3a8b51e6f2411",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_component.gd": {
+          "sha256": "97d0c8e77e16aa96c65b7c62eed54dafc3c3740543219b3ade01186a10572acd",
+          "executable": false,
+          "symlink": null
+        },
+        "src/game/shared/sword_cast/sword_cast_targets.gd": {
+          "sha256": "0b54528fece7c27fa34adeb9593115851f917624248e9f01677cca144358e79b",
+          "executable": false,
+          "symlink": null
+        },
+        "src/levels/experiments/sword_combat/sword_workbench.gd": {
+          "sha256": "0ac63bf06f3728bd459dca5d3735948a29d67a3a7763c305052adec9f8753ed3",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "docs/10-plans/sword-spell-exploration/integration.md": {
+          "sha256": "1335674f73e94a2f57b99101417e1b766666365886a39f097d999f30a1ed1152",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_sword_spell_exploration.gd": {
+          "sha256": "ca33ed1f20d3e2c610041e6a6cb29d095b5ae334246a102a7bdd84117a7daa7f",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "ef8c6ac9ca212e102c997af3730af3374ef818bf6616b43971bd4ad4327f4e16"
+    },
+    "acceptance": {
+      "node": "acceptance",
+      "attempt": "e0e6a74fa6834530a5c50ab64ca35497",
+      "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+      "checks": [
+        {
+          "id": "window",
+          "argv": [
+            "/Applications/Godot.app/Contents/MacOS/Godot",
+            "--path",
+            "src",
+            "--script",
+            "res://tests/sword_spell_exploration_playtest.gd",
+            "--",
+            "--evidence-dir=docs/playtest/2026-10-10-sword-spells"
+          ],
+          "cwd": ".",
+          "timeout": 300,
+          "started": 1791571639.676759,
+          "passed": true,
+          "expected_exit": 0,
+          "exit_code": 0,
+          "finished": 1791571659.0555038,
+          "stdout_sha256": "a66043a5bd251bef77f0105f92101a40f23dce66f6ec583ef6412fa9630f5acd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "inputs": {
+        "src/tests/sword_spell_exploration_playtest.gd": {
+          "sha256": "836fcdf6e20f1cf6ce6f98ec4f7b2bb38a1aea9a204c21b60a9019490e2bdc27",
+          "executable": false,
+          "symlink": null
+        },
+        "src/tests/test_sword_spell_exploration.gd": {
+          "sha256": "ca33ed1f20d3e2c610041e6a6cb29d095b5ae334246a102a7bdd84117a7daa7f",
+          "executable": false,
+          "symlink": null
+        },
+        "src/levels/experiments/sword_combat/sword_workbench.gd": {
+          "sha256": "0ac63bf06f3728bd459dca5d3735948a29d67a3a7763c305052adec9f8753ed3",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "outputs": {
+        "docs/playtest/2026-10-10-sword-spells/acceptance.json": {
+          "sha256": "b87132a0e39bd95b4d622e21dbcb88ad991c1beaa74ad8d20b7b65747998c3e7",
+          "executable": false,
+          "symlink": null
+        },
+        "docs/playtest/2026-10-10-sword-spells/report.md": {
+          "sha256": "85bca92fe954b8cb02456a9cd7d51c2615ee947b3e15b76839166d4e988a323a",
+          "executable": false,
+          "symlink": null
+        }
+      },
+      "error": null,
+      "subject": "6569bb88d143fc90301b959bcd717fce0d8f911db2a4a60aaef4cf152bbf627f",
+      "review": {
+        "node": "acceptance",
+        "attempt": "e0e6a74fa6834530a5c50ab64ca35497",
+        "revision": "ecd2c4cc02fbe2537f027ffe427ab4454f2673eba15b3fc3a15a08637ba0d71f",
+        "subject": "6569bb88d143fc90301b959bcd717fce0d8f911db2a4a60aaef4cf152bbf627f",
+        "reviewer": "root / primary implementation and visual acceptance agent",
+        "independent": false,
+        "verdict": "pass",
+        "objectives": [
+          "wheel",
+          "giant",
+          "rain",
+          "quality"
+        ],
+        "evidence": [
+          "docs/playtest/2026-10-10-sword-spells/acceptance.json",
+          "docs/playtest/2026-10-10-sword-spells/report.md"
+        ],
+        "findings": []
+      }
+    }
+  },
+  "history": []
+}

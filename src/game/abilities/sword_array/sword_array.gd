@@ -69,11 +69,12 @@ func _tick_active(delta: float) -> void:
 			_swords.append({"state": State.HOVER, "slot": _swords.size(), "position": Vector3.ZERO,
 				"forward": direction, "hit": {}, "stuck_until": 0.0, "target": Vector3.ZERO})
 			_next_spawn += cast.array_spawn_interval
-		cast.face_direction = direction
-		cast.face_until = now + cast.pose_time
-		cast.pose_kind = SwordCastComponent.POSE_RAISE
-		cast.pose_weight = 1.0
-		if cast.cast_released or not cast.cast_held:
+		if cast.form == SwordCastComponent.FORM_ARRAY:
+			cast.face_direction = direction
+			cast.face_until = now + cast.pose_time
+			cast.pose_kind = SwordCastComponent.POSE_RAISE
+			cast.pose_weight = 1.0
+		if cast.released_for(SwordCastComponent.FORM_ARRAY) or not cast.cast_held:
 			_phase = Phase.FIRE
 			_next_fire = now
 			_volley_target = Vector3(cast.aim_point.x, host.global_position.y, cast.aim_point.z)
@@ -89,7 +90,7 @@ func _tick_active(delta: float) -> void:
 func _should_deactivate() -> bool:
 	var cast := component(&"SwordCastComponent") as SwordCastComponent
 	return _phase == Phase.DONE or cast == null or cast.cancel_generation != _cancel_generation \
-		or (_phase == Phase.GATHER and cast.form != SwordCastComponent.FORM_ARRAY)
+		or (_phase == Phase.GATHER and cast.form != SwordCastComponent.FORM_ARRAY and not cast.released_for(SwordCastComponent.FORM_ARRAY))
 
 
 func _on_deactivated() -> void:

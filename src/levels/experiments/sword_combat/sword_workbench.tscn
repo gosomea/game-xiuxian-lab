@@ -4,10 +4,12 @@
 
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1
-background_color = Color(0.62, 0.66, 0.62, 1)
+background_color = Color(0.012, 0.025, 0.039, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.733333, 0.792157, 0.776471, 1)
-ambient_light_energy = 0.3
+ambient_light_energy = 0.6
+glow_enabled = true
+glow_intensity = 0.32
 tonemap_mode = 2
 tonemap_white = 1.0
 
@@ -20,7 +22,7 @@ environment = SubResource("Environment")
 [node name="Sun" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-55, -35, 0)
 light_color = Color(1, 0.945098, 0.843137, 1)
-light_energy = 0.55
+light_energy = 0.75
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]

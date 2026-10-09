@@ -15,6 +15,7 @@ var _ground: Array[MeshInstance3D] = []
 var _glyphs: MeshInstance3D = null
 var _trails: MeshInstance3D = null
 var _impact_mesh: MeshInstance3D = null
+var _orientations: Dictionary = {}
 
 
 func bind(rain: HeavenlySwordRainComponent) -> void:
@@ -74,6 +75,7 @@ func _process(_delta: float) -> void:
 		node.visible = visible_now
 	if not visible_now:
 		_swords.multimesh.visible_instance_count = 0
+		_orientations.clear()
 		return
 	var count := _rain.swords.size()
 	if count > _swords.multimesh.instance_count:
@@ -82,7 +84,13 @@ func _process(_delta: float) -> void:
 		var sword: Dictionary = _rain.swords[index]
 		var color := PALE.lerp(JADE, float(int(sword["batch"]) % 3) * 0.20)
 		color.a = float(sword["alpha"])
-		_swords.multimesh.set_instance_transform(index, transform_for_sword(sword))
+		var transform := transform_for_sword(sword)
+		var key := int(sword["slot"])
+		if _orientations.has(key):
+			transform = SwordSpellVisual.continuous_sword_transform(transform.origin, sword["forward"],
+				Vector3.ONE * float(sword["scale"]), _orientations[key])
+		_orientations[key] = transform.basis.orthonormalized()
+		_swords.multimesh.set_instance_transform(index, transform)
 		_swords.multimesh.set_instance_color(index, color)
 	_swords.multimesh.visible_instance_count = count
 	var formed := minf(1.0, _rain.progress) if _rain.phase == "gather" else 1.0
