@@ -10,6 +10,8 @@ Status: implemented
 
 ## 决策
 
+2026-10-10 使用者随后授权历史大文件迁移；下列前向追踪的初始范围由[历史 LFS 迁移](2026-10-10-historical-lfs-migration.md)接替，独立动作管线继续有效。
+
 使用者于 2026-10-09 授权实施，2026-10-10 落地。本仓采用后续资产 LFS 与共享人物加独立动作库：
 
 1. **LFS 只影响后续新资产或内容发生变化的旧资产。** 本机安装 Git LFS，在仓库执行 `git lfs install --local`，配置 clean/smudge 与 pre-push hook。新 `.blend`、`.glb`、`.obj` 走 LFS；大于 5,000,000 bytes 的 PNG 按路径登记。`tools/assets/lfs_legacy_blobs.json` 固定记录采用前 `81726d3` 中的 85 个普通 blob。未修改的旧文件有明确属性例外；旧文件变更后，同步器撤销例外并转为 LFS，不迁移历史，也不重暂存所有旧文件。
