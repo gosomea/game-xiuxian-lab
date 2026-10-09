@@ -1,0 +1,33 @@
+extends RefCounted
+
+static func run(t) -> void:
+	t.begin_case()
+	var down := SwordCastTargets._segment_cylinder(Vector3(0, 8, 0), Vector3(0, -2, 0), 0.1, Vector3.ZERO, 0.35, 1.8)
+	t.assert_true(down > 0.5 and down < 0.7, "高速垂直落剑取最早交叉")
+	t.assert_true(SwordCastTargets._segment_cylinder(Vector3(0, -2, 0), Vector3(0, 8, 0), 0.1, Vector3.ZERO, 0.35, 1.8) >= 0.0, "向上贯穿也命中")
+	t.assert_eq(SwordCastTargets._segment_cylinder(Vector3(2, 8, 0), Vector3(2, -2, 0), 0.1, Vector3.ZERO, 0.35, 1.8), -1.0, "垂直线不在目标半径内不命中")
+	t.assert_eq(SwordCastTargets._segment_cylinder(Vector3(-2, 4, 0), Vector3(2, 4, 0), 0.1, Vector3.ZERO, 0.35, 1.8), -1.0, "高于目标的水平剑不命中")
+	t.assert_true(SwordCastTargets._segment_cylinder(Vector3(-2, 3, 0), Vector3(2, -1, 0), 0.1, Vector3.ZERO, 0.35, 1.8) >= 0.0, "斜线同时求水平与高度区间")
+	t.assert_eq(SwordCastTargets._segment_cylinder(Vector3.ZERO, Vector3.ZERO, 0.1, Vector3.ZERO, 0.35, 1.8), 0.0, "起点重叠零位移有效")
+	t.begin_case()
+	var host := Node3D.new()
+	var data := SwordTargetComponent.new()
+	host.add_child(data)
+	host.add_to_group(&"sword_target")
+	t.track(host)
+	var hits := SwordCastTargets.sweep(host.get_tree(), Vector3(0, 8, 0), Vector3(0, -2, 0), 0.1)
+	t.assert_eq(hits.size(), 1, "真实目标分组垂直命中")
+	t.assert_eq(SwordCastTargets.sweep(host.get_tree(), Vector3(0, 8, 0), Vector3(0, -2, 0), 0.1, {host.get_instance_id(): true}).size(), 0, "跨阶段命中账本去重")
+	t.assert_eq(SwordCastTargets.burst(host.get_tree(), Vector3.ZERO, 2.0, 1.0).size(), 1, "地面圆形冲击命中")
+	host.position.y = 4.0
+	t.assert_eq(SwordCastTargets.burst(host.get_tree(), Vector3.ZERO, 2.0, 1.0).size(), 0, "冲击不命中高台目标")
+	t.begin_case()
+	var cast := SwordCastComponent.new()
+	t.track(cast)
+	cast.cast_held = true
+	cast.request_cancel()
+	t.assert_eq(cast.cancel_generation, 1, "取消序号递增")
+	t.assert_false(cast.cast_held, "取消清输入")
+	cast.record_feedback(Vector3.ONE, 0.9)
+	t.assert_eq(cast.feedback_serial, 1, "反馈记录为纯数据序号")
+	t.assert_eq(cast.feedback_point, Vector3.ONE, "反馈世界位置保留")

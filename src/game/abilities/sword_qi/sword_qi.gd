@@ -9,6 +9,7 @@ extends Capability
 
 ## 下一次可出剑气的逻辑时刻。
 var _ready_at: float = 0.0
+var _cancel_generation := 0
 var _cast_ref: SwordCastComponent = null
 
 
@@ -30,7 +31,11 @@ func _tick_active(delta: float) -> void:
 	var host := game_object() as Node3D
 	if cast == null or host == null:
 		return
+	if not cast.qi_shots.is_empty() and _cancel_generation != cast.cancel_generation:
+		cast.qi_shots = []
+		return
 	if _wants_cast(cast):
+		_cancel_generation = cast.cancel_generation
 		_spawn(cast, host)
 	var alive: Array = []
 	for value in cast.qi_shots:

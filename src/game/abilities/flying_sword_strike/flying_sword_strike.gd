@@ -13,6 +13,7 @@ enum Phase { OUT, BACK, DONE }
 ## 飞剑落点离地高度（米），约在木桩腰部。
 const TARGET_HEIGHT := 0.9
 
+var _cancel_generation := 0
 var _phase: Phase = Phase.DONE
 var _start := Vector3.ZERO
 var _control := Vector3.ZERO
@@ -47,6 +48,7 @@ func _on_activated() -> void:
 		return
 	_host_ref = host
 	_cast_ref = cast
+	_cancel_generation = cast.cancel_generation
 	var origin := host.global_position
 	var flat := cast.aim_point - origin
 	flat.y = 0.0
@@ -104,7 +106,8 @@ func _tick_active(delta: float) -> void:
 
 
 func _should_deactivate() -> bool:
-	return _phase == Phase.DONE or component(&"SwordCastComponent") == null
+	var cast := component(&"SwordCastComponent") as SwordCastComponent
+	return _phase == Phase.DONE or cast == null or cast.cancel_generation != _cancel_generation
 
 
 func _on_deactivated() -> void:

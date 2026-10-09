@@ -22,6 +22,7 @@ const FAN_BACK := 0.85
 const STUCK_TIME := 0.6
 const GOLDEN_ANGLE := 2.39996323
 
+var _cancel_generation := 0
 var _phase: Phase = Phase.DONE
 var _swords: Array = []
 var _next_spawn := 0.0
@@ -48,6 +49,7 @@ func _on_activated() -> void:
 		_phase = Phase.DONE
 		return
 	_cast_ref = cast
+	_cancel_generation = cast.cancel_generation
 	_swords = []
 	_phase = Phase.GATHER
 	_next_spawn = manager_time()
@@ -85,7 +87,9 @@ func _tick_active(delta: float) -> void:
 
 
 func _should_deactivate() -> bool:
-	return _phase == Phase.DONE or component(&"SwordCastComponent") == null
+	var cast := component(&"SwordCastComponent") as SwordCastComponent
+	return _phase == Phase.DONE or cast == null or cast.cancel_generation != _cancel_generation \
+		or (_phase == Phase.GATHER and cast.form != SwordCastComponent.FORM_ARRAY)
 
 
 func _on_deactivated() -> void:

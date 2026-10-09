@@ -18,7 +18,7 @@ var _owned: Array[Node] = []
 
 
 ## 安装；返回错误信息，"" 表示成功。一个实例只安装一次。
-func install(host: Swordsman, capability_scripts: Array[Script]) -> String:
+func install(host: Swordsman, capability_scripts: Array[Script], component_scripts: Array[Script] = []) -> String:
 	if _host != null:
 		return "SwordCastBundle.install: 已安装，请先 uninstall"
 	if host == null or not is_instance_valid(host) or not host.is_inside_tree():
@@ -28,6 +28,12 @@ func install(host: Swordsman, capability_scripts: Array[Script]) -> String:
 		return "SwordCastBundle.install: 宿主缺少直系 CapabilityManager"
 	if host.get_node_or_null(COMPONENT_NAME) != null or host.get_node_or_null(PRESENTATION_NAME) != null:
 		return "SwordCastBundle.install: 宿主已有剑法组件或表现，拒绝认领"
+	var component_names: Array[String] = []
+	for script in component_scripts:
+		var global_name := str(script.get_global_name()) if script != null else ""
+		if global_name.is_empty() or host.get_node_or_null(global_name) != null or global_name in component_names:
+			return "SwordCastBundle.install: 组件为空或重复 %s" % global_name
+		component_names.append(global_name)
 	var names: Array[String] = []
 	for script in capability_scripts:
 		var global_name := str(script.get_global_name()) if script != null else ""
@@ -41,6 +47,14 @@ func install(host: Swordsman, capability_scripts: Array[Script]) -> String:
 	_component.name = COMPONENT_NAME
 	_own(host, _component)
 	LabDefaults.apply_component(_component)
+	for index in range(component_scripts.size()):
+		var data := component_scripts[index].new() as Component
+		if data == null:
+			uninstall()
+			return "SwordCastBundle.install: %s 不是 Component" % component_names[index]
+		data.name = component_names[index]
+		_own(host, data)
+		LabDefaults.apply_component(data)
 	for index in range(capability_scripts.size()):
 		var capability := capability_scripts[index].new() as Capability
 		if capability == null:

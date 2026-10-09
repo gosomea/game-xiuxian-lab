@@ -13,12 +13,28 @@ extends Component
 const FORM_QI := "sword_qi"
 const FORM_STRIKE := "flying_sword"
 const FORM_ARRAY := "sword_array"
+const FORM_WHEEL := "heavenly_sword_wheel"
+const FORM_GIANT := "giant_sword_descent"
+const FORM_RAIN := "heavenly_sword_rain"
 const FORMS: Array[String] = [FORM_QI, FORM_STRIKE, FORM_ARRAY]
 const POSE_THRUST := "thrust"
 const POSE_RAISE := "raise"
+const POSE_WHEEL := "wheel"
+const POSE_GIANT := "giant"
+const POSE_RAIN := "rain"
 
 ## 输入：鼠标在地面的指向点（世界坐标）。
 var aim_point: Vector3 = Vector3.ZERO
+## 输入：真实碰撞地面的选点、法线与有效性；独立于人物高度的方向平面。
+var aim_surface_point: Vector3 = Vector3.ZERO
+var aim_surface_normal: Vector3 = Vector3.UP
+var aim_surface_valid: bool = false
+## 输入：全体法术取消序号；场景重置、失焦、退出递增。
+var cancel_generation: int = 0
+## 请求：反馈数据序号、位置与强度；0..1，小剑为轻反馈，巨剑落地为重反馈。
+var feedback_serial: int = 0
+var feedback_point: Vector3 = Vector3.ZERO
+var feedback_strength: float = 0.0
 ## 输入：左键按下边沿（仅一帧）。
 var cast_pressed: bool = false
 ## 输入：左键是否按住。
@@ -34,6 +50,9 @@ var face_until: float = -1.0
 ## 请求：出招姿势目标权重与种类，表现层平滑过渡。
 var pose_weight: float = 0.0
 var pose_kind: String = POSE_THRUST
+## 请求：施法姿势所处阶段与该阶段进度；只由当前招式写入。
+var pose_phase: String = "gather"
+var pose_progress: float = 0.0
 
 ## 状态：本命剑是否离开悬浮位，以及离开时的世界位置与剑尖方向。
 var sword_away: bool = false
@@ -105,3 +124,16 @@ func clear_input() -> void:
 	cast_pressed = false
 	cast_held = false
 	cast_released = false
+
+
+## 数据存取：递增取消序号并清输入；能力在其生命周期内读序号响应。
+func request_cancel() -> void:
+	cancel_generation += 1
+	clear_input()
+
+
+## 数据存取：登记一次空间反馈，表现层读序号变化。
+func record_feedback(point: Vector3, strength: float) -> void:
+	feedback_serial += 1
+	feedback_point = point
+	feedback_strength = clampf(strength, 0.0, 1.0)

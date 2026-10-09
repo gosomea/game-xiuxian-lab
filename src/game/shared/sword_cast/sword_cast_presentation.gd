@@ -71,6 +71,8 @@ func _process(delta: float) -> void:
 		var target := _cast.pose_weight if _cast.facing_requested(now) else 0.0
 		_modifier.weight = move_toward(_modifier.weight, target, POSE_RATE * delta)
 		_modifier.kind = _cast.pose_kind
+		_modifier.phase = _cast.pose_phase
+		_modifier.progress = _cast.pose_progress
 		_modifier.facing = _facing()
 
 
