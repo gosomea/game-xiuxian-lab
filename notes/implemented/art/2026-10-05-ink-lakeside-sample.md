@@ -30,4 +30,4 @@ Status: implemented
 
 源资产与运行报告分别保存在 `docs/art/ink_lakeside_sample/`、`docs/playtest/2026-10-05-ink-lakeside/`。本轮没有清理或修改工作区既有美术试验。
 
-物理、输入、目录与画面取证已完成。返回目录后退出窗口仍有纹理释放诊断，旧青玉场景同类流程也能复现，具体资源归属尚未定位；本轮按 WIP 保存，结果与限制见[运行记录](../../../docs/playtest/2026-10-05-ink-lakeside/report.md)。
+物理、输入、目录与画面取证已完成。2026-10-09 复验确认：窗口退出的四条 `349524` 字节纹理诊断来自移动目录用 `load()` 预载全部子场景，不是本场景的 `ImageTexture`；无头空材质来自 dummy renderer 在复制导入人物材质时拿到空 RID。目录改为 `ResourceLoader.exists()`，无头跳过这层只用于窗口调色的材质复制。复验见[运行记录](../../../docs/playtest/2026-10-05-ink-lakeside/report.md)。

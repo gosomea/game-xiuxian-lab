@@ -213,6 +213,9 @@ func _build_world() -> void:
 
 
 func _style_character() -> void:
+	# Dummy renderer queries a null material RID when these imported materials are duplicated.
+	if DisplayServer.get_name() == "headless":
+		return
 	for mesh: MeshInstance3D in _player.get_node("Visual").find_children("*", "MeshInstance3D", true, false):
 		for surface in range(mesh.mesh.get_surface_count()):
 			var original := mesh.get_active_material(surface) as StandardMaterial3D

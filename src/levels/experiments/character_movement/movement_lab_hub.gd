@@ -191,7 +191,9 @@ static func can_open(entry: Dictionary) -> bool:
 static func _valid_scene(scene: String) -> bool:
 	if not scene.begins_with("res://levels/") or not scene.ends_with(".tscn") or ".." in scene:
 		return false
-	return ResourceLoader.exists(scene, "PackedScene") and load(scene) is PackedScene
+	# exists() checks the resource type. load() would preload every subexperiment,
+	# including GLB dependencies, and those cached loads leak GL textures on exit.
+	return ResourceLoader.exists(scene, "PackedScene")
 
 
 func select_entry(id: String) -> void:
