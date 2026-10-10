@@ -35,18 +35,18 @@ X/Z 是地面，Y 是高度。正交相机与场景环境可在编辑器中直�
 
 纯动作版本使用[轻量源与独立动作库](art/cultivator_motion_library_20261010/asset_ledger.md)，共享网格、贴图和 rest。改网格或骨架才建立新的共享模型版本。
 
-## 仅本地开发与备份
+## LFS 同步与备份
 
-使用者于 2026-10-10 选择 LFS 内容只保留本地。继续正常 `git add`、本地提交、切换已有版本和运行 Godot；本地操作不使用 GitHub LFS 配额。保留 LFS 过滤器与门禁。暂不执行 `git push`、`git lfs push` 或对旧远端 fetch/pull；远端没有迁移后的内容，也不保存后续本地进度。
+使用者于 2026-10-10 在历史精简完成后明确授权上传完整 LFS 内容并强推远端主分支，[发布决策](../notes/implemented/process/2026-10-10-lfs-remote-publication.md)接替此前仅本地选择。继续正常 `git add`、本地提交、切换已有版本和运行 Godot；保留 LFS 过滤器、门禁与 pre-push hook。后续推送仍须使用者授权；不要把迁移前旧历史合回新历史。
 
-本机当前仓库采用以下可撤销配置，普通 `git push origin` 会在连接远端前被拒绝：
+此前仅本地模式使用以下配置阻断普通推送，本次发布解除这两项本仓配置：
 
 ```sh
 git config --local remote.origin.pushurl disabled://local-only-lfs
 git config --local protocol.disabled.allow never
 ```
 
-这是 `.git/config` 中的本地配置，普通 clone 不会继承；复制完整仓库会携带它。显式 URL 或直接 `git lfs push` 可以绕开普通 Git 推送配置，此模式下不要执行。若以后明确决定发布且确认配额，先解除配置，再按迁移报告上传完整对象并更新远端：
+这是 `.git/config` 中的本地配置，普通 clone 不会继承；复制旧备份可能携带它。解除命令如下；发布必须先上传目标提交的完整 LFS 内容，再更新 Git 分支，不能只发布指针：
 
 ```sh
 git config --local --unset-all remote.origin.pushurl
@@ -55,4 +55,4 @@ git config --local --unset-all protocol.disabled.allow
 
 开发暂停、提交保存后，复制整个仓库目录到备份位置，确保包含隐藏的 `.git` 与全部 `.git/lfs/objects`。仅 `git bundle` 或复制当前工作树不能备份历史资产；本地 LFS 对象不能删除，也不运行 `git lfs prune`。现有迁移备份保留；使用者授权的[旧人物历史精简](migrations/2026-10-10-lfs-compaction/report.md)已为日常库剔除限定旧版本，原版本仍可从完整备份恢复。后续提交与新增对象须继续更新备份。同一磁盘的备份不能应对磁盘损坏，建议另存到独立磁盘。
 
-恢复时使用完整仓库副本，安装 Git LFS（macOS：`brew install git-lfs`），执行 `git lfs install --local`、`git lfs checkout` 与 `git lfs fsck --objects --pointers refs/heads/main`，再导入 Godot；本地对象完整时无需 `git lfs pull`。仅从 GitHub clone 目前只能取得旧版本，不能恢复这份本地工程。
+恢复时使用完整仓库副本，安装 Git LFS（macOS：`brew install git-lfs`），执行 `git lfs install --local`、`git lfs checkout` 与 `git lfs fsck --objects --pointers refs/heads/main`，再导入 Godot；本地对象完整时无需 `git lfs pull`。从 GitHub 获取已发布版本时，执行 `git lfs pull` 并确认资源已经恢复成真实文件；迁移前旧克隆应先保存工作，再重新克隆或按提交映射迁移。

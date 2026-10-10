@@ -2,6 +2,8 @@
 
 依据：[精简决策](../../../notes/implemented/process/2026-10-10-local-lfs-history-compaction.md)。使用者同意精简已从当前目录删除的旧人物历史；本次不上传或修改 GitHub。
 
+精简实施后的远端发布另获使用者明确授权，依据[完整 LFS 上传与强推决策](../../../notes/implemented/process/2026-10-10-lfs-remote-publication.md)。本报告中的未上传状态与推送阻断描述精简阶段，不再作为当前发布限制。
+
 ## 范围与备份
 
 - 原工作区分支：`codex/sword-spell-exploration`，原 HEAD：`f0f29a5e7043ef5f108c9fa2e9d1d4a783c1b050`；包含最新三项剑法探索成果。
