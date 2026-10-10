@@ -8,6 +8,8 @@ Status: implemented
 
 ## 决策
 
+使用者于 2026-10-10 确认“剑法我觉得 ok”，本轮六招探索收口，`sword_combat` 标记为 `ready`，可供后续独立组合实验使用。完成范围是施法、剑的运动、命中反馈、共享剑指动作与移动/御剑装配；不表示敌人 AI、伤害、血量、胜负或最终平衡已完成。模块清单、README 与实验结论同步更新，保留全部探索资产和已有验收边界。
+
 三个方向各为 abilities 下独立叶子包：heavenly_sword_wheel、giant_sword_descent、heavenly_sword_rain。各包包含自己的纯数据 Component、Capability、View 与配对测试；只通过 SwordCastComponent、SwordsmanMotionComponent 与目标数据通信，不跨 Capability 引用。旧三招、角色现役视觉与共享镜头保留。
 
 共享 sword_cast 契约增加真实地面 aim_surface_point / aim_surface_valid / aim_surface_normal，保留 aim_point 的人物高度方向语义；增加 cancel_generation（重置、失焦、退出触发的取消序号）与 feedback_serial / feedback_point / feedback_strength（纯数据反馈请求记录）。各新能力捕获取消序号，取消时失活并清表现；蓄势换招取消，释放后换招继续完成，持续输出不再覆盖其它招的独立 Component。表现阶段的姿势请求只由当前招式写入，避免后台法术抢朝向。
@@ -30,4 +32,4 @@ SwordCastTargets 提供三维线段对膨胀竖直目标的最早交叉，以及
 
 ## 后果
 
-三个新方向的参数是探索起点，不构成最终平衡结论；不增加成长、敌人 AI、血量、伤害与胜负。无手指骨的限制保留，施法以肩臂姿态和法阵响应表达，不宣称做出掐诀手型。运行验收与视觉结论由实际证据记录，主观好看不由单元测试替代。
+三个新方向的参数是探索起点，不构成最终平衡结论；不增加成长、敌人 AI、血量、伤害与胜负。原身体仍无手指骨，后续[剑指动作优化](../art/2026-10-10-sword-finger-gesture.md)提供独立十六骨右手与共享施法表现，六招共用胸前结诀、约 105° 前下方发令和全程掌心朝左的动作。当前模块结论与保留边界见[剑法实验结论](../../../docs/experiments/sword-combat.md)。运行验收与视觉结论由实际证据记录，主观好看不由单元测试替代。
