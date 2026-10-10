@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "baseline_commit": "535a7d2013adfe25e26c160fe071d6e376c8ada7",
+  "baseline_commit": "f37f9170c9bace0c3b7a4f75e6e09d6e0267302e",
   "files": {
     "docs/art/bound_sword_20261009/bound_sword_20261009.blend": "484d690f32142a2152310df2472a10f7b908f4cf",
     "docs/art/ground_contact_course/ground_contact_course.blend": "4df28405bb74cb3d6607609eaee8a040d98fa386",
@@ -94,5 +94,12 @@
       "src/levels/experiments/character_movement/mountain_realm_courtyards.glb",
       "src/levels/experiments/character_movement/west_lake_sunset_world.glb"
     ]
+  },
+  "historical_compaction": {
+    "date": "2026-10-10",
+    "baseline_before_compaction": "535a7d2013adfe25e26c160fe071d6e376c8ada7",
+    "removed_paths": 255,
+    "removed_lfs_objects": 212,
+    "removed_lfs_bytes": 8611699289
   }
 }

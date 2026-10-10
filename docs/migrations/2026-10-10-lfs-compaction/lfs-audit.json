@@ -1,0 +1,11 @@
+{
+  "retained_history_objects_hashed": 40,
+  "retained_history_bytes": 1149407340,
+  "sha256_and_sizes_verified": true,
+  "approved_unreferenced_objects_removed": 212,
+  "removed_bytes": 8611699289,
+  "cache_before_bytes": 9761470959,
+  "cache_after_bytes": 1149771670,
+  "cache_after_GiB": 1.0708083119243383,
+  "unselected_unreferenced_objects_retained": 1
+}

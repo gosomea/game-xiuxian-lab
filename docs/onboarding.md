@@ -53,6 +53,6 @@ git config --local --unset-all remote.origin.pushurl
 git config --local --unset-all protocol.disabled.allow
 ```
 
-开发暂停、提交保存后，复制整个仓库目录到备份位置，确保包含隐藏的 `.git` 与全部 `.git/lfs/objects`。仅 `git bundle` 或复制当前工作树不能备份历史资产；本地 LFS 对象不能删除，也不运行 `git lfs prune`。现有迁移备份保留，但后续提交与新增对象须继续更新备份。同一磁盘的备份不能应对磁盘损坏，建议另存到独立磁盘。
+开发暂停、提交保存后，复制整个仓库目录到备份位置，确保包含隐藏的 `.git` 与全部 `.git/lfs/objects`。仅 `git bundle` 或复制当前工作树不能备份历史资产；本地 LFS 对象不能删除，也不运行 `git lfs prune`。现有迁移备份保留；使用者授权的[旧人物历史精简](migrations/2026-10-10-lfs-compaction/report.md)已为日常库剔除限定旧版本，原版本仍可从完整备份恢复。后续提交与新增对象须继续更新备份。同一磁盘的备份不能应对磁盘损坏，建议另存到独立磁盘。
 
 恢复时使用完整仓库副本，安装 Git LFS（macOS：`brew install git-lfs`），执行 `git lfs install --local`、`git lfs checkout` 与 `git lfs fsck --objects --pointers refs/heads/main`，再导入 Godot；本地对象完整时无需 `git lfs pull`。仅从 GitHub clone 目前只能取得旧版本，不能恢复这份本地工程。

@@ -1,0 +1,33 @@
+{
+  "commits_checked": 103,
+  "preserved_path_mode_blob_entries": 135201,
+  "removed_entries": 5292,
+  "removed_exact_paths": 255,
+  "all_metadata_messages_parent_graph_preserved": true,
+  "all_ref_tips_unchanged": true,
+  "before_refs": {
+    "refs/codex/turn-diffs/captures/1791615917481/b49a888b-3653-4bbc-b3b5-1985e36f615a/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/captures/1791616015156/4fbb8a93-f0b0-4e62-9cc8-916a35d2b562/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/checkpoints/243df745c6ebd7366502905163744e8b/213dccc183de4604c8f1a84d1a0bf82a/1791567932297/7ca5d986-39c5-4cc2-96b5-1e88dc82e2dd": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/codex/turn-diffs/checkpoints/b8897e36aeaee7f85a24c837848c6a3d/de8975288cfaabc197f985e0238d90e7/1791568115591/6d3da27f-d515-4bfa-ac80-94d2214abc09": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/heads/codex/giant-sword-descent": "881742976250a745f098626e2495f5f10014773a",
+    "refs/heads/codex/heavenly-sword-rain": "311f28cb0771e35f0217fc33b6eb30306060a3db",
+    "refs/heads/codex/heavenly-sword-wheel": "c05172e75704163370d5cf354ea929eaa1737714",
+    "refs/heads/codex/sword-spell-exploration": "78faf167e16c57be16521670955b97117d659241",
+    "refs/heads/codex/sword-spell-foundation": "b4117cb527796899b35f2c5596299da660feaf2a",
+    "refs/heads/main": "06d40244ec0f258747680c87d29b5357d8dc5b62"
+  },
+  "after_refs": {
+    "refs/codex/turn-diffs/captures/1791615917481/b49a888b-3653-4bbc-b3b5-1985e36f615a/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/captures/1791616015156/4fbb8a93-f0b0-4e62-9cc8-916a35d2b562/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/checkpoints/243df745c6ebd7366502905163744e8b/213dccc183de4604c8f1a84d1a0bf82a/1791567932297/7ca5d986-39c5-4cc2-96b5-1e88dc82e2dd": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/codex/turn-diffs/checkpoints/b8897e36aeaee7f85a24c837848c6a3d/de8975288cfaabc197f985e0238d90e7/1791568115591/6d3da27f-d515-4bfa-ac80-94d2214abc09": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/heads/codex/giant-sword-descent": "292683df989542637009209eeffb08ba28c4094b",
+    "refs/heads/codex/heavenly-sword-rain": "a2d8b82de80c0bb3d983b07d3e40270505b82039",
+    "refs/heads/codex/heavenly-sword-wheel": "23efd0b0806e648d5c45b1eba222b05e10a7f4c4",
+    "refs/heads/codex/sword-spell-exploration": "ce2c2177f7e7760f55da0fef783151d6cffbfe6a",
+    "refs/heads/codex/sword-spell-foundation": "e009be6e8bc08f64a8aa4cf8c83ca3b78d7fb093",
+    "refs/heads/main": "9acd6257d415f13c7f339551bf6ed3b26b697266"
+  },
+  "script_sha256": "3d40953ead37e42f5793876cfdc6bba93ed7cb264b09ac1fa772c9cade3dd2f6"
+}
