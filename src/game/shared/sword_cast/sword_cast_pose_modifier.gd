@@ -20,7 +20,6 @@ var _last_frame := Transform3D.IDENTITY
 func _process_modification_with_delta(delta: float) -> void:
 	var skeleton := get_skeleton()
 	if skeleton == null: return
-	if weight <= 0.001 and not _prepared: return
 	var flat := Vector3(facing.x, 0.0, facing.z).normalized()
 	if flat.is_zero_approx(): return
 	var right := flat.cross(Vector3.UP).normalized()
@@ -53,7 +52,9 @@ func _process_modification_with_delta(delta: float) -> void:
 	var blend := 1.0 - exp(-visual_delta * 16.0)
 	var hand_index := skeleton.find_bone("mixamorig_RightHand")
 	# 必须在手臂 IK 之前读取基础动画，避免把肘部转向再次混进手腕。
-	var base_rotation := (skeleton.global_transform.basis * skeleton.get_bone_global_pose(hand_index).basis).orthonormalized().get_rotation_quaternion()
+	var base_fingers := (skeleton.global_transform.basis * skeleton.get_bone_global_pose(hand_index).basis).y.normalized()
+	# 独立手部原生 -Z 为掌心；垂手和施法都保持朝角色左侧。
+	var base_rotation := _palm_left_basis(flat, base_fingers).get_rotation_quaternion()
 	var commanded_rotation := _gesture_basis(flat, command).get_rotation_quaternion()
 	var desired_rotation := base_rotation.slerp(commanded_rotation, weight)
 	if not _prepared:
@@ -67,6 +68,7 @@ func _process_modification_with_delta(delta: float) -> void:
 		_right_target = body_motion * _right_target
 		_left_target = body_motion * _left_target
 		_hand_rotation = (body_motion.basis.orthonormalized().get_rotation_quaternion() * _hand_rotation).normalized()
+		_hand_rotation = _palm_left_basis(flat, Basis(_hand_rotation).y).get_rotation_quaternion()
 	_last_frame = skeleton.global_transform
 	_right_target = _right_target.move_toward(target, minf(_right_target.distance_to(target) * blend, 0.045))
 	_left_target = _left_target.move_toward(left, minf(_left_target.distance_to(left) * blend, 0.045))
@@ -77,7 +79,7 @@ func _process_modification_with_delta(delta: float) -> void:
 	_orient_hand(skeleton, hand_index, _hand_rotation)
 	if _left_weight > 0.001:
 		_solve_arm(skeleton, "mixamorig_Left", _left_target, -right - Vector3.UP * 0.5, _left_weight)
-	# 权重归零不能丢弃尚未回到基础动画的手腕旋转，否则末帧会突然转手。
+	# 权重归零后逐步垂手，掌心仍向左，避免收势时翻掌朝天。
 	if weight <= 0.001 and _hand_rotation.angle_to(base_rotation) < 0.02:
 		_prepared = false
 		_left_weight = 0.0
@@ -115,10 +117,16 @@ static func _aim_bone(skeleton: Skeleton3D, bone: int, child: int, desired: Vect
 	skeleton.set_bone_global_pose(bone, Transform3D(Basis(turn) * pose.basis, pose.origin))
 
 static func _gesture_basis(flat: Vector3, command: float) -> Basis:
-	# 同一侧轴上的单纯俯转：正上 → 一百零五度前下指，不加掌部侧翻。
-	var across := -flat.cross(Vector3.UP).normalized()
-	var fingers := Vector3.UP.rotated(across, clampf(command, 0.0, 1.0) * COMMAND_PITCH)
-	return Basis(across, fingers, across.cross(fingers)).orthonormalized()
+	var left := -flat.cross(Vector3.UP).normalized()
+	var fingers := Vector3.UP.rotated(left, clampf(command, 0.0, 1.0) * COMMAND_PITCH)
+	return _palm_left_basis(flat, fingers)
+
+static func _palm_left_basis(flat: Vector3, fingers: Vector3) -> Basis:
+	var back_of_hand := flat.cross(Vector3.UP).normalized()
+	var along := fingers - back_of_hand * fingers.dot(back_of_hand)
+	if along.length_squared() < 0.000001: along = Vector3.DOWN
+	along = along.normalized()
+	return Basis(along.cross(back_of_hand), along, back_of_hand).orthonormalized()
 
 static func _orient_hand(skeleton: Skeleton3D, index: int, world_rotation: Quaternion) -> void:
 	var pose := skeleton.get_bone_global_pose(index)

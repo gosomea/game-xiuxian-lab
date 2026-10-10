@@ -5,6 +5,7 @@ var _scene: Node3D
 var _actor: Swordsman
 var _cast: SwordCastComponent
 var _body: Skeleton3D
+var _hand_skeleton: Skeleton3D
 var _view: SubViewport
 var _camera: Camera3D
 var _out := ""
@@ -22,13 +23,14 @@ var _previous_rotation := Quaternion.IDENTITY
 var _max_step := 0.0
 var _max_turn := 0.0
 var _max_weight := 0.0
+var _max_palm_error := 0.0
 var _aim_point := Vector3(0,0,-4)
 var _observed_wrist := Vector3.ZERO
 var _observed_rotation := Quaternion.IDENTITY
 func _initialize() -> void:
 	Engine.max_fps = 60
 	process_frame.connect(_frame_started)
-	_out = ProjectSettings.globalize_path("res://").trim_suffix("/").get_base_dir().path_join("docs/playtest/2026-10-10-sword-finger-gesture/upright105")
+	_out = ProjectSettings.globalize_path("res://").trim_suffix("/").get_base_dir().path_join("docs/playtest/2026-10-10-sword-finger-gesture/palm-left")
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--evidence-dir="): _out = arg.trim_prefix("--evidence-dir=")
 		if arg == "--offscreen": _offscreen = true
@@ -46,8 +48,9 @@ func _run() -> void:
 	_actor = _scene.call("actor")
 	_cast = _scene.call("cast_component")
 	_body = _actor.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
-	var modifier := _body.get_node("SwordCastPoseModifier") as SwordCastPoseModifier
-	modifier.modification_processed.connect(_observe_modified_pose)
+	_hand_skeleton = _body.get_node("SwordFingerAttachment").find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	# 骨架完成全部修改后，BoneAttachment 已同步，再读真实手部腕骨。
+	_body.skeleton_updated.connect(_observe_modified_pose)
 	_observe_modified_pose()
 	physics_frame.connect(_pin_aim)
 	var container := SubViewportContainer.new()
@@ -91,7 +94,7 @@ func _run() -> void:
 	_actor.press_flight_toggle()
 	await _frames(25)
 	var f := FileAccess.open(_out.path_join("acceptance.json"), FileAccess.WRITE)
-	f.store_string(JSON.stringify({"checks":_checks,"samples":_rows,"failed":_failed,"command_pitch_degrees":105,"rendering_method":RenderingServer.get_current_rendering_method()}, "  "))
+	f.store_string(JSON.stringify({"checks":_checks,"samples":_rows,"failed":_failed,"command_pitch_degrees":105,"palm_constraint":"actor_left_throughout","palm_source":"imported_hand_Wrist_negative_Z","rendering_method":RenderingServer.get_current_rendering_method()}, "  "))
 	print("GESTURE_ACCEPTANCE checks=%d failed=%d" % [_checks.size(),_failed])
 	quit(1 if _failed > 0 else 0)
 func _exercise(form: String) -> void:
@@ -105,7 +108,7 @@ func _exercise(form: String) -> void:
 	_click(true)
 	_previous_wrist = _wrist()
 	_previous_rotation = _hand_rotation()
-	_max_step = 0.0; _max_turn = 0.0; _max_weight = 0.0
+	_max_step = 0.0; _max_turn = 0.0; _max_weight = 0.0; _max_palm_error = 0.0
 	_record_form = form; _recording = true; _record_serial = -1
 	var sample_start := _rows.size()
 	for frame in range(320):
@@ -120,6 +123,7 @@ func _exercise(form: String) -> void:
 	_check(_max_weight > 0.9, form + "完整结成剑指")
 	_check(_max_step < 0.14, form + "手腕无超过十四厘米逐帧跳变 %.3f" % _max_step)
 	_check(_max_turn < 0.7, form + "手腕朝向连续 %.3f" % _max_turn)
+	_check(_max_palm_error < deg_to_rad(1.0), form + "入势发令收势全程真实掌心朝左 %.4f度" % rad_to_deg(_max_palm_error))
 	await _frames(160)
 	await _capture(form+"-settled")
 	var presentation := _actor.get_node("SwordCastPresentation") as SwordCastPresentation
@@ -151,7 +155,13 @@ func _observe_modified_pose() -> void:
 		var presentation := _actor.get_node("SwordCastPresentation") as SwordCastPresentation
 		_max_weight = maxf(_max_weight, float(presentation.hand_state()["weight"]))
 		var basis := pose.basis.orthonormalized()
-		_rows.append({"form":_record_form,"render_frame":_serial,"delta":_scene.get_process_delta_time(),"wrist":[pose.origin.x,pose.origin.y,pose.origin.z],"rotation":[_observed_rotation.x,_observed_rotation.y,_observed_rotation.z,_observed_rotation.w],"fingers":[basis.y.x,basis.y.y,basis.y.z],"palm_width":[basis.x.x,basis.x.y,basis.x.z],"phase":_cast.pose_phase,"progress":_cast.pose_progress,"weight":presentation.pose_weight(),"finger_weight":presentation.hand_state()["weight"]})
+		var hand_wrist := _hand_skeleton.get_bone_global_pose(_hand_skeleton.find_bone("Wrist"))
+		var palm := -(_hand_skeleton.global_transform.basis * hand_wrist.basis).orthonormalized().z
+		var modifier := _body.get_node("SwordCastPoseModifier") as SwordCastPoseModifier
+		var flat := Vector3(modifier.facing.x, 0.0, modifier.facing.z).normalized()
+		var palm_error := palm.angle_to(-flat.cross(Vector3.UP))
+		_max_palm_error = maxf(_max_palm_error, palm_error)
+		_rows.append({"form":_record_form,"render_frame":_serial,"delta":_scene.get_process_delta_time(),"wrist":[pose.origin.x,pose.origin.y,pose.origin.z],"rotation":[_observed_rotation.x,_observed_rotation.y,_observed_rotation.z,_observed_rotation.w],"fingers":[basis.y.x,basis.y.y,basis.y.z],"palm_width":[basis.x.x,basis.x.y,basis.x.z],"palm":[palm.x,palm.y,palm.z],"palm_left_error":palm_error,"phase":_cast.pose_phase,"progress":_cast.pose_progress,"weight":presentation.pose_weight(),"finger_weight":presentation.hand_state()["weight"]})
 func _frame_started() -> void:
 	_serial += 1
 

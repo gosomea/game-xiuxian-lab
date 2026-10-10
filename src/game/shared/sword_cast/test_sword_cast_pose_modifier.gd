@@ -32,6 +32,10 @@ static func run(t) -> void:
 			player = candidate as AnimationPlayer
 			break
 	t.assert_true(player != null, "明确找到身体的移动动画播放器")
+	player.play("idle"); player.advance(0.0)
+	modifier.facing = Vector3.FORWARD
+	modifier._process_modification_with_delta(1.0 / 60.0)
+	t.assert_true(_palm(body, hs).dot(Vector3.LEFT) > 0.9999, "装配剑法后的垂手掌心朝角色内侧")
 	modifier.weight = 1.0
 	modifier.kind = SwordCastComponent.POSE_WHEEL
 	modifier.phase = "gather"
@@ -64,17 +68,18 @@ static func run(t) -> void:
 			modifier._process_modification_with_delta(1.0 / 60.0)
 		var upright := _hand_basis(body)
 		t.assert_true(upright.y.dot(Vector3.UP) > 0.9999, pose_kind + "结诀手指严格朝上")
+		t.assert_true(_palm(body, hs).dot(Vector3.LEFT) > 0.9999, pose_kind + "导入手部结诀掌心朝左")
 		modifier.phase = "release"; modifier.progress = 1.0; modifier.age = 0.6
-		var max_roll := 0.0
+		var max_palm_error := 0.0
 		for i in range(80):
 			player.play("idle"); player.advance(0.0)
 			modifier._process_modification_with_delta(1.0 / 60.0)
-			max_roll = maxf(max_roll, _hand_basis(body).x.angle_to(Vector3.LEFT))
+			max_palm_error = maxf(max_palm_error, _palm(body, hs).angle_to(Vector3.LEFT))
 		var forward := _hand_basis(body)
 		var forward_down := Vector3.UP.rotated(Vector3.LEFT, deg_to_rad(105.0))
 		t.assert_true(forward.y.dot(forward_down) > 0.9999, pose_kind + "发令手指朝前方偏下十五度")
 		t.assert_true(absf(upright.y.angle_to(forward.y) - deg_to_rad(105.0)) < 0.001, pose_kind + "起势到发令俯转一百零五度")
-		t.assert_true(max_roll < 0.001, pose_kind + "转动全程掌宽轴稳定不侧翻")
+		t.assert_true(max_palm_error < 0.001, pose_kind + "转动全程导入手部掌心始终朝左")
 	# 换一个角色朝向也必须围绕角色自身侧轴前指。
 	modifier.kind = SwordCastComponent.POSE_WHEEL
 	modifier.facing = Vector3.FORWARD.rotated(Vector3.UP, 1.1)
@@ -83,24 +88,28 @@ static func run(t) -> void:
 		modifier._process_modification_with_delta(1.0 / 60.0)
 	var aimed_down := Vector3.UP.rotated(-modifier.facing.cross(Vector3.UP), deg_to_rad(105.0))
 	t.assert_true(_hand_basis(body).y.dot(aimed_down) > 0.9999, "改变瞄准方向后手指仍朝角色前下方")
-	t.assert_true(_hand_basis(body).x.dot(-modifier.facing.cross(Vector3.UP)) > 0.9999, "改变朝向后掌宽轴仍稳定在角色侧向")
+	t.assert_true(_palm(body, hs).dot(-modifier.facing.cross(Vector3.UP)) > 0.9999, "改变朝向后掌心仍朝角色左侧")
 	modifier.facing = Vector3.FORWARD
 	for i in range(80):
 		player.play("idle"); player.advance(0.0)
 		modifier._process_modification_with_delta(1.0 / 60.0)
 	var previous_rotation := _hand_basis(body).get_rotation_quaternion()
-	var base_rotation := previous_rotation
+	var base_fingers := Vector3.DOWN
 	var max_return_turn := 0.0
+	var max_return_palm_error := 0.0
 	for i in range(80):
 		modifier.weight = maxf(0.0, 1.0 - (i + 1) * 0.15)
 		player.play("idle"); player.advance(0.0)
-		base_rotation = _hand_basis(body).get_rotation_quaternion()
+		base_fingers = _hand_basis(body).y
+		base_fingers = (base_fingers - Vector3.RIGHT * base_fingers.x).normalized()
 		modifier._process_modification_with_delta(1.0 / 60.0)
 		var next_rotation := _hand_basis(body).get_rotation_quaternion()
 		max_return_turn = maxf(max_return_turn, previous_rotation.angle_to(next_rotation))
+		max_return_palm_error = maxf(max_return_palm_error, _palm(body, hs).angle_to(Vector3.LEFT))
 		previous_rotation = next_rotation
 	t.assert_true(max_return_turn < 0.33, "施法权重归零前后手腕持续平滑归位")
-	t.assert_true(previous_rotation.angle_to(base_rotation) < 0.025, "收势结束手腕回到基础动画朝向")
+	t.assert_true(_hand_basis(body).y.dot(base_fingers) > 0.999, "收势结束手指回到基础动画的垂手方向")
+	t.assert_true(max_return_palm_error < 0.001, "收势和归零全程导入手部掌心朝左不翻掌")
 	# 人为长帧不能让腕部一次跳回胸前。
 	modifier.weight = 1.0
 	modifier.phase = "gather"
@@ -139,3 +148,9 @@ static func _point(body: Skeleton3D, name: String) -> Vector3:
 
 static func _hand_basis(body: Skeleton3D) -> Basis:
 	return (body.global_transform.basis * body.get_bone_global_pose(body.find_bone("mixamorig_RightHand")).basis).orthonormalized()
+
+static func _palm(body: Skeleton3D, hand_skeleton: Skeleton3D) -> Vector3:
+	body.force_update_all_bone_transforms()
+	(body.get_node("SwordFingerAttachment") as BoneAttachment3D).on_skeleton_update()
+	var hand_wrist := hand_skeleton.get_bone_global_pose(hand_skeleton.find_bone("Wrist"))
+	return -(hand_skeleton.global_transform.basis * hand_wrist.basis).orthonormalized().z

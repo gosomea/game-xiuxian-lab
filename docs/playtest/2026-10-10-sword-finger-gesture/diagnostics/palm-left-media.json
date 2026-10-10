@@ -1,0 +1,13 @@
+{
+  "command": "ffmpeg -v error -i <file> -f null -",
+  "results": [
+    {
+      "file": "palm-left/gesture.gif",
+      "exit_code": 0
+    },
+    {
+      "file": "palm-left/gesture.mp4",
+      "exit_code": 0
+    }
+  ]
+}
