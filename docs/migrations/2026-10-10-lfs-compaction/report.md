@@ -20,6 +20,8 @@
 - 回收前，对全部剩余历史 LFS 内容验证 SHA-256 与大小：40 个对象，1149407340 bytes。任何仍有引用的对象均不回收。[对象审计](lfs-audit.json)、[限定回收程序](collect_lfs_objects.py)。
 - 本地 LFS 缓存由 9761470959 bytes（9.091 GiB）降为 1149771670 bytes（1.071 GiB）。最新剑法分支新增的对象已经计入，故实施前比之前 9.079 GiB 的盘点略大。
 
+重新打包后普通 Git pack+索引为 769.22 MiB，`git fsck --full` 退出 0；见[空间统计](storage.json)、[打包后检查](git-fsck-after-gc.txt)。
+
 普通 blob 豁免的基线 SHA 已按新映射更新，文件/blob 例外保持；LFS 属性同步继续由原生成器执行。
 
 ## 验收与恢复

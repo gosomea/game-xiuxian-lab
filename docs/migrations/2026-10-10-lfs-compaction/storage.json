@@ -1,0 +1,10 @@
+{
+  "git_pack_and_index_bytes": 806582526,
+  "git_pack_MiB": 769.2170391082764,
+  "lfs_cache_objects": 41,
+  "lfs_cache_bytes": 1149771670,
+  "lfs_cache_GiB": 1.0708083119243383,
+  "head": "3a9e14119259ff63ae7fe8ee6b72095ab711fcf8",
+  "all_branch_names_retained": true,
+  "git_fsck_after_gc_exit": 0
+}
