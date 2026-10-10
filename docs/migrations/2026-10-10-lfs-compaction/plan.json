@@ -1,0 +1,2031 @@
+{
+  "authorized_date": "2026-10-10",
+  "before_head": "f0f29a5e7043ef5f108c9fa2e9d1d4a783c1b050",
+  "before_branch": "codex/sword-spell-exploration",
+  "before_refs": {
+    "refs/codex/turn-diffs/captures/1791615917481/b49a888b-3653-4bbc-b3b5-1985e36f615a/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/captures/1791616015156/4fbb8a93-f0b0-4e62-9cc8-916a35d2b562/base": "b67d23274d789accb086b0c45bf4656940b4c469",
+    "refs/codex/turn-diffs/checkpoints/243df745c6ebd7366502905163744e8b/213dccc183de4604c8f1a84d1a0bf82a/1791567932297/7ca5d986-39c5-4cc2-96b5-1e88dc82e2dd": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/codex/turn-diffs/checkpoints/b8897e36aeaee7f85a24c837848c6a3d/de8975288cfaabc197f985e0238d90e7/1791568115591/6d3da27f-d515-4bfa-ac80-94d2214abc09": "87d456f101b193c8efd5a36cc3e5de469ea9f4be",
+    "refs/heads/codex/giant-sword-descent": "881742976250a745f098626e2495f5f10014773a",
+    "refs/heads/codex/heavenly-sword-rain": "311f28cb0771e35f0217fc33b6eb30306060a3db",
+    "refs/heads/codex/heavenly-sword-wheel": "c05172e75704163370d5cf354ea929eaa1737714",
+    "refs/heads/codex/sword-spell-exploration": "f0f29a5e7043ef5f108c9fa2e9d1d4a783c1b050",
+    "refs/heads/codex/sword-spell-foundation": "b4117cb527796899b35f2c5596299da660feaf2a",
+    "refs/heads/main": "06d40244ec0f258747680c87d29b5357d8dc5b62"
+  },
+  "remove_paths": [
+    "docs/art/9b092e988c21840611f833788e4e4e9a.glb",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius.blend",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius.blend1",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius_rigged.glb",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/iterations/cultivator_handsome_youth_v4_quaternius_iteration_01.blend",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/iterations/cultivator_handsome_youth_v4_quaternius_iteration_02.blend",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_BaseColor.png",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_Normal.png",
+    "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_ORM.png",
+    "docs/art/cultivator_handsome_youth_v5_anime/source/generic_anime_male_original.blend",
+    "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid.blend",
+    "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid.blend1",
+    "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid_rigged.glb",
+    "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend",
+    "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend1",
+    "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02.blend",
+    "docs/art/cultivator_handsome_youth_v6_vroid/source/HairSample_Male_original.vrm",
+    "docs/art/cultivator_handsome_youth_v6_vroid/source/hairsample_male_original.zip",
+    "docs/art/cultivator_human_motion_20260927/cultivator_human_motion_20260927.blend",
+    "docs/art/cultivator_ink_v2/cultivator_ink_v2.blend",
+    "docs/art/cultivator_ink_v2/cultivator_ink_v2.blend1",
+    "docs/art/cultivator_jade/cultivator_jade.blend",
+    "docs/art/cultivator_jade/cultivator_jade.blend1",
+    "docs/art/cultivator_jade/cultivator_jade_for_mixamo.fbx",
+    "docs/art/cultivator_jade/cultivator_jade_for_mixamo.obj",
+    "docs/art/cultivator_motion_20260927/cultivator_motion_20260927.blend",
+    "docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend",
+    "docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend1",
+    "docs/art/cultivator_neutral_youth_v7/source/generic_anime_male_original.blend",
+    "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius.blend",
+    "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius.blend1",
+    "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius_rigged.glb",
+    "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend",
+    "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend1",
+    "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend",
+    "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend1",
+    "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_BaseColor.png",
+    "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_Normal.png",
+    "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_ORM.png",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_lowpoly.fbx",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_obj/cultivator_tripo_v9_mixamo.obj",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload.fbx",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload.zip",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload_yup.fbx",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_blender.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v2.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v4.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v5.glb",
+    "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v6.glb",
+    "docs/art/cultivator_tripo_v9/exports/mixamo_upload_obj/cultivator_tripo_v9_mixamo_upload.obj",
+    "docs/art/cultivator_tripo_v9/exports/mixamo_upload_obj/cultivator_tripo_v9_mixamo_upload_yup.obj",
+    "docs/art/cultivator_tripo_v9/iterations/_unpack_probe/f_default.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/_unpack_probe/f_noyup.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_hands_behind_back_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_meditate_seat_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_sword_riding_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/lean_fix/_check_idle.glb",
+    "docs/art/cultivator_tripo_v9/iterations/lean_fix/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_idle_guarded_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_meditate_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_sword_ride_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_idle_guarded_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_meditate_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_sword_ride_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_idle_guarded_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_meditate_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_sword_ride_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_idle_guarded_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_meditate_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_sword_ride_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_guarded_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_meditate_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_sword_ride_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot0.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot1.glb",
+    "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot2.fbx",
+    "docs/art/cultivator_tripo_v9/raw/9b092e988c21840611f833788e4e4e9a.glb",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend1",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_imported.blend",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_imported.blend1",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend",
+    "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend1",
+    "docs/art/cultivator_walk_sources/cultivator_walk_sources_v5.blend",
+    "docs/art/cultivator_walk_sources/trials/first_export/cultivator_walk_sources_v1.blend",
+    "docs/art/cultivator_walk_sources/trials/first_export/cultivator_walk_sources_v1.glb",
+    "docs/art/cultivator_walk_sources/trials/fourth_export/cultivator_walk_sources_v4.blend",
+    "docs/art/cultivator_walk_sources/trials/fourth_export/cultivator_walk_sources_v4.glb",
+    "docs/art/cultivator_walk_sources/trials/second_export/cultivator_walk_sources_v2.blend",
+    "docs/art/cultivator_walk_sources/trials/second_export/cultivator_walk_sources_v2.glb",
+    "docs/art/cultivator_walk_sources/trials/third_export/cultivator_walk_sources_v3.blend",
+    "docs/art/cultivator_walk_sources/trials/third_export/cultivator_walk_sources_v3.glb",
+    "docs/art/cultivator_xianxia_motion_v1/cultivator_xianxia_motion_v1.blend",
+    "docs/art/cultivator_xianxia_motion_v1/cultivator_xianxia_motion_v1.blend1",
+    "docs/art/jade_paper_sample/hunyuan_raw/character_raw.glb",
+    "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb",
+    "src/game/actors/swordsman/models/cultivator_ink_v2.glb",
+    "src/game/actors/swordsman/models/cultivator_jade.glb",
+    "src/game/actors/swordsman/models/cultivator_jade_texture_20250901.png",
+    "src/game/actors/swordsman/models/cultivator_motion_20260927.glb",
+    "src/game/actors/swordsman/models/cultivator_tripo_v9.glb",
+    "src/game/actors/swordsman/models/cultivator_walk_sources_v5.glb",
+    "src/game/actors/swordsman/models/cultivator_xianxia_motion_v1.glb"
+  ],
+  "candidate_objects": [
+    {
+      "oid": "009eac7472c41775e553d319ae7d4ad9f23a91fb539c9e2cde4a661471a4dd54",
+      "bytes": 43706412,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "030cc7105feebe852992c4081ebac6babfaa75ab0bbc34a6e11a7d540c08f454",
+      "bytes": 43678620,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "03efc9d9ec661202d16eef1a9989ba30e9fcff0c5a7e390f397b45cdb87221ff",
+      "bytes": 43727068,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "04778064ced5bc533d43447e1af78fdbc6ff9348a2e67d43af5ceac4e61b4d30",
+      "bytes": 49681004,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "050fd39563f0f48c8dc884324c6eb87f3b2ac246e4e823830597239f69795ad5",
+      "bytes": 62816728,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_motion_20260927.glb"
+      ]
+    },
+    {
+      "oid": "05b83807231c953c27bdae6e7d8e901211753761928acbde3a981c4349752595",
+      "bytes": 40261964,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "077ec877650d3747b8d3853a9ebeddb253d7d24a7f6168848fb6e0bfa42b6d83",
+      "bytes": 43691644,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "0874dcffdeca2ae60ae37ab52b39841de99e8f2fd3906415ec786c7e307a0ce8",
+      "bytes": 9002918,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid.blend1"
+      ]
+    },
+    {
+      "oid": "0a531e2628c83b8d18cb7515c254e773b2b828d3fb642131a70647de579ca09a",
+      "bytes": 29436940,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "0ce8c4954552b92bd18fe58aced87c828b76a6eca56f6b20dbaaa2e50b21d2f6",
+      "bytes": 64913081,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/mixamo_upload_obj/cultivator_tripo_v9_mixamo_upload_yup.obj"
+      ]
+    },
+    {
+      "oid": "0d7a2b03465e3bffcd505e0cc07a7e6bc82897145f4fd39be016cc090b25c745",
+      "bytes": 29646364,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "0d9b06759e809cd2e5a9a79351f8d2884b80349e8a61bb54ad4545154d87e8c9",
+      "bytes": 29748284,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "0de3c467b169c72c1bddd9005d8fe408cfc9fb43b0f725d57b69b6d8af8ea125",
+      "bytes": 29646364,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "1029c8398dfe32d42238e8c5696267ef2f1b275ed5c5d32517a21b75c92999b0",
+      "bytes": 43783452,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "105064ff3432bd480954c2587175a8388475c023b6cfc3b9049dab7a43943fce",
+      "bytes": 77507924,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v6.glb",
+        "src/game/actors/swordsman/models/cultivator_tripo_v9.glb"
+      ]
+    },
+    {
+      "oid": "120058328842b9439586cd03aa591d66e04d333717035989e3e94037f0c4bb06",
+      "bytes": 59729058,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/first_export/cultivator_walk_sources_v1.blend"
+      ]
+    },
+    {
+      "oid": "13bd0085649f55398d96986e8008a1e6a6610b5f8c7912222f7abbb7ebd9e2bb",
+      "bytes": 15641140,
+      "in_head": false,
+      "paths": [
+        "docs/art/jade_paper_sample/hunyuan_raw/character_raw.glb"
+      ]
+    },
+    {
+      "oid": "157951e4a9515d0eb8d137c1b35ba2265d117a404cad659d7dfe7f0351f06eb9",
+      "bytes": 40334924,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "15c7cfb2d32c84e444f3809be50a2f0ec4b6e8cd1fca869a8d7fd516698f67cd",
+      "bytes": 9022857,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_02/cultivator_handsome_youth_v6_vroid_iteration_02.blend"
+      ]
+    },
+    {
+      "oid": "166576557774365ae41b86caf6f30ef1d73083f2f9e4452ac3d7c66c6c08321a",
+      "bytes": 40261496,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot1.glb"
+      ]
+    },
+    {
+      "oid": "166dab5e1cc2e70ac65b8fdfd13dd9219bfbdfe9ae767fbdf2472f41a041aab7",
+      "bytes": 77513468,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v3.glb",
+        "src/game/actors/swordsman/models/cultivator_tripo_v9.glb"
+      ]
+    },
+    {
+      "oid": "16cbaafeba2f6d9bb01d61304aaa36cbfcd90b532899ff27ff677b57495aef76",
+      "bytes": 29606812,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_idle_guarded_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "19feb6d057378dda85e48d8993d937827325196c65c498d7485ff11db00cf350",
+      "bytes": 40258780,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot1.glb"
+      ]
+    },
+    {
+      "oid": "1bf217bdbe76f36e39baaea9c18f40968956f0eb954af92aebb569cb9b3aff3b",
+      "bytes": 29560748,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "1cbc780bc8cef86ddd14d20606c923faff6089f937fb9d6e83d6596f600c930f",
+      "bytes": 43831868,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "1d61b90cbd36a93b55c2e8140fb248bb4fe6f7034ed2706f89c4e2ca8727284a",
+      "bytes": 43832316,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "1dec4ad77460f6f4e87d0f7590b6b7fba220f0c0e563b303f6ca381bc59b7466",
+      "bytes": 40263092,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_fly_slot1.glb"
+      ]
+    },
+    {
+      "oid": "1e712a7e7105bc6339d25cdb6e4993c209253ac264ab71a83850bea513c067b6",
+      "bytes": 38699816,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius_rigged.glb"
+      ]
+    },
+    {
+      "oid": "229c5d1cc0970cb7a57b1bfe6e545c514c7d636df7766c8a8be8c08ded447c0e",
+      "bytes": 77507924,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v4.glb"
+      ]
+    },
+    {
+      "oid": "2783216463b328d85eb5723bbd106c904d83edbe02a8a9106d759e94dc981abc",
+      "bytes": 38581272,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend"
+      ]
+    },
+    {
+      "oid": "28d08cefca9f6c5df42679986b8afa74f0c73c8ac0b86da645bba7c59f9c4692",
+      "bytes": 59741592,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/third_export/cultivator_walk_sources_v3.blend"
+      ]
+    },
+    {
+      "oid": "2a4a1c93f98c1f3b5b921fadde2bb7d6e9c534f0f9cc0fb5dcad9a182c3492bb",
+      "bytes": 49682148,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "2a8461028428f20453b4ad13a1bee8f79e83494f4789f791ee898a7cdaa2a2d6",
+      "bytes": 43713212,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "2a9c82612d8533514c799ce260d2658dc3ceed73884356ad38b2e97869976449",
+      "bytes": 22730164,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend1"
+      ]
+    },
+    {
+      "oid": "2b1becd212e3a29aa06af91aa51274a2217ea5e892f2147f2b9abde2f1a88e67",
+      "bytes": 29598252,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_sword_riding_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "2dd83e379be18da2507f1a099de1ff94fb971c5512f5c1b20c030533989c77de",
+      "bytes": 22730164,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_neutral_youth_v7/cultivator_neutral_youth_v7.blend"
+      ]
+    },
+    {
+      "oid": "2e96327648662dab9baf1ec375c7c0c72615698b197bb64a656cbfddb51779d8",
+      "bytes": 43763148,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "2fff269143a2d9c8b5a81446e5b37680459e39ad67f2e998d8b78fd11d3a62e2",
+      "bytes": 60115373,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_human_motion_20260927/cultivator_human_motion_20260927.blend"
+      ]
+    },
+    {
+      "oid": "30b9baaab53dddc862b534a32212d88810f654adb5e560b62115163e5df16f17",
+      "bytes": 73434452,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime.glb"
+      ]
+    },
+    {
+      "oid": "332b2dc329a1f4e9ba3b824af38600d6c9ae58f7dd4e1ad3e4aedaa7a09880e9",
+      "bytes": 15764685,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_jade/cultivator_jade.blend1"
+      ]
+    },
+    {
+      "oid": "33e7736b54ac2a49f628cab0c459aa54272ed9ace79f496a7a6f15349ed89f29",
+      "bytes": 43779932,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "398a996726c0c9bc1faa2da0e98356e7c82a36502d11fbdbaebe847af325c138",
+      "bytes": 6046747,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_jade/cultivator_jade_for_mixamo.obj"
+      ]
+    },
+    {
+      "oid": "3a3707c95f19ffbdbc9e0fc283757ad2e9a5e680d1516a59b90f21866fcb3b86",
+      "bytes": 40279008,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "3e79790b4b1099251db73b5e1e2ba1c8020c3e345807239586b91f269a5b6faf",
+      "bytes": 59742796,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/second_export/cultivator_walk_sources_v2.blend"
+      ]
+    },
+    {
+      "oid": "432619d81d09123dea5b90c9b6cfb60828c5f42380f1519bdf79fbe16d6a2ac5",
+      "bytes": 59587120,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_xianxia_motion_v1/cultivator_xianxia_motion_v1.blend"
+      ]
+    },
+    {
+      "oid": "435176c101866404744ba2ec4921cf5de15a6a956ec87715366cc97bca2f543d",
+      "bytes": 53747036,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/_unpack_probe/f_noyup.fbx"
+      ]
+    },
+    {
+      "oid": "441cdfe5c853ce50c78eded192775aeb37471565596b9c4d5678189507116c50",
+      "bytes": 9002215,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend1"
+      ]
+    },
+    {
+      "oid": "44759b369ccacc569b48bfa3debbec781f971908741da2656a6414aa231df8b0",
+      "bytes": 53741484,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/_unpack_probe/f_default.fbx"
+      ]
+    },
+    {
+      "oid": "454b1673ef02273daaf95704a105f7a06872acb8d07031bbd714e779e88e4be0",
+      "bytes": 29598252,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_hands_behind_back_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_guarded_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "4746a02ee50a16993328af010ccffe73898c13d81af3d0fd335ee7ce3d98f2d3",
+      "bytes": 40349888,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot1.glb"
+      ]
+    },
+    {
+      "oid": "47fa1b08400f9ba4b3b3b3d6ac775c587857d4337ee30cc8acc8a49d0cea926c",
+      "bytes": 24563406,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend1"
+      ]
+    },
+    {
+      "oid": "49170aabb2dbfee5c7940cd234fc76438829ec91fdd7b1785edf55340172a0c4",
+      "bytes": 38658051,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend"
+      ]
+    },
+    {
+      "oid": "4a0f583f94c2c3cd84cb3300ea379e8766abe75868ea151596125a3c2687e564",
+      "bytes": 38809396,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius_rigged.glb"
+      ]
+    },
+    {
+      "oid": "4af2194f90ba846f3b13c00b50b14262419062d2171d17de922bcce2f89979c7",
+      "bytes": 18947896,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/source/HairSample_Male_original.vrm"
+      ]
+    },
+    {
+      "oid": "4f6e2d9f0c81544c995b2048df8619065b2951428d0fdd2d746ed614b875be7b",
+      "bytes": 43696444,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "4f9edaaa632430ab97234b7b4d86c890f45f00c70f9a2565b24f38933657337c",
+      "bytes": 40252080,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "512c16e91e9684aaaa2e4b8f75992c4746a5cf41cd31198dfdd5cee76e844c93",
+      "bytes": 49681760,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "51b7ecfb565f63c32b811f0a971e1dadb83ae8629c3d69450da727ab9704e5a8",
+      "bytes": 40254064,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "51bb47018928c193711c816124d12fb6ea164e709a99ac9e7935a7364570bdfe",
+      "bytes": 29632076,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "53b731c37641e9d711685e6a3db3950ba8fb2ce411952ac177895164685233df",
+      "bytes": 29491452,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "5502de486fa67cb9a421f7a1b00b343cc35e66f4439967a43e920199041fc18a",
+      "bytes": 49681688,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot0.glb"
+      ]
+    },
+    {
+      "oid": "55040850dc8b79d4d97bc825978e79e6d478b8f54f03eac912405656c6a75a6a",
+      "bytes": 6721972,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid_rigged.glb"
+      ]
+    },
+    {
+      "oid": "552e2f53af9e9911edb3d26f26ab4e851e44243765e4d45f1f68164c7ecc9368",
+      "bytes": 40251272,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "55b01802985b12248ffea2e188f4654001fa1e879458743a6f0ba0128ab711e7",
+      "bytes": 60115645,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_human_motion_20260927/cultivator_human_motion_20260927.blend"
+      ]
+    },
+    {
+      "oid": "56f14643d137fcfff6a10ed7af2686bc72e55db2e643e64699e9a517b366c458",
+      "bytes": 29491452,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_sword_ride_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "571a6c3328aa028bcb48b33b75d715e7ee3aa9293800ce8a34d731f3d9925c54",
+      "bytes": 9003311,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/iterations/iteration_01/cultivator_handsome_youth_v6_vroid_iteration_01.blend"
+      ]
+    },
+    {
+      "oid": "57911ca5d99bff012c62fcdcbbf466d5d091d79fabfe1f74bc99a1613c7a1d1b",
+      "bytes": 49681560,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "58a00ee3860871992df27d52f1656a04cf2748d8e5b2a42241c52a0f189b3a6b",
+      "bytes": 62746160,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_walk_sources_v5.glb"
+      ]
+    },
+    {
+      "oid": "59c2f92a05f98fa3ed2a4d07a22bb572d8203f6f19aefa6480d04ae7138b5b53",
+      "bytes": 43752988,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "5a76a84119bc03ac30384c94848d6a676b083e0c522668cab5564e8c716d65ff",
+      "bytes": 87426687,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_imported.blend"
+      ]
+    },
+    {
+      "oid": "5a8d73a7f2f2253a73e0b748d61395a7cf839cd5bb5eee0bc73aa36f63199e3d",
+      "bytes": 40256920,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot1.glb"
+      ]
+    },
+    {
+      "oid": "5c03e8d1cb7f2d4ea906ec7bf85e71db114509cf8ec28765ec1ad7ca3f8197c3",
+      "bytes": 40325376,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot1.glb"
+      ]
+    },
+    {
+      "oid": "5c45e81ad289d7d9162e5db987cb01fb7857b3dd5a0b27ab000e16f720799c65",
+      "bytes": 43695820,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_run_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "5e3aa296320f277b601a2cd3a00ef6f275b181c1121151c1b869a6100f1849ae",
+      "bytes": 40243096,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "5f6473e0f3d41e0b8a35e553ddcc32739fe9943da21cb4e41359c7678ebb619e",
+      "bytes": 38589273,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius.blend"
+      ]
+    },
+    {
+      "oid": "60d6404f77fa452bc596472caae06bf47fb9e44d14903574f38e47aaa8bd60fe",
+      "bytes": 49682996,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot0.glb"
+      ]
+    },
+    {
+      "oid": "611711fcbdfaf522e2d5755eec45102a4674f320b57989ea3758dc85b56663c5",
+      "bytes": 40247236,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "62887243c38cc1760626deb99f26c9f9f0a162c3add7a0aaeaf37b5fe20180b7",
+      "bytes": 43662092,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "62bb1054cc34a1688fbc7b6544840eb1494e4258132d0b5d6d47b583290dd5b6",
+      "bytes": 8872343,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend"
+      ]
+    },
+    {
+      "oid": "63386fcc0c571f937e2f6d85b3aeebd260154752a050c895333eb1a3d131813f",
+      "bytes": 29632092,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "637522e51682dd2bff062ecf3fd3b080a8ac538f347390665d51e3459da4190d",
+      "bytes": 62769412,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/third_export/cultivator_walk_sources_v3.glb"
+      ]
+    },
+    {
+      "oid": "64d8c510b26da38bf26503f7dfe906b6f110716c4e318a1f65c046ddfee1fbe2",
+      "bytes": 40259600,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot1.glb"
+      ]
+    },
+    {
+      "oid": "653a467f536ee4377f50b8ade2375854600d99fb22acc94f61c983beca428dda",
+      "bytes": 38588751,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/iterations/cultivator_handsome_youth_v4_quaternius_iteration_02.blend"
+      ]
+    },
+    {
+      "oid": "66763f4dcaebe15d169074236c81272e33b07184911b0fe0f33d185f3e23f413",
+      "bytes": 59741956,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/fourth_export/cultivator_walk_sources_v4.blend"
+      ]
+    },
+    {
+      "oid": "69ed3a5b9a6279fd4756212c5ab43e25521fefbbc12baaed150d8e6dfd031627",
+      "bytes": 78881664,
+      "in_head": false,
+      "paths": [
+        "docs/art/9b092e988c21840611f833788e4e4e9a.glb",
+        "docs/art/cultivator_tripo_v9/raw/9b092e988c21840611f833788e4e4e9a.glb"
+      ]
+    },
+    {
+      "oid": "6a6cb7f19776ac2df55e57334db954bc0730fa09d86b2f88ee707e55efc9b754",
+      "bytes": 14562752,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_jade/cultivator_jade.blend"
+      ]
+    },
+    {
+      "oid": "6d532ded7a86a7348aa33063932e14605e38f8eb965add236c9385fd0f0f9e59",
+      "bytes": 40258816,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot1.glb"
+      ]
+    },
+    {
+      "oid": "6fa22f2632ce4c446fc1aceb2f2c23409249b952bf1247f1bd2e4c5877b31dc0",
+      "bytes": 43742508,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "7138d86cc59914aad07ea2739c675e3c8156e42b6a6d5f526e03d8520a12fd58",
+      "bytes": 59643869,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/cultivator_walk_sources_v5.blend"
+      ]
+    },
+    {
+      "oid": "71c5ab70fa1637b701da0d3073745099f19dfd80aa322b99ecfc1707112758ce",
+      "bytes": 9022644,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/cultivator_handsome_youth_v6_vroid.blend"
+      ]
+    },
+    {
+      "oid": "72138d0b5d7511c1c425226abc340e275ccb95f3dd3f814dcb728b4cc2693a10",
+      "bytes": 49681768,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_jump_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "72efcc49286b34701f48487628b8132822443ec77fd90a27d6455a8b46de02b1",
+      "bytes": 62769560,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/second_export/cultivator_walk_sources_v2.glb"
+      ]
+    },
+    {
+      "oid": "749fe625e4ef4c2f133eae4f7d64f65942d9e9f625385c62214cb9492299faba",
+      "bytes": 53974948,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_clean.glb"
+      ]
+    },
+    {
+      "oid": "7598fa7b63e46fd4dac29708bf5a81e05eb9a67280f7b13c61e28a9110eeb679",
+      "bytes": 14110336,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_Normal.png",
+        "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_Normal.png"
+      ]
+    },
+    {
+      "oid": "75a749036ac16d337cd459718344c53aa1269bc85df1749d0fbfb64ef64bc0a5",
+      "bytes": 38654554,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_05.blend1"
+      ]
+    },
+    {
+      "oid": "7674ccc6175cd50dc962e4eade21c7ea7bb7db1410c7fdccde639061ea344f2f",
+      "bytes": 40262900,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "774d69e7e34b353feb4b2829da483ef850a2cb7edf64b4d5878ca068e19f6ca5",
+      "bytes": 16278156,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_jade/cultivator_jade_for_mixamo.fbx"
+      ]
+    },
+    {
+      "oid": "781626d1eef3dd92a6f465e6b0e488437aee93c8e912a49f3d60b786332c7fdd",
+      "bytes": 43704556,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "7952590e40cd2e4e45c5e82b07f857ceaadea57610ea319eeed2ad9218051c52",
+      "bytes": 43825132,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_idle_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "79adbded1eafecd3f71a4bf164584d354ea024714828083dc5e805ca8e5b25b7",
+      "bytes": 77231088,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v2.glb",
+        "src/game/actors/swordsman/models/cultivator_tripo_v9.glb"
+      ]
+    },
+    {
+      "oid": "79b058b24c1ef1cf1f3467851aae9ee731cce91022debd00a5a5c6dabfeb8fab",
+      "bytes": 40309544,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "7a66e1f3a2722471b729993cbd32d11af2505cc689111d1221efa09ef368e781",
+      "bytes": 38590107,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/iterations/cultivator_shortcoat_v3_quaternius_iteration_04.blend1"
+      ]
+    },
+    {
+      "oid": "7cd450dbdbc831112ebdb1e8c7dad3d27cd38b128f4afb1ed00074694dd00861",
+      "bytes": 49682196,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot0.glb"
+      ]
+    },
+    {
+      "oid": "823362d449a361ee16f2596364bc2dd7b7ff04c9909c4497b77e79184f3826c7",
+      "bytes": 49682276,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot0.glb"
+      ]
+    },
+    {
+      "oid": "83f543f3153c43475939d0856fb686001e05bbd91aaa30167f8a126069853275",
+      "bytes": 22127948,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload.fbx"
+      ]
+    },
+    {
+      "oid": "85a8f1831234b7ec639bcfd6f21dc8305fb30216bc32f311159f31968d281a66",
+      "bytes": 43857388,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "85cacfc7822847c6f8cf91cb2dd302032c16a225cee8990387558c1f6941e982",
+      "bytes": 59663451,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_motion_20260927/cultivator_motion_20260927.blend"
+      ]
+    },
+    {
+      "oid": "87707b3f5382325f48bf8cafa79d63b5950067f993d100ba27a44ed57a23b14c",
+      "bytes": 77065808,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_blender.glb",
+        "src/game/actors/swordsman/models/cultivator_tripo_v9.glb"
+      ]
+    },
+    {
+      "oid": "8bb2cb768264ac02183ebb8c69df57ae5d094c245b5bd0ddd22ccaf48e91facb",
+      "bytes": 49681356,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot0.glb"
+      ]
+    },
+    {
+      "oid": "8d4d856321a314af4495b88c1887b098db824406c510893899de45857f0e589a",
+      "bytes": 43698780,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "8d62991ba6a289439cc1d0e6fad5d453439fd7b138531a40809b7d3bf6d59f5a",
+      "bytes": 29748284,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "8db84030841d6f71cc2b0ff00d10186f58a899d943dfde2e74494401b0cdf428",
+      "bytes": 49682172,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "8e694b63d2679f43abdc967b7e16685b2048a689942555c5f4fa6b0df7978cb0",
+      "bytes": 43771596,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "8f19ee2b7136656515e8ce4be162589499fb8a35e4d3d1ac8a4c48d5e8f370c7",
+      "bytes": 40262968,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runalt/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "90d1c6b9093f810fb4ff527241b5e2ccf7007bf90b81ecb8ac18e63d8b124a1c",
+      "bytes": 43722860,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "9144c143eee76cb55aea943197a86b59a179a556831d5e51242cb47400c3898a",
+      "bytes": 29606892,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_sword_ride_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "933171d5ba40d5161d973995c6e4748f0e2e593949a33fe626cf74c69fdda282",
+      "bytes": 22961814,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_obj/cultivator_tripo_v9_mixamo.obj"
+      ]
+    },
+    {
+      "oid": "952f115a65c94ecff7ad68d592b2f0ef7699f2bb2b84ade6130b29d7574ce2ec",
+      "bytes": 43831020,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iBreath_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "95f284dad76586f88cf0d9fb908d09dff009896f1c0501cf90777b38ca0d1bf6",
+      "bytes": 43682876,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "977ec50e147d38fa589e58d62d5082b810c400f0f6073bb2a4cbf1b47bde1d85",
+      "bytes": 43727068,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "9a8261dfd93448fb04be653503cd238092e652a74b1b5a998e8990c7761d5b69",
+      "bytes": 29598204,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_sword_riding_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_sword_ride_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "9babedcf37989f0fb8583ce0cdde5279c496fd70c5bad4063732c0588b0167fd",
+      "bytes": 29560748,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "9c6edfbd829c7e356fed35536ba3e37741306a5dc634ebebf2536e3dcf1c22a1",
+      "bytes": 43735660,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "a29109cb735ec98fa897d4d879a0f7729e6e572002c9c4c0eba7e8bbb34034ba",
+      "bytes": 40247276,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rWalk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "a2cdf45c65c2ab4f55c4fe4e1f177773db588166cf0d569d033b35a690ae1ad4",
+      "bytes": 40265188,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot1.glb"
+      ]
+    },
+    {
+      "oid": "a2d4344f3db3692557afc04eb2be7e322ccb51ae2df4410459363ec1311f93a8",
+      "bytes": 8155548,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_lowpoly.fbx"
+      ]
+    },
+    {
+      "oid": "a2f6d4d591e12f4c07c5ad9115b925a77f42c9378ed3fc33fc8ba8c2487a6bea",
+      "bytes": 29606812,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_idle_guarded_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "a43635628d95571cd62fd4db0cc3a6ea32778b2bc02f242dda224c89d07f1ade",
+      "bytes": 5055760,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_BaseColor.png",
+        "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_BaseColor.png"
+      ]
+    },
+    {
+      "oid": "a53e3ba6fc2b8fbc33f84005d1c5a085b24915e7da1f34177c4ba0e9f9f3b298",
+      "bytes": 43697932,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "a58cb67a0451b9198692e75385259dd8c72c914ea4c49e44e205ce34d986cc2a",
+      "bytes": 12141904,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v5_anime/source/generic_anime_male_original.blend",
+        "docs/art/cultivator_neutral_youth_v7/source/generic_anime_male_original.blend"
+      ]
+    },
+    {
+      "oid": "a77271c088b1ea945cd92dac2183013e797aa36da4c97b158703d37446ffdbf9",
+      "bytes": 29606812,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_idle_guarded_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "a7cd19074d60f0f607212c8a4e63e4feb10cdd5147786056794d1f97c37f186a",
+      "bytes": 43728668,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "aa73133024142d3a75652fdf8ae4e80d3a778fe2fce99c9bbfe6537a00d80cb1",
+      "bytes": 40245604,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "ab2bb0766e45641df9870aa022760a65b4a157c2ac807f3e422d2f8134022814",
+      "bytes": 40281736,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "abc34d03e50290d86e2114dedd5f53536cbcc7fafa5aed87fd85c6ed100420f7",
+      "bytes": 40338088,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "af14f599a380b2b8eb7cca2e778d50e48c1c022aa4be8e8816f1fb14c1434b66",
+      "bytes": 29829572,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/lean_fix/_check_idle.glb"
+      ]
+    },
+    {
+      "oid": "b0616ba12fc29adbaf9c14cc8b1a916bb8e68ae84a2914a7009e3037426cfaa7",
+      "bytes": 40274876,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFloat_slot1.glb"
+      ]
+    },
+    {
+      "oid": "b0f893059e99daafae5f888d9301441ac348dbeb40b92eccbbbcbb1f513e775f",
+      "bytes": 24563411,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_clean.blend"
+      ]
+    },
+    {
+      "oid": "b1bd5389e17d61898de41f0d6dfcd4a24388c84023504735032847dd164bad6c",
+      "bytes": 40262908,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "b6ac554b140251675b3db615cc73e358e3e46d2844b1c805fd384baad647209e",
+      "bytes": 62797012,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_xianxia_motion_v1.glb"
+      ]
+    },
+    {
+      "oid": "b783ea2d0ee182bce60d616fb8c888bc1841d816b405f52f1327b309c7006840",
+      "bytes": 40293908,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot1.glb"
+      ]
+    },
+    {
+      "oid": "b7b655ab006021502f4d14b730b25e3e640c56809f08eeb09f86ede89f822480",
+      "bytes": 62816308,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_ink_v2.glb"
+      ]
+    },
+    {
+      "oid": "b931e2ae8cc62e818507998e600fad0b9994a76f8100cb7720e2a56bc821fc33",
+      "bytes": 29598252,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_hands_behind_back_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "b9482b053734316821f0368dbc9d0f257b8b7aed9d968450fa77e71bdba39601",
+      "bytes": 63594468,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_runtime_v5.glb"
+      ]
+    },
+    {
+      "oid": "b990d0ae0077491b29e51b141bdc98899cc8067046f96589aa47fcdcb32b916f",
+      "bytes": 62769412,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/fourth_export/cultivator_walk_sources_v4.glb"
+      ]
+    },
+    {
+      "oid": "b99ff7e96a16243a042761fd1f2cb4db5655f9b6e41c765f3d1f6e52caec76cb",
+      "bytes": 43705628,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "b9b53938a472e76b1171345d1e2b08f1ede37a739a653907a22008fc5fb13c28",
+      "bytes": 40244328,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot1.glb"
+      ]
+    },
+    {
+      "oid": "ba87440272b157a443dbe2cddb375eb175bce3586a45a84779bb018a5e730129",
+      "bytes": 15474155,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v6_vroid/source/hairsample_male_original.zip"
+      ]
+    },
+    {
+      "oid": "bb2c48732a4608d2bab0743264b384d494779933f5cc2ec4dc590cd707629f73",
+      "bytes": 29598236,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_meditate_seat_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_meditate_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_meditate_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_meditate_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_meditate_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_meditate_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "bba4f882a627197c31a5d75516fea90c5f857dc200187bded2d6ed2ac14eb321",
+      "bytes": 38565620,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/iterations/cultivator_handsome_youth_v4_quaternius_iteration_01.blend"
+      ]
+    },
+    {
+      "oid": "be43ed7307381863a94ec79e8fe1db6a7e3c69751420122c42228842f1f13990",
+      "bytes": 29598236,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/authored_poses/clip_meditate_seat_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "bf76a90733afd368c904c1435f23bf63a279c002602768654bcac9c3fb564a38",
+      "bytes": 29491468,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_idle_guarded_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "c046dbac0aa899ef1c262b51120eccb62143454451a090ca6cb05b8ffe723ddf",
+      "bytes": 40278964,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final2/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "c1774807e1edb71b386c66861d53e332e92bb459950ec49397eae3390d211f12",
+      "bytes": 40254756,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot1.glb"
+      ]
+    },
+    {
+      "oid": "c29b85153fe43cb20bf54115c94b6a2bbef1b02626aa29f79d600883a58712c7",
+      "bytes": 40245520,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "c2e66ea5edcee7a8ac8eabf7d7516d72c2866aede0390ee58a4c4d4491afcdf8",
+      "bytes": 15727852,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_jade.glb"
+      ]
+    },
+    {
+      "oid": "c3951bfe073b773ae9d7cdbfc24dfd6339e050c850cac4fe0af37de5da5c4959",
+      "bytes": 29632092,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "c50f227a20666c4675a4872d5ff14428e3935b9ceafb0006dadf35f976de1d34",
+      "bytes": 40276048,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "c5cabce7a33a68a74546bc13f98729a23115ea4d11f0547a1e65430b892ef209",
+      "bytes": 43708476,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_walk_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "c660db439da00e07f8a8557c3e66a4fdfb737e31a4e99201e835bd58aa2a956e",
+      "bytes": 43852076,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iWarrior_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "c74d03bd6fb42284579178732164298aae6aff60f2e0c9630c984888f14f3822",
+      "bytes": 62839164,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb"
+      ]
+    },
+    {
+      "oid": "c868cb45deabadb334db36740c74674704df0ad48cb41837a6022a40f2f5c1d6",
+      "bytes": 29491628,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_walk_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "cc6a51dd5490c1a600b54159e87433cbc0457d613b1f7eac60cb6bfbca632b5d",
+      "bytes": 14015018,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_jade_texture_20250901.png"
+      ]
+    },
+    {
+      "oid": "ccf0c1d52f71c4c66dc1d9e4b0e1f269cf2c01fdf5a3dcb12ce085e3f208c3d9",
+      "bytes": 29560748,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright4/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "cd6ee87cdb574889e68ec62b55700730aab0c7b4778672c441928c207bcbf133",
+      "bytes": 87426705,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_imported.blend1"
+      ]
+    },
+    {
+      "oid": "ce0aac71636af97d62d6272efdc68cf7ad07581ac184faa1923f0bc97b0ee2fb",
+      "bytes": 49681128,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_jump_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot0.glb"
+      ]
+    },
+    {
+      "oid": "d012f86d9bbd78e8d092da1650d431f6315c3119716f0a346fa246f84d038319",
+      "bytes": 29491628,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright3/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "d025b0d3b0e22e137e20837641f8ada33bef49b0961401873be5ba76ae9464fe",
+      "bytes": 63308516,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_walk_sources/trials/first_export/cultivator_walk_sources_v1.glb"
+      ]
+    },
+    {
+      "oid": "d0e9745c3a52d96027293533fd6fac3aadd2fd60b18e50d5d356d97600d55f8e",
+      "bytes": 38657951,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius.blend"
+      ]
+    },
+    {
+      "oid": "d2359f7dfd5e5002e6422ac681ae9864219c5f5e46045962bb672d3109815e99",
+      "bytes": 43776476,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "d2798bdf1c36a448f03d009b8e2b8a6deb65e65a960c5115e6eae6c13bd2d004",
+      "bytes": 38654386,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_shortcoat_v3_quaternius/cultivator_shortcoat_v3_quaternius.blend1"
+      ]
+    },
+    {
+      "oid": "d2b172244516288b68a1a4dfcc6210708a9c591fe21a0f6ade96579ef0558240",
+      "bytes": 29606892,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_sword_ride_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "d5b25ee0f85659569b79794935ef101bbd91aba925d449e32d9196a54d1b12b8",
+      "bytes": 43722716,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_jump_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "d628c9b87504daf1ce927cbe1152c3733c5083b3b2c28eda67c5239de7396058",
+      "bytes": 40266292,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-v2/clip_fly_slot1.glb"
+      ]
+    },
+    {
+      "oid": "d75867afd3f2adf05cb4c1ed4ec799982babcda4de8ad3f1d54b99b54d15c6d9",
+      "bytes": 40251992,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "d77edc8688801b4568d61be31a85f83dd62768819bf31578f43c86146386b435",
+      "bytes": 40243072,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot1.glb"
+      ]
+    },
+    {
+      "oid": "dbb5a4c618b469a2f234f81e8efd4af625326281d712b13ec00d0038136e2662",
+      "bytes": 29748268,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "dcf7f1258d701b3a150d86f4f506355d404d6fc3b1a1d707ff88b991e7e022d9",
+      "bytes": 43637500,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_run_slot2.fbx",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "dd035dde24066a416c15a8aa0c40defae18674cd55a3be7836d6cfd5f4124cd3",
+      "bytes": 40243996,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "e01b0b5b0153c1be9f36041faf58357c4b0efe2cce8f9dd148042718fe89f1c1",
+      "bytes": 43695356,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rFast_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "e08f9b00442ff36b574bb2e3976b6cd38aa40b0837dcb3d28b2d89769de5bbd0",
+      "bytes": 43755500,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "e1932f5f91104afca89c501416a5fec09069b8552734237fc09045fabc4ca9b4",
+      "bytes": 9903835,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/source/T_Peasant_ORM.png",
+        "docs/art/cultivator_shortcoat_v3_quaternius/source/T_Peasant_ORM.png"
+      ]
+    },
+    {
+      "oid": "e1e513d9edb1775a8cefca9aa616d00f6c201499e3729f8624de5c450c63340d",
+      "bytes": 59618729,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_ink_v2/cultivator_ink_v2.blend"
+      ]
+    },
+    {
+      "oid": "e209a168130a9e2b0ff96d5df546059ae848dbe5bd658f5dd9362282c56dc3fe",
+      "bytes": 43781980,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iFocus_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "e451087aa171e0ed15f715bd24b073163a084084a0be6d31046762140eba4ce7",
+      "bytes": 62839164,
+      "in_head": false,
+      "paths": [
+        "src/game/actors/swordsman/models/cultivator_human_motion_20260927.glb"
+      ]
+    },
+    {
+      "oid": "e5b27e4842d7efb8a7192f1366daf2bd25b5491f5f373b3c5551312ed50e1781",
+      "bytes": 43737356,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "e7232c5cb71e90e76787cf337f0c6c88a49f7ec915e9fbd07d9c4805fb0af9ee",
+      "bytes": 40324712,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iNinja_slot1.glb"
+      ]
+    },
+    {
+      "oid": "e79fcb7b5cbf3edc18d2666d6f48c90fbbe83f233de7cbf32a1f1a4d2d0b6179",
+      "bytes": 49680308,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_idle_slot0.glb",
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-treadmill_runningfbx/clip_run_slot0.glb"
+      ]
+    },
+    {
+      "oid": "e8962225e53f113d652d5bee945d9e9ab526b30bc7835b5a1dd383a26292bd65",
+      "bytes": 40278940,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "ea1c8f3990d9307a0246586ad4ea65cad784cfb2af60e894b42b5b0c621e188e",
+      "bytes": 40254048,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-idlecand/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "ea4a9de658ee4cd24dcf0c71a35ec6365656de48dbe7ef678042264ec66c8aa8",
+      "bytes": 59586085,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_xianxia_motion_v1/cultivator_xianxia_motion_v1.blend1"
+      ]
+    },
+    {
+      "oid": "ed86564eb9670a01a668488cef05fcae998f99e235c5f59710383dc76c8c54ef",
+      "bytes": 29748172,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/lean_fix/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "ef343d4785cac73777541a64847dbfa562f4d3f4d808846adb62cf87378d0a88",
+      "bytes": 40280368,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot1.glb"
+      ]
+    },
+    {
+      "oid": "f04e319f14651d35384d10300fea895f272244752e0aedc4ec4fc6b49f177b36",
+      "bytes": 43766940,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "f070e209d4811d8dc06076bc92200f412acc9d34f5a7db5278624f0fc55203a6",
+      "bytes": 22127948,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload_yup.fbx"
+      ]
+    },
+    {
+      "oid": "f178ee347737e098e08cd91bd9e5de182482c71825d622d0493d5254bdc91e29",
+      "bytes": 59870635,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_ink_v2/cultivator_ink_v2.blend1"
+      ]
+    },
+    {
+      "oid": "f1b91982b88772febc4a35c47ee98e726a7142b8ceffaa2113ed48fb46018c35",
+      "bytes": 29646364,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright2/clip_jump_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "f1be199dda74cb4d4bb0c666a775fd19f8c272a8823ade98ced7434ded837226",
+      "bytes": 43753996,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fly2/clip_flyFly_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "f289f1f17eb94e86f09e6252c09a31969903c21f6da5b7ae308ecd83589a266a",
+      "bytes": 64912801,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/mixamo_upload_obj/cultivator_tripo_v9_mixamo_upload.obj"
+      ]
+    },
+    {
+      "oid": "f4811360a89ff3cfda0e31f30dbad1531d61651189dd24d60c363c8de2b741b7",
+      "bytes": 40277532,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runfbx/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "f4c793daf6653f9453356dce56b59fa776dd8807a1aec18dc6675ab42e48fde5",
+      "bytes": 40242692,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-fast_runfbx/clip_run_slot1.glb"
+      ]
+    },
+    {
+      "oid": "f79d6e2be0d743ca18e410ff0d5d96c80b543477ad6ebf23e5cb1112cd458905",
+      "bytes": 43698508,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-runB/clip_idle_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "f8aef6b6c891c096192183bd4528aff87c22d0a3956f51fd463d069fcff4ea99",
+      "bytes": 30644169,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/exports/cultivator_tripo_v9_mixamo_upload.zip"
+      ]
+    },
+    {
+      "oid": "f8c008fd1cfea5be68a23bcc72d3846a72e53db5118ae8a0dc21b51a526e3a28",
+      "bytes": 43719580,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_iStand_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "f95adf5883c40c2a9c7a71da13d9dafa8a6937cd3e966a62c3d19e5cbefb020f",
+      "bytes": 43756220,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_base_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "fb04c47134ec3cf19f798bcae4fa969298b64dc10a9a3627e9205019eb73b9f1",
+      "bytes": 40278904,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship/clip_idle_slot1.glb"
+      ]
+    },
+    {
+      "oid": "fc3e8e218499ba7903f1f618ed353ad980c0a1a15f73971fe6530de2a1e0b1a0",
+      "bytes": 38565979,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_handsome_youth_v4_quaternius/cultivator_handsome_youth_v4_quaternius.blend1"
+      ]
+    },
+    {
+      "oid": "fd2b3b452b46eb1c6da4c890f47b79f4a90023e9ee926913a98b71553332f2f6",
+      "bytes": 43695276,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-cand/clip_rSprint_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "fd4882c7d5f46b15febae391400dfa81282e3f1541db7350da195db2728a3cc3",
+      "bytes": 40252040,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-final/clip_walk_slot1.glb"
+      ]
+    },
+    {
+      "oid": "fe5a5f8f0a82560f59d4c3af5f3e900d8b57f4788f2621313cd33895791c57db",
+      "bytes": 43752044,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-114926/clip_run_slot2.fbx"
+      ]
+    },
+    {
+      "oid": "feb94e1e6bee07acb0b81c3ca2740a435917040dd6e19d9e44e51c3106d01653",
+      "bytes": 8872634,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/source/cultivator_tripo_v9_lowpoly.blend1"
+      ]
+    },
+    {
+      "oid": "feced1906a5ff4205d3848742bfcf6d028fef91297e0249989b6f086dac0251d",
+      "bytes": 29606892,
+      "in_head": false,
+      "paths": [
+        "docs/art/cultivator_tripo_v9/iterations/mia_rig/20260921-ship7-upright/clip_sword_ride_slot2.fbx"
+      ]
+    }
+  ],
+  "candidate_object_count": 212,
+  "candidate_bytes": 8611699289,
+  "protected_exceptions": [
+    "docs/art/jade_paper_sample/jade_pine.blend1",
+    "docs/art/jade_paper_sample/jade_rock.blend1"
+  ],
+  "all_ref_tips_protected": true
+}
