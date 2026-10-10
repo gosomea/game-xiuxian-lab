@@ -1,0 +1,15 @@
+{
+  "adopted_head": "dc70af9372fd8cd406c58d29d95c2cb19b082cb9",
+  "adopted_policy_document_paths": 19,
+  "original_asset_files_not_rewritten": true,
+  "all_worktrees_clean_at_guarded_swap": true,
+  "live_original_database": "/Users/yuqixian/.codex/backups/game-xiuxian-lab/20261010-lfs-compaction-f0f29a5-d5c1ccc2/live-before-adoption.git",
+  "post_adoption_lfs_asset_gate_exit": 0,
+  "post_adoption_lfs_fsck_exit": 0,
+  "post_adoption_git_fsck_exit": 0,
+  "git_pack_MiB": 769.2170391082764,
+  "lfs_cache_bytes": 1149771670,
+  "lfs_cache_GiB": 1.0708083119243383,
+  "push_url": "disabled://local-only-lfs",
+  "subsequent_other_session_work": "切换后另一个会话新建 notes/implemented/art/2026-10-10-sword-finger-gesture.md，不属于本次提交"
+}
