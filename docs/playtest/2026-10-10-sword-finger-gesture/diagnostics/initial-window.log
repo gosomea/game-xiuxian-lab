@@ -1,0 +1,25 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-10 15:32:39.379 Godot[44022:33891805] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-10 15:32:40.606 Godot[44022:33891805] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+PASS sword_qi完整结成剑指
+PASS sword_qi手腕无超过十四厘米逐帧跳变 0.000
+PASS sword_qi手腕朝向连续 0.002
+PASS sword_qi结束恢复移动动作
+PASS flying_sword完整结成剑指
+PASS flying_sword手腕无超过十四厘米逐帧跳变 0.000
+PASS flying_sword手腕朝向连续 0.001
+PASS flying_sword结束恢复移动动作
+PASS sword_array完整结成剑指
+PASS sword_array手腕无超过十四厘米逐帧跳变 0.001
+PASS sword_array手腕朝向连续 0.003
+PASS sword_array结束恢复移动动作
+PASS heavenly_sword_wheel完整结成剑指
+PASS heavenly_sword_wheel手腕无超过十四厘米逐帧跳变 0.008
+PASS heavenly_sword_wheel手腕朝向连续 0.035
+PASS heavenly_sword_wheel结束恢复移动动作
+PASS giant_sword_descent完整结成剑指
+PASS giant_sword_descent手腕无超过十四厘米逐帧跳变 0.009
+PASS giant_sword_descent手腕朝向连续 0.037
+PASS giant_sword_descent结束恢复移动动作

@@ -21,6 +21,10 @@ var _host: Swordsman = null
 var _cast: SwordCastComponent = null
 var _sword: Node3D = null
 var _modifier: SwordCastPoseModifier = null
+var _hand: SwordCastHandPresentation = null
+var _pose_age := 0.0
+var _release_age := 0.0
+var _last_cast := -1
 var _clock := 0.0
 
 
@@ -37,11 +41,17 @@ func bind(host: Swordsman, cast: SwordCastComponent) -> void:
 		_modifier = SwordCastPoseModifier.new()
 		_modifier.name = "SwordCastPoseModifier"
 		(skeletons[0] as Skeleton3D).add_child(_modifier)
+		_hand = SwordCastHandPresentation.new()
+		_hand.name = "SwordCastHandPresentation"
+		add_child(_hand)
+		_hand.bind(skeletons[0] as Skeleton3D)
 	_place(_rest_transform())
 
 
 func _exit_tree() -> void:
 	if _modifier != null and is_instance_valid(_modifier):
+		if _modifier.get_parent() != null:
+			_modifier.get_parent().remove_child(_modifier)
 		_modifier.queue_free()
 	_modifier = null
 
@@ -52,6 +62,10 @@ func sword_node() -> Node3D:
 
 func pose_weight() -> float:
 	return _modifier.weight if _modifier != null else 0.0
+
+
+func hand_state() -> Dictionary:
+	return _hand.sample_state() if _hand != null else {}
 
 
 func _process(delta: float) -> void:
@@ -67,13 +81,27 @@ func _process(delta: float) -> void:
 		_place(Transform3D(current.basis.orthonormalized().slerp(rest.basis, alpha),
 			current.origin.lerp(rest.origin, alpha)))
 	if _modifier != null:
+		if _last_cast != _cast.casts_total:
+			_pose_age = 0.0
+			_release_age = 0.0
+			_last_cast = _cast.casts_total
+		var visual_delta := minf(delta, 1.0 / 30.0)
+		_pose_age += visual_delta
+		_release_age = 0.0 if _cast.cast_held else _release_age + visual_delta
 		var now := _host.capability_manager().elapsed
 		var target := _cast.pose_weight if _cast.facing_requested(now) else 0.0
-		_modifier.weight = move_toward(_modifier.weight, target, POSE_RATE * delta)
+		# 长帧也不在一次更新中跳到出手或待机；只限制视觉混合。
+		_modifier.weight = move_toward(_modifier.weight, target, POSE_RATE * minf(delta, 1.0 / 60.0))
 		_modifier.kind = _cast.pose_kind
 		_modifier.phase = _cast.pose_phase
 		_modifier.progress = _cast.pose_progress
+		if _cast.pose_kind == SwordCastComponent.POSE_RAISE:
+			_modifier.phase = "gather" if _cast.cast_held else "release"
+			_modifier.progress = clampf(_release_age / 0.22, 0.0, 1.0)
 		_modifier.facing = _facing()
+		_modifier.age = _pose_age
+		if _hand != null:
+			_hand.set_gesture(smoothstep(0.0, 0.8, _modifier.weight))
 
 
 func _place(transform: Transform3D) -> void:

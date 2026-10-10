@@ -1,0 +1,11 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-10 15:43:38.022 Godot[59093:33958110] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-10 15:43:39.126 Godot[59093:33958110] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+EXERCISE sword_qi
+PASS sword_qi完整结成剑指
+FAIL sword_qi手腕无超过十四厘米逐帧跳变 0.435
+FAIL sword_qi手腕朝向连续 1.842
+PASS sword_qi结束恢复移动动作
+EXERCISE flying_sword

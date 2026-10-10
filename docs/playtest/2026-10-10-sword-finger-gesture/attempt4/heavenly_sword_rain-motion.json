@@ -1,0 +1,770 @@
+[
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 0.0,
+    "form": "heavenly_sword_rain",
+    "frame": 0,
+    "weight": 0.0,
+    "wrist": [
+      0.252923458814621,
+      0.962095737457275,
+      3.97225952148438
+    ]
+  },
+  {
+    "delta": 0.0366363333333334,
+    "finger_weight": 0.09228515625,
+    "form": "heavenly_sword_rain",
+    "frame": 1,
+    "weight": 0.15,
+    "wrist": [
+      0.272091507911682,
+      0.966476023197174,
+      3.96486306190491
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 0.31640625,
+    "form": "heavenly_sword_rain",
+    "frame": 2,
+    "weight": 0.3,
+    "wrist": [
+      0.284095913171768,
+      0.973182141780853,
+      3.94858765602112
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 0.59326171875,
+    "form": "heavenly_sword_rain",
+    "frame": 3,
+    "weight": 0.45,
+    "wrist": [
+      0.272808372974396,
+      0.985072135925293,
+      3.92252659797668
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 0.84375,
+    "form": "heavenly_sword_rain",
+    "frame": 4,
+    "weight": 0.6,
+    "wrist": [
+      0.23676510155201,
+      1.01215624809265,
+      3.89075088500977
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 0.98876953125,
+    "form": "heavenly_sword_rain",
+    "frame": 5,
+    "weight": 0.75,
+    "wrist": [
+      0.185779079794884,
+      1.06307208538055,
+      3.86534881591797
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 6,
+    "weight": 0.9,
+    "wrist": [
+      0.132459700107574,
+      1.1381424665451,
+      3.85534143447876
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 7,
+    "weight": 1.0,
+    "wrist": [
+      0.0962653756141663,
+      1.20703434944153,
+      3.85647630691528
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 8,
+    "weight": 1.0,
+    "wrist": [
+      0.0800424888730049,
+      1.23236095905304,
+      3.84465861320496
+    ]
+  },
+  {
+    "delta": 0.0324483333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 9,
+    "weight": 1.0,
+    "wrist": [
+      0.0676264464855194,
+      1.25190925598145,
+      3.83561325073242
+    ]
+  },
+  {
+    "delta": 0.0185185185185185,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 10,
+    "weight": 1.0,
+    "wrist": [
+      0.0512103587388992,
+      1.27973079681396,
+      3.82362151145935
+    ]
+  },
+  {
+    "delta": 0.0149191481481481,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 11,
+    "weight": 1.0,
+    "wrist": [
+      0.0452618636190891,
+      1.29139459133148,
+      3.81915473937988
+    ]
+  },
+  {
+    "delta": 0.017572,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 12,
+    "weight": 1.0,
+    "wrist": [
+      0.0412438586354256,
+      1.29956245422363,
+      3.81630969047546
+    ]
+  },
+  {
+    "delta": 0.016671,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 13,
+    "weight": 1.0,
+    "wrist": [
+      0.0378064215183258,
+      1.30857169628143,
+      3.8137686252594
+    ]
+  },
+  {
+    "delta": 0.016661,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 14,
+    "weight": 1.0,
+    "wrist": [
+      0.0353833958506584,
+      1.3167210817337,
+      3.81193947792053
+    ]
+  },
+  {
+    "delta": 0.016669,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 15,
+    "weight": 1.0,
+    "wrist": [
+      0.0335156098008156,
+      1.3248051404953,
+      3.81052947044373
+    ]
+  },
+  {
+    "delta": 0.016666,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 16,
+    "weight": 1.0,
+    "wrist": [
+      0.0321076214313507,
+      1.33302700519562,
+      3.80944538116455
+    ]
+  },
+  {
+    "delta": 0.016664,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 17,
+    "weight": 1.0,
+    "wrist": [
+      0.0310429614037275,
+      1.34151363372803,
+      3.8086109161377
+    ]
+  },
+  {
+    "delta": 0.016666,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 18,
+    "weight": 1.0,
+    "wrist": [
+      0.0302405487746,
+      1.35035109519958,
+      3.80796694755554
+    ]
+  },
+  {
+    "delta": 0.0307483333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 19,
+    "weight": 1.0,
+    "wrist": [
+      0.0296374335885048,
+      1.35959231853485,
+      3.8074688911438
+    ]
+  },
+  {
+    "delta": 0.0183333333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 20,
+    "weight": 1.0,
+    "wrist": [
+      0.0289059393107891,
+      1.37940347194672,
+      3.80682015419006
+    ]
+  },
+  {
+    "delta": 0.0158243333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 21,
+    "weight": 1.0,
+    "wrist": [
+      0.0287409033626318,
+      1.39063453674316,
+      3.80657172203064
+    ]
+  },
+  {
+    "delta": 0.015862,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 22,
+    "weight": 1.0,
+    "wrist": [
+      0.0284449253231287,
+      1.40058147907257,
+      3.8063747882843
+    ]
+  },
+  {
+    "delta": 0.017659,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 23,
+    "weight": 1.0,
+    "wrist": [
+      0.0283081848174334,
+      1.41095781326294,
+      3.80622982978821
+    ]
+  },
+  {
+    "delta": 0.016666,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 24,
+    "weight": 1.0,
+    "wrist": [
+      0.0282127149403095,
+      1.42306900024414,
+      3.80609536170959
+    ]
+  },
+  {
+    "delta": 0.016665,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 25,
+    "weight": 1.0,
+    "wrist": [
+      0.0281546805053949,
+      1.43471395969391,
+      3.80596518516541
+    ]
+  },
+  {
+    "delta": 0.016674,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 26,
+    "weight": 1.0,
+    "wrist": [
+      0.028108200058341,
+      1.44660425186157,
+      3.80583000183105
+    ]
+  },
+  {
+    "delta": 0.016294,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 27,
+    "weight": 1.0,
+    "wrist": [
+      0.0280855018645525,
+      1.45868408679962,
+      3.80569291114807
+    ]
+  },
+  {
+    "delta": 0.017035,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 28,
+    "weight": 1.0,
+    "wrist": [
+      0.0280762147158384,
+      1.47057223320007,
+      3.8055567741394
+    ]
+  },
+  {
+    "delta": 0.015864,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 29,
+    "weight": 1.0,
+    "wrist": [
+      0.0280743893235922,
+      1.48312282562256,
+      3.80540704727173
+    ]
+  },
+  {
+    "delta": 0.017437,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 30,
+    "weight": 1.0,
+    "wrist": [
+      0.0280833169817924,
+      1.49470376968384,
+      3.80526566505432
+    ]
+  },
+  {
+    "delta": 0.016052,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 31,
+    "weight": 1.0,
+    "wrist": [
+      0.0280911158770323,
+      1.50749278068542,
+      3.80510330200195
+    ]
+  },
+  {
+    "delta": 0.016518,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 32,
+    "weight": 1.0,
+    "wrist": [
+      0.0281093418598175,
+      1.51901161670685,
+      3.80495357513428
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 33,
+    "weight": 1.0,
+    "wrist": [
+      0.0281223841011524,
+      1.53070747852325,
+      3.80479407310486
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 34,
+    "weight": 1.0,
+    "wrist": [
+      0.0281433928757906,
+      1.5422465801239,
+      3.80463004112244
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 35,
+    "weight": 1.0,
+    "wrist": [
+      0.0281644314527512,
+      1.55344653129578,
+      3.80438852310181
+    ]
+  },
+  {
+    "delta": 0.0305063333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 36,
+    "weight": 1.0,
+    "wrist": [
+      0.0281849820166826,
+      1.56423616409302,
+      3.80417418479919
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 37,
+    "weight": 1.0,
+    "wrist": [
+      0.0282290428876877,
+      1.58383893966675,
+      3.80381178855896
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 38,
+    "weight": 1.0,
+    "wrist": [
+      0.0282961092889309,
+      1.59284329414368,
+      3.80365347862244
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 39,
+    "weight": 1.0,
+    "wrist": [
+      0.028271721675992,
+      1.60124635696411,
+      3.80349040031433
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 40,
+    "weight": 1.0,
+    "wrist": [
+      0.028293177485466,
+      1.608966588974,
+      3.80333995819092
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 41,
+    "weight": 1.0,
+    "wrist": [
+      0.028313510119915,
+      1.61592698097229,
+      3.80318522453308
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 42,
+    "weight": 1.0,
+    "wrist": [
+      0.0283330827951431,
+      1.62205219268799,
+      3.80302739143372
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 43,
+    "weight": 1.0,
+    "wrist": [
+      0.028351578861475,
+      1.62726902961731,
+      3.80286693572998
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 44,
+    "weight": 1.0,
+    "wrist": [
+      0.028368977829814,
+      1.63150596618652,
+      3.80270457267761
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 45,
+    "weight": 1.0,
+    "wrist": [
+      0.0283858068287373,
+      1.63476669788361,
+      3.80254507064819
+    ]
+  },
+  {
+    "delta": 0.031486,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 46,
+    "weight": 1.0,
+    "wrist": [
+      0.0284024327993393,
+      1.6372652053833,
+      3.80238795280457
+    ]
+  },
+  {
+    "delta": 0.0181818181818182,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 47,
+    "weight": 1.0,
+    "wrist": [
+      0.0284336525946856,
+      1.64050567150116,
+      3.80207204818726
+    ]
+  },
+  {
+    "delta": 0.0152968484848485,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 48,
+    "weight": 1.0,
+    "wrist": [
+      0.0284367427229881,
+      1.6417555809021,
+      3.80191421508789
+    ]
+  },
+  {
+    "delta": 0.017465,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 49,
+    "weight": 1.0,
+    "wrist": [
+      0.0284388158470392,
+      1.64256024360657,
+      3.80178880691528
+    ]
+  },
+  {
+    "delta": 0.016734,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 50,
+    "weight": 1.0,
+    "wrist": [
+      0.0284414477646351,
+      1.64326906204224,
+      3.80164694786072
+    ]
+  },
+  {
+    "delta": 0.0296723333333333,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 51,
+    "weight": 1.0,
+    "wrist": [
+      0.0284438189119101,
+      1.64378619194031,
+      3.80151534080505
+    ]
+  },
+  {
+    "delta": 0.0176886666666663,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 52,
+    "weight": 1.0,
+    "wrist": [
+      0.0284486021846533,
+      1.64442610740662,
+      3.8012707233429
+    ]
+  },
+  {
+    "delta": 0.0164950000000004,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 53,
+    "weight": 1.0,
+    "wrist": [
+      0.0284502413123846,
+      1.64468598365784,
+      3.80116844177246
+    ]
+  },
+  {
+    "delta": 0.016393,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 54,
+    "weight": 1.0,
+    "wrist": [
+      0.0284513980150223,
+      1.64486992359161,
+      3.80110144615173
+    ]
+  },
+  {
+    "delta": 0.016439,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 55,
+    "weight": 1.0,
+    "wrist": [
+      0.0284524597227573,
+      1.64501023292542,
+      3.80105566978455
+    ]
+  },
+  {
+    "delta": 0.017332,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 56,
+    "weight": 1.0,
+    "wrist": [
+      0.0284529831260443,
+      1.64511823654175,
+      3.801025390625
+    ]
+  },
+  {
+    "delta": 0.016377,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 57,
+    "weight": 1.0,
+    "wrist": [
+      0.0284533873200417,
+      1.64520502090454,
+      3.80100727081299
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 58,
+    "weight": 1.0,
+    "wrist": [
+      0.0284533984959126,
+      1.64526724815369,
+      3.80099987983704
+    ]
+  },
+  {
+    "delta": 0.0330086666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 59,
+    "weight": 1.0,
+    "wrist": [
+      0.0284534748643637,
+      1.64531588554382,
+      3.80099940299988
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 60,
+    "weight": 1.0,
+    "wrist": [
+      0.0284554362297058,
+      1.64527773857117,
+      3.80097508430481
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 61,
+    "weight": 1.0,
+    "wrist": [
+      0.0284597314894199,
+      1.64509177207947,
+      3.80089926719666
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 62,
+    "weight": 1.0,
+    "wrist": [
+      0.0284691210836172,
+      1.64466428756714,
+      3.80072665214539
+    ]
+  },
+  {
+    "delta": 0.0166666666666667,
+    "finger_weight": 1.0,
+    "form": "heavenly_sword_rain",
+    "frame": 63,
+    "weight": 1.0,
+    "wrist": [
+      0.0284847319126129,
+      1.64394378662109,
+      3.80043435096741
+    ]
+  }
+]

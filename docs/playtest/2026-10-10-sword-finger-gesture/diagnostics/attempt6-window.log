@@ -1,0 +1,38 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-10 16:02:59.430 Godot[96562:34112643] +[IMKClient subclass]: chose IMKClient_Modern
+2026-10-10 16:03:00.078 Godot[96562:34112643] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+EXERCISE sword_qi
+PASS sword_qi完整结成剑指
+PASS sword_qi手腕无超过十四厘米逐帧跳变 0.127
+PASS sword_qi手腕朝向连续 0.469
+PASS sword_qi结束恢复移动动作
+EXERCISE flying_sword
+PASS flying_sword完整结成剑指
+PASS flying_sword手腕无超过十四厘米逐帧跳变 0.125
+PASS flying_sword手腕朝向连续 0.452
+PASS flying_sword结束恢复移动动作
+EXERCISE sword_array
+PASS sword_array完整结成剑指
+PASS sword_array手腕无超过十四厘米逐帧跳变 0.129
+PASS sword_array手腕朝向连续 0.455
+PASS sword_array结束恢复移动动作
+EXERCISE heavenly_sword_wheel
+PASS heavenly_sword_wheel完整结成剑指
+FAIL heavenly_sword_wheel手腕无超过十四厘米逐帧跳变 0.240
+FAIL heavenly_sword_wheel手腕朝向连续 0.898
+PASS heavenly_sword_wheel结束恢复移动动作
+EXERCISE giant_sword_descent
+PASS giant_sword_descent完整结成剑指
+PASS giant_sword_descent手腕无超过十四厘米逐帧跳变 0.092
+PASS giant_sword_descent手腕朝向连续 0.479
+PASS giant_sword_descent结束恢复移动动作
+EXERCISE heavenly_sword_rain
+PASS heavenly_sword_rain完整结成剑指
+PASS heavenly_sword_rain手腕无超过十四厘米逐帧跳变 0.093
+PASS heavenly_sword_rain手腕朝向连续 0.464
+PASS heavenly_sword_rain结束恢复移动动作
+PASS 切招取消后人物与手指完全收势
+PASS 优化后原御剑入口有效
+GESTURE_ACCEPTANCE checks=26 failed=2

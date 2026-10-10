@@ -1,0 +1,32 @@
+{
+  "source": "docs/art/sword_finger_gesture_20261010/sword_finger_hand_20261010.blend",
+  "export": "src/game/shared/sword_cast/models/sword_finger_hand_20261010.glb",
+  "bones": [
+    "Wrist",
+    "Index1",
+    "Index2",
+    "Index3",
+    "Middle1",
+    "Middle2",
+    "Middle3",
+    "Ring1",
+    "Ring2",
+    "Ring3",
+    "Little1",
+    "Little2",
+    "Little3",
+    "Thumb1",
+    "Thumb2",
+    "Thumb3"
+  ],
+  "animations": [
+    "gesture"
+  ],
+  "skin_joint_count": [
+    16
+  ],
+  "vertices": 1189,
+  "faces": 1112,
+  "hand_frame": "X thumb side / Y fingers / Z back",
+  "original": true
+}

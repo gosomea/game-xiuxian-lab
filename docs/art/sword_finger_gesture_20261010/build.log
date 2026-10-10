@@ -1,0 +1,19 @@
+00:00.162  translation      | WARNING Falling back to standard locale ("C")
+/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/sword_finger_gesture_20261010/build_hand.py:92: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new('Warm skin');mat.diffuse_color=(.67,.47,.39,1);mat.use_nodes=True
+/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/sword_finger_gesture_20261010/build_hand.py:95: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  nail=bpy.data.materials.new('Natural nails');nail.diffuse_color=(.83,.70,.62,1);nail.use_nodes=True
+Info: Saved as "sword_finger_hand_20261010.blend"
+INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib
+INFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib
+15:57:14 | INFO: Starting glTF 2.0 export
+15:57:14 | INFO: Extracting primitive: ArticulatedRightHand
+15:57:14 | INFO: Primitives created: 2
+15:57:14 | INFO: Finished glTF 2.0 export in 0.08198380470275879 s
+00:01.649  render           | Saved: '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/sword_finger_gesture_20261010/relaxed.png'
+00:01.954  render           | Saved: '/Users/yuqixian/forever-skills/projects/games/game-xiuxian-lab/docs/art/sword_finger_gesture_20261010/sword_fingers.png'
+
+HAND_EXPORT {'source': 'docs/art/sword_finger_gesture_20261010/sword_finger_hand_20261010.blend', 'export': 'src/game/shared/sword_cast/models/sword_finger_hand_20261010.glb', 'bones': ['Wrist', 'Index1', 'Index2', 'Index3', 'Middle1', 'Middle2', 'Middle3', 'Ring1', 'Ring2', 'Ring3', 'Little1', 'Little2', 'Little3', 'Thumb1', 'Thumb2', 'Thumb3'], 'animations': ['gesture'], 'skin_joint_count': [16], 'vertices': 1189, 'faces': 1112, 'hand_frame': 'X thumb side / Y fingers / Z back', 'original': True}
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
+
+Blender quit

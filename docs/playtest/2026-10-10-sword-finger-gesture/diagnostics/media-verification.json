@@ -1,0 +1,21 @@
+{
+  "method": "ffmpeg -v error -i <media> -f null -",
+  "results": [
+    {
+      "file": "gesture.gif",
+      "exit_code": 0
+    },
+    {
+      "file": "gesture.mp4",
+      "exit_code": 0
+    },
+    {
+      "file": "upright105/gesture.gif",
+      "exit_code": 0
+    },
+    {
+      "file": "upright105/gesture.mp4",
+      "exit_code": 0
+    }
+  ]
+}

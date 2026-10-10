@@ -1,0 +1,12 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+OpenGL API 4.1 Metal - 89.3 - Compatibility - Using Device: Apple - Apple M4 Pro
+
+2026-10-10 16:19:07.475 Godot[25847:34241485] +[IMKClient subclass]: chose IMKClient_Modern
+EXERCISE heavenly_sword_wheel
+PASS heavenly_sword_wheel完整结成剑指
+PASS heavenly_sword_wheel手腕无超过十四厘米逐帧跳变 0.138
+PASS heavenly_sword_wheel手腕朝向连续 0.470
+PASS heavenly_sword_wheel结束恢复移动动作
+PASS 切招取消后人物与手指完全收势
+PASS 优化后原御剑入口有效
+GESTURE_ACCEPTANCE checks=6 failed=0

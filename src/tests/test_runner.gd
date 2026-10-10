@@ -49,6 +49,7 @@ const SUITES := [
 	"res://tests/test_cultivator_motion_library.gd",
 	"res://tests/test_sword_workbench.gd",
 	"res://game/shared/sword_cast/test_sword_cast_targets.gd",
+	"res://game/shared/sword_cast/test_sword_cast_pose_modifier.gd",
 	"res://game/abilities/heavenly_sword_wheel/test_heavenly_sword_wheel.gd",
 	"res://game/abilities/giant_sword_descent/test_giant_sword_descent.gd",
 	"res://game/abilities/heavenly_sword_rain/test_heavenly_sword_rain.gd",
